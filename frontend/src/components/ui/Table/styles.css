@@ -1,0 +1,7 @@
+.custom-table .ant-table-thead > tr > th {
+    background-color: white !important;
+}
+
+th.ant-table-cell::before {
+    width: 0 !important;
+}
