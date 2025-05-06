@@ -1,0 +1,123 @@
+export const blogs = [
+  {
+    id: 1,
+    title:
+      "Hướng Dẫn Toàn Tập Về Đi Phượt Off-Road: Chinh Phục Địa Hình An Toàn",
+    shortTitle: "Hướng Dẫn Toàn Tập Về Đi Phượt...",
+    description:
+      "Khám phá cách chuẩn bị xe máy, đóng gói trang bị cần thiết và làm chủ kỹ thuật lái xe an toàn trên địa hình khó. Từ đồi núi đến sa mạc, hướng dẫn này giúp cả người mới và tay lái kinh nghiệm.",
+    avatar: "/images/avatar.png",
+    author: "Nguyễn Thanh Hà",
+    date: "08/04/2025",
+    tag: "Phượt Off-Road",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 2,
+    title: "Bí Quyết Bảo Dưỡng Xe Máy Cho Hành Trình Dài",
+    shortTitle: "Bí Quyết Bảo Dưỡng Xe Máy...",
+    description:
+      "Tìm hiểu các bước bảo dưỡng xe máy cơ bản để đảm bảo xe luôn trong tình trạng tốt nhất cho những chuyến đi dài. Từ kiểm tra lốp đến thay dầu, bài viết này có tất cả.",
+    avatar: "/images/avatar.png",
+    author: "Trần Minh Tuấn",
+    date: "10/04/2025",
+    tag: "Bảo Dưỡng",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 3,
+    title: "Top 5 Mẫu Xe Máy Phù Hợp Cho Đi Phượt",
+    shortTitle: "Top 5 Mẫu Xe Máy Phù Hợp...",
+    description:
+      "Danh sách 5 mẫu xe máy tốt nhất cho các chuyến phượt, từ địa hình núi đá đến đường trường. So sánh ưu nhược điểm để chọn xe phù hợp với bạn.",
+    avatar: "/images/avatar.png",
+    author: "Lê Thị Mai",
+    date: "12/04/2025",
+    tag: "Xe Máy",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 4,
+    title: "Kỹ Thuật Lái Xe Máy Trên Đường Trơn Trượt",
+    shortTitle: "Kỹ Thuật Lái Xe Trên Đường...",
+    description:
+      "Học cách xử lý xe máy trên đường ướt, bùn lầy hoặc sỏi đá. Mẹo từ các tay lái chuyên nghiệp để giữ an toàn và kiểm soát xe.",
+    avatar: "/images/avatar.png",
+    author: "Phạm Văn Hùng",
+    date: "14/04/2025",
+    tag: "Kỹ Thuật Lái",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 5,
+    title: "Cách Chọn Lốp Xe Máy Cho Địa Hình Khác Nhau",
+    shortTitle: "Cách Chọn Lốp Xe Máy...",
+    description:
+      "Hướng dẫn chọn lốp xe máy phù hợp với từng loại địa hình: đường trường, off-road, hoặc đường phố. Đánh giá các thương hiệu lốp phổ biến.",
+    avatar: "/images/avatar.png",
+    author: "Hoàng Anh Dũng",
+    date: "16/04/2025",
+    tag: "Phụ Kiện",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 6,
+    title: "Hành Trang Cho Chuyến Phượt Đêm",
+    shortTitle: "Hành Trang Cho Chuyến Phượt...",
+    description:
+      "Chuẩn bị gì cho một chuyến phượt đêm? Từ đèn pha đến đồ bảo hộ, bài viết này chia sẻ kinh nghiệm để đảm bảo an toàn khi lái xe trong bóng tối.",
+    avatar: "/images/avatar.png",
+    author: "Ngô Thị Lan",
+    date: "18/04/2025",
+    tag: "Phượt Đêm",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 7,
+    title: "Câu Chuyện Phượt: Hành Trình Qua Tây Bắc",
+    shortTitle: "Câu Chuyện Phượt Tây Bắc...",
+    description:
+      "Trải nghiệm thực tế của một nhóm phượt thủ trên cung đường Tây Bắc. Những thử thách, cảnh đẹp và bài học từ hành trình đáng nhớ.",
+    avatar: "/images/avatar.png",
+    author: "Vũ Minh Châu",
+    date: "20/04/2025",
+    tag: "Kinh Nghiệm",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 8,
+    title: "Sửa Chữa Xe Máy Khẩn Cấp Trên Đường",
+    shortTitle: "Sửa Chữa Xe Máy Khẩn Cấp...",
+    description:
+      "Hướng dẫn xử lý các sự cố xe máy phổ biến khi đang trên đường, từ thủng lốp đến chết máy. Mang theo công cụ gì và làm thế nào để tiếp tục hành trình.",
+    avatar: "/images/avatar.png",
+    author: "Đỗ Quốc Bảo",
+    date: "22/04/2025",
+    tag: "Sửa Chữa",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 9,
+    title: "Phượt Biển: Lái Xe Dọc Duyên Hải Việt Nam",
+    shortTitle: "Phượt Biển Dọc Duyên Hải...",
+    description:
+      "Khám phá các cung đường ven biển đẹp nhất Việt Nam. Lời khuyên về lộ trình, điểm dừng chân và cách bảo vệ xe khỏi môi trường biển.",
+    avatar: "/images/avatar.png",
+    author: "Mai Văn Tùng",
+    date: "24/04/2025",
+    tag: "Phượt Biển",
+    image: "/images/blog-img.png",
+  },
+  {
+    id: 10,
+    title: "Tăng Tốc An Toàn: Mẹo Cho Tay Lái Mới",
+    shortTitle: "Tăng Tốc An Toàn Cho Tay...",
+    description:
+      "Làm thế nào để tăng tốc xe máy mượt mà và an toàn? Bài viết chia sẻ kỹ thuật cơ bản dành cho người mới bắt đầu lái xe.",
+    avatar: "/images/avatar.png",
+    author: "Bùi Thị Hương",
+    date: "26/04/2025",
+    tag: "Kỹ Thuật Lái",
+    image: "/images/blog-img.png",
+  },
+];
