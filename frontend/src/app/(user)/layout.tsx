@@ -1,7 +1,7 @@
-//app/(user)/layout.tsx
 import type { Metadata } from "next";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
+import Header from "@/shared/components/Header/Header";
+import Footer from "@/shared/components/Footer/Footer";
+
 export const metadata: Metadata = {
   title: "Motorbike",
   description: "Motorbike",
@@ -13,9 +13,9 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="antialiased">
+    <div className="antialiased bg-[#F8F8F8]">
       <Header />
-      <main className="pt-20">{children}</main>
+      <main className="pt-[100px]">{children}</main>
       <Footer />
     </div>
   );
