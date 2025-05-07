@@ -1,28 +1,36 @@
-//app/layout.tsx
-
 import type { Metadata } from "next";
-import { Poppins, Nosifer } from "next/font/google";
-import "./globals.css";
+import { notFound } from "next/navigation";
+import { Montserrat } from "next/font/google";
+import "@/styles/globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
 import ToastProvider from "@/components/Toast/ToastProvider";
+import { HandleProgressOnComplete } from "@/lib/nprogress/HandleOnProgressComplete";
+import { PageProps } from "@/types/application";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const nosifer = Nosifer({
-  variable: "--font-nosifer",
-  subsets: ["latin"],
-  weight: "400",
-});
+export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Motorbike",
-  description: "Motorbike",
-};
+export async function generateMetadata({
+  searchParams,
+}: PageProps): Promise<Metadata | null> {
+  try {
+    return {
+      title: "Title",
+      description: "Description",
+      keywords: "abc",
+      metadataBase: null,
+      openGraph: null,
+    };
+  } catch (error: any) {
+    return notFound();
+  }
+}
 
 export default function RootLayout({
   children,
@@ -32,11 +40,10 @@ export default function RootLayout({
   return (
     <AntdRegistry>
       <html lang="en">
-        <body className={`${poppins.variable} ${nosifer.variable} antialiased`}>
-          {children}
-        </body>
+        <body className={`${montserrat.variable} antialiased`}>{children}</body>
       </html>
       <ToastProvider />
+      <HandleProgressOnComplete />
     </AntdRegistry>
   );
 }

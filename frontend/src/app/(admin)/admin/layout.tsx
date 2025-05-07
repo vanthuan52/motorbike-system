@@ -1,6 +1,6 @@
 // app/(admin)/layout.tsx
 import type { Metadata } from "next";
-import AdminHeader from "@/components/Header/AdminHeader";
+import AdminHeader from "@/shared/components/Header/AdminHeader";
 import { SidebarAdmin } from "@/components/Sidebar/Sidebar";
 
 export const metadata: Metadata = {

@@ -1,7 +1,7 @@
-//app/(user)/layout.tsx
 import type { Metadata } from "next";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
+import Header from "@/shared/components/Header/Header";
+import Footer from "@/shared/components/Footer/Footer";
+
 export const metadata: Metadata = {
   title: "Motorbike",
   description: "Motorbike",
