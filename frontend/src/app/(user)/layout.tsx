@@ -13,9 +13,9 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="antialiased">
+    <div className="antialiased bg-[#F8F8F8]">
       <Header />
-      <main className="pt-20">{children}</main>
+      <main className="pt-[100px]">{children}</main>
       <Footer />
     </div>
   );

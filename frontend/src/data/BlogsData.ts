@@ -11,6 +11,162 @@ export const blogs = [
     date: "08/04/2025",
     tag: "Phượt Off-Road",
     image: "/images/blog-img.png",
+    relatedBlogs: [
+      {
+        id: 1,
+        title: "Bí Quyết Bảo Dưỡng Xe Máy Cho Hành Trình Dài",
+        shortTitle: "Bí Quyết Bảo Dưỡng Xe Máy...",
+        description:
+          "Tìm hiểu các bước bảo drysler cho hành trình dài. Từ kiểm tra lốp đến thay dầu, bài viết này có tất cả.",
+        avatar: "/images/avatar.png",
+        author: "Trần Minh Tuấn",
+        date: "10/04/2025",
+        tag: "Bảo Dưỡng",
+        image: "/images/blog-img.png",
+      },
+      {
+        id: 2,
+        title: "Bí Quyết Bảo Dưỡng Xe Máy Cho Hành Trình Dài",
+        shortTitle: "Bí Quyết Bảo Dưỡng Xe Máy...",
+        description:
+          "Tìm hiểu các bước bảo drysler cho hành trình dài. Từ kiểm tra lốp đến thay dầu, bài viết này có tất cả.",
+        avatar: "/images/avatar.png",
+        author: "Trần Minh Tuấn",
+        date: "10/04/2025",
+        tag: "Bảo Dưỡng",
+        image: "/images/blog-img.png",
+      },
+      {
+        id: 3,
+        title: "Bí Quyết Bảo Dưỡng Xe Máy Cho Hành Trình Dài",
+        shortTitle: "Bí Quyết Bảo Dưỡng Xe Máy...",
+        description:
+          "Tìm hiểu các bước bảo drysler cho hành trình dài. Từ kiểm tra lốp đến thay dầu, bài viết này có tất cả.",
+        avatar: "/images/avatar.png",
+        author: "Trần Minh Tuấn",
+        date: "10/04/2025",
+        tag: "Bảo Dưỡng",
+        image: "/images/blog-img.png",
+      },
+      {
+        id: 4,
+        title: "Bí Quyết Bảo Dưỡng Xe Máy Cho Hành Trình Dài",
+        shortTitle: "Bí Quyết Bảo Dưỡng Xe Máy...",
+        description:
+          "Tìm hiểu các bước bảo drysler cho hành trình dài. Từ kiểm tra lốp đến thay dầu, bài viết này có tất cả.",
+        avatar: "/images/avatar.png",
+        author: "Trần Minh Tuấn",
+        date: "10/04/2025",
+        tag: "Bảo Dưỡng",
+        image: "/images/blog-img.png",
+      },
+    ],
+    blogDetails: {
+      title: "Kinh Nghiệm Chạy Off-road Cho Người Mới",
+      description:
+        "Tổng hợp những kinh nghiệm cần biết để bắt đầu hành trình off-road an toàn và thú vị.",
+      thumbnail: "/images/blog-img.png",
+      minutes: 5,
+      sections: [
+        {
+          title: "1. Lựa Chọn Xe Phù Hợp",
+          paragraphs: [
+            "Adventure và xe dirt bike được thiết kế đặc biệt cho mục đích này với những ưu điểm:",
+          ],
+          bullets: [
+            "Khoảng sáng gầm cao: Giúp xe vượt qua chướng ngại vật và không bị cản trở",
+            "Lốp có gai sâu: Cung cấp độ bám tốt trên các bề mặt trơn trượt",
+            "Hệ thống treo tốt ưu: Hấp thụ tốt các tác động trên đường gồ ghề",
+            "Khung xe chắc chắn: Chịu được các tác động mạnh khi đi off-road",
+          ],
+          recommendations: [
+            "Honda CRF250L/CRF300L",
+            "Yamaha WR250R",
+            "BMW F850GS/R1250GS",
+            "KTM 690 Enduro R",
+          ],
+        },
+        {
+          title: "2. Chuẩn Bị Kỹ Lưỡng Cho Xe",
+          bullets: [
+            "Kiểm tra lốp: Áp suất phù hợp cho địa hình",
+            "Hệ thống phanh: Đảm bảo dầu phanh đầy đủ, má phanh còn tốt",
+            "Kiểm tra dầu: Dầu máy, dầu phanh, dầu truyền động",
+            "Bộ lọc: Bảo vệ sạch sẽ lọc gió và lọc nhớt",
+            "Xích: Đảm bảo độ căng và bôi trơn phù hợp",
+            "Gắn thêm phụ kiện bảo vệ: Chắn bùn, bảo vệ động cơ, bảo vệ két nước",
+          ],
+        },
+        {
+          title: "3. Trang Bị Bảo Hộ Cá Nhân",
+          bullets: [
+            "Mũ bảo hiểm full-face hoặc đa dụng",
+            "Kính bảo hộ: Ngăn gió, bụi và côn trùng",
+            "Găng tay: Bảo vệ và tăng cảm giác lái",
+            "Quần áo bảo hộ: Vải dày, có giáp bảo vệ",
+            "Ủng đi phượt: Cao cổ, chống nước và bám tốt",
+            "Bảo vệ đầu gối: Có thể đeo bên ngoài hoặc tích hợp",
+          ],
+        },
+        {
+          title: "4. Kỹ Thuật Điều Khiển Cơ Bản",
+          subsections: [
+            {
+              subtitle: "Tư thế đúng",
+              bullets: [
+                "Đứng trên gác chân: Hấp thụ lực tốt hơn",
+                "Gối ép vào bình xăng: Giữ thăng bằng",
+                "Khuỷu tay mở: Cải thiện kiểm soát tay lái",
+                "Nhìn xa về phía trước: Đọc đường tốt hơn",
+              ],
+            },
+            {
+              subtitle: "Kỹ thuật phanh",
+              bullets: [
+                "Dùng phanh trước và sau phù hợp",
+                "Phanh nhẹ nhàng trước chướng ngại vật",
+              ],
+            },
+            {
+              subtitle: "Vượt chướng ngại vật",
+              bullets: ["Tiếp cận từ tốc độ vừa phải", "Chọn góc nhanh hợp lý"],
+            },
+          ],
+        },
+        {
+          title: "5. Lập Kế Hoạch Cho Chuyến Đi",
+          bullets: [
+            "Nghiên cứu tuyến đường: Dùng bản đồ offline",
+            "Kiểm tra thời tiết",
+            "Lên kế hoạch di chuyển và nghỉ ngơi hợp lý",
+            "Thông báo cho người thân",
+            "Tìm hiểu địa phương: Trạm xăng, bệnh viện, sửa xe",
+          ],
+          quotes: [
+            "Đi phượt off-road không phải là về việc đi nhanh nhất có thể, mà là về việc đi an toàn nhất có thể để chinh phục những cung đường thú vị.",
+          ],
+        },
+        {
+          title: "6. Trang Bị Cần Mang Theo",
+          bullets: [
+            "Bộ công cụ cơ bản: Lục giác, mỏ lết, keo vá lốp",
+            "Bơm mini và bộ vá lốp",
+            "Bình xăng phụ",
+            "Thiết bị liên lạc: Đàm thoại hoặc điện thoại vệ tinh",
+            "Đồ sơ cứu",
+            "GPS hoặc bản đồ",
+            "Bật lửa, dao nhỏ, đèn pin",
+          ],
+        },
+        {
+          title: "7. Kết Luận",
+          paragraphs: [
+            "Off-road là trải nghiệm hấp dẫn, nhưng cũng đầy thử thách. Việc chuẩn bị kỹ lưỡng là điều cần thiết để hành trình an toàn.",
+            "Chúc bạn có những chuyến đi tuyệt vời!",
+          ],
+        },
+      ],
+    },
   },
   {
     id: 2,
