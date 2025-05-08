@@ -35,7 +35,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   } rounded-lg text-sm border bg-white appearance-none focus:outline-none transition duration-200 ease-in-out ${
     error
       ? "border-red-500 focus:ring-2 focus:ring-red-200"
-      : "border-gray-300 focus:ring-green-200"
+      : "border-gray-300 "
   }`;
 
   return (
@@ -72,7 +72,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         </select>
 
         {/* Custom arrow icon */}
-        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-green-600">
+        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path
               fillRule="evenodd"

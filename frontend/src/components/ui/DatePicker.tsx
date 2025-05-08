@@ -26,14 +26,12 @@ const CustomInput = forwardRef<HTMLInputElement, any>(
       <input
         type="text"
         ref={ref}
-        value={moment(value).format("DD-MM-YYYY")}
+        value={value ? moment(value).format("DD-MM-YYYY") : ""}
         onClick={onClick}
         placeholder={placeholder}
         readOnly
         className={`w-full min-h-[42px] pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white text-gray-900 text-sm ${
-          error
-            ? "border-red-500 focus:ring-red-200"
-            : "border-gray-300 focus:ring-green-200"
+          error ? "border-red-500 focus:ring-red-200" : "border-gray-300 "
         }`}
       />
     </div>
@@ -41,18 +39,6 @@ const CustomInput = forwardRef<HTMLInputElement, any>(
 );
 
 CustomInput.displayName = "CustomInput";
-
-/**
- * A reusable datepicker component with a customizable placeholder, label, and error message.
- *
- * @param {Date | null} value - The selected date value.
- * @param {(date: Date | null) => void} onChange - The callback function to handle changes in date value.
- * @param {string} [placeholder="Ch n ng y"] - The placeholder text for the input field.
- * @param {string} [label] - The label for the datepicker.
- * @param {string} [error] - The error message to display.
- *
- * @returns {JSX.Element} The datepicker component.
- */
 const Datepicker: React.FC<DatepickerProps> = ({
   value,
   onChange,
