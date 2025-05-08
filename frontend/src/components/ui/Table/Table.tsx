@@ -4,19 +4,6 @@ import type { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import "./styles.css";
 import TablePagination from "./TablePagination";
-
-/**
- * A reusable table component with a default pagination and centered columns.
- *
- * @param {TableProps<T>} props The props for the table component.
- * @param {ColumnsType<T>} [props.columns] The columns configuration for the table.
- * @param {PaginationConfig} [props.pagination] The pagination configuration for the table.
- * @param {number} [props.pagination.pageSize] The default page size for the table.
- * @param {(page: number, pageSize: number) => void} [props.pagination.onChange] The callback function when the page or page size is changed.
- * @param {T[]} [props.dataSource] The data source for the table.
- *
- * @returns {ReactElement} The table component with a default pagination and centered columns.
- */
 const TableReuse = <T extends object>(props: TableProps<T>) => {
   const centeredColumns = props.columns?.map((col: ColumnsType<T>[number]) => ({
     ...col,
@@ -58,20 +45,144 @@ const TableReuse = <T extends object>(props: TableProps<T>) => {
   }, [props.dataSource]);
 
   return (
-    <div className="rounded-[5px] overflow-hidden border border-gray-200">
-      <Table<T>
-        {...props}
-        columns={centeredColumns}
-        pagination={false}
-        className="custom-table"
-      />
-      <TablePagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        pageSize={pageSize}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handlePageSizeChange}
-      />
+    <div className="rounded-[5px] overflow-hidden h-full">
+      {/* Table cho sm trở lên */}
+      <div className="hidden sm:block">
+        <Table<T>
+          {...props}
+          columns={centeredColumns}
+          pagination={false}
+          className="custom-table"
+          scroll={{ x: "max-content" }}
+        />
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      </div>
+      {/* Card cho mobile */}
+      <div className="block sm:hidden">
+        <div className="space-y-4 p-2">
+          {props.dataSource && props.dataSource.length > 0 ? (
+            (props.dataSource as Record<string, unknown>[])
+              .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+              .map((row, idx) => (
+                <div
+                  key={row.id?.toString() || idx}
+                  className="bg-white rounded shadow border border-gray-100 p-4 flex flex-col gap-2"
+                >
+                  {Array.isArray(centeredColumns)
+                    ? centeredColumns
+                        .filter((col) => {
+                          return (
+                            col &&
+                            typeof (col as { dataIndex?: unknown })
+                              .dataIndex === "string" &&
+                            (col as { dataIndex?: string }).dataIndex !==
+                              "action"
+                          );
+                        })
+                        .map((col, i) => {
+                          const dataIndex = (col as { dataIndex: string })
+                            .dataIndex;
+                          let value = row[dataIndex];
+                          if (
+                            "render" in col &&
+                            typeof col.render === "function"
+                          ) {
+                            const rendered = col.render(value, row as T, idx);
+                            if (React.isValidElement(rendered))
+                              return (
+                                <div key={i} className="flex text-sm">
+                                  <span className="font-semibold min-w-[110px] text-gray-500">
+                                    {typeof col.title === "function"
+                                      ? col.title({})
+                                      : col.title}
+                                    :
+                                  </span>
+                                  <span className="ml-2 break-all">
+                                    {rendered}
+                                  </span>
+                                </div>
+                              );
+                            if (
+                              rendered &&
+                              typeof rendered === "object" &&
+                              "children" in rendered
+                            ) {
+                              value = (
+                                rendered as { children: React.ReactNode }
+                              ).children;
+                            } else {
+                              value = rendered;
+                            }
+                          }
+                          return (
+                            <>
+                              <div key={i} className="flex text-sm ">
+                                <span className="font-semibold min-w-[110px] text-gray-500 ">
+                                  {typeof col.title === "function"
+                                    ? col.title({})
+                                    : col.title}
+                                  :
+                                </span>
+                                <span className="ml-2 break-all">
+                                  {value as React.ReactNode}
+                                </span>
+                              </div>
+
+                              <span className="h-[1px] bg-gray-200" />
+                            </>
+                          );
+                        })
+                    : null}
+                  {(() => {
+                    const actionCol = (
+                      centeredColumns as ColumnsType<Record<string, unknown>>
+                    ).find((col) => col.key === "action");
+                    if (!actionCol || !actionCol.render) return null;
+                    const rendered = actionCol.render(null, row, idx);
+                    if (React.isValidElement(rendered)) {
+                      return (
+                        <div className="flex justify-end pt-2">{rendered}</div>
+                      );
+                    }
+                    if (
+                      rendered &&
+                      typeof rendered === "object" &&
+                      "children" in rendered
+                    ) {
+                      return (
+                        <div className="flex justify-end pt-2">
+                          {(rendered as { children: React.ReactNode }).children}
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="flex justify-end pt-2">
+                        {rendered as React.ReactNode}
+                      </div>
+                    );
+                  })()}
+                </div>
+              ))
+          ) : (
+            <div className="text-center text-gray-400 py-8">
+              {"Không có dữ liệu"}
+            </div>
+          )}
+        </div>
+        <TablePagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
+        />
+      </div>
     </div>
   );
 };

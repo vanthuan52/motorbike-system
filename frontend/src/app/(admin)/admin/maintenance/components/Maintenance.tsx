@@ -232,7 +232,7 @@ export default function Maintenance() {
         onClickAdd={handleOpenCreate}
         addButtonLabel="Tạo đơn bảo dưỡng"
       />
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="bg-white rounded-lg p-4 border border-gray-200">
         <div className="mb-4">
           <SearchInputReuse
             onChange={(text) =>

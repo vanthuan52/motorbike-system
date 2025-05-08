@@ -35,8 +35,8 @@ const TablePagination = ({
   onPageSizeChange,
 }: TablePaginationProps) => {
   return (
-    <div className="flex items-center justify-end gap-5 px-4 py-2 text-sm">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-2 text-sm w-full">
+      <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
         <span className="font-medium">Số bản ghi:</span>
         <Select
           value={pageSize}
@@ -46,7 +46,7 @@ const TablePagination = ({
         />
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-end flex-wrap">
         <button
           className="px-2 py-1 text-lg disabled:text-gray-300"
           onClick={() => onPageChange(1)}
@@ -66,7 +66,7 @@ const TablePagination = ({
           <button
             key={page}
             className={`px-2 py-1 font-semibold rounded ${
-              page === currentPage ? "text-black" : "text-gray-500"
+              page === currentPage ? "text-black bg-gray-200" : "text-gray-500"
             }`}
             onClick={() => onPageChange(page)}
           >
