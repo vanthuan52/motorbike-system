@@ -6,7 +6,7 @@ export const comments = [
     content:
       "Cảm ơn tác giả đã chia sẻ những thông tin bổ ích về đi phượt off-road. Mình sẽ áp dụng ngay cho chuyến đi sắp tới.",
     date: "2025-04-08",
-    avatar: "/images/avatar.png",
+    avatar: "/images/avatar/avatar1.jpeg",
     blogId: 1,
     likes: 10,
   },
@@ -17,7 +17,7 @@ export const comments = [
     content:
       "Bài viết rất hay và chi tiết. Mình đã học được nhiều điều mới mẻ từ đây.",
     date: "2025-04-09",
-    avatar: "/images/avatar.png",
+    avatar: "/images/avatar/avatar8.jpeg",
     blogId: 1,
     likes: 5,
   },
@@ -28,7 +28,7 @@ export const comments = [
     content:
       "Bài viết rất tốt nhưng mình nghĩ có thể thêm một số hình ảnh minh họa để dễ hiểu hơn.",
     date: "2025-04-10",
-    avatar: "/images/avatar.png",
+    avatar: "/images/avatar/avatar6.jpeg",
     blogId: 1,
     likes: 2,
   },
@@ -39,7 +39,7 @@ export const comments = [
     content:
       "Bài viết rất tốt nhưng mình nghĩ có thể thêm một số hình ảnh minh họa để dễ hiểu hơn.",
     date: "2025-04-10",
-    avatar: "/images/avatar.png",
+    avatar: "/images/avatar/avatar3.jpeg",
     blogId: 1,
     likes: 5,
   },

@@ -36,7 +36,8 @@ const Button: React.FC<ButtonProps> = ({
 
   switch (variant) {
     case "primary":
-      variantClasses = "bg-green-600 text-white hover:bg-green-700";
+      variantClasses =
+        "bg-black text-white font-medium px-5 py-2 rounded-md cursor-pointer";
       break;
     case "secondary":
       variantClasses = "bg-gray-200 text-gray-800 hover:bg-gray-300";
@@ -49,7 +50,8 @@ const Button: React.FC<ButtonProps> = ({
         "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50";
       break;
     default:
-      variantClasses = "bg-green-600 text-white hover:bg-green-700";
+      variantClasses =
+        "border border-white text-white px-6 py-3 rounded-full hover:bg-white hover:text-black transition";
   }
 
   return (

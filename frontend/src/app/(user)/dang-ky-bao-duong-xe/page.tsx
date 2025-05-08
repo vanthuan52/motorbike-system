@@ -236,7 +236,7 @@ export default function Page() {
         {/* Footer nút và thông báo */}
         <div className="flex flex-col md:flex-row w-full gap-2.5">
           <Button
-            label="Đăng ký"
+            label="Đặt lịch"
             type="submit"
             className="w-full md:w-1/2 h-[45px] cursor-pointer"
           />

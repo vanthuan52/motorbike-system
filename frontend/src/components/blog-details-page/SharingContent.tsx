@@ -46,7 +46,7 @@ export default function SharingContent({ blog }: { blog: Blog }) {
       </div>
 
       {/* Author card */}
-      <div className="bg-white rounded-[30px] mt-6 sm:mt-8 px-4 py-4 sm:px-[80px] sm:py-2.5 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-16 shadow-sm">
+      <div className="bg-white rounded-[30px] mt-6 sm:mt-8 px-4 py-4 sm:px-[80px] sm:py-2.5 flex flex-col sm:flex-row items-center gap-6 sm:gap-16 shadow-sm">
         <Image
           src={blog.avatar}
           alt="avatar"

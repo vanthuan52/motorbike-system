@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff } from "lucide-react"; // hoặc dùng icon khác tùy bạn
+import { Eye, EyeOff } from "lucide-react";
 
 interface InputFieldProps {
   label?: string;
@@ -41,9 +41,7 @@ const InputField: React.FC<InputFieldProps> = ({
   const inputClasses = `w-full min-h-[42px] flex py-2 pr-10 ${
     icon ? "pl-10" : "pl-3"
   } rounded-lg text-sm border bg-white focus:outline-none focus:ring-2 ${
-    error
-      ? "border-red-500 focus:ring-red-200"
-      : "border-gray-300 focus:ring-green-200"
+    error ? "border-red-500 focus:ring-red-200" : "border-gray-300 "
   } ${disabled ? "cursor-not-allowed opacity-50" : ""}`;
 
   const handleChange = (
