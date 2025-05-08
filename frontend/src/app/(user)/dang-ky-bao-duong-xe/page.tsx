@@ -106,151 +106,165 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-10 px-4 py-6 lg:px-6 lg:py-10">
-      <div className="flex flex-col items-center w-full lg:w-1/2">
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-center">
-          Đăng ký bảo dưỡng xe
-        </h1>
-        <Image
-          src="/images/dang-ky-bao-duong.png"
-          alt="dang-ky-bao-duong-xe"
-          width={600}
-          height={600}
-          className="w-full max-w-[300px] md:max-w-[400px] lg:max-w-[600px] h-auto"
-        />
-      </div>
-
-      <form
-        className="flex flex-col gap-5 w-full lg:w-1/2"
-        onSubmit={handleSubmit}
-      >
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-center">
-          Đặt lịch hẹn bảo trì
-        </h1>
-
-        {/* Thông tin khách hàng */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField
-            placeholder="Vui lòng nhập họ"
-            value={formData.first_name}
-            onChange={(e) => handleChange(e, "first_name")}
-            error={errors.first_name}
-            icon={<User size={20} />}
-          />
-          <InputField
-            placeholder="Vui lòng nhập tên"
-            value={formData.last_name}
-            onChange={(e) => handleChange(e, "last_name")}
-            error={errors.last_name}
-            icon={<User size={20} />}
-          />
-          <InputField
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) => handleChange(e, "email")}
-            error={errors.email}
-            icon={<Mail size={20} />}
-          />
-          <InputField
-            placeholder="Vui lòng nhập số điện thoại"
-            value={formData.phone_number}
-            onChange={(e) => handleChange(e, "phone_number")}
-            error={errors.phone_number}
-            icon={<Phone size={20} />}
+    <div className="w-full py-6 lg:py-10">
+      <div className="container flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col items-center lg:w-1/2">
+          <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+            Đăng ký bảo dưỡng xe
+          </h2>
+          <Image
+            src="/images/dang-ky-bao-duong.png"
+            alt="dang-ky-bao-duong-xe"
+            width={400}
+            height={400}
+            className="w-full max-w-[200px] md:max-w-[300px] lg:max-w-[500px] h-auto"
           />
         </div>
 
-        {/* Thông tin xe máy */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <SelectField
-            options={["Xe số", "Xe ga", "Xe tay côn"]}
-            value={formData.vehicle_type}
-            onChange={(e) => handleChange(e, "vehicle_type")}
-            error={errors.vehicle_type}
-            icon={<Bike size={20} />}
-            optionLabel="loại xe"
-          />
-
-          <InputField
-            placeholder="Nhập hãng xe"
-            value={formData.vehicle_brand}
-            onChange={(e) => handleChange(e, "vehicle_brand")}
-            error={errors.vehicle_brand}
-            icon={<BadgeCheck size={20} />}
-          />
-
-          <SelectField
-            options={["Bảo dưỡng", "Thay dầu", "Sửa chữa"]}
-            value={formData.service_type}
-            onChange={(e) => handleChange(e, "service_type")}
-            error={errors.service_type}
-            icon={<Bolt size={20} />}
-            optionLabel="dịch vụ"
-          />
-
-          <InputField
-            placeholder="Nhập biển số"
-            value={formData.vehicle_number}
-            onChange={(e) => handleChange(e, "vehicle_number")}
-            error={errors.vehicle_number}
-            icon={<Hash size={20} />}
-          />
-        </div>
-
-        {/* Lịch hẹn */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Datepicker
-            value={formData.date ? new Date(formData.date) : null}
-            onChange={handleDateChange}
-            placeholder="Chọn ngày"
-            error={errors.date}
-          />
-
-          <InputField
-            placeholder="HH:MM"
-            type="time"
-            value={formData.time}
-            onChange={(e) => handleChange(e, "time")}
-            error={errors.time}
-            icon={<Clock size={20} />}
-          />
-        </div>
-
-        <InputField
-          placeholder="Nhập địa chỉ"
-          value={formData.address}
-          onChange={(e) => handleChange(e, "address")}
-          error={errors.address}
-          icon={<MapPin size={20} />}
-        />
-        <InputField
-          placeholder="Thêm ghi chú nếu cần"
-          type="textarea"
-          value={formData.note}
-          onChange={(e) => handleChange(e, "note")}
-          error={errors.note}
-          rows={1}
-          icon={<NotebookPen size={20} />}
-        />
-
-        {/* Footer nút và thông báo */}
-        <div className="flex flex-col md:flex-row w-full gap-2.5">
-          <Button
-            label="Đặt lịch"
-            type="submit"
-            className="w-full md:w-1/2 h-[45px] cursor-pointer"
-          />
-          <div className="flex flex-col gap-2 md:pl-2">
-            <p className="text-sm md:text-md font-medium mt-2">
-              Giờ hoạt động: <br />
-              9:00 AM - 6:00 PM <br />
-            </p>
-            <p className="text-sm md:text-md font-medium mt-2">
-              Vui lòng đến đúng giờ cho cuộc hẹn của bạn!
-            </p>
+        <form
+          className="flex flex-col gap-5 w-full lg:w-1/2"
+          onSubmit={handleSubmit}
+        >
+          <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
+            Đặt lịch hẹn với chúng tôi
+          </h2>
+          <div className="">
+            <h3 className="mb-4 text-lg md:text-xl font-semibold">
+              Thông tin cơ bản
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField
+                placeholder="Vui lòng nhập họ"
+                value={formData.first_name}
+                onChange={(e) => handleChange(e, "first_name")}
+                error={errors.first_name}
+                icon={<User size={20} />}
+              />
+              <InputField
+                placeholder="Vui lòng nhập tên"
+                value={formData.last_name}
+                onChange={(e) => handleChange(e, "last_name")}
+                error={errors.last_name}
+                icon={<User size={20} />}
+              />
+              <InputField
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => handleChange(e, "email")}
+                error={errors.email}
+                icon={<Mail size={20} />}
+              />
+              <InputField
+                placeholder="Vui lòng nhập số điện thoại"
+                value={formData.phone_number}
+                onChange={(e) => handleChange(e, "phone_number")}
+                error={errors.phone_number}
+                icon={<Phone size={20} />}
+              />
+            </div>
           </div>
-        </div>
-      </form>
+
+          {/* Thông tin xe máy */}
+          <div className="">
+            <h3 className="mb-4 text-lg md:text-xl font-semibold">
+              Thông tin phương tiện
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SelectField
+                options={["Xe số", "Xe ga", "Xe tay côn"]}
+                value={formData.vehicle_type}
+                onChange={(e) => handleChange(e, "vehicle_type")}
+                error={errors.vehicle_type}
+                icon={<Bike size={20} />}
+                optionLabel="loại xe"
+              />
+
+              <InputField
+                placeholder="Nhập hãng xe"
+                value={formData.vehicle_brand}
+                onChange={(e) => handleChange(e, "vehicle_brand")}
+                error={errors.vehicle_brand}
+                icon={<BadgeCheck size={20} />}
+              />
+
+              <SelectField
+                options={["Bảo dưỡng", "Thay dầu", "Sửa chữa"]}
+                value={formData.service_type}
+                onChange={(e) => handleChange(e, "service_type")}
+                error={errors.service_type}
+                icon={<Bolt size={20} />}
+                optionLabel="dịch vụ"
+              />
+
+              <InputField
+                placeholder="Nhập biển số"
+                value={formData.vehicle_number}
+                onChange={(e) => handleChange(e, "vehicle_number")}
+                error={errors.vehicle_number}
+                icon={<Hash size={20} />}
+              />
+            </div>
+          </div>
+          <div className="">
+            <h3 className="mb-4 text-lg md:text-xl font-semibold">Thời gian</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Datepicker
+                value={formData.date ? new Date(formData.date) : null}
+                onChange={handleDateChange}
+                placeholder="Chọn ngày"
+                error={errors.date}
+              />
+
+              <InputField
+                placeholder="HH:MM"
+                type="time"
+                value={formData.time}
+                onChange={(e) => handleChange(e, "time")}
+                error={errors.time}
+                icon={<Clock size={20} />}
+              />
+            </div>
+
+            <InputField
+              placeholder="Nhập địa chỉ"
+              value={formData.address}
+              onChange={(e) => handleChange(e, "address")}
+              error={errors.address}
+              icon={<MapPin size={20} />}
+            />
+            <InputField
+              placeholder="Thêm ghi chú nếu cần"
+              type="textarea"
+              value={formData.note}
+              onChange={(e) => handleChange(e, "note")}
+              error={errors.note}
+              rows={1}
+              icon={<NotebookPen size={20} />}
+            />
+          </div>
+
+          <div className="">
+            <div className="flex flex-col gap-2 md:pl-2">
+              <p className="text-sm md:text-md font-medium mt-2">
+                Giờ hoạt động: 9:00 AM - 6:00 PM
+              </p>
+              <p className="text-sm md:text-md font-medium mt-2">
+                Vui lòng đến đúng giờ cho cuộc hẹn của bạn!
+              </p>
+            </div>
+          </div>
+
+          {/* Footer nút và thông báo */}
+          <div className="flex flex-col md:flex-row w-full gap-2.5">
+            <Button
+              label="Đăng ký"
+              type="submit"
+              className="w-full h-[45px] cursor-pointer"
+            />
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
