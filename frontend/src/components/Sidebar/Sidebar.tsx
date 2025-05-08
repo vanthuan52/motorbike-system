@@ -59,9 +59,9 @@ const menuItems = [
     ],
   },
   {
-    key: "/admin/appointments",
+    key: "/admin/maintenance-schedule",
     icon: <CalendarOutlined />,
-    label: <CustomLink href="/admin/appointments">Quản lý lịch hẹn</CustomLink>,
+    label: <CustomLink href="/admin/maintenance-schedule">Quản lý lịch hẹn</CustomLink>,
   },
   {
     key: "/admin/maintenance",
