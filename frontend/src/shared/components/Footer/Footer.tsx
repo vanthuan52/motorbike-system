@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { CustomLink } from "../CustomerLink/CustomLink";
+import { ROUTER_PATH } from "@/constant/router-path";
 
 const CONTACT_INFO = [
   "Giờ làm việc: 8:00 AM – 17:00 PM",
@@ -54,20 +56,28 @@ export default function Footer() {
             <h4 className="text-lg text-gray-900 font-medium mb-7">Công ty</h4>
             <ul className="text-sm  transition-all duration-500">
               <li className="mb-6">
-                <a
-                  href="javascript:;"
+                <CustomLink
+                  href={ROUTER_PATH.HOME}
                   className="text-gray-600 hover:text-gray-900"
                 >
                   Trang chủ
-                </a>
+                </CustomLink>
               </li>
               <li className="mb-6">
-                <a
-                  href="javascript:;"
+                <CustomLink
+                  href={ROUTER_PATH.ABOUT}
                   className=" text-gray-600 hover:text-gray-900"
                 >
                   Về chúng tôi
-                </a>
+                </CustomLink>
+              </li>
+              <li className="mb-6">
+                <CustomLink
+                  href={ROUTER_PATH.SERVICES}
+                  className=" text-gray-600 hover:text-gray-900"
+                >
+                  Dịch vụ
+                </CustomLink>
               </li>
             </ul>
           </div>

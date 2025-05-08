@@ -1,6 +1,6 @@
 import { Eye, Mail } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 
 interface BlogSection {
   title: string;
@@ -35,12 +35,12 @@ export default function BlogContent({ blog }: { blog: Blog }) {
     <div>
       <ol className="flex items-center whitespace-nowrap">
         <li className="inline-flex items-center">
-          <Link
+          <CustomLink
             className="flex items-center text-sm text-gray-500 hover:text-green-500 focus:outline-hidden focus:text-green-500"
             href="/"
           >
             Trang chủ
-          </Link>
+          </CustomLink>
           <svg
             className="shrink-0 mx-2 size-4 text-gray-400 dark:text-neutral-600"
             xmlns="http://www.w3.org/2000/svg"
@@ -57,9 +57,9 @@ export default function BlogContent({ blog }: { blog: Blog }) {
           </svg>
         </li>
         <li className="inline-flex items-center">
-          <a
+          <CustomLink
             className="flex items-center text-sm text-gray-500 hover:text-green-500 focus:outline-hidden focus:text-green-500"
-            href="#"
+            href="/blog"
           >
             Bài viết
             <svg
@@ -76,7 +76,7 @@ export default function BlogContent({ blog }: { blog: Blog }) {
             >
               <path d="m9 18 6-6-6-6" />
             </svg>
-          </a>
+          </CustomLink>
         </li>
         <li
           className="inline-flex items-center text-sm font-semibold text-green-800 truncate "
@@ -85,10 +85,10 @@ export default function BlogContent({ blog }: { blog: Blog }) {
           {blog.title}
         </li>
       </ol>
-      <div className="flex justify-center items-center w-fit p-4 my-4 h-[55px] bg-[#A7D571] rounded-[30px] text-2xl font-bold">
+      <div className="flex justify-center items-center w-fit p-4 my-4 h-[55px] bg-[#A7D571] rounded-[30px] text-lg sm:text-xl font-bold">
         {blog.tag}
       </div>
-      <h1 className="text-xl sm:text-2xl font-bold my-4">{blog.title}</h1>
+      <h1 className="text-lg sm:text-xl font-bold my-4">{blog.title}</h1>
       <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6 ">
         <Image
           src={blog.avatar}
