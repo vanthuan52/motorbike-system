@@ -1,12 +1,18 @@
 {
-  "name": "motorbike",
+  "name": "motorbike-system-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "NODE_ENV=development next dev --turbopack",
+    "build": "NODE_ENV=production next build",
+    "start": "NODE_ENV=production next start",
+    "lint": "next lint",
+    "start:dev": "NODE_ENV=development pm2 start ecosystem.config.js --env development",
+    "start:staging": "NODE_ENV=staging pm2 start ecosystem.config.js --env staging",
+    "start:prod": "NODE_ENV=production pm2 start ecosystem.config.js --env production",
+    "pm2:dev": "NODE_ENV=development next dev",
+    "pm2:staging": "NODE_ENV=staging next start",
+    "pm2:prod": "NODE_ENV=production next start"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.2",
