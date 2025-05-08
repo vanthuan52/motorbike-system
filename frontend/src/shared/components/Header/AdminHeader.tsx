@@ -1,8 +1,20 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, User } from "lucide-react";
+import { Button, Layout } from "antd";
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+interface AdminHeaderProps {
+  collapsed: boolean;
+  setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  colorBgContainer: string;
+}
 
-const AdminHeader: React.FC = () => {
+const AdminHeader: React.FC<AdminHeaderProps> = ({
+  collapsed,
+  setCollapsed,
+  colorBgContainer,
+}) => {
+  const { Header } = Layout;
   const [userOpen, setUserOpen] = useState(false);
   const [notiOpen, setNotiOpen] = useState(false);
   const userRef = useRef<HTMLDivElement>(null);
@@ -26,10 +38,23 @@ const AdminHeader: React.FC = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 z-50 w-[calc(100%-256px)] bg-white border-b border-[#E8E8E8] px-4 py-3 flex justify-end">
+    <Header
+      className="flex items-center justify-between !px-0 sm:px-10 sm:relative w-full"
+      style={{ background: colorBgContainer }}
+    >
+      <Button
+        type="text"
+        icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        onClick={() => setCollapsed(!collapsed)}
+        style={{
+          fontSize: "16px",
+          width: 64,
+          height: 64,
+        }}
+      />
       <div className="flex items-center gap-4">
         {/* User Dropdown */}
-        <div className="relative" ref={userRef}>
+        <div className="relative flex" ref={userRef}>
           <button
             onClick={() => {
               setUserOpen(!userOpen);
@@ -40,7 +65,7 @@ const AdminHeader: React.FC = () => {
             <User size={20} />
           </button>
           {userOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+            <div className="absolute right-0 mt-10 sm:mt-12 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
               <div className="px-4 py-3">
                 <p className="text-sm">Neil Sims</p>
                 <p className="text-sm font-medium truncate">
@@ -74,7 +99,7 @@ const AdminHeader: React.FC = () => {
         </div>
 
         {/* Notification Dropdown */}
-        <div className="relative" ref={notiRef}>
+        <div className="relative flex" ref={notiRef}>
           <button
             onClick={() => {
               setNotiOpen(!notiOpen);
@@ -85,7 +110,7 @@ const AdminHeader: React.FC = () => {
             <Bell size={20} />
           </button>
           {notiOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+            <div className="absolute right-1 mt-10 sm:mt-12 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
               <div className="px-4 py-3">
                 <p className="text-sm">Neil Sims</p>
                 <p className="text-sm font-medium truncate">
@@ -118,7 +143,7 @@ const AdminHeader: React.FC = () => {
           )}
         </div>
       </div>
-    </header>
+    </Header>
   );
 };
 
