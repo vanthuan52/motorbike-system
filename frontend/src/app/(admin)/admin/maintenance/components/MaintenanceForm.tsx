@@ -45,7 +45,7 @@ export default function MaintenanceForm({
         type="select"
         required
         placeholder="Chọn nhân viên"
-        value={formData.staff.name}
+        value={formData.staff?.name}
         options={staffOptions.map((s) => ({
           label: s.name,
           value: s.id.toString(),
