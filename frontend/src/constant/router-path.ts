@@ -7,4 +7,15 @@ export const ROUTER_PATH = {
   MAINTAIN_REGISTRATION: "/dang-ky-bao-duong-xe",
   LOGIN: "/login",
   REGISTER: "/register",
+  ADMIN: {
+    INDEX: "/admin",
+    DASHBOARD: "/admin/dashboard",
+    VEHICLE_BRAND: "/admin/vehicle-company",
+    VEHICLE_TYPE: "/admin/vehicle-type",
+    VEHICLE_PART: "/admin/vehicle-part",
+    APPOINTMENTS: "/admin/maintenance-schedule",
+    MAINTENANCE: "/admin/maintenance",
+    CUSTOMERS: "/admin/customers",
+    STAFFS: "/admin/staffs",
+  },
 };

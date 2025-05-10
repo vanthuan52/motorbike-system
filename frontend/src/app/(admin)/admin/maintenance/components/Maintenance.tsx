@@ -17,6 +17,7 @@ import { ModalDeleteReuse } from "@/components/ui/Modal/ModalDeleteReuse";
 import { ModalReuse } from "@/components/ui/Modal/ModalReuse";
 import { formatVND } from "@/helpers/formatVND";
 import MaintenanceForm from "./MaintenanceForm";
+import { PageHeading } from "@/components/ui/Admin/page-heading";
 export default function Maintenance() {
   const [open, setOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -226,12 +227,8 @@ export default function Maintenance() {
     },
   ];
   return (
-    <div>
-      <PageHeaderReuse
-        title="Quản lý đơn bảo dưỡng"
-        onClickAdd={handleOpenCreate}
-        addButtonLabel="Tạo đơn bảo dưỡng"
-      />
+    <div className="">
+      <PageHeading title="Quản lý đơn bảo dưỡng" />
       <div className="bg-white rounded-lg p-4 border border-gray-200">
         <div className="mb-4">
           <SearchInputReuse

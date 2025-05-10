@@ -1,6 +1,9 @@
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+"use client";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
+  const router = useRouter();
+
   return (
     <main className="flex items-center justify-center min-h-screen bg-gray-950 text-white px-4">
       <div className="text-center">
@@ -9,12 +12,12 @@ export default function NotFound() {
         <p className="text-gray-400 mb-6">
           Sorry, the page you're looking for doesn't exist or has been moved.
         </p>
-        <CustomLink
-          href="/"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition"
+        <button
+          onClick={() => router.back()}
+          className="cursor-pointer inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition"
         >
-          Go back home
-        </CustomLink>
+          Back to previous page
+        </button>
       </div>
     </main>
   );
