@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
@@ -54,7 +53,7 @@ export default function Customers() {
       title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
-      render: (_, record) => (record.gender === "male" ? "Nam" : "Nữ"),
+      render: (_, record) => (record.gender === "MALE" ? "Nam" : "Nữ"),
     },
     {
       title: "Trạng thái",
@@ -81,7 +80,7 @@ export default function Customers() {
       render: (_, record) => (
         <Space>
           <CustomLink
-            href={`/admin/users-management/customers/customer-details?id=${record.id}`}
+            href={`/admin/customers/customer-details?id=${record.id}`}
           >
             <Eye />
           </CustomLink>
@@ -113,7 +112,7 @@ export default function Customers() {
                   ? mockDataTableManageCustomers
                   : mockDataTableManageCustomers.filter(
                       (item) =>
-                        item.gender === (value === "Nam" ? "male" : "female")
+                        item.gender === (value === "Nam" ? "MALE" : "FEMALE")
                     )
               );
               setPayload({ ...payload, gender: value });

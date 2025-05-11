@@ -136,7 +136,12 @@ export default function Maintenance() {
   ];
   return (
     <div className="">
-      <PageHeading title="Quản lý đơn bảo dưỡng" />
+      {/* <PageHeading title="Quản lý đơn bảo dưỡng" /> */}
+      <PageHeaderReuse
+        title="Quản lý đơn bảo dưỡng"
+        onClickAdd={openCreate}
+        addButtonLabel="Tạo đơn bảo dưỡng"
+      />
       <div className="bg-white rounded-lg p-4 border border-gray-200">
         <div className="mb-4">
           <SearchInputReuse

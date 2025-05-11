@@ -114,7 +114,7 @@ export default function Employees() {
       render: (_, record: any) => (
         <Space>
           <CustomLink
-            href={`/admin/users-management/employees/employee-details?id=${record.id}`}
+            href={`/admin/employees/employee-details?id=${record.id}`}
           >
             <Eye size={24} />
           </CustomLink>
