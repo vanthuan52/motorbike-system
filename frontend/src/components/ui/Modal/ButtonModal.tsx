@@ -9,18 +9,6 @@ type ButtonModalProps = {
   loading?: boolean;
   showCancel?: boolean;
 };
-
-/**
- * A modal component containing two buttons: one for canceling and one for confirming actions.
- *
- * @param {() => void} [onCancel] - Function to call when the cancel button is clicked.
- * @param {() => void} [onOk] - Function to call when the confirm button is clicked.
- * @param {string} [cancelText="Hủy"] - Text to display on the cancel button.
- * @param {string} [okText="Xác nhận"] - Text to display on the confirm button.
- * @param {boolean} [loading=false] - Whether the confirm button shows a loading spinner.
- * @param {boolean} [showCancel=true] - Whether to display the cancel button.
- */
-
 export const ButtonModal = ({
   onCancel,
   onOk,
@@ -30,7 +18,7 @@ export const ButtonModal = ({
   showCancel = true,
 }: ButtonModalProps) => {
   return (
-    <div className="flex justify-center gap-4">
+    <div className="flex justify-end gap-4">
       {showCancel && (
         <Button
           onClick={onCancel}

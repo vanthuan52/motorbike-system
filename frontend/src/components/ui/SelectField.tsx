@@ -8,19 +8,10 @@ interface SelectFieldProps {
   error?: string;
   icon?: React.ReactNode;
   optionLabel?: string;
+  values?: string[];
+  rootClass?: string;
 }
 
-/**
- * SelectField is a reusable component for displaying a select input field with a label, icon, and error handling.
- *
- * @param {string} [label] - The label text to be displayed next to the select input.
- * @param {string} value - The current value of the select input.
- * @param {(e: React.ChangeEvent<HTMLSelectElement>) => void} onChange - The change handler for the select input.
- * @param {string[]} options - The options to be displayed in the select input.
- * @param {string} [error] - The error message to be displayed below the select input.
- * @param {React.ReactNode} [icon] - The icon to be displayed next to the select input.
- * @param {string} [optionLabel] - The label text to be used for the first option in the select input.
- */
 const SelectField: React.FC<SelectFieldProps> = ({
   label,
   value,
@@ -29,6 +20,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
   error,
   icon,
   optionLabel,
+  values,
+  rootClass,
 }) => {
   const selectClasses = `w-full py-2 pr-10 ${
     icon ? "pl-10" : "pl-4"
@@ -39,7 +32,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   }`;
 
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className={`flex flex-col gap-1 w-full ${rootClass}`}>
       {label && (
         <label className="text-sm font-medium text-gray-700" htmlFor={label}>
           {label}
@@ -65,7 +58,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
             Chọn {optionLabel}
           </option>
           {options.map((option) => (
-            <option key={option} value={option}>
+            <option key={option} value={values ? values : option}>
               {option}
             </option>
           ))}

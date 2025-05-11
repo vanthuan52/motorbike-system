@@ -3,194 +3,55 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ColumnsType } from "antd/es/table";
-import { Skeleton } from "antd";
+import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { mockDataTableVehiclePart } from "@/data/TableData";
-import { VehiclePart } from "@/types/VehiclePart";
-import { ModalReuse } from "@/components/ui/Modal/ModalReuse";
 import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
 import TableReuse from "@/components/ui/Table/Table";
 import { GreenSwitch } from "@/components/ui/Switch";
-import { ActionButtonsReuse } from "@/components/ui/Button/ActionButtonsReuse";
-import { ModalDeleteReuse } from "@/components/ui/Modal/ModalDeleteReuse";
+
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
-import VehiclePartForm from "./VehiclePartForm";
-import { validateFieldVehiclePart } from "@/utils/validation/PartManagement";
-import { getBase64 } from "@/utils/fileUtils";
+import VehiclePartModal from "./VehiclePartForm";
 export default function VehicleParts() {
-  const [open, setOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<
-    (typeof mockDataTableVehiclePart)[0] | null
-  >(null);
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [assignVisible, setAssignVisible] = useState(false);
+  const [selected, setSelected] = useState<any | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [dataSource, setDataSource] = useState(mockDataTableVehiclePart);
-  const [formData, setFormData] = useState({
-    id: 0,
-    vehicle_type_id: null,
-    name: "",
-    code: "",
-    average_life: null,
-    unit_price: null,
-    quantity: null,
-    status: true,
-    image: null,
-  });
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof VehiclePart, string>>
-  >({
-    name: "",
-    vehicle_type_id: "",
-    average_life: "",
-    unit_price: "",
-    quantity: "",
-    image: "",
-    status: "",
-  });
-
-  const [fileList, setFileList] = useState<any[]>([]);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // fake loading
   useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => {
+    const timer = setTimeout(() => {
+      setDataSource(mockDataTableVehiclePart);
       setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
+    }, 800);
+    return () => clearTimeout(timer);
   }, []);
-  const handleOpenCreate = () => {
-    setIsEditMode(false);
-    setFormData({
-      id: 0,
-      vehicle_type_id: null,
-      name: "",
-      code: "",
-      average_life: null,
-      unit_price: null,
-      quantity: null,
-      status: true,
-      image: null,
-    });
-    setOpen(true);
+  const openCreate = () => {
+    setIsEdit(false);
+    setSelected(undefined);
+    setAssignVisible(true);
   };
 
-  const handleOpenEdit = (record: any) => {
-    setIsEditMode(true);
-    setFormData(record);
-    setOpen(true);
+  const openEdit = (record: any) => {
+    setIsEdit(true);
+    setSelected(record);
+    setAssignVisible(true);
   };
-  const resetForm = () => {
-    setFormData({
-      id: 0,
-      vehicle_type_id: null,
-      name: "",
-      code: "",
-      average_life: null,
-      unit_price: null,
-      quantity: null,
-      status: true,
-      image: null,
-    });
-    setErrors({});
-  };
-  // hàm handleChange cho các trường trong form
-  const handleChange = (field: keyof typeof formData, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    if (isSubmitted || errors[field]) {
-      const error = validateFieldVehiclePart(field, value);
-      setErrors((prev) => ({
-        ...prev,
-        [field]: error || "",
-      }));
-    }
-  };
-  // hàm submit vehicle part
-  const handleSubmit = () => {
-    setIsSubmitted(true);
-
-    const newErrors: Partial<Record<keyof VehiclePart, string>> = {};
-
-    (Object.keys(formData) as (keyof typeof formData)[]).forEach((field) => {
-      const error = validateFieldVehiclePart(field, formData[field]);
-      if (error) {
-        newErrors[field] = error;
-      }
-    });
-
-    setErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((err) => err);
-    if (hasErrors) {
-      toast.error("Vui lòng kiểm tra lại các trường!");
-      return;
-    }
-
-    if (isEditMode) {
-      setDataSource((prev: any) =>
-        prev.map((item: any) => (item.id === formData.id ? formData : item))
+  const handleAssignSubmit = (values: any) => {
+    if (isEdit && selected) {
+      setDataSource((prev) =>
+        prev.map((item) => (item.id === selected.id ? values : item))
       );
-      toast.success("Cập nhật phụ tùng thành công!");
+      toast.success("Cập nhật phụ tùng thành công");
     } else {
-      const newId = Math.max(0, ...dataSource.map((d) => Number(d.id))) + 1;
-      const newRecord = { ...formData, id: newId };
-      setDataSource((prev: any) => [...prev, newRecord]);
-      toast.success("Thêm phụ tùng thành công!");
+      const newId = Math.max(...dataSource.map((d) => d.id), 0) + 1;
+      setDataSource((prev) => [...prev, { ...values, id: newId }]);
+      toast.success("Tạo phụ tùng mới thành công");
     }
-    resetForm();
-    setOpen(false);
-    setIsSubmitted(false);
+    setAssignVisible(false);
   };
-  const handleUploadChange = async (info: any) => {
-    const newList = info.fileList.slice(-1);
-    if (newList[0]?.originFileObj) {
-      try {
-        const preview = await getBase64(newList[0].originFileObj);
-        newList[0] = {
-          ...newList[0],
-          preview,
-          url: preview,
-        };
-        setFormData((prev: any) => ({ ...prev, image: preview }));
-      } catch (e) {
-        console.error(e);
-      }
-    }
-    setFileList(newList);
-  };
-
-  const handlePreview = (file: any) => {
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      setFileList([
-        {
-          ...file,
-          preview: fileReader.result,
-        },
-      ]);
-    };
-    fileReader.readAsDataURL(file.originFileObj);
-  };
-  const handleRemovePreview = (file: any) => {
-    setFileList((prevList) => prevList.filter((item) => item.uid !== file.uid));
-    setFormData((prev) => ({ ...prev, image: null }));
-  };
-  const handleOpenDelete = (record: any) => {
-    setSelectedItem(record);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    setDataSource((prev) =>
-      prev.filter((item) => item.id !== selectedItem?.id)
-    );
-    toast.success("Xóa phụ tùng thành công!");
-    setDeleteModalOpen(false);
+  const handleDelete = (id: number) => {
+    setDataSource((prev) => prev.filter((item) => item.id !== id));
+    toast.success("Xóa phụ tùng thành công");
   };
   const columns: ColumnsType<(typeof mockDataTableVehiclePart)[0]> = [
     {
@@ -236,10 +97,19 @@ export default function VehicleParts() {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
-        <ActionButtonsReuse
-          onView={() => handleOpenEdit(record)}
-          onDelete={() => handleOpenDelete(record)}
-        />
+        <>
+          <Tooltip title="Sửa" className="mr-1">
+            <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
+          </Tooltip>
+          <Popconfirm
+            title="Xác nhận xóa?"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Tooltip title="Xóa">
+              <Button icon={<DeleteOutlined />} danger />
+            </Tooltip>
+          </Popconfirm>
+        </>
       ),
     },
   ];
@@ -248,7 +118,7 @@ export default function VehicleParts() {
     <div>
       <PageHeaderReuse
         title="Phụ tùng"
-        onClickAdd={handleOpenCreate}
+        onClickAdd={openCreate}
         addButtonLabel="Thêm phụ tùng"
       />
       <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -285,28 +155,12 @@ export default function VehicleParts() {
           />
         )}
 
-        {/* Modal Create / Edit */}
-        <ModalReuse
-          title={isEditMode ? "Chỉnh sửa phụ tùng" : "Thêm phụ tùng mới"}
-          open={open}
-          onCancel={() => setOpen(false)}
-          onOk={handleSubmit}
-        >
-          <VehiclePartForm
-            formData={formData}
-            errors={errors}
-            handleChange={handleChange}
-            handleUploadChange={handleUploadChange}
-            handlePreview={handlePreview}
-            fileList={fileList}
-            handleRemovePreview={handleRemovePreview}
-          />
-        </ModalReuse>
-
-        <ModalDeleteReuse
-          open={deleteModalOpen}
-          onCancel={() => setDeleteModalOpen(false)}
-          onConfirm={handleConfirmDelete}
+        <VehiclePartModal
+          visible={assignVisible}
+          mode={isEdit ? "edit" : "create"}
+          initialData={selected}
+          onCancel={() => setAssignVisible(false)}
+          onSubmit={handleAssignSubmit}
         />
       </div>
     </div>

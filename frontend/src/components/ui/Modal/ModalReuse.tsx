@@ -12,23 +12,9 @@ interface ModalReuseProps {
   showCancel?: boolean;
   children: React.ReactNode;
   loading?: boolean;
+  width?: number;
 }
 
-/**
- * A reusable modal component with a title, ok button, and cancel button.
- * The footer buttons are wrapped in a {@link ButtonModal} component.
- *
- * @param {ModalReuseProps} props
- * @param {string} props.title Title to display in the modal header.
- * @param {boolean} props.open Whether the modal is visible.
- * @param {() => void} props.onCancel Called when the cancel button is clicked.
- * @param {() => void} [props.onOk] Called when the ok button is clicked.
- * @param {string} [props.okText="Xác nhận"] Text to display on the ok button.
- * @param {string} [props.cancelText="Hủy"] Text to display on the cancel button.
- * @param {boolean} [props.showCancel=true] Whether to display the cancel button.
- * @param {React.ReactNode} props.children Content to display in the modal body.
- * @param {boolean} [props.loading=false] Whether the ok button is in a loading state.
- */
 export const ModalReuse = ({
   title,
   open,
@@ -39,6 +25,7 @@ export const ModalReuse = ({
   showCancel = true,
   children,
   loading = false,
+  width = 500,
 }: ModalReuseProps) => {
   return (
     <Modal
@@ -58,6 +45,7 @@ export const ModalReuse = ({
       }
       centered
       destroyOnClose
+      width={width}
     >
       <div className="!space-y-8">{children}</div>
     </Modal>

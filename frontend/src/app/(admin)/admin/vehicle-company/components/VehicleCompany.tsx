@@ -3,125 +3,56 @@
 import React, { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
-import { Skeleton } from "antd";
-import { ModalReuse } from "@/components/ui/Modal/ModalReuse";
+import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 import TableReuse from "@/components/ui/Table/Table";
 import { mockDataTable } from "@/data/TableData";
-import { ActionButtonsReuse } from "@/components/ui/Button/ActionButtonsReuse";
 import { GreenSwitch } from "@/components/ui/Switch";
-import { VehicleCompanyTypes } from "@/types/VehicleCompany";
-import { ModalDeleteReuse } from "@/components/ui/Modal/ModalDeleteReuse";
-import { validateFieldVehicleCompany } from "@/utils/validation/PartManagement";
-import { VehicleCompanyForm } from "./VehicleCompanyForm";
+
+import VehicleCompanyModal from "./VehicleCompanyModal";
 
 export default function VehicleCompany() {
-  const [open, setOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<
-    (typeof mockDataTable)[0] | null
-  >(null);
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [assignVisible, setAssignVisible] = useState(false);
+  const [selected, setSelected] = useState<any | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [dataSource, setDataSource] = useState(mockDataTable);
-  const [formData, setFormData] = useState<VehicleCompanyTypes>({
-    id: 0,
-    name: "",
-    description: "",
-    status: true,
-  });
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof VehicleCompanyTypes, string>>
-  >({
-    name: "",
-    description: "",
-    status: "",
-  });
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  // fake loading
   useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => {
+    const timer = setTimeout(() => {
+      setDataSource(mockDataTable);
       setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
+    }, 800);
+    return () => clearTimeout(timer);
   }, []);
-  const handleOpenCreate = () => {
-    setIsEditMode(false);
-    setFormData({ id: 0, name: "", description: "", status: true });
-    setOpen(true);
+  const openCreate = () => {
+    setIsEdit(false);
+    setSelected(undefined);
+    setAssignVisible(true);
   };
 
-  const handleOpenEdit = (record: (typeof mockDataTable)[0]) => {
-    setIsEditMode(true);
-    setFormData(record);
-    setOpen(true);
+  const openEdit = (record: any) => {
+    setIsEdit(true);
+    setSelected(record);
+    setAssignVisible(true);
   };
-  const resetForm = () => {
-    setFormData({ id: 0, name: "", description: "", status: true });
-    setErrors({});
-  };
-  // hàm handleChange cho các trường trong form
-  const handleChange = (field: keyof VehicleCompanyTypes, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    if (isSubmitted || errors[field]) {
-      const error = validateFieldVehicleCompany(field, value);
-      setErrors((prev) => ({
-        ...prev,
-        [field]: error || "",
-      }));
-    }
-  };
-  // hàm submit vehicle company
-  const handleSubmit = () => {
-    setIsSubmitted(true);
-
-    const newErrors: Partial<Record<keyof VehicleCompanyTypes, string>> = {};
-
-    (Object.keys(errors) as (keyof VehicleCompanyTypes)[]).forEach((field) => {
-      const error = validateFieldVehicleCompany(field, formData[field]);
-      if (error) {
-        newErrors[field] = error;
-      }
-    });
-    setErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((err) => err);
-    if (hasErrors) {
-      toast.error("Vui lòng kiểm tra lại các trường!");
-      return;
-    }
-    if (isEditMode) {
+  const handleAssignSubmit = (values: any) => {
+    if (isEdit && selected) {
       setDataSource((prev) =>
-        prev.map((item) => (item.id === formData.id ? formData : item))
+        prev.map((item) => (item.id === selected.id ? values : item))
       );
-      toast.success("Cập nhật hãng xe thành công!");
+      toast.success("Cập nhật hãng xe thành công");
     } else {
-      const newId = Math.max(...dataSource.map((d) => Number(d.id))) + 1;
-      const newRecord = { ...formData, id: newId };
-      setDataSource((prev) => [...prev, newRecord]);
-      toast.success("Thêm hãng xe thành công!");
+      const newId = Math.max(...dataSource.map((d) => d.id), 0) + 1;
+      setDataSource((prev) => [...prev, { ...values, id: newId }]);
+      toast.success("Tạo hãng xe mới thành công");
     }
-    resetForm();
-    setOpen(false);
-    setIsSubmitted(false);
+    setAssignVisible(false);
   };
-  const handleOpenDelete = (record: any) => {
-    setSelectedItem(record);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    setDataSource((prev) =>
-      prev.filter((item) => item.id !== selectedItem?.id)
-    );
-    toast.success("Xóa hãng xe thành công!");
-    setDeleteModalOpen(false);
+  const handleDelete = (id: number) => {
+    setDataSource((prev) => prev.filter((item) => item.id !== id));
+    toast.success("Xóa hãng xe thành công");
   };
   const columns: ColumnsType<(typeof mockDataTable)[0]> = [
     {
@@ -161,10 +92,20 @@ export default function VehicleCompany() {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
-        <ActionButtonsReuse
-          onView={() => handleOpenEdit(record)}
-          onDelete={() => handleOpenDelete(record)}
-        />
+        <>
+          <Tooltip title="Sửa" className="mr-1">
+            <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
+          </Tooltip>
+
+          <Popconfirm
+            title="Xác nhận xóa?"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Tooltip title="Xóa">
+              <Button icon={<DeleteOutlined />} danger />
+            </Tooltip>
+          </Popconfirm>
+        </>
       ),
     },
   ];
@@ -173,7 +114,7 @@ export default function VehicleCompany() {
     <div>
       <PageHeaderReuse
         title="Hãng xe"
-        onClickAdd={handleOpenCreate}
+        onClickAdd={openCreate}
         addButtonLabel="Thêm hãng xe"
       />
       <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -210,23 +151,12 @@ export default function VehicleCompany() {
           />
         )}
 
-        {/* Modal Create / Edit */}
-        <ModalReuse
-          title={isEditMode ? "Chỉnh sửa hãng xe" : "Thêm hãng xe mới"}
-          open={open}
-          onCancel={() => setOpen(false)}
-          onOk={handleSubmit}
-        >
-          <VehicleCompanyForm
-            formData={formData}
-            errors={errors}
-            handleChange={handleChange}
-          />
-        </ModalReuse>
-        <ModalDeleteReuse
-          open={deleteModalOpen}
-          onCancel={() => setDeleteModalOpen(false)}
-          onConfirm={handleConfirmDelete}
+        <VehicleCompanyModal
+          visible={assignVisible}
+          mode={isEdit ? "edit" : "create"}
+          initialData={selected}
+          onCancel={() => setAssignVisible(false)}
+          onSubmit={handleAssignSubmit}
         />
       </div>
     </div>
