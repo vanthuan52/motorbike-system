@@ -16,6 +16,6 @@ export const ROUTER_PATH = {
     APPOINTMENTS: "/admin/maintenance-schedule",
     MAINTENANCE: "/admin/maintenance",
     CUSTOMERS: "/admin/customers",
-    STAFFS: "/admin/staffs",
+    EMPLOYEES: "/admin/employees",
   },
 };

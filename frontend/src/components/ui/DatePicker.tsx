@@ -48,9 +48,10 @@ const Datepicker: React.FC<DatepickerProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-1">
-      {label && (
-        <label className="font-medium text-sm text-gray-700">{label}</label>
-      )}
+      <label className="block font-semibold mb-1">
+        {label && <span className="text-red-500 mr-1">*</span>}
+        {label}
+      </label>
 
       <ReactDatePicker
         selected={value}

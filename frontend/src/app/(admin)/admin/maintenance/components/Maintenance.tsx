@@ -3,165 +3,74 @@
 import React, { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
-import { Skeleton } from "antd";
+import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
 import moment from "moment";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { mockDataTableMaintenance } from "@/data/TableData";
-import { validateFieldMaintenanceManagement } from "@/utils/validation/MaintenanceManagement";
 import { MaintenanceManagementTypes } from "@/types/MaintenanceManagementTypes";
-import { GreenSwitch } from "@/components/ui/Switch";
-import { ActionButtonsReuse } from "@/components/ui/Button/ActionButtonsReuse";
 import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 import TableReuse from "@/components/ui/Table/Table";
-import { ModalDeleteReuse } from "@/components/ui/Modal/ModalDeleteReuse";
-import { ModalReuse } from "@/components/ui/Modal/ModalReuse";
 import { formatVND } from "@/helpers/formatVND";
-import MaintenanceForm from "./MaintenanceForm";
 import { PageHeading } from "@/components/ui/Admin/page-heading";
+import MaintenanceModal from "./MaintenanceModal";
 export default function Maintenance() {
-  const [open, setOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<
-    (typeof mockDataTableMaintenance)[0] | null
-  >(null);
-  const [loading, setLoading] = useState(false);
-  const [dataSource, setDataSource] = useState(mockDataTableMaintenance);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState<{
-    id: number;
-    customer: string;
-    phone: string;
-    staff: { id: number; name: string; phone: string; email: string } | null;
-    maintenance_date: string;
-    total_cost: number | null;
-    status: string;
-  }>({
-    id: 0,
-    customer: "",
-    phone: "",
-    staff: null,
-    maintenance_date: "",
-    total_cost: null,
-    status: "",
-  });
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof typeof formData, string>>
-  >({
-    customer: "",
-    phone: "",
-    staff: "",
-    maintenance_date: "",
-    total_cost: "",
-    status: "",
-  });
+  const [dataSource, setDataSource] = useState<MaintenanceManagementTypes[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+  const [assignVisible, setAssignVisible] = useState(false);
+  const [selected, setSelected] = useState<MaintenanceManagementTypes | null>(
+    null
+  );
+  const [isEdit, setIsEdit] = useState(false);
+
   useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, []);
-  const handleOpenCreate = () => {
-    setIsEditMode(false);
-    setFormData({
-      id: 0,
-      customer: "",
-      phone: "",
-      staff: null,
-      maintenance_date: "",
-      total_cost: null,
-      status: "",
-    });
-    setOpen(true);
-  };
-  const handleOpenEdit = (item: (typeof mockDataTableMaintenance)[0]) => {
-    setIsEditMode(true);
-    setFormData(item);
-    setOpen(true);
-  };
-  const resetForm = () => {
-    setFormData({
-      id: 0,
-      customer: "",
-      phone: "",
-      staff: null,
-      maintenance_date: "",
-      total_cost: null,
-      status: "",
-    });
-    setErrors({});
-  };
-  const handleChange = (field: keyof typeof formData, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (isSubmitted || errors[field]) {
-      const error = validateFieldMaintenanceManagement(field, value);
-      setErrors((prev) => ({ ...prev, [field]: error || "" }));
-    }
-  };
-  const handleDateChange = (date: Date | null) => {
-    const formattedDate = date ? date.toISOString().split("T")[0] : "";
-
-    setFormData((prev) => ({ ...prev, maintenance_date: formattedDate }));
-
-    const fieldError = validateFieldMaintenanceManagement(
-      "maintenance_date",
-      formattedDate
-    );
-
-    setErrors((prev) => ({ ...prev, maintenance_date: fieldError || "" }));
-  };
-
-  const handleSubmit = () => {
-    setIsSubmitted(true);
-
-    const newErrors: Partial<Record<keyof MaintenanceManagementTypes, string>> =
-      {};
-
-    (Object.keys(formData) as (keyof typeof formData)[]).forEach((field) => {
-      const error = validateFieldMaintenanceManagement(field, formData[field]);
-      if (error) {
-        newErrors[field] = error;
-      }
-    });
-
-    setErrors(newErrors);
-
-    const hasErrors = Object.values(newErrors).some((err) => err);
-    if (hasErrors) {
-      toast.error("Vui lòng kiểm tra lại các trường!");
-      return;
-    }
-
-    if (isEditMode) {
-      setDataSource((prev: any) =>
-        prev.map((item: any) => (item.id === formData.id ? formData : item))
+    const timer = setTimeout(() => {
+      setDataSource(
+        mockDataTableMaintenance.map((item) => ({
+          ...item,
+          id: String(item.id),
+          phone: Number(item.phone),
+        }))
       );
-      toast.success("Cập thông tin bảo dưỡng thành công!");
-    } else {
-      const newId = Math.max(0, ...dataSource.map((d) => Number(d.id))) + 1;
-      const newRecord = { ...formData, id: newId };
-      setDataSource((prev: any) => [...prev, newRecord]);
-      toast.success("Tạo đơn bảo dưỡng thành công!");
-    }
-    resetForm();
-    setOpen(false);
-    setIsSubmitted(false);
-  };
-  const handleOpenDelete = (record: any) => {
-    setSelectedItem(record);
-    setDeleteModalOpen(true);
+      setLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const openCreate = () => {
+    setIsEdit(false);
+    setSelected(null);
+    setAssignVisible(true);
   };
 
-  const handleConfirmDelete = () => {
-    setDataSource((prev) =>
-      prev.filter((item) => item.id !== selectedItem?.id)
-    );
-    toast.success("Xóa đơn bảo dưỡng thành công!");
-    setDeleteModalOpen(false);
+  const openEdit = (record: MaintenanceManagementTypes) => {
+    setIsEdit(true);
+    setSelected(record);
+    setAssignVisible(true);
   };
-  const columns: ColumnsType<(typeof mockDataTableMaintenance)[0]> = [
+
+  const handleDelete = (id: string) => {
+    setDataSource((prev) => prev.filter((item) => item.id !== id));
+    toast.success("Xóa đơn bảo dưỡng thành công");
+  };
+
+  const handleAssignSubmit = (values: any) => {
+    if (isEdit && selected) {
+      setDataSource((prev) =>
+        prev.map((item) => (item.id === selected.id ? values : item))
+      );
+      toast.success("Cập nhật đơn bảo dưỡng thành công");
+    } else {
+      const newId = Math.max(...dataSource.map((d) => Number(d.id)), 0) + 1;
+      setDataSource((prev) => [...prev, { ...values, id: newId }]);
+      toast.success("Tạo đơn bảo dưỡng mới thành công");
+    }
+    setAssignVisible(false);
+  };
+
+  const columns: ColumnsType<MaintenanceManagementTypes> = [
     {
       title: "ID",
       dataIndex: "id",
@@ -202,27 +111,26 @@ export default function Maintenance() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status: boolean, record: any) => (
-        <GreenSwitch
-          checked={status}
-          onChange={() => {
-            setDataSource((prev: any) =>
-              prev.map((item: any) =>
-                item.id === record.id ? { ...item, status: !item.status } : item
-              )
-            );
-          }}
-        />
-      ),
+      render: (s) => s,
     },
     {
       title: "Hành động",
       key: "action",
       render: (_, record) => (
-        <ActionButtonsReuse
-          onView={() => handleOpenEdit(record)}
-          onDelete={() => handleOpenDelete(record)}
-        />
+        <>
+          <Tooltip title="Sửa" className="mr-1">
+            <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
+          </Tooltip>
+
+          <Popconfirm
+            title="Xác nhận xóa?"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Tooltip title="Xóa">
+              <Button icon={<DeleteOutlined />} danger />
+            </Tooltip>
+          </Popconfirm>
+        </>
       ),
     },
   ];
@@ -234,9 +142,15 @@ export default function Maintenance() {
           <SearchInputReuse
             onChange={(text) =>
               setDataSource(
-                mockDataTableMaintenance.filter((item) =>
-                  item.customer.toLowerCase().includes(text.toLowerCase())
-                )
+                mockDataTableMaintenance
+                  .filter((item) =>
+                    item.customer.toLowerCase().includes(text.toLowerCase())
+                  )
+                  .map((item) => ({
+                    ...item,
+                    id: String(item.id),
+                    phone: Number(item.phone),
+                  }))
               )
             }
           />
@@ -263,29 +177,12 @@ export default function Maintenance() {
           />
         )}
 
-        {/* Modal Create / Edit */}
-        <ModalReuse
-          title={
-            isEditMode
-              ? "Chỉnh sửa thông tin đơn bảo dưỡng"
-              : "Tạo đơn bảo dưỡng"
-          }
-          open={open}
-          onCancel={() => setOpen(false)}
-          onOk={handleSubmit}
-        >
-          <MaintenanceForm
-            formData={formData}
-            errors={errors}
-            handleChange={handleChange}
-            handleDateChange={handleDateChange}
-          />
-        </ModalReuse>
-
-        <ModalDeleteReuse
-          open={deleteModalOpen}
-          onCancel={() => setDeleteModalOpen(false)}
-          onConfirm={handleConfirmDelete}
+        <MaintenanceModal
+          visible={assignVisible}
+          mode={isEdit ? "edit" : "create"}
+          initialData={selected}
+          onCancel={() => setAssignVisible(false)}
+          onSubmit={handleAssignSubmit}
         />
       </div>
     </div>

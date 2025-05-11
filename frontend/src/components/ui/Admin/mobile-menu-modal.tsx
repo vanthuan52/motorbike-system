@@ -44,7 +44,7 @@ const links = [
   {
     label: "Nhân viên",
     icon: <Home size={24} />,
-    href: ROUTER_PATH.ADMIN.STAFFS,
+    href: ROUTER_PATH.ADMIN.EMPLOYEES,
   },
   {
     label: "Khách hàng",

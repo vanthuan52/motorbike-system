@@ -2,25 +2,25 @@
 import React, { useState } from "react";
 import InputField from "@/components/ui/InputField";
 import { validateLogin } from "@/utils/validation/Login";
-import { UserType } from "@/types/User";
+import { LoginType } from "@/types/Login";
 import AuthCard from "@/components/Login/AuthCard";
 import Button from "@/components/ui/Button/Button";
 import Link from "next/link";
 import { toast } from "react-toastify";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState<UserType>({
+  const [formData, setFormData] = useState<LoginType>({
     email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof UserType, string>>>(
-    {}
-  );
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof LoginType, string>>
+  >({});
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: keyof UserType
+    field: keyof LoginType
   ) => {
     const value = e.target.value;
     const updatedData = { ...formData, [field]: value };

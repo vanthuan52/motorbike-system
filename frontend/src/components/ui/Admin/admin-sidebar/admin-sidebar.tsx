@@ -67,7 +67,7 @@ const menuItems = [
   {
     key: "staffs",
     icon: <LiaUsersCogSolid />,
-    href: ROUTER_PATH.ADMIN.STAFFS,
+    href: ROUTER_PATH.ADMIN.EMPLOYEES,
     label: "Quản lý nhân viên",
   },
 ];
