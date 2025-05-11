@@ -1,7 +1,6 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import { validate } from "@/utils/validation/MaintenanceRegistration";
 import { MaintenanceRegistrationType } from "@/types/MaintenanceRegistration";
 import {
   BadgeCheck,
@@ -19,25 +18,7 @@ import InputField from "@/components/ui/InputField";
 import SelectField from "@/components/ui/SelectField";
 import Datepicker from "@/components/ui/DatePicker";
 import Button from "@/components/ui/Button/Button";
-/**
- * Một thành phần chức năng cho trang đăng ký bảo dưỡng.
- *
- * Thành phần này hiển thị một biểu mẫu cho phép người dùng đăng ký bảo dưỡng xe.
- * Bao gồm các trường nhập thông tin khách hàng, thông tin chi tiết về xe và lịch hẹn.
- * Thành phần quản lý trạng thái biểu mẫu và xác thực bằng hook useState của React.
- *
- * - `formData`: Một đối tượng biểu thị các giá trị nhập biểu mẫu.
- * - `errors`: Một đối tượng biểu thị các thông báo lỗi xác thực cho từng trường biểu mẫu.
- * - `handleChange`: Một hàm để cập nhật các giá trị biểu mẫu và xác thực các đầu vào khi chúng thay đổi.
- * - `handleSubmit`: Một hàm để xử lý việc gửi biểu mẫu, xác thực tất cả các trường và ghi nhật ký dữ liệu nếu hợp lệ.
- *
- * Thành phần bao gồm các phần sau:
- * - Thông tin khách hàng: Tên, họ, email và số điện thoại.
- * - Thông tin xe: Loại xe, nhãn hiệu, loại dịch vụ và số xe.
- * - Thông tin cuộc hẹn: Ngày và giờ.
- * - Thông tin bổ sung: Địa chỉ và ghi chú tùy chọn.
- */
-
+import { validate } from "@/utils/validation/MaintenanceRegistration";
 export default function Page() {
   const [formData, setFormData] = useState<MaintenanceRegistrationType>({
     first_name: "",

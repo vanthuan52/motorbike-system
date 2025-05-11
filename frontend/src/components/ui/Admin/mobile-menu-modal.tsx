@@ -1,9 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Home, X } from "lucide-react";
+import { X } from "lucide-react";
+import { RxHome } from "react-icons/rx";
 import { ROUTER_PATH } from "@/constant/router-path";
 import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { GrSchedulePlay } from "react-icons/gr";
+import { AiOutlineSchedule } from "react-icons/ai";
+import { FiUsers } from "react-icons/fi";
+import { LiaUsersCogSolid } from "react-icons/lia";
+import { TbSettingsCode } from "react-icons/tb";
+import { BiCategoryAlt } from "react-icons/bi";
+import { IoCarSportSharp } from "react-icons/io5";
 
 type MobileMenuModalProps = {
   isOpen: boolean;
@@ -13,42 +21,42 @@ type MobileMenuModalProps = {
 const links = [
   {
     label: "Trang chủ",
-    icon: <Home size={24} />,
+    icon: <RxHome size={24} />,
     href: ROUTER_PATH.ADMIN.INDEX,
   },
   {
     label: "Lịch hẹn",
-    icon: <Home size={24} />,
+    icon: <GrSchedulePlay size={24} />,
     href: ROUTER_PATH.ADMIN.APPOINTMENTS,
   },
   {
     label: "Bảo dưỡng",
-    icon: <Home size={24} />,
+    icon: <AiOutlineSchedule size={24} />,
     href: ROUTER_PATH.ADMIN.MAINTENANCE,
   },
   {
     label: "Hãng xe",
-    icon: <Home size={24} />,
+    icon: <IoCarSportSharp size={24} />,
     href: ROUTER_PATH.ADMIN.VEHICLE_BRAND,
   },
   {
     label: "Loại xe",
-    icon: <Home size={24} />,
+    icon: <BiCategoryAlt size={24} />,
     href: ROUTER_PATH.ADMIN.VEHICLE_TYPE,
   },
   {
     label: "Phụ tùng",
-    icon: <Home size={24} />,
+    icon: <TbSettingsCode size={24} />,
     href: ROUTER_PATH.ADMIN.VEHICLE_PART,
   },
   {
     label: "Nhân viên",
-    icon: <Home size={24} />,
+    icon: <LiaUsersCogSolid size={24} />,
     href: ROUTER_PATH.ADMIN.EMPLOYEES,
   },
   {
     label: "Khách hàng",
-    icon: <Home size={24} />,
+    icon: <FiUsers size={24} />,
     href: ROUTER_PATH.ADMIN.CUSTOMERS,
   },
 ];
@@ -83,8 +91,11 @@ export default function MobileMenuModal({
         </div>
 
         <div className="grid grid-cols-3 gap-1 mt-10">
-          {links.map((link) => (
-            <div className=" bg-blue-200 rounded-md px-2 py-4 flex flex-1 items-center flex-col gap-2">
+          {links.map((link, index) => (
+            <div
+              className=" bg-blue-200 rounded-md px-2 py-4 flex flex-1 items-center flex-col gap-2"
+              key={index}
+            >
               {link.icon}
               <CustomLink
                 key={link.href}

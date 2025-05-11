@@ -2,7 +2,7 @@ import React from "react";
 
 const NotificationPopover = () => {
   return (
-    <div className="absolute right-0 mt-10 sm:mt-12 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+    <div className="absolute right-0 mt-4 w-56 bg-white rounded-md shadow-lg border border-gray-200 z-50">
       <div className="px-4 py-3">
         <p className="text-sm">Neil Sims</p>
         <p className="text-sm font-medium truncate">neil.sims@flowbite.com</p>
