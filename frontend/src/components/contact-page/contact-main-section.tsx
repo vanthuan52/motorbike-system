@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
 
-function ContactHeroSection() {
+function ContactMainSection() {
   return (
     <section className="relative bg-white overflow-hidden">
       <div className="relative h-[500px] lg:h-[600px]">
@@ -261,4 +261,4 @@ function ContactHeroSection() {
   );
 }
 
-export default ContactHeroSection;
+export default ContactMainSection;
