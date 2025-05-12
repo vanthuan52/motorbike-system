@@ -12,7 +12,6 @@ import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 import TableReuse from "@/components/ui/Table/Table";
 import { formatVND } from "@/helpers/formatVND";
-import { PageHeading } from "@/components/ui/Admin/page-heading";
 import MaintenanceModal from "./MaintenanceModal";
 export default function Maintenance() {
   const [dataSource, setDataSource] = useState<MaintenanceManagementTypes[]>(
@@ -135,8 +134,7 @@ export default function Maintenance() {
     },
   ];
   return (
-    <div className="">
-      {/* <PageHeading title="Quản lý đơn bảo dưỡng" /> */}
+    <div className="sm:px-4">
       <PageHeaderReuse
         title="Quản lý đơn bảo dưỡng"
         onClickAdd={openCreate}

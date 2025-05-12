@@ -129,7 +129,7 @@ export default function Employees() {
     },
   ];
   return (
-    <div>
+    <div className="sm:px-4">
       <PageHeaderReuse
         title="Danh sách nhân viên"
         addButtonLabel="Thêm nhân viên"

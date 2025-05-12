@@ -7,9 +7,14 @@ import { useState } from "react";
 interface Props {
   items: SidebarMenuItem[];
   collapsed: boolean;
+  setSidebarCollapsed: (value: boolean) => void;
 }
 
-export default function SidebarMenu({ items, collapsed }: Props) {
+export default function SidebarMenu({
+  items,
+  collapsed,
+  setSidebarCollapsed,
+}: Props) {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
 
   const toggleMenu = (key: string) => {
@@ -27,6 +32,7 @@ export default function SidebarMenu({ items, collapsed }: Props) {
           collapsed={collapsed}
           isOpen={openMenus.includes(item.key)}
           toggleOpen={toggleMenu}
+          setSidebarCollapsed={setSidebarCollapsed}
         />
       ))}
     </nav>

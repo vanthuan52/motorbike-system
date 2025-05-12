@@ -28,7 +28,7 @@ const appointments = [
 
 export default function AdminHomePage() {
   return (
-    <div className="">
+    <div className="sm:px-4">
       <div className="overflow-auto">
         {/*Hello section*/}
 
