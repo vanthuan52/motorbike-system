@@ -115,7 +115,7 @@ export default function VehicleParts() {
   ];
 
   return (
-    <div>
+    <div className="sm:px-4">
       <PageHeaderReuse
         title="Phụ tùng"
         onClickAdd={openCreate}

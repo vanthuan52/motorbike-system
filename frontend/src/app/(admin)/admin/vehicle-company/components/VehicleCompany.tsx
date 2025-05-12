@@ -111,7 +111,7 @@ export default function VehicleCompany() {
   ];
 
   return (
-    <div>
+    <div className="sm:px-4">
       <PageHeaderReuse
         title="Hãng xe"
         onClickAdd={openCreate}

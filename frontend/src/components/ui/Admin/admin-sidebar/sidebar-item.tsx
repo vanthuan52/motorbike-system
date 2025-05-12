@@ -2,15 +2,17 @@
 
 import { HiOutlineChevronDown, HiOutlineChevronRight } from "react-icons/hi";
 import clsx from "clsx";
+import { Tooltip } from "antd";
+import { useEffect } from "react";
 import { SidebarMenuItem } from "@/types/application";
 import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import { usePathname } from "next/navigation";
-
 interface Props {
   item: SidebarMenuItem;
   collapsed: boolean;
   isOpen: boolean;
   toggleOpen: (key: string) => void;
+  setSidebarCollapsed: (value: boolean) => void;
 }
 
 export default function SidebarItem({
@@ -18,12 +20,19 @@ export default function SidebarItem({
   collapsed,
   isOpen,
   toggleOpen,
+  setSidebarCollapsed,
 }: Props) {
   const pathname = usePathname();
   const hasChildren = !!item.children?.length;
 
   const isActive = item.href == pathname;
-
+  useEffect(() => {
+    if (pathname === "/admin/messages") {
+      setSidebarCollapsed(true);
+    } else {
+      setSidebarCollapsed(false);
+    }
+  }, [pathname, setSidebarCollapsed]);
   return (
     <div>
       <div
@@ -33,13 +42,14 @@ export default function SidebarItem({
         )}
         onClick={() => hasChildren && toggleOpen(item.key)}
       >
-        <CustomLink className="flex items-center gap-3" href={item.href}>
-          <span className="text-xl font-medium">{item.icon}</span>
-          {!collapsed && (
-            <span className="text-sm font-medium">{item.label}</span>
-          )}
-        </CustomLink>
-
+        <Tooltip title={item.label} placement="right">
+          <CustomLink className="flex items-center gap-3" href={item.href}>
+            <span className="text-xl font-medium">{item.icon}</span>
+            {!collapsed && (
+              <span className="text-sm font-medium">{item.label}</span>
+            )}
+          </CustomLink>
+        </Tooltip>
         {!collapsed && hasChildren && (
           <span className="text-xs">
             {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}

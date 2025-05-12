@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import clsx from "clsx";
-import { CgMenuRightAlt, CgComponents } from "react-icons/cg";
+import { CgMenuRightAlt } from "react-icons/cg";
 import { IoCarSportSharp } from "react-icons/io5";
 import { RxDashboard, RxHome } from "react-icons/rx";
-import { BiCategoryAlt } from "react-icons/bi";
+import { BiCategoryAlt, BiMessageDetail } from "react-icons/bi";
 import { TbSettingsCode } from "react-icons/tb";
 import { LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
@@ -26,6 +26,12 @@ const menuItems = [
     icon: <RxDashboard />,
     href: ROUTER_PATH.ADMIN.DASHBOARD,
     label: "Dashboard",
+  },
+  {
+    key: "messages",
+    icon: <BiMessageDetail />,
+    href: ROUTER_PATH.ADMIN.MESSAGES,
+    label: "Tin nhắn",
   },
   {
     key: "brand",
@@ -95,7 +101,11 @@ const AdminSidebar = () => {
         </button>
       </div>
 
-      <SidebarMenu items={menuItems} collapsed={sidebarCollapsed} />
+      <SidebarMenu
+        items={menuItems}
+        collapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+      />
     </div>
   );
 };

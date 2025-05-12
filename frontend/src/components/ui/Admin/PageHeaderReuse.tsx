@@ -12,7 +12,7 @@ export const PageHeaderReuse = ({
   disabledButton,
 }: Props) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 px-2 sm:px-0">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 px-2 sm:px-0 py-4">
       <h2
         className="text-xl sm:text-[26px] font-semibold text-center sm:text-left"
         style={{ wordBreak: "break-word" }}

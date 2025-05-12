@@ -90,7 +90,7 @@ export default function Customers() {
   ];
 
   return (
-    <div>
+    <div className="sm:px-4">
       <PageHeaderReuse title="Danh sách khách hàng" disabledButton />
       <div className="bg-white rounded-lg p-4 border border-gray-200">
         <div className="mb-4 flex gap-4 max-h-[40px] w-full">

@@ -121,7 +121,7 @@ export default function VehicleTypes() {
   ];
 
   return (
-    <div>
+    <div className="sm:px-4">
       <PageHeaderReuse
         title="Loại xe"
         onClickAdd={openCreate}

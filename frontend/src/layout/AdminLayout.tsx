@@ -13,7 +13,10 @@ export default function AdminLayout({
       <AdminSidebar />
       <div className="w-full overflow-x-auto flex flex-col flex-1">
         <AdminHeader />
-        <div className="mt-2 md:mt-5 py-2 px-4 pb-14">{children}</div>
+        <div className="overflow-hidden h-full sm:h-auto">
+          {/* <div className="mt-2 md:mt-5 py-2 px-4 pb-14 overflow-hidden sm:overflow-auto"> */}
+          {children}
+        </div>
       </div>
       <MobileMenubar />
     </div>

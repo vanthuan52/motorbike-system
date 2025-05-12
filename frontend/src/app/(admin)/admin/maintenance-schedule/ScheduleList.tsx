@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Button, Skeleton, message, Popconfirm, Tooltip } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import moment from 'moment';
-import { mockScheduleList, ScheduleType } from './data/mockSchedule';
-import ScheduleAssignModal from './ScheduleAssignModal';
-import ScheduleDetailModal from './ScheduleDetailModal';
-import { PageHeaderReuse } from '@/components/ui/Admin/PageHeaderReuse';
-import { SearchInputReuse } from '@/components/ui/SearchInputReuse';
-import TableReuse from '@/components/ui/Table/Table';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from "react";
+import { Button, Skeleton, message, Popconfirm, Tooltip } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import moment from "moment";
+import { mockScheduleList, ScheduleType } from "./data/mockSchedule";
+import ScheduleAssignModal from "./ScheduleAssignModal";
+import ScheduleDetailModal from "./ScheduleDetailModal";
+import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
+import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
+import TableReuse from "@/components/ui/Table/Table";
+import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 export default function ScheduleList() {
   const [dataSource, setDataSource] = useState<ScheduleType[]>([]);
@@ -46,44 +46,53 @@ export default function ScheduleList() {
   };
 
   const handleDelete = (id: number) => {
-    setDataSource(prev => prev.filter(item => item.id !== id));
-    message.success('Xóa lịch bảo dưỡng thành công');
+    setDataSource((prev) => prev.filter((item) => item.id !== id));
+    message.success("Xóa lịch bảo dưỡng thành công");
   };
 
   const handleAssignSubmit = (values: ScheduleType) => {
     if (isEdit && selected) {
-      setDataSource(prev => prev.map(item => item.id === selected.id ? values : item));
-      message.success('Cập nhật lịch bảo dưỡng thành công');
+      setDataSource((prev) =>
+        prev.map((item) => (item.id === selected.id ? values : item))
+      );
+      message.success("Cập nhật lịch bảo dưỡng thành công");
     } else {
-      const newId = Math.max(...dataSource.map(d => d.id), 0) + 1;
-      setDataSource(prev => [...prev, { ...values, id: newId }]);
-      message.success('Tạo lịch bảo dưỡng mới thành công');
+      const newId = Math.max(...dataSource.map((d) => d.id), 0) + 1;
+      setDataSource((prev) => [...prev, { ...values, id: newId }]);
+      message.success("Tạo lịch bảo dưỡng mới thành công");
     }
     setAssignVisible(false);
   };
 
   const columns: ColumnsType<ScheduleType> = [
-    { title: 'ID', dataIndex: 'id', key: 'id', render: (_,__,i) => i+1 },
-    { title: 'Khách hàng', dataIndex: 'customer', key: 'customer' },
-    { title: 'SĐT', dataIndex: 'phone', key: 'phone' },
-    { title: 'Nhân viên', dataIndex: ['staff','name'], key: 'staff' },
-    { title: 'Ngày', dataIndex: 'schedule_date', key: 'schedule_date', render: d => moment(d).format('DD-MM-YYYY') },
-    { title: 'Khung giờ', dataIndex: 'time_slot', key: 'time_slot' },
-    { title: 'Trạng thái', dataIndex: 'status', key: 'status', render: s => s ? 'Hoàn thành' : 'Đang chờ' },
-    { title: 'Hành động', key: 'action', render: (_, record) => (
+    { title: "ID", dataIndex: "id", key: "id", render: (_, __, i) => i + 1 },
+    { title: "Khách hàng", dataIndex: "customer", key: "customer" },
+    { title: "SĐT", dataIndex: "phone", key: "phone" },
+    { title: "Nhân viên", dataIndex: ["staff", "name"], key: "staff" },
+    {
+      title: "Ngày",
+      dataIndex: "schedule_date",
+      key: "schedule_date",
+      render: (d) => moment(d).format("DD-MM-YYYY"),
+    },
+    { title: "Khung giờ", dataIndex: "time_slot", key: "time_slot" },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (s) => (s ? "Hoàn thành" : "Đang chờ"),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      render: (_, record) => (
         <>
-          <Tooltip title="Chi tiết" className='mr-1'>
-            <Button
-              icon={<EyeOutlined />}
-              onClick={() => openDetail(record)}
-            />
+          <Tooltip title="Chi tiết" className="mr-1">
+            <Button icon={<EyeOutlined />} onClick={() => openDetail(record)} />
           </Tooltip>
 
-          <Tooltip title="Sửa" className='mr-1'>
-            <Button
-              icon={<EditOutlined />}
-              onClick={() => openEdit(record)}
-            />
+          <Tooltip title="Sửa" className="mr-1">
+            <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
           </Tooltip>
 
           <Popconfirm
@@ -91,19 +100,16 @@ export default function ScheduleList() {
             onConfirm={() => handleDelete(record.id)}
           >
             <Tooltip title="Xóa">
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-              />
+              <Button icon={<DeleteOutlined />} danger />
             </Tooltip>
           </Popconfirm>
         </>
-      )
-    }
+      ),
+    },
   ];
 
   return (
-    <div>
+    <div className="sm:px-4">
       <div style={{ marginBottom: 16 }}>
         <PageHeaderReuse
           title="Quản lý lịch bảo dưỡng"
@@ -124,12 +130,17 @@ export default function ScheduleList() {
       {loading ? (
         <Skeleton active paragraph={{ rows: 5 }} />
       ) : (
-        <TableReuse columns={columns} dataSource={dataSource} rowKey="id" pagination={{ pageSize: 5 }} />
+        <TableReuse
+          columns={columns}
+          dataSource={dataSource}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
       )}
 
       <ScheduleAssignModal
         visible={assignVisible}
-        mode={isEdit ? 'edit' : 'create'}
+        mode={isEdit ? "edit" : "create"}
         initialData={selected}
         onCancel={() => setAssignVisible(false)}
         onSubmit={handleAssignSubmit}

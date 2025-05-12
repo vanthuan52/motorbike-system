@@ -9,11 +9,11 @@ export interface UserType {
   status: "ACTIVE" | "INACTIVE" | null;
   photo?: string | null;
   gender?: "MALE" | "FEMALE" | null;
-  dob?: string | null | null;
-  address?: string | null | null;
-  ward?: string | null | null;
-  district?: string | null | null;
-  city?: string | null | null;
+  dob?: string | null;
+  address?: string | null;
+  ward?: string | null;
+  district?: string | null;
+  city?: string | null;
   created_at: string | null;
   updated_at: string | null;
   ref_id?: string | null;
