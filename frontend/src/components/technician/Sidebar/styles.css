@@ -1,0 +1,3 @@
+li:has(a.active-sidebar-item) {
+  border-right: none !important;
+}
