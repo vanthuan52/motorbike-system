@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -43,13 +44,13 @@ export default function UserAvatar({ name, avatarUrl }: UserAvatarProps) {
 
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-          <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+          <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
             Hồ sơ cá nhân
           </button>
-          <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-            Cài đặt
+          <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
+            <CustomLink href="/admin/settings">Cài đặt</CustomLink>
           </button>
-          <button className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+          <button className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 cursor-pointer">
             Đăng xuất
           </button>
         </div>
