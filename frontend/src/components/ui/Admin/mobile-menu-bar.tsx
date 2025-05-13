@@ -27,7 +27,7 @@ export default function MobileMenubar() {
       label: "Bảo dưỡng",
     },
     {
-      href: ROUTER_PATH.ADMIN.APPOINTMENTS,
+      href: ROUTER_PATH.ADMIN.MESSAGES,
       icon: <BiMessageDetail size={22} />,
       label: "Tin nhắn",
     },

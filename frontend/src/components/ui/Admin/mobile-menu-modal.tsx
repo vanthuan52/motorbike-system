@@ -59,6 +59,11 @@ const links = [
     icon: <FiUsers size={24} />,
     href: ROUTER_PATH.ADMIN.CUSTOMERS,
   },
+  {
+    label: "Tin nhắn",
+    icon: <FiUsers size={24} />,
+    href: ROUTER_PATH.ADMIN.MESSAGES,
+  },
 ];
 
 export default function MobileMenuModal({
