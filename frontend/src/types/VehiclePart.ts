@@ -1,6 +1,6 @@
 export interface VehiclePart {
-  id: number;
-  vehicle_type_id: number | null;
+  id: string;
+  vehicle_type_id: string | null;
   name: string;
   code: string;
   average_life: number;

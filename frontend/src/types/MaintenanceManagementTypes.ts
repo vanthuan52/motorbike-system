@@ -1,7 +1,7 @@
 export interface MaintenanceManagementTypes {
   id: string;
   customer: string | null;
-  phone: number;
+  phone: string;
   staff: object | null;
   maintenance_date: string;
   total_cost: number | null;
