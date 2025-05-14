@@ -8,7 +8,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 import TableReuse from "@/components/ui/Table/Table";
-import { mockDataTable } from "@/data/TableData";
+import { mockDataTableVehicleCompany } from "@/data/TableData";
 import { GreenSwitch } from "@/components/ui/Switch";
 
 import VehicleCompanyModal from "./VehicleCompanyModal";
@@ -21,7 +21,7 @@ export default function VehicleCompany() {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDataSource(mockDataTable);
+      setDataSource(mockDataTableVehicleCompany);
       setLoading(false);
     }, 800);
     return () => clearTimeout(timer);
@@ -54,7 +54,7 @@ export default function VehicleCompany() {
     setDataSource((prev) => prev.filter((item) => item.id !== id));
     toast.success("Xóa hãng xe thành công");
   };
-  const columns: ColumnsType<(typeof mockDataTable)[0]> = [
+  const columns: ColumnsType<(typeof mockDataTableVehicleCompany)[0]> = [
     {
       title: "STT",
       dataIndex: "id",
@@ -122,7 +122,7 @@ export default function VehicleCompany() {
           <SearchInputReuse
             onChange={(text) =>
               setDataSource(
-                mockDataTable.filter((item) =>
+                mockDataTableVehicleCompany.filter((item) =>
                   item.name.toLowerCase().includes(text.toLowerCase())
                 )
               )

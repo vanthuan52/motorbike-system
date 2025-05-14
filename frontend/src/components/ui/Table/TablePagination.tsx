@@ -48,14 +48,14 @@ const TablePagination = ({
 
       <div className="flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-end flex-wrap">
         <button
-          className="px-2 py-1 text-lg disabled:text-gray-300"
+          className="px-2 py-1 text-lg disabled:text-gray-300 cursor-pointer"
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
         >
           <DoubleLeftOutlined />
         </button>
         <button
-          className="px-2 py-1 text-lg disabled:text-gray-300"
+          className="px-2 py-1 text-lg disabled:text-gray-300 cursor-pointer"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -65,8 +65,10 @@ const TablePagination = ({
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button
             key={page}
-            className={`px-2 py-1 font-semibold rounded ${
-              page === currentPage ? "text-black bg-gray-200" : "text-gray-500"
+            className={`px-2 py-1 font-semibold rounded cursor-pointer ${
+              page === currentPage
+                ? "text-black bg-gray-200"
+                : "text-gray-500 hover:bg-gray-100"
             }`}
             onClick={() => onPageChange(page)}
           >
@@ -75,14 +77,14 @@ const TablePagination = ({
         ))}
 
         <button
-          className="px-2 py-1 text-lg disabled:text-gray-300"
+          className="px-2 py-1 text-lg disabled:text-gray-300 cursor-pointer"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           <RightOutlined />
         </button>
         <button
-          className="px-2 py-1 text-lg disabled:text-gray-300"
+          className="px-2 py-1 text-lg disabled:text-gray-300 cursor-pointer"
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
         >

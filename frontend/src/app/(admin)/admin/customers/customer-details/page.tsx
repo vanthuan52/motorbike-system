@@ -7,19 +7,26 @@ import TableReuse from "@/components/ui/Table/Table";
 import { Home } from "lucide-react";
 import Breadcrumb from "@/components/ui/Admin/Breadcrumb";
 import CustomerInfo from "./components/CustomerInfo";
-import { mockDataTableManageCustomers, vehicleData } from "@/data/TableData";
+import { ColumnsType } from "antd/es/table";
+import {
+  mockDataTableManageCustomers,
+  mockDataTableVehicleType,
+  vehicleData,
+} from "@/data/TableData";
+import { Vehicle } from "@/types/Vehicle";
 
-const vehicleColumns = [
+const vehicleColumns: ColumnsType<Vehicle> = [
   {
     title: "STT",
     dataIndex: "key",
     key: "key",
     width: 60,
+    render: (_, __, index) => index + 1,
   },
   {
     title: "Ảnh",
-    dataIndex: "image",
-    key: "image",
+    dataIndex: "image_file_name",
+    key: "image_file_name",
     render: (url: string, record: any) => (
       <Space>
         <img
@@ -32,18 +39,13 @@ const vehicleColumns = [
   },
   {
     title: "Biển xe",
-    dataIndex: "plate",
-    key: "plate",
+    dataIndex: "license_plate",
+    key: "license_plate",
   },
   {
-    title: "Hãng xe",
-    dataIndex: "brand",
-    key: "brand",
-  },
-  {
-    title: "Dòng xe",
-    dataIndex: "model",
-    key: "model",
+    title: "Đời xe",
+    dataIndex: "vehicle_model",
+    key: "vehicle_model",
   },
   {
     title: "Màu xe",
@@ -52,18 +54,24 @@ const vehicleColumns = [
   },
   {
     title: "Số máy",
-    dataIndex: "engineNo",
-    key: "engineNo",
+    dataIndex: "engine_number",
+    key: "engine_number",
   },
   {
     title: "Số khung",
-    dataIndex: "chassisNo",
-    key: "chassisNo",
+    dataIndex: "chassis_number",
+    key: "chassis_number",
   },
   {
     title: "Loại xe",
-    dataIndex: "type",
-    key: "type",
+    dataIndex: "vehicle_type_id",
+    key: "vehicle_type_id",
+    render: (id: string) => {
+      const vehicleType = mockDataTableVehicleType.find(
+        (vehicleType) => vehicleType.id === id
+      );
+      return vehicleType ? vehicleType.name : "";
+    },
   },
 ];
 

@@ -1,4 +1,12 @@
-export const mockDataTable = [
+import { CustomerType } from "@/types/Customers";
+import { EmployeeType } from "@/types/Employees";
+import { MaintenanceManagementTypes } from "@/types/MaintenanceManagementTypes";
+import { Vehicle } from "@/types/Vehicle";
+import { VehicleCompanyTypes } from "@/types/VehicleCompany";
+import { VehiclePart } from "@/types/VehiclePart";
+import { VehicleType } from "@/types/VehicleType";
+
+export const mockDataTableVehicleCompany: VehicleCompanyTypes[] = [
   {
     id: 1,
     name: "Yamaha",
@@ -31,41 +39,41 @@ export const mockDataTable = [
   },
 ];
 
-export const mockDataTableVehicleType = [
+export const mockDataTableVehicleType: VehicleType[] = [
   {
-    id: 1,
-    company_id: 1,
+    id: "vt-1",
+    company_id: "com-1",
     name: "Xe tay ga",
     description: "Đây là loại xe tay ga",
     status: true,
   },
   {
-    id: 2,
-    company_id: 2,
+    id: "vt-2",
+    company_id: "com-2",
     name: "Xe số",
     description: "Đây là loại xe số",
     status: true,
   },
   {
-    id: 3,
-    company_id: 3,
+    id: "vt-3",
+    company_id: "com-3",
     name: "Xe côn tay",
     description: "Đây là loại xe côn tay",
     status: false,
   },
   {
-    id: 4,
-    company_id: 4,
+    id: "vt-4",
+    company_id: "com-4",
     name: "Xe điện",
     description: "Đây là loại xe điện",
     status: true,
   },
 ];
 
-export const mockDataTableVehiclePart = [
+export const mockDataTableVehiclePart: VehiclePart[] = [
   {
-    id: 1,
-    vehicle_type_id: 1,
+    id: "vp-1",
+    vehicle_type_id: "vt-1",
     name: "Xe tay ga",
     code: "Xe tay ga",
     average_life: 10000,
@@ -75,8 +83,8 @@ export const mockDataTableVehiclePart = [
     image: "https://example.com/image1.jpg",
   },
   {
-    id: 2,
-    vehicle_type_id: 2,
+    id: "vp-2",
+    vehicle_type_id: "vt-2",
     name: "Xe số",
     code: "Xe số",
     average_life: 20000,
@@ -86,8 +94,8 @@ export const mockDataTableVehiclePart = [
     image: "https://example.com/image2.jpg",
   },
   {
-    id: 3,
-    vehicle_type_id: 3,
+    id: "vp-3",
+    vehicle_type_id: "vt-3",
     name: "Xe côn tay",
     code: "Xe côn tay",
     average_life: 30000,
@@ -97,8 +105,8 @@ export const mockDataTableVehiclePart = [
     image: "https://example.com/image3.jpg",
   },
   {
-    id: 4,
-    vehicle_type_id: 4,
+    id: "vp-4",
+    vehicle_type_id: "vt-4",
     name: "Xe điện",
     code: "Xe điện",
     average_life: 40000,
@@ -108,8 +116,8 @@ export const mockDataTableVehiclePart = [
     image: "https://example.com/image4.jpg",
   },
   {
-    id: 5,
-    vehicle_type_id: 5,
+    id: "vp-5",
+    vehicle_type_id: "vt-5",
     name: "Xe tay ga",
     code: "Xe tay ga",
     average_life: 50000,
@@ -120,13 +128,13 @@ export const mockDataTableVehiclePart = [
   },
 ];
 
-export const mockDataTableMaintenance = [
+export const mockDataTableMaintenance: MaintenanceManagementTypes[] = [
   {
-    id: 1,
+    id: "m-1",
     customer: "Nguyễn Văn A",
     phone: "0123456789",
     staff: {
-      id: 1,
+      id: "e-1",
       name: "Nguyễn Văn B",
       phone: "0987654321",
       email: "b@c.com",
@@ -137,11 +145,11 @@ export const mockDataTableMaintenance = [
   },
 
   {
-    id: 2,
+    id: "m-2",
     customer: "Nguyễn Văn A",
     phone: "0123456789",
     staff: {
-      id: 2,
+      id: "e-2",
       name: "Trần Thị D",
       phone: "0987654321",
       email: "d@e.com",
@@ -152,11 +160,11 @@ export const mockDataTableMaintenance = [
   },
 
   {
-    id: 3,
+    id: "m-3",
     customer: "Nguyễn Văn A",
     phone: "0123456789",
     staff: {
-      id: 3,
+      id: "e-3",
       name: "Nguyễn Văn F",
       phone: "0987654321",
       email: "f@g.com",
@@ -167,12 +175,12 @@ export const mockDataTableMaintenance = [
   },
 
   {
-    id: 4,
+    id: "m-4",
     customer: "Nguyễn Văn A",
 
     phone: "0123456789",
     staff: {
-      id: 4,
+      id: "e-4",
       name: "Nguyễn Văn H",
       phone: "0987654321",
       email: "h@i.com",
@@ -182,12 +190,12 @@ export const mockDataTableMaintenance = [
     status: "Đang chờ",
   },
   {
-    id: 5,
+    id: "m-5",
     customer: "Nguyễn Văn A",
 
     phone: "0123456789",
     staff: {
-      id: 5,
+      id: "e-5",
       name: "Nguyễn Văn J",
       phone: "0987654321",
       email: "j@k.com",
@@ -198,9 +206,9 @@ export const mockDataTableMaintenance = [
   },
 ];
 
-export const mockDataTableManageCustomers = [
+export const mockDataTableManageCustomers: CustomerType[] = [
   {
-    id: "1",
+    id: "cus-01",
     first_name: "John",
     last_name: "Doe",
     phone: "123456789",
@@ -219,7 +227,7 @@ export const mockDataTableManageCustomers = [
     updated_at: "2023-01-02",
   },
   {
-    id: "2",
+    id: "cus-02",
     first_name: "Trần Thị",
     last_name: "B",
     phone: "0987654321",
@@ -238,7 +246,7 @@ export const mockDataTableManageCustomers = [
     photo: "/images/avatar/avatar2.jpeg",
   },
   {
-    id: "3",
+    id: "cus-03",
     first_name: "Nguyễn Văn",
     last_name: "C",
     phone: "0123456789",
@@ -257,7 +265,7 @@ export const mockDataTableManageCustomers = [
     photo: "/images/avatar/avatar3.jpeg",
   },
   {
-    id: "4",
+    id: "cus-04",
     first_name: "Nguyễn Văn",
     last_name: "D",
     phone: "0123456789",
@@ -276,7 +284,7 @@ export const mockDataTableManageCustomers = [
     photo: "/images/avatar/avatar4.jpeg",
   },
   {
-    id: "5",
+    id: "cus-05",
     first_name: "Nguyễn Văn",
     last_name: "E",
     phone: "0123456789",
@@ -296,14 +304,14 @@ export const mockDataTableManageCustomers = [
   },
 ];
 
-export const mockDataTableManageEmployees = [
+export const mockDataTableManageEmployees: EmployeeType[] = [
   {
-    id: "1",
+    id: "e-1",
     first_name: "Nguyễn Văn",
     last_name: "A",
     phone: "0123456789",
     email: "a@b.com",
-    type: "EMPLOYEES",
+    type: "EMPLOYEE",
     status: "ACTIVE",
     dob: "2000-01-01",
     address: "Hanoi",
@@ -321,12 +329,12 @@ export const mockDataTableManageEmployees = [
     position: "Manager",
   },
   {
-    id: "2",
+    id: "e-2",
     first_name: "Trần Thị",
     last_name: "B",
     phone: "0987654321",
     email: "b@c.com",
-    type: "EMPLOYEES",
+    type: "EMPLOYEE",
     status: "ACTIVE",
     dob: "2001-01-01",
     gender: "FEMALE",
@@ -344,12 +352,12 @@ export const mockDataTableManageEmployees = [
     position: "Staff",
   },
   {
-    id: "3",
+    id: "e-3",
     first_name: "Nguyễn Văn",
     last_name: "C",
     phone: "0123456789",
     email: "c@d.com",
-    type: "EMPLOYEES",
+    type: "EMPLOYEE",
     status: "ACTIVE",
     dob: "2002-01-01",
     gender: "MALE",
@@ -367,12 +375,12 @@ export const mockDataTableManageEmployees = [
     position: "Staff",
   },
   {
-    id: "4",
+    id: "e-4",
     first_name: "Nguyễn Văn",
     last_name: "D",
     phone: "0123456789",
     email: "d@e.com",
-    type: "EMPLOYEES",
+    type: "EMPLOYEE",
     status: "INACTIVE",
     dob: "2003-01-01",
     gender: "FEMALE",
@@ -390,12 +398,12 @@ export const mockDataTableManageEmployees = [
     position: "Staff",
   },
   {
-    id: "5",
+    id: "e-5",
     first_name: "Nguyễn Văn",
     last_name: "E",
     phone: "0123456789",
     email: "e@f.com",
-    type: "EMPLOYEES",
+    type: "EMPLOYEE",
     status: "ACTIVE",
     dob: "2004-01-01",
     gender: "MALE",
@@ -414,60 +422,93 @@ export const mockDataTableManageEmployees = [
   },
 ];
 
-export const vehicleData = [
+export const vehicleData: Vehicle[] = [
   {
-    key: 1,
-    image: "/images/motorbike/motor1.png",
-    plate: "79B-456.78",
-    brand: "Honda",
-    model: "Wave Alpha",
-    color: "Xanh",
-    engineNo: "ENG12345",
-    chassisNo: "CHS67890",
-    type: "Xe số",
-  },
-  {
-    key: 2,
-    image: "/images/motorbike/motor2.jpeg",
-    plate: "79C-987.65",
-    brand: "Yamaha",
-    model: "Exciter",
-    color: "Đỏ",
-    engineNo: "ENG54321",
-    chassisNo: "CHS09876",
-    type: "Xe côn tay",
-  },
-  {
-    key: 3,
-    image: "/images/motorbike/motor3.png",
-    plate: "79D-123.45",
-    brand: "Suzuki",
-    model: "Raider",
+    id: "v-1",
+    customer_id: "cus-01",
+    license_plate: "79B-456.78",
+    vehicle_model: "Honda",
     color: "Đen",
-    engineNo: "ENG11223",
-    chassisNo: "CHS33445",
-    type: "Xe côn tay",
+    engine_number: "ENG12345",
+    chassis_number: "CHS67890",
+    vehicle_type_id: "vt-1",
+    image_file_name: "/images/motorbike/motor1.png",
   },
   {
-    key: 4,
-    image: "/images/motorbike/motor4.webp",
-    plate: "79E-678.90",
-    brand: "Piaggio",
-    model: "Vespa",
+    id: "v-2",
+    customer_id: "cus-02",
+    license_plate: "79C-987.65",
+    vehicle_model: "Exciter",
+    color: "Đỏ",
+    engine_number: "ENG54321",
+    chassis_number: "CHS09876",
+    vehicle_type_id: "vt-2",
+    image_file_name: "/images/motorbike/motor2.jpeg",
+  },
+  {
+    id: "v-3",
+    customer_id: "cus-03",
+    license_plate: "79D-123.45",
+    vehicle_model: "Raider",
+    color: "Đen",
+    engine_number: "ENG11223",
+    chassis_number: "CHS33445",
+    vehicle_type_id: "vt-3",
+    image_file_name: "/images/motorbike/motor3.png",
+  },
+  {
+    id: "v-4",
+    customer_id: "cus-04",
+    license_plate: "79E-678.90",
+    vehicle_model: "Vespa",
     color: "Trắng",
-    engineNo: "ENG55667",
-    chassisNo: "CHS77889",
-    type: "Xe tay ga",
+    engine_number: "ENG55667",
+    chassis_number: "CHS77889",
+    vehicle_type_id: "vt-4",
+    image_file_name: "/images/motorbike/motor4.webp",
   },
   {
-    key: 5,
-    image: "/images/motorbike/motor5.png",
-    plate: "79F-111.22",
-    brand: "SYM",
-    model: "Attila",
+    id: "v-5",
+    customer_id: "cus-05",
+    license_plate: "79F-111.22",
+    vehicle_model: "Attila",
     color: "Hồng",
-    engineNo: "ENG99001",
-    chassisNo: "CHS22334",
-    type: "Xe tay ga",
+    engine_number: "ENG99001",
+    chassis_number: "CHS22334",
+    vehicle_type_id: "vt-5",
+    image_file_name: "/images/motorbike/motor5.png",
+  },
+  {
+    id: "v-6",
+    customer_id: "cus-01",
+    license_plate: "79B-797.79",
+    vehicle_model: "Honda",
+    color: "Đỏ",
+    engine_number: "ENG12345",
+    chassis_number: "CHS67890",
+    vehicle_type_id: "vt-1",
+    image_file_name: "/images/motorbike/motor3.png",
+  },
+  {
+    id: "v-7",
+    customer_id: "cus-01",
+    license_plate: "79B-797.79",
+    vehicle_model: "Honda",
+    color: "Đỏ",
+    engine_number: "ENG12345",
+    chassis_number: "CHS67890",
+    vehicle_type_id: "vt-1",
+    image_file_name: "/images/motorbike/motor3.png",
+  },
+  {
+    id: "v-8",
+    customer_id: "cus-01",
+    license_plate: "79B-393.79",
+    vehicle_model: "Honda",
+    color: "Đen",
+    engine_number: "ENG12345",
+    chassis_number: "CHS67890",
+    vehicle_type_id: "vt-1",
+    image_file_name: "/images/motorbike/motor4.webp",
   },
 ];

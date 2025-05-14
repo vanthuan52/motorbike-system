@@ -1,6 +1,6 @@
 export interface VehicleType {
-  id: number;
-  company_id: number | null;
+  id: string;
+  company_id: string | null;
   name: string;
   description: string;
   status: boolean;
