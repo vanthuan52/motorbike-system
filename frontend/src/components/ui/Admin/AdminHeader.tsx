@@ -1,7 +1,8 @@
+// AdminHeader.tsx
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, User } from "lucide-react";
-import NotificationPopover from "./notification-popover";
+import { Bell } from "lucide-react";
+import NotificationSidebar from "./notification-sidebar";
 import UserAvatar from "./user-avatar";
 
 const AdminHeader = () => {
@@ -43,7 +44,9 @@ const AdminHeader = () => {
                 <Bell size={24} />
               </button>
 
-              {notiOpen && <NotificationPopover />}
+              {notiOpen && (
+                <NotificationSidebar onClose={() => setNotiOpen(false)} />
+              )}
             </div>
 
             <UserAvatar name={"Admin"} />
