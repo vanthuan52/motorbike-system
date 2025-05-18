@@ -9,32 +9,22 @@ import {
   Upload,
   message,
   Button,
+  Image,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import type { UploadFile } from "antd/es/upload/interface";
+import { getBase64 } from "@/utils/fileUtils";
 import { GreenSwitch } from "@/components/ui/Switch";
-
+import { VehiclePart } from "@/types/VehiclePart";
+import type { GetProp, UploadFile, UploadProps } from "antd";
 interface FormValues {
-  vehicle_type_id: number | null;
+  vehicle_type_id: string | null;
   name: string;
   code: string;
   average_life: number;
   unit_price: number;
   quantity: number;
   status: boolean;
-  image?: string;
-}
-
-export interface VehiclePart {
-  id: number;
-  vehicle_type_id: number | null;
-  name: string;
-  code: string;
-  average_life: number;
-  unit_price: number;
-  quantity: number;
-  status: boolean;
-  image?: string;
+  images?: string[];
 }
 
 interface Props {
@@ -43,6 +33,8 @@ interface Props {
   initialData?: VehiclePart | null;
   onCancel: () => void;
   onSubmit: (values: VehiclePart) => void;
+  setFileList: (fileList: any) => void;
+  fileList: any;
 }
 
 const vehicleTypeOptions = [
@@ -53,16 +45,17 @@ const vehicleTypeOptions = [
   { label: "SYM", value: 4 },
   { label: "Ducati", value: 5 },
 ];
-
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 export default function VehiclePartModal({
   visible,
   mode,
   initialData,
   onCancel,
   onSubmit,
+  setFileList,
+  fileList,
 }: Props) {
   const [form] = Form.useForm<FormValues>();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
     if (visible) {
@@ -76,16 +69,16 @@ export default function VehiclePartModal({
           quantity: initialData.quantity,
           status: initialData.status,
         });
-
-        if (initialData.image) {
-          setFileList([
-            {
-              uid: "-1",
-              name: "image.jpg",
+        if (initialData.images && Array.isArray(initialData.images)) {
+          setFileList(
+            initialData.images.map((img, idx) => ({
+              uid: String(-idx - 1),
+              name: `image-${idx}.jpg`,
               status: "done",
-              url: initialData.image,
-            },
-          ]);
+              url: img.startsWith("/") ? img : "/" + img,
+              thumbUrl: img.startsWith("/") ? img : "/" + img,
+            }))
+          );
         } else {
           setFileList([]);
         }
@@ -95,19 +88,33 @@ export default function VehiclePartModal({
         setFileList([]);
       }
     }
-  }, [visible, form, initialData, mode]);
+  }, [visible, form, initialData, mode, setFileList]);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+
+  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
+    setFileList(newFileList);
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
 
-      const imageUrl =
-        fileList.length > 0
-          ? fileList[0].url || fileList[0].response?.url
-          : undefined;
+      const imageUrls =
+        fileList && fileList.length > 0
+          ? fileList.map((file: any) => file.url || file.thumbUrl)
+          : [];
 
       const part: VehiclePart = {
-        id: initialData?.id ?? 0,
+        id: initialData?.id?.toString() ?? "0",
         vehicle_type_id: values.vehicle_type_id,
         name: values.name,
         code: values.code,
@@ -115,7 +122,7 @@ export default function VehiclePartModal({
         unit_price: values.unit_price,
         quantity: values.quantity,
         status: values.status,
-        image: imageUrl,
+        images: imageUrls,
       };
 
       onSubmit(part);
@@ -182,7 +189,7 @@ export default function VehiclePartModal({
           <InputNumber min={0} style={{ width: "100%" }} />
         </Form.Item>
         <Form.Item
-          name="image"
+          name="images"
           label="Hình ảnh"
           valuePropName="fileList"
           getValueFromEvent={(e) => {
@@ -193,11 +200,25 @@ export default function VehiclePartModal({
           <Upload
             name="logo"
             listType="picture-card"
-            maxCount={1}
             beforeUpload={() => false}
+            fileList={fileList}
+            onPreview={handlePreview}
+            onChange={handleChange}
           >
             <Button icon={<UploadOutlined />}></Button>
           </Upload>
+          {previewImage && (
+            <Image
+              alt="example"
+              wrapperStyle={{ display: "none" }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
         </Form.Item>
         <Form.Item name="status" label="Trạng thái" valuePropName="checked">
           <GreenSwitch checked />

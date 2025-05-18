@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ColumnsType } from "antd/es/table";
 import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import type { UploadFile } from "antd/es/upload/interface";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { mockDataTableVehiclePart } from "@/data/TableData";
 import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
@@ -18,6 +19,7 @@ export default function VehicleParts() {
   const [assignVisible, setAssignVisible] = useState(false);
   const [selected, setSelected] = useState<any | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   useEffect(() => {
     const timer = setTimeout(() => {
       setDataSource(mockDataTableVehiclePart);
@@ -34,6 +36,7 @@ export default function VehicleParts() {
   const openEdit = (record: any) => {
     setIsEdit(true);
     setSelected(record);
+    setFileList(record.image);
     setAssignVisible(true);
   };
   const handleAssignSubmit = (values: any) => {
@@ -161,6 +164,8 @@ export default function VehicleParts() {
           initialData={selected}
           onCancel={() => setAssignVisible(false)}
           onSubmit={handleAssignSubmit}
+          setFileList={setFileList}
+          fileList={fileList}
         />
       </div>
     </div>
