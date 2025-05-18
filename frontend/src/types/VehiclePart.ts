@@ -7,5 +7,5 @@ export interface VehiclePart {
   unit_price: number;
   quantity: number;
   status: boolean;
-  image?: string;
+  images?: string[];
 }

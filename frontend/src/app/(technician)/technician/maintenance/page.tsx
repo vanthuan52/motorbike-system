@@ -1,5 +1,10 @@
-import React from "react";
-import MaintenancePage from "@/components/technician/Maintenance/MaintenancePage";
+import { Metadata } from "next";
+import TechnicianMaintenancePage from "./components/MaintenancePage";
+
+export const metadata: Metadata = {
+  title: "Lịch bảo dưỡng",
+  description: "",
+};
 export default function page() {
-  return <MaintenancePage />;
+  return <TechnicianMaintenancePage />;
 }
