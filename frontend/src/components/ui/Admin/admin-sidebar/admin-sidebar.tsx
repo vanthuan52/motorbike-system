@@ -10,7 +10,7 @@ import { TbSettingsCode } from "react-icons/tb";
 import { LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { FiUsers } from "react-icons/fi";
+import { FiEdit2, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constant/router-path";
 import SidebarMenu from "./sidebar-menu";
 
@@ -75,6 +75,12 @@ const menuItems = [
     icon: <LiaUsersCogSolid />,
     href: ROUTER_PATH.ADMIN.EMPLOYEES,
     label: "Quản lý nhân viên",
+  },
+  {
+    key: "posts",
+    icon: <FiEdit2 />,
+    href: ROUTER_PATH.ADMIN.POSTS,
+    label: "Quản lý bài viết",
   },
 ];
 
