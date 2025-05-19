@@ -18,5 +18,6 @@ export const ROUTER_PATH = {
     CUSTOMERS: "/admin/customers",
     EMPLOYEES: "/admin/employees",
     MESSAGES: "/admin/messages",
+    POSTS: "/admin/posts",
   },
 };

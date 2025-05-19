@@ -7,7 +7,7 @@ import { ROUTER_PATH } from "@/constant/router-path";
 import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { FiUsers } from "react-icons/fi";
+import { FiEdit2, FiUsers } from "react-icons/fi";
 import { LiaUsersCogSolid } from "react-icons/lia";
 import { TbSettingsCode } from "react-icons/tb";
 import { BiCategoryAlt } from "react-icons/bi";
@@ -63,6 +63,11 @@ const links = [
     label: "Tin nhắn",
     icon: <FiUsers size={24} />,
     href: ROUTER_PATH.ADMIN.MESSAGES,
+  },
+  {
+    label: "Bài viết",
+    icon: <FiEdit2 size={24} />,
+    href: ROUTER_PATH.ADMIN.POSTS,
   },
 ];
 
