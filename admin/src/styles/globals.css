@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "react-tooltip/dist/react-tooltip.css";
+@import "react-toastify/dist/ReactToastify.css";
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
