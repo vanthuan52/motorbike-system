@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+
+import { employeeData } from "@/data/EmployeeData";
+
 import AccountsTabs from "./Accounts/AccountsTabs";
 import NotificationsTabs from "./Notifications/NotificationsTabs";
-import { employeeData } from "@/data/EmployeeData";
-export default function Settings() {
+
+function Settings() {
   const [activeTab, setActiveTab] = useState("accounts");
   const [avatar, setAvatar] = useState<string | null>(
     employeeData.photo || null
@@ -67,3 +70,5 @@ export default function Settings() {
     </div>
   );
 }
+
+export default Settings;
