@@ -1,0 +1,15 @@
+@use "variables" as vars;
+@use "fonts";
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: vars.$font-primary;
+  color: vars.$text-color;
+  background-color: vars.$primary-bg-color;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}

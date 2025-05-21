@@ -1,0 +1,15 @@
+export const ROUTER_PATH = {
+  INDEX: "/",
+  LOGIN: "/login",
+  REGISTER: "/register",
+  DASHBOARD: "/dashboard",
+  MESSAGES: "/messages",
+  VEHICLE_COMPANY: "/vehicle-company",
+  VEHICLE_TYPE: "/vehicle-type",
+  VEHICLE_PART: "/vehicle-part",
+  MAINTENANCE_SCHEDULE: "/maintenance-schedule",
+  MAINTENANCE: "/maintenance",
+  CUSTOMERS: "/customers",
+  EMPLOYEES: "/employees",
+  POSTS: "/posts",
+};
