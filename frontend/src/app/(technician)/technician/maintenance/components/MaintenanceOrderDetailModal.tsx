@@ -70,7 +70,6 @@ export default function MaintenanceOrderDetailModal({
             </Descriptions.Item>
           </Descriptions>
         </div>
-        {/* Bên phải: Đánh giá & chọn dịch vụ/phụ tùng */}
         <div className="flex-1 min-w-[320px]">
           <VehicleConditionForm
             initialValue={order.vehicle_condition || ""}
