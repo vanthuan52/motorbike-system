@@ -12,40 +12,12 @@ import { Appointment } from "@/types/Appointment";
 import { pendingAppointments } from "@/data/PendingAppointments";
 import MaintenanceWaitingCard from "./MaintenanceWaitingCard";
 import MaintenanceMyOrderCard from "./MaintenanceMyOrderCard";
-import MaintenanceOrderDetailModal from "./MaintenanceOrderDetailModal";
-import { Vehicle } from "@/types/Vehicle";
-import { CustomerType } from "@/types/Customers";
 
 export default function TechnicianMaintenancePage() {
   const [waitingList, setWaitingList] =
     useState<Appointment[]>(pendingAppointments);
   const [myOrders, setMyOrders] = useState<Appointment[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<Appointment | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>({
-    id: "",
-    customer_id: "",
-    license_plate: "",
-    vehicle_model: "",
-    color: "",
-    engine_number: "",
-    chassis_number: "",
-    vehicle_type_id: "",
-    image_file_name: "",
-  });
-  const [selectedCustomer, setSelectedCustomer] = useState<CustomerType>({
-    id: "",
-    first_name: null,
-    last_name: null,
-    phone: null,
-    email: null,
-    password: null,
-    type: null,
-    status: null,
-    created_at: null,
-    updated_at: null,
-  });
   const getCustomerName = (id: string) => {
     const customer = mockDataTableManageCustomers.find((cus) => cus.id === id);
     return customer
@@ -90,16 +62,6 @@ export default function TechnicianMaintenancePage() {
       return;
     }
     const selected = waitingList.find((item) => item.id === id);
-    const selectedCustomer = mockDataTableManageCustomers.find(
-      (cus) => cus.id === selected?.customer_id
-    );
-
-    const selectedVehicle = vehicleData.find(
-      (v) => v.id === selected?.vehicle_id
-    );
-    setSelectedCustomer(selectedCustomer!);
-    setSelectedVehicle(selectedVehicle!);
-
     if (!selected || selected.employee_id) return;
 
     const newOrder = {
@@ -175,29 +137,12 @@ export default function TechnicianMaintenancePage() {
                   getCustomerName={getCustomerName}
                   getEmployeeName={getEmployeeName}
                   handleStatusChange={handleStatusChange}
-                  onClick={() => {
-                    setSelectedOrder(order);
-                    setModalOpen(true);
-                  }}
                 />
               </SwiperSlide>
             ))}
           </Swiper>
         )}
       </section>
-      <MaintenanceOrderDetailModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        order={selectedOrder}
-        vehicle={selectedVehicle}
-        customer={selectedCustomer}
-        onSaveCondition={(condition) => {
-          toast.success("Lưu đánh giá thành công!");
-        }}
-        onSaveServices={(services, parts) => {
-          toast.success("Lưu hạng mục thành công!");
-        }}
-      />
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import { Wrench } from "lucide-react";
 import moment from "moment";
 import { Appointment } from "@/types/Appointment";
+import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 interface Props {
   order: Appointment;
   getCustomerName: (id: string) => string;
   getEmployeeName: (id: string | null) => string;
   handleStatusChange: (id: number, status: string) => void;
-  onClick: () => void;
 }
 
 export default function MaintenanceMyOrderCard({
@@ -14,7 +14,6 @@ export default function MaintenanceMyOrderCard({
   getCustomerName,
   getEmployeeName,
   handleStatusChange,
-  onClick,
 }: Props) {
   return (
     <div className="bg-white p-4 rounded-lg shadow hover:shadow-md transition flex justify-between items-start h-full">
@@ -47,7 +46,13 @@ export default function MaintenanceMyOrderCard({
           </select>
         </div>
       </div>
-      <Wrench className="text-gray-500 mt-1 cursor-pointer" onClick={onClick} />
+      <CustomLink
+        href={`/technician/maintenance/${order.id}`}
+        >
+       <Wrench
+        className="text-gray-500 mt-1 cursor-pointer"
+      />
+      </CustomLink>
     </div>
   );
 }
