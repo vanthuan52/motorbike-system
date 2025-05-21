@@ -31,39 +31,37 @@ export default function SidebarItem({
 
   const isActive = item.href == pathname;
   useEffect(() => {
-    if (pathname === "/admin/messages") {
+    if (pathname === "/messages") {
       setSidebarCollapsed(true);
     } else {
       setSidebarCollapsed(false);
     }
   }, [pathname, setSidebarCollapsed]);
   return (
-    <div>
-      <div
-        className={clsx(
-          "flex items-center justify-between p-2 rounded-md cursor-pointer transition-all",
-          isActive ? "bg-gray-200" : "hover:bg-gray-100"
-        )}
-        onClick={() => hasChildren && toggleOpen(item.key)}
+    <div
+      className={clsx(
+        "flex items-center justify-between p-2 rounded-md cursor-pointer transition-all",
+        isActive ? "bg-gray-200" : "hover:bg-gray-100"
+      )}
+      onClick={() => hasChildren && toggleOpen(item.key)}
+    >
+      <a
+        className="flex items-center gap-3"
+        href={item.href}
+        data-tooltip-id={item.href}
+        data-tooltip-content={item.label}
       >
-        <a
-          className="flex items-center gap-3"
-          href={item.href}
-          data-tooltip-id={item.href}
-          data-tooltip-content={item.label}
-        >
-          <span className="text-xl font-medium">{item.icon}</span>
-          {!collapsed && (
-            <span className="text-sm font-medium">{item.label}</span>
-          )}
-        </a>
-        <Tooltip id={item.href} />
-        {!collapsed && hasChildren && (
-          <span className="text-xs">
-            {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
-          </span>
+        <span className="text-xl font-medium">{item.icon}</span>
+        {!collapsed && (
+          <span className="text-sm font-medium">{item.label}</span>
         )}
-      </div>
+      </a>
+      <Tooltip id={item.href} />
+      {!collapsed && hasChildren && (
+        <span className="text-xs">
+          {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
+        </span>
+      )}
     </div>
   );
 }

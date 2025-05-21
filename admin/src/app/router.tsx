@@ -11,7 +11,15 @@ const LoginPage = lazy(() => import("@/modules/auth/pages/login-page"));
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
 );
-
+const MessagesPage = lazy(
+  () => import("@/modules/messages/pages/messages-page")
+);
+const VehicleCompanyPage = lazy(
+  () => import("@/modules/vehicle-company/pages/vehicle-company-page")
+);
+const VehicleType = lazy(
+  () => import("@/modules/vehicle-type/pages/vehicle-type-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -24,6 +32,9 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: ROUTER_PATH.EMPLOYEES, element: <EmployeesPage /> },
       { path: ROUTER_PATH.POSTS, element: <PostPage /> },
+      { path: ROUTER_PATH.MESSAGES, element: <MessagesPage /> },
+      { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
+      { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
     ],
   },
   {
