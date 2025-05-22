@@ -1,9 +1,9 @@
 "use client";
-import Banner from "@/components/user/user-profile/banner";
-import AvatarSection from "@/components/user/user-profile/avatarSection";
-import UserInfo from "@/components/user/user-profile/userInfo";
-import ProfileCompletion from "@/components/user/user-profile/profileCompletion";
-import ProfileUpdateForm from "@/components/user/user-profile/profileUpdateForm";
+import Banner from "@/components/user/user-profile/Banner";
+import AvatarSection from "@/components/user/user-profile/AvatarSection";
+import UserInfo from "@/components/user/user-profile/UserInfo";
+import ProfileCompletion from "@/components/user/user-profile/ProfileCompletion";
+import ProfileUpdateForm from "@/components/user/user-profile/ProfileUpdateForm";
 
 import { UserType } from "@/types/User";
 

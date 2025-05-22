@@ -25,7 +25,6 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
 
   useEffect(() => {
-    // Giả lập delay load dữ liệu từ props vehicles
     const timer = setTimeout(() => {
       setVehicleData(vehicles);
       setLoading(false);
