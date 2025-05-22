@@ -1,0 +1,33 @@
+"use client";
+
+import { Camera } from "lucide-react";
+import Image from "next/image";
+
+interface AvatarSectionProps {
+  photo: string;
+  firstName: string;
+  lastName: string;
+}
+
+export default function AvatarSection({
+  photo,
+  firstName,
+  lastName,
+}: AvatarSectionProps) {
+  return (
+    <div className="relative z-10 -mt-20 flex flex-col items-center">
+      <div className="relative w-28 h-28 rounded-full border-4 border-white shadow-md bg-gray-200 overflow-visible">
+        <Image
+          src={photo}
+          alt="Avatar người dùng"
+          fill
+          className="object-cover rounded-full"
+        />
+        <button className="absolute bottom-0 right-0 z-20 bg-violet-600 w-8 h-8 rounded-full flex items-center justify-center text-white shadow-md hover:bg-violet-700 transition">
+          <Camera size={16} />
+        </button>
+      </div>
+      <h1 className="mt-4 text-3xl font-semibold">{`${firstName} ${lastName}`}</h1>
+    </div>
+  );
+}
