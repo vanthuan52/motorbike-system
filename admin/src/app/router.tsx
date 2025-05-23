@@ -11,6 +11,9 @@ const LoginPage = lazy(() => import("@/modules/auth/pages/login-page"));
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
 );
+const EmployeeDetailsPage = lazy(
+  () => import("@/modules/employees/pages/employees-detail-page")
+)
 const MessagesPage = lazy(
   () => import("@/modules/messages/pages/messages-page")
 );
@@ -31,6 +34,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: ROUTER_PATH.EMPLOYEES, element: <EmployeesPage /> },
+      { path: ROUTER_PATH.EMPLOYEES_DETAILS, element: <EmployeeDetailsPage /> },
       { path: ROUTER_PATH.POSTS, element: <PostPage /> },
       { path: ROUTER_PATH.MESSAGES, element: <MessagesPage /> },
       { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
