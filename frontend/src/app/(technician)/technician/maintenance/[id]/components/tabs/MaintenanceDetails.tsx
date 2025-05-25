@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button } from 'antd';
 import {pendingAppointments} from "@/data/PendingAppointments";
 import { mockDataTableManageCustomers, vehicleData } from '@/data/TableData';
@@ -14,7 +14,14 @@ export default function MaintenanceDetails() {
     const [openVehicleModal, setOpenVehicleModal] = useState(false);
     const [openCustomerModal, setOpenCustomerModal] = useState(false);
     const [activeTab, setActiveTab] = useState("nearest");
-    const [tabTransition, setTabTransition] = useState(false);
+  const [tabTransition, setTabTransition] = useState(false);
+   useEffect(() => {
+    const tab = localStorage.getItem("note_after_maintenance");
+    if (tab) {
+      setActiveTab(tab);
+      localStorage.removeItem("note_after_maintenance"); 
+    }
+  }, []);
     const handleTabChange = (key: string) => {
     setTabTransition(true);
     setTimeout(() => {
