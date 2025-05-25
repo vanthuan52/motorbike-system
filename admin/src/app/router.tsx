@@ -23,6 +23,19 @@ const VehicleCompanyPage = lazy(
 const VehicleType = lazy(
   () => import("@/modules/vehicle-type/pages/vehicle-type-page")
 );
+
+const VehiclePartsPage = lazy(
+  () => import("@/modules/vehicle-parts/pages/vehicle-part-page")
+);
+
+const CustomerPage = lazy(
+  () => import("@/modules/customer-management/pages/customer-page")
+);
+
+const CustomerDetailPage = lazy(
+  () => import("@/modules/customer-management/pages/customer-detail-page")
+);
+
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -39,6 +52,12 @@ export const router = createBrowserRouter([
       { path: ROUTER_PATH.MESSAGES, element: <MessagesPage /> },
       { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
       { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
+      { path: ROUTER_PATH.VEHICLE_PART, element: <VehiclePartsPage /> },
+      { path: ROUTER_PATH.CUSTOMERS, element: <CustomerPage /> },
+      {
+        path: `${ROUTER_PATH.CUSTOMERS}/:id`,
+        element: <CustomerDetailPage />,
+      },
     ],
   },
   {
