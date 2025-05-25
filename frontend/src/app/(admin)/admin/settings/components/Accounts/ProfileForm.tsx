@@ -33,6 +33,46 @@ export default function ProfileForm({ avatar, setAvatar, ref }: Props) {
       </div>
       <div className="md:col-span-2 grid gap-6">
         <Form layout="vertical" ref={ref} initialValues={employeeData}>
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex flex-col">
+              <span className="font-medium">Ảnh đại diện</span>
+              <span className="text-sm text-gray-500">
+                Ảnh hiển thị trên hồ sơ của bạn
+              </span>
+            </div>
+            <Form.Item className="mb-0">
+              <div className="mb-0 !flex items-center gap-4">
+                <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                  {avatar ? (
+                    <Image
+                      src={avatar}
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <UserCircle className="w-16 h-16 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    className="flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer "
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <PencilIcon className="mr-2 w-4 h-4" />
+                    Sửa ảnh
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="!hidden"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              </div>
+            </Form.Item>
+          </div>
           <div className="grid md:grid-cols-2 gap-4">
             <Form.Item
               label={<span className="text-sm font-medium">Họ</span>}
@@ -90,46 +130,6 @@ export default function ProfileForm({ avatar, setAvatar, ref }: Props) {
                 placeholder="0123456789"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:!outline-none focus:!ring-0 focus:!border-gray-400 hover:!border-gray-400"
               />
-            </Form.Item>
-          </div>
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div className="flex flex-col">
-              <span className="font-medium">Ảnh đại diện</span>
-              <span className="text-sm text-gray-500">
-                Ảnh hiển thị trên hồ sơ của bạn
-              </span>
-            </div>
-            <Form.Item className="mb-0">
-              <div className="mb-0 !flex items-center gap-4">
-                <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
-                  {avatar ? (
-                    <Image
-                      src={avatar}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <UserCircle className="w-16 h-16 text-gray-400" />
-                  )}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <button
-                    type="button"
-                    className="flex items-center px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer "
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <PencilIcon className="mr-2 w-4 h-4" />
-                    Sửa ảnh
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="!hidden"
-                    onChange={handleFileChange}
-                  />
-                </div>
-              </div>
             </Form.Item>
           </div>
         </Form>
