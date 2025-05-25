@@ -10,6 +10,8 @@ export const ROUTER_PATH = {
   MAINTENANCE_SCHEDULE: "/maintenance-schedule",
   MAINTENANCE: "/maintenance",
   CUSTOMERS: "/customers",
+  CUSTOMERS_DETAILS: "/customer/customer-details/:id",
   EMPLOYEES: "/employees",
+  EMPLOYEES_DETAILS: "/employees/employee-details/:id",
   POSTS: "/posts",
 };

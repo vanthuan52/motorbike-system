@@ -78,7 +78,7 @@ export default function EmployeesList() {
       key: "action",
       render: (_, record: any) => (
         <Space>
-          <a href={`/admin/employees/employee-details?id=${record.id}`}>
+          <a href={`/employees/employee-details/${record.id}`}>
             <FiEye size={24} />
           </a>
           <BiPencil
