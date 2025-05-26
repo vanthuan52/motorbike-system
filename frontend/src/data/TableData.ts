@@ -91,7 +91,7 @@ export const mockDataTableVehiclePart: VehiclePart[] = [
     unit_price: 200000,
     quantity: 200,
     status: true,
-    images: ["/images/vehicle-parts/brake-pad.jpg"],
+    images: ["/images/vehicle-parts/brake_pad.webp"],
   },
   {
     id: "vp-3",
@@ -102,7 +102,7 @@ export const mockDataTableVehiclePart: VehiclePart[] = [
     unit_price: 300000,
     quantity: 300,
     status: false,
-    images: ["/images/vehicle-parts/bugi.jpg"],
+    images: ["/images/vehicle-parts/bugi.avif"],
   },
   {
     id: "vp-4",
