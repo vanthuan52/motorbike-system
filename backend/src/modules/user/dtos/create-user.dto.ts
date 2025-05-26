@@ -8,18 +8,18 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { ENUM_USER_STATUS, ENUM_USER_TYPE } from '../enums/user.enum';
+import { ENUM_USER_STATUS, ENUM_USER_ROLE } from '../enums/user.enum';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'Nguyen', description: 'First name' })
   @IsString()
   @MaxLength(100)
-  first_name: string;
+  firstName: string;
 
   @ApiProperty({ example: 'Van A', description: 'Last name' })
   @IsString()
   @MaxLength(100)
-  last_name: string;
+  lastName: string;
 
   @ApiProperty({ example: '0123456789', required: false })
   @IsOptional()
@@ -38,47 +38,23 @@ export class CreateUserDto {
   @MaxLength(20)
   password: string;
 
-  @ApiProperty({ example: ENUM_USER_TYPE.CUSTOMER, enum: ENUM_USER_TYPE })
+  @ApiProperty({ example: ENUM_USER_ROLE.USER, enum: ENUM_USER_ROLE })
   @IsOptional()
-  @IsEnum(ENUM_USER_TYPE)
-  type?: ENUM_USER_TYPE;
-
-  @ApiProperty({ example: 'd8c8fca1-4a00-4c1d-b60a-9fd2b4c31212' })
-  @IsOptional()
-  @IsUUID()
-  ref_id?: string;
+  @IsEnum(ENUM_USER_ROLE)
+  role?: ENUM_USER_ROLE;
 
   @ApiProperty({ example: ENUM_USER_STATUS.ACTIVE, enum: ENUM_USER_STATUS })
   @IsOptional()
   @IsEnum(ENUM_USER_STATUS)
   status?: ENUM_USER_STATUS;
 
-  @ApiProperty({ example: '1990-01-01', required: false })
+  @ApiProperty({ example: 'd8c8fca1-4a00-4c1d-b60a-9fd2b4c31212' })
   @IsOptional()
-  @IsString()
-  dob?: string;
+  @IsUUID()
+  createBy?: string;
 
-  @ApiProperty({ example: '123 Đường ABC, Phường XYZ', required: false })
+  @ApiProperty({ example: 'd8c8fca1-4a00-4c1d-b60a-9fd2b4c31212' })
   @IsOptional()
-  @IsString()
-  @MaxLength(200)
-  address?: string;
-
-  @ApiProperty({ example: 'Phường 1', required: false })
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  ward?: string;
-
-  @ApiProperty({ example: 'Quận 3', required: false })
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  district?: string;
-
-  @ApiProperty({ example: 'TP.HCM', required: false })
-  @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  city?: string;
+  @IsUUID()
+  updatedBy?: string;
 }

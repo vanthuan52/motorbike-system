@@ -3,6 +3,25 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "builder": {
+      "type": "swc",
+      "options": {
+        "swcrcPath": ".swcrc"
+      }
+    },
+    "typeCheck": true,
+    "plugins": ["@nestjs/swagger"],
+    "assets": [
+      {
+        "include": "languages/**/*",
+        "outDir": "dist"
+      },
+      {
+        "include": "**/**/templates/*",
+        "outDir": "dist"
+      }
+    ],
+    "deleteOutDir": true,
+    "watchAssets": true
   }
 }

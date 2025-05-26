@@ -8,12 +8,11 @@ import { AllConfigType } from './config/config.type';
 
 export default async function (app: NestApplication) {
   const configService = app.get(ConfigService<AllConfigType>);
-
-  const env: string = configService.getOrThrow<string>('app.nodeEnv', {
-    infer: true,
-  })!;
   const logger = new Logger('NestJs-Swagger');
 
+  const env: string = configService.getOrThrow<string>('app.env', {
+    infer: true,
+  });
   const docName = configService.getOrThrow<string>('docs.name', {
     infer: true,
   });
@@ -29,6 +28,8 @@ export default async function (app: NestApplication) {
       .setTitle(docName)
       .setDescription(docDesc)
       .addServer('/')
+      .addServer('/staging')
+      .addServer('/prod')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
         'accessToken',
@@ -43,7 +44,8 @@ export default async function (app: NestApplication) {
       deepScanRoutes: true,
     });
 
-    writeFileSync('swagger.json', JSON.stringify(document));
+    writeFileSync('./data/swagger.json', JSON.stringify(document));
+
     SwaggerModule.setup(docPrefix, app, document, {
       jsonDocumentUrl: `${docPrefix}/json`,
       yamlDocumentUrl: `${docPrefix}/yaml`,

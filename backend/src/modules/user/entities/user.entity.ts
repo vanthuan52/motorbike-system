@@ -1,34 +1,44 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
+import { ENUM_USER_STATUS, ENUM_USER_ROLE } from '../enums/user.enum';
 import {
-  ENUM_USER_GENDER,
-  ENUM_USER_STATUS,
-  ENUM_USER_TYPE,
-} from '../enums/user.enum';
+  DatabaseEntity,
+  DatabaseProp,
+  DatabaseSchema,
+} from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-
-export type UserDocument = UserEntity & Document;
 
 export const UserTableName = 'users';
 
-@Schema({ collection: UserTableName })
+@DatabaseEntity({ collection: UserTableName })
 export class UserEntity extends DatabaseEntityBase {
-  @Prop({ required: false, trim: true, maxlength: 100 })
-  first_name: string;
+  @DatabaseProp({
+    required: true,
+    lowercase: true,
+    trim: true,
+    maxlength: 50,
+  })
+  firstName: string;
 
-  @Prop({ required: false, trim: true, maxlength: 100 })
-  last_name: string;
+  @DatabaseProp({
+    required: true,
+    lowercase: true,
+    trim: true,
+    maxlength: 50,
+  })
+  lastName: string;
 
-  @Prop({
+  @DatabaseProp({
     required: true,
     unique: true,
+    lowercase: true,
     index: true,
     trim: true,
     maxlength: 100,
+    type: String,
   })
   email: string;
 
-  @Prop({
+  @DatabaseProp({
     required: false,
     trim: true,
     maxlength: 20,
@@ -36,55 +46,32 @@ export class UserEntity extends DatabaseEntityBase {
   })
   phone?: string;
 
-  @Prop({
+  @DatabaseProp({
     required: true,
     trim: true,
     select: false,
   })
   password: string;
 
-  @Prop({
+  @DatabaseProp({
     required: true,
-    default: ENUM_USER_TYPE.CUSTOMER,
+    default: ENUM_USER_ROLE.USER,
     index: true,
-    enum: ENUM_USER_TYPE,
+    type: String,
+    enum: ENUM_USER_ROLE,
   })
-  type: ENUM_USER_TYPE;
+  role: ENUM_USER_ROLE;
 
-  @Prop({
-    required: true,
-    index: true,
-  })
-  ref_id?: string;
-
-  @Prop({
+  @DatabaseProp({
     required: true,
     default: ENUM_USER_STATUS.ACTIVE,
     index: true,
+    type: String,
     enum: ENUM_USER_STATUS,
   })
   status: ENUM_USER_STATUS;
-
-  @Prop({ required: false })
-  photo?: string;
-
-  @Prop({ required: false, enum: ENUM_USER_GENDER })
-  gender?: ENUM_USER_GENDER;
-
-  @Prop({ required: false, type: Date })
-  dob?: Date;
-
-  @Prop({ required: false, trim: true })
-  address?: string;
-
-  @Prop({ required: false, trim: true })
-  ward?: string;
-
-  @Prop({ required: false, trim: true })
-  district?: string;
-
-  @Prop({ required: false, trim: true })
-  city?: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(UserEntity);
+export const UserSchema = DatabaseSchema(UserEntity);
+
+export type UserDocument = IDatabaseDocument<UserEntity>;
