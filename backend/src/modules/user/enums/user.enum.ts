@@ -1,15 +1,15 @@
 export enum ENUM_USER_STATUS {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  BLOCKED = 'BLOCKED',
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  BLOCKED = 'blocked',
 }
 
-export enum ENUM_USER_TYPE {
-  CUSTOMER = 'CUSTOMER',
-  EMPLOYEE = 'EMPLOYEE',
+export enum ENUM_USER_ROLE {
+  USER = 'user',
+  TECHNICIAN = 'technician',
 }
 
 export enum ENUM_USER_GENDER {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
+  MALE = 'male',
+  FEMALE = 'female',
 }

@@ -1,4 +1,4 @@
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '../pagination.enum';
+import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '../enums/pagination.enum';
 
 export type IPaginationOrder = Record<
   string,
@@ -11,4 +11,19 @@ export interface IPaginationQueryOptions {
   defaultOrderDirection?: ENUM_PAGINATION_ORDER_DIRECTION_TYPE;
   availableSearch?: string[];
   availableOrderBy?: string[];
+}
+
+export interface IPaginationFilterOptions {
+  queryField?: string;
+  raw?: boolean;
+}
+
+export interface IPaginationFilterDateBetweenOptions {
+  queryFieldStart?: string;
+  queryFieldEnd?: string;
+}
+
+export interface IPaginationFilterEqualOptions
+  extends IPaginationFilterOptions {
+  isNumber?: boolean;
 }

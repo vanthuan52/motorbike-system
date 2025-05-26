@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ENUM_USER_STATUS } from '../enums/user.enum';
+import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../enums/user.enum';
+import { IsOptional, IsUUID } from 'class-validator';
 
 export class UserResponseDto {
   @ApiProperty({
@@ -10,13 +11,27 @@ export class UserResponseDto {
   id: string;
 
   @ApiProperty({
-    example: 'john_doe',
-    description: 'Username of user',
+    example: 'abc@example.com',
+    description: 'Phone',
+    required: false,
   })
-  username: string;
+  phone?: string;
+
+  @ApiProperty({
+    example: 'abc@example.com',
+    description: 'Email',
+  })
+  email: string;
 
   @Exclude()
   password: string;
+
+  @ApiProperty({
+    example: ENUM_USER_ROLE.USER,
+    enum: ENUM_USER_ROLE,
+    description: 'User role',
+  })
+  role: ENUM_USER_ROLE;
 
   @ApiProperty({
     example: ENUM_USER_STATUS.ACTIVE,
@@ -25,17 +40,20 @@ export class UserResponseDto {
   })
   status: ENUM_USER_STATUS;
 
-  @Exclude()
-  @ApiProperty({
-    example: new Date(),
-    description: 'Last login date',
-  })
-  lastLogin: Date;
-
   @ApiProperty({
     example: new Date(),
     description: 'User registation date',
   })
+  @ApiProperty({ example: 'd8c8fca1-4a00-4c1d-b60a-9fd2b4c31212' })
+  @IsOptional()
+  @IsUUID()
+  createBy?: string;
+
+  @ApiProperty({ example: 'd8c8fca1-4a00-4c1d-b60a-9fd2b4c31212' })
+  @IsOptional()
+  @IsUUID()
+  updatedBy?: string;
+
   @Exclude()
   createdAt: Date;
 

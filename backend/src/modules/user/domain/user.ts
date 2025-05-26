@@ -1,29 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import {
-  ENUM_USER_GENDER,
-  ENUM_USER_STATUS,
-  ENUM_USER_TYPE,
-} from '../enums/user.enum';
+import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../enums/user.enum';
 
 /* Define system data, seperate with database */
 export class User {
   @ApiProperty({ type: String, example: '1' })
-  _id: string;
+  id: string;
 
   @ApiProperty({
     type: String,
     required: true,
     example: 'Thien',
   })
-  first_name: string;
+  firstName: string;
 
   @ApiProperty({
     type: String,
     required: true,
     example: 'Nguyen Anh',
   })
-  last_name: string;
+  lastName: string;
 
   @ApiProperty({
     type: String,
@@ -43,83 +39,43 @@ export class User {
   password: string;
 
   @ApiProperty({
-    required: false,
     type: () => String,
-    example: ENUM_USER_TYPE.CUSTOMER,
-    enum: ENUM_USER_TYPE,
-  })
-  type?: ENUM_USER_TYPE;
-
-  @ApiProperty({
-    type: String,
     required: true,
-    example: 'uuid',
+    example: ENUM_USER_ROLE.USER,
+    enum: ENUM_USER_ROLE,
+    default: ENUM_USER_ROLE.USER,
   })
-  ref_id?: string;
+  role: ENUM_USER_ROLE;
 
   @ApiProperty({
     type: () => String,
     required: false,
     example: ENUM_USER_STATUS.ACTIVE,
     enum: ENUM_USER_STATUS,
+    default: ENUM_USER_STATUS.ACTIVE,
   })
   status?: ENUM_USER_STATUS;
 
-  @ApiProperty({
-    type: String,
-    required: false,
-    example: 'photo path',
-  })
-  photo?: string;
+  @ApiProperty({ type: Boolean, example: false, default: false })
+  deleted?: boolean;
 
-  @ApiProperty({
-    type: () => String,
-    required: false,
-    example: ENUM_USER_GENDER.MALE,
-    enum: ENUM_USER_GENDER,
-  })
-  gender?: ENUM_USER_GENDER;
+  @ApiProperty({ type: String, example: '1' })
+  createdBy?: string;
 
-  @ApiProperty({
-    required: false,
-    type: Date,
-    example: '2000/12/24',
-  })
-  dob?: Date;
+  @ApiProperty({ type: String, example: '1' })
+  updatedBy?: string;
 
-  @ApiProperty({
-    required: false,
-    type: Date,
-    example: '123 Pham Văn Đồng',
-  })
-  address?: string;
-
-  @ApiProperty({
-    required: false,
-    type: Date,
-    example: 'Phường 10',
-  })
-  ward?: string;
-
-  @ApiProperty({
-    required: false,
-    type: Date,
-    example: 'Bình Thạnh',
-  })
-  district?: string;
-
-  @ApiProperty({
-    required: false,
-    type: Date,
-    example: 'Hồ Chí Minh',
-  })
-  city?: string;
+  @ApiProperty({ type: String, example: '1' })
+  deletedBy?: string;
 
   @ApiProperty()
   createdAt?: Date;
 
   @ApiProperty()
   updatedAt?: Date;
+
+  @ApiProperty()
+  deletedAt?: Date;
 
   constructor(partial?: Partial<User>) {
     Object.assign(this, partial);

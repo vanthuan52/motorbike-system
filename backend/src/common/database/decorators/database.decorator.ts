@@ -1,5 +1,6 @@
 import { Type } from '@nestjs/common';
 import {
+  InjectConnection,
   InjectModel,
   Prop,
   PropOptions,
@@ -14,7 +15,7 @@ import { IDatabaseQueryContainOptions } from '../interfaces/database.interface';
 export function InjectDatabaseConnection(
   connectionName?: string,
 ): ParameterDecorator {
-  return InjectDatabaseConnection(connectionName ?? DATABASE_CONNECTION_NAME);
+  return InjectConnection(connectionName ?? DATABASE_CONNECTION_NAME);
 }
 
 export function InjectDatabaseModel(
@@ -27,9 +28,9 @@ export function InjectDatabaseModel(
 export function DatabaseEntity(options?: SchemaOptions): ClassDecorator {
   return Schema({
     ...options,
-    timestamps: options?.timestamps ?? {
-      createdAt: true,
-      updatedAt: true,
+    timestamps: {
+      createdAt: 'createdAt',
+      updatedAt: 'updatedAt',
     },
   });
 }

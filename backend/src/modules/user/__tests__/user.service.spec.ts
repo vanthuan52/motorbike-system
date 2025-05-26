@@ -1,28 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { UserService } from '../user.service';
-import { UserRepository } from '../user.repository';
+import { UserRepository } from '../repository/user.repository';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { User } from '../domain/user';
 import { ENUM_USER_STATUS, ENUM_USER_TYPE } from '../enums/user.enum';
+import { mockUser } from '../mocks/users';
 
 describe('UserService (Mongoose)', () => {
   let userService: UserService;
   let userRepository: UserRepository;
-
-  const mockUser: User = new User({
-    _id: '507f1f77bcf86cd799439011',
-    first_name: 'John',
-    last_name: 'Doe',
-    email: 'john@example.com',
-    password: 'hashedpassword',
-    type: ENUM_USER_TYPE.CUSTOMER,
-    ref_id: 'uuid-ref',
-    status: ENUM_USER_STATUS.ACTIVE,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
 
   const mockUserRepository = {
     create: jest.fn(),
