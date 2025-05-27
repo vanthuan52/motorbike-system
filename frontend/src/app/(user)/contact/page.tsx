@@ -1,7 +1,7 @@
 import React from "react";
 
-import ContactMainSection from "@/components/contact-page/contact-main-section";
-import ContactMapSection from "@/components/contact-page/contact-map-section";
+import ContactMainSection from "@/app/(user)/contact/_components/contact-main-section";
+import ContactMapSection from "@/app/(user)/contact/_components/contact-map-section";
 
 function ContactPage() {
   return (

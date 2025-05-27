@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import TechnicianDashboardPage from "@/components/technician/Dashboard/Dashboard";
+import TechnicianDashboardPage from "@/app/(technician)/technician/dashboard/_components/Dashboard";
 
 export const metadata: Metadata = {
   title: "Technician Dashboard | Motorbike",

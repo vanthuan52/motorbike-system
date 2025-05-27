@@ -1,8 +1,8 @@
 "use client";
 
-import UserSidebar from "@/components/user/user-sidebar/UserSidebar";
 import { mockVehicles } from "@/data/MyVehicle";
-import MyVehicle from "@/components/user/user-my-vehicle/MyVehicle";
+import UserSidebar from "../../ho-so/_components/UserSidebar";
+import MyVehicle from "./MyVehicle";
 
 export default function MyVehicleLayout() {
   return (

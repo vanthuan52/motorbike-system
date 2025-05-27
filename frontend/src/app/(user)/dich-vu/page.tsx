@@ -1,11 +1,11 @@
 import BookingSuggest from "@/components/home-page/booking-suggest";
-import CustomerReviews from "@/components/service-page/customer-review";
-import FAQSection from "@/components/service-page/faqs-section";
-import PriceTable from "@/components/service-page/price-table";
-import ServiceCombos from "@/components/service-page/service-combos";
-import ServiceHero from "@/components/service-page/service-hero";
-import ServiceList from "@/components/service-page/service-list";
-import ServiceProcess from "@/components/service-page/service-process";
+import CustomerReviews from "@/app/(user)/dich-vu/_components/customer-review";
+import FAQSection from "@/app/(user)/dich-vu/_components/faqs-section";
+import PriceTable from "@/app/(user)/dich-vu/_components/price-table";
+import ServiceCombos from "@/app/(user)/dich-vu/_components/service-combos";
+import ServiceHero from "@/app/(user)/dich-vu/_components/service-hero";
+import ServiceList from "@/app/(user)/dich-vu/_components/service-list";
+import ServiceProcess from "@/app/(user)/dich-vu/_components/service-process";
 
 export default function Page() {
   return (

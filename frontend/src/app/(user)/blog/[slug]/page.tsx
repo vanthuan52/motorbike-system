@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { blogs } from "@/data/BlogsData";
 import { comments as allComments } from "@/data/CommentsData";
-import BlogContent from "@/components/blog-details-page/BlogContent";
-import TableOfContents from "@/components/blog-details-page/TableOfContents";
-import SharingContent from "@/components/blog-details-page/SharingContent";
-import RelatedBlogs from "@/components/blog-details-page/RelatedBlogs";
-import CommentsList from "@/components/blog-details-page/CommentsList";
-import CommentForm from "@/components/blog-details-page/CommentForm";
+import BlogContent from "@/app/(user)/blog/[slug]/_components/BlogContent";
+import TableOfContents from "@/app/(user)/blog/[slug]/_components/TableOfContents";
+import SharingContent from "@/app/(user)/blog/[slug]/_components/SharingContent";
+import RelatedBlogs from "@/app/(user)/blog/[slug]/_components/RelatedBlogs";
+import CommentsList from "@/app/(user)/blog/[slug]/_components/CommentsList";
+import CommentForm from "@/app/(user)/blog/[slug]/_components/CommentForm";
 
 export default function BlogDetails() {
   const { slug } = useParams();
