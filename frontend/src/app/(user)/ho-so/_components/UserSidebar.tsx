@@ -17,20 +17,20 @@ import Image from "next/image";
 
 const customerSidebarItems = [
   { label: "Trang chủ", icon: Home, href: "/" },
-  { label: "Hồ sơ cá nhân", icon: User, href: "/user/profile" },
-  { label: "Lịch hẹn bảo dưỡng", icon: CalendarClock, href: "/user/schedule" },
-  { label: "Xe của tôi", icon: Car, href: "/user/my-vehicle" },
+  { label: "Hồ sơ cá nhân", icon: User, href: "/ho-so" },
+  { label: "Lịch hẹn bảo dưỡng", icon: CalendarClock, href: "/schedule" },
+  { label: "Xe của tôi", icon: Car, href: "/quan-ly-phuong-tien" },
   {
     label: "Lịch sử bảo dưỡng",
     icon: History,
-    href: "/user/maintenance-history",
+    href: "/maintenance-history",
   },
-  { label: "Cài đặt tài khoản", icon: Settings, href: "/user/settings" },
-  { label: "Hỗ trợ", icon: MessageSquare, href: "/user/support" },
-  { label: "Đăng xuất", icon: LogOut, href: "/user/logout" },
+  { label: "Cài đặt tài khoản", icon: Settings, href: "/settings" },
+  { label: "Hỗ trợ", icon: MessageSquare, href: "/support" },
+  { label: "Đăng xuất", icon: LogOut, href: "/logout" },
 ];
 
-export default function CustomerSidebar() {
+export default function UserSidebar() {
   const pathname = usePathname();
 
   const user = {

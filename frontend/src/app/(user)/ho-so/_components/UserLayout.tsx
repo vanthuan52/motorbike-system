@@ -1,8 +1,8 @@
 "use client";
 
-import UserSidebar from "@/components/user/user-sidebar/UserSidebar";
-import UserProfile from "@/components/user/user-profile/UserProfile";
 import { mockUser } from "@/data/UserProfile";
+import UserProfile from "./userProfile";
+import UserSidebar from "./UserSidebar";
 
 export default function UserLayout() {
   return (

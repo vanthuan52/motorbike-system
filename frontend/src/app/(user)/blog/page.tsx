@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { blogs } from "@/data/BlogsData";
-import BlogHeader from "@/components/blog-page/BlogHeader";
-import BlogFilter from "@/components/blog-page/BlogFilter";
-import BlogCard from "@/components/blog-page/BlogCard";
+import BlogHeader from "@/app/(user)/blog/_components/BlogHeader";
+import BlogFilter from "@/app/(user)/blog/_components/BlogFilter";
+import BlogCard from "@/app/(user)/blog/_components/BlogCard";
 
 export default function BlogPage() {
   const [selectedTag, setSelectedTag] = useState("Tất cả");

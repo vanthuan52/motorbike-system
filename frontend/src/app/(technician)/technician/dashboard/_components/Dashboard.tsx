@@ -2,11 +2,11 @@
 
 import { Wrench, CalendarCheck, Clock } from "lucide-react";
 import dynamic from "next/dynamic";
-import StatCard from "@/components/technician/Dashboard/StatCard";
-import TaskList from "@/components/technician/Dashboard/TaskList";
+import StatCard from "@/app/(technician)/technician/dashboard/_components/StatCard";
+import TaskList from "@/app/(technician)/technician/dashboard/_components/TaskList";
 
 const DashboardChart = dynamic(
-  () => import("@/components/technician/Dashboard/DashboardChart"),
+  () => import("@/app/(technician)/technician/dashboard/_components/DashboardChart"),
   { ssr: false }
 );
 

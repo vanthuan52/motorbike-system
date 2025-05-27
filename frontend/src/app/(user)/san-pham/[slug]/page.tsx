@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import ProductDetailsPage from '@/components/product-details-page/ProductDetailsPage'
+import ProductDetailsPage from '@/app/(user)/san-pham/[slug]/_components/ProductDetailsPage'
 
 export const metadata: Metadata = {
     title: "Chi tiết sản phẩm",

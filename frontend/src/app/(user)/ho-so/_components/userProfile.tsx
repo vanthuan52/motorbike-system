@@ -1,11 +1,11 @@
 "use client";
-import Banner from "@/components/user/user-profile/Banner";
-import AvatarSection from "@/components/user/user-profile/AvatarSection";
-import UserInfo from "@/components/user/user-profile/UserInfo";
-import ProfileCompletion from "@/components/user/user-profile/ProfileCompletion";
-import ProfileUpdateForm from "@/components/user/user-profile/ProfileUpdateForm";
 
 import { UserType } from "@/types/User";
+import Banner from "./banner";
+import AvatarSection from "./avatarSection";
+import UserInfo from "./userInfo";
+import ProfileUpdateForm from "./profileUpdateForm";
+import ProfileCompletion from "./profileCompletion";
 
 interface UserProfileProps {
   user: UserType;
