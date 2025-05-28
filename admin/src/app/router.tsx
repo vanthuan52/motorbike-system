@@ -35,7 +35,12 @@ const CustomerPage = lazy(
 const CustomerDetailPage = lazy(
   () => import("@/modules/customer-management/pages/customer-detail-page")
 );
-
+const InvoicesPage = lazy(
+  () => import("@/modules/invoice-management/pages/invoices-page")
+);
+const InvoicesDetailPage = lazy(
+  () => import("@/modules/invoice-management/pages/invoices-details-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -57,6 +62,11 @@ export const router = createBrowserRouter([
       {
         path: `${ROUTER_PATH.CUSTOMERS}/:id`,
         element: <CustomerDetailPage />,
+      },
+      { path: ROUTER_PATH.INVOICES, element: <InvoicesPage /> },
+      {
+        path: ROUTER_PATH.INVOICES_DETAILS,
+        element: <InvoicesDetailPage />,
       },
     ],
   },

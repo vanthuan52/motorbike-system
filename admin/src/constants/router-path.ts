@@ -14,4 +14,6 @@ export const ROUTER_PATH = {
   EMPLOYEES: "/employees",
   EMPLOYEES_DETAILS: "/employees/employee-details/:id",
   POSTS: "/posts",
+  INVOICES: "/invoices",
+  INVOICES_DETAILS: "/invoices/:id",
 };

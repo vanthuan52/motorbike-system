@@ -5,7 +5,7 @@ import { IoCarSportSharp } from "react-icons/io5";
 import { RxDashboard, RxHome } from "react-icons/rx";
 import { BiCategoryAlt, BiMessageDetail } from "react-icons/bi";
 import { TbSettingsCode } from "react-icons/tb";
-import { LiaUsersCogSolid } from "react-icons/lia";
+import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { FiEdit2, FiUsers } from "react-icons/fi";
@@ -80,6 +80,12 @@ const menuItems = [
     href: ROUTER_PATH.POSTS,
     label: "Quản lý bài viết",
   },
+  {
+    key: "invoices",
+    icon: <LiaFileInvoiceSolid />,
+    href: ROUTER_PATH.INVOICES,
+    label: "Quản lý hóa đơn",
+  }
 ];
 
 const DesktopSidebar = () => {
