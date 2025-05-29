@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../enums/user.enum';
+import { ENUM_USER_STATUS } from '../enums/user.enum';
 import { IsOptional, IsUUID } from 'class-validator';
 
 export class UserResponseDto {
@@ -27,11 +27,9 @@ export class UserResponseDto {
   password: string;
 
   @ApiProperty({
-    example: ENUM_USER_ROLE.USER,
-    enum: ENUM_USER_ROLE,
     description: 'User role',
   })
-  role: ENUM_USER_ROLE;
+  role: string;
 
   @ApiProperty({
     example: ENUM_USER_STATUS.ACTIVE,

@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
+import { faker } from '@faker-js/faker';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '@/common/pagination/enums/pagination.enum';
-import { faker } from '@faker-js/faker/.';
 import { ResponseDto, ResponseMetadataDto } from './response.dto';
 import { PAGINATION_DEFAULT_AVAILABLE_ORDER_DIRECTION } from '@/common/pagination/constants/pagination.constant';
 
