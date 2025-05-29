@@ -9,7 +9,7 @@ import { HelperDateService } from '@/common/helper/services/helper.date.service'
 import { ENUM_HELPER_DATE_DAY_OF } from '@/common/helper/enums/helper.enum';
 import { ResponsePagingMetadataPaginationRequestDto } from '@/common/response/dtos/response.paging.dto';
 
-export function PaginationFilterDateBetwwenPipe(
+export function PaginationFilterDateBetweenPipe(
   fieldStart: string,
   fieldEnd: string,
   options?: IPaginationFilterDateBetweenOptions,

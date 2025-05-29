@@ -1,14 +1,13 @@
 import { User } from '../domain/user';
 import { UserEntity } from '../entities/user.entity';
-import { ENUM_USER_STATUS, ENUM_USER_ROLE } from '../enums/user.enum';
+import { ENUM_USER_STATUS } from '../enums/user.enum';
 
 export class UserMapper {
   static toDomain(entity: UserEntity): User {
     const user = new User();
 
     user.id = entity._id;
-    user.firstName = entity.firstName;
-    user.lastName = entity.lastName;
+    user.name = entity.name;
     user.phone = entity.phone;
     user.email = entity.email;
     user.password = entity.password;
@@ -28,12 +27,11 @@ export class UserMapper {
     const entity = new UserEntity();
 
     entity._id = domain.id;
-    entity.firstName = domain.firstName;
-    entity.lastName = domain.lastName;
+    entity.name = domain.name;
     entity.phone = domain.phone;
     entity.email = domain.email;
     entity.password = domain.password;
-    entity.role = domain.role as ENUM_USER_ROLE;
+    entity.role = domain.role;
     entity.status = domain.status as ENUM_USER_STATUS;
     entity.deleted = domain.deleted || false;
     entity.createdBy = domain.createdBy;

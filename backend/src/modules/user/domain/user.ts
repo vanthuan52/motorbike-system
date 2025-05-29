@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ENUM_USER_ROLE, ENUM_USER_STATUS } from '../enums/user.enum';
+import { ENUM_USER_STATUS } from '../enums/user.enum';
 
 /* Define system data, seperate with database */
 export class User {
@@ -12,14 +12,7 @@ export class User {
     required: true,
     example: 'Thien',
   })
-  firstName: string;
-
-  @ApiProperty({
-    type: String,
-    required: true,
-    example: 'Nguyen Anh',
-  })
-  lastName: string;
+  name: string;
 
   @ApiProperty({
     type: String,
@@ -41,11 +34,8 @@ export class User {
   @ApiProperty({
     type: () => String,
     required: true,
-    example: ENUM_USER_ROLE.USER,
-    enum: ENUM_USER_ROLE,
-    default: ENUM_USER_ROLE.USER,
   })
-  role: ENUM_USER_ROLE;
+  role: string;
 
   @ApiProperty({
     type: () => String,
