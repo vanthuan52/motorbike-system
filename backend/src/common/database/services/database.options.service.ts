@@ -15,8 +15,6 @@ export class DatabaseOptionService implements IDatabaseOptionService {
     const env = this.configService.get<string>('app.env');
     const name = this.configService.get<string>('app.name');
 
-    // If a full URI is provided, we can connect directly to the database
-    // In this case, host, port, username, and password are not required.
     const uri = this.configService.get<string>('database.uri');
 
     const dbName = this.configService.get<string>('database.name');
@@ -61,6 +59,8 @@ export class DatabaseOptionService implements IDatabaseOptionService {
       ...poolOptions,
     };
 
+    // If a full URI is provided, we can connect directly to the database
+    // In this case, host, port, username, and password are not required.
     if (uri) {
       mongooseOptions.uri = uri;
       this.logger.log(`Using database URI: ${uri}`);
