@@ -1,9 +1,11 @@
+import { Request } from 'express';
 import { ResponsePagingMetadataPaginationRequestDto } from '@/common/response/dtos/response.paging.dto';
 import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.interface';
 import { IUserDoc } from '@/modules/user/interfaces/user.interface';
-import { Request } from 'express';
 
-export interface IRequestApp<T = IAuthJwtAccessTokenPayload> extends Request {
+export interface IRequestApp<
+  T extends Express.User = IAuthJwtAccessTokenPayload,
+> extends Request {
   // apiKey?: ApiKeyPayloadDto;
   user?: T;
 

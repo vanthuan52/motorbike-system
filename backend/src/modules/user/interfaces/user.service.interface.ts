@@ -1,7 +1,9 @@
+import { PipelineStage } from 'mongoose';
 import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
+  IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
@@ -37,6 +39,15 @@ export interface IUserService {
     find?: Record<string, any>,
     options?: IDatabaseGetTotalOptions,
   ): Promise<number>;
+
+  createRawQueryFindAllWithRoleAndCountry(
+    find?: Record<string, any>,
+  ): PipelineStage[];
+
+  findAllWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllAggregateOptions,
+  ): Promise<IUserEntity[]>;
 
   findOneById(_id: string, options?: IDatabaseOptions): Promise<UserDoc | null>;
 

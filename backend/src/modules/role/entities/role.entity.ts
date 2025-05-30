@@ -11,7 +11,7 @@ import {
 } from './role.permission.entity';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 
-export const RoleTableName = 'Roles';
+export const RoleTableName = 'roles';
 
 @DatabaseEntity({ collection: RoleTableName })
 export class RoleEntity extends DatabaseEntityBase {
