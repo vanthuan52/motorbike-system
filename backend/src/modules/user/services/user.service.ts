@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
+import { Document, PipelineStage } from 'mongoose';
 import { IUserService } from '../interfaces/user.service.interface';
 import { UserRepository } from '../repository/user.repository';
 import { HelperDateService } from '@/common/helper/services/helper.date.service';
@@ -10,6 +10,7 @@ import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
+  IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
@@ -37,6 +38,7 @@ import { UserShortResponseDto } from '../dtos/response/user.short.response.dto';
 import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
 import { UserCensorResponseDto } from '../dtos/response/user.censor.response.dto';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
+import { RoleTableName } from '@/modules/role/entities/role.entity';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -63,6 +65,38 @@ export class UserService implements IUserService {
     options?: IDatabaseGetTotalOptions,
   ): Promise<number> {
     return this.userRepository.getTotal(find, options);
+  }
+
+  createRawQueryFindAllWithRoleAndCountry(
+    find?: Record<string, any>,
+  ): PipelineStage[] {
+    return [
+      {
+        $lookup: {
+          from: RoleTableName,
+          as: 'role',
+          foreignField: '_id',
+          localField: 'role',
+        },
+      },
+      {
+        $unwind: '$role',
+      },
+      {
+        // @ts-ignore
+        $match: find,
+      },
+    ];
+  }
+
+  async findAllWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllAggregateOptions,
+  ): Promise<IUserEntity[]> {
+    const pipeline: PipelineStage[] =
+      this.createRawQueryFindAllWithRoleAndCountry(find);
+
+    return this.userRepository.findAllAggregate<IUserEntity>(pipeline, options);
   }
 
   async findOneById(

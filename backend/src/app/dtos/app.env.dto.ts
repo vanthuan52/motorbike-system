@@ -59,7 +59,7 @@ export class AppEnvDto {
   @IsBoolean()
   @IsNotEmpty()
   @Type(() => Boolean)
-  DEBUG_INTO_FILE;
+  DEBUG_INTO_FILE: boolean;
 
   @IsBoolean()
   @IsNotEmpty()

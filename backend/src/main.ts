@@ -6,7 +6,7 @@ import { plainToInstance } from 'class-transformer';
 import { useContainer, validate } from 'class-validator';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import compression from 'compression';
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
 import { AllConfigType } from './config/config.type';
 import { GlobalExceptionFilter } from './app/filters/global-exception.filter';
 import { CustomValidationPipe } from './app/pipes/custom-validation.pipe';
@@ -23,9 +23,6 @@ async function bootstrap() {
   const configService = app.get(ConfigService<AllConfigType>);
   const httpAdapterHost = app.get(HttpAdapterHost);
 
-  const databaseUri: string = configService.getOrThrow<string>('database.uri', {
-    infer: true,
-  });
   const env: string = configService.getOrThrow<string>('app.env', {
     infer: true,
   });
