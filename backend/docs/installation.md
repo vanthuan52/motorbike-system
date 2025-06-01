@@ -4,6 +4,26 @@ This guide covers both standard installation and Docker-based setup of the NestJ
 
 # Table of Contents
 
+- [Overview](#overview)
+- [Table of Contents](#table-of-contents)
+  - [Standard Installation](#standard-installation)
+    - [Prerequisites](#prerequisites)
+    - [Clone Repo](#clone-repo)
+    - [Install Dependencies](#install-dependencies)
+    - [Generate Keys](#generate-keys)
+    - [Create Environment](#create-environment)
+    - [Database Migration and Seed](#database-migration-and-seed)
+    - [Template Migration](#template-migration)
+    - [Run Project](#run-project)
+  - [Installation with Docker](#installation-with-docker)
+    - [Prerequisites](#prerequisites-1)
+    - [Setup Steps](#setup-steps)
+    - [Start the Application](#start-the-application)
+    - [Accessing the Application](#accessing-the-application)
+    - [Database Migration and Seed](#database-migration-and-seed-1)
+    - [Viewing Logs](#viewing-logs)
+    - [Stopping the Application](#stopping-the-application)
+
 ## Standard Installation
 
 ### Prerequisites
