@@ -11,6 +11,7 @@ import { AiOutlineSchedule } from "react-icons/ai";
 import { FiEdit2, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
+import { FaUserShield } from "react-icons/fa";
 
 const menuItems = [
   {
@@ -85,6 +86,25 @@ const menuItems = [
     icon: <LiaFileInvoiceSolid />,
     href: ROUTER_PATH.INVOICES,
     label: "Quản lý hóa đơn",
+  },
+  {
+    key: "roles-permissions",
+    icon: <FaUserShield />,
+    label: "Phân quyền",
+    children: [
+      {
+        key: "roles-permissions",
+        icon: <FiUsers />,
+        href: ROUTER_PATH.ROLES,
+        label: "Vai trò",
+      },
+      {
+        key: "roles-permissions",
+        icon: <TbSettingsCode />,
+        href: ROUTER_PATH.PERMISSIONS,
+        label: "Quyền",
+      },
+    ]
   }
 ];
 

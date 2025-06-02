@@ -44,15 +44,21 @@ const Table = <T extends object>(props: TableProps<T>) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [props.dataSource]);
-
+  const paginatedData =
+    props.dataSource?.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize
+    ) ?? [];
   return (
     <div className="h-full overflow-x-auto">
       <AntdTable<T>
         {...props}
+        dataSource={paginatedData}
         columns={centeredColumns}
         pagination={false}
         className="custom-table"
         scroll={{ x: "max-content" }}
+        rowKey={props.rowKey}
       />
       <TablePagination
         currentPage={currentPage}

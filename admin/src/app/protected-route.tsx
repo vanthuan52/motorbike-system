@@ -9,6 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  console.log(isAuthenticated);
 
   return isAuthenticated ? (
     <>{children}</>
