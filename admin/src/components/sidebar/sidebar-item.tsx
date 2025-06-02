@@ -38,30 +38,57 @@ export default function SidebarItem({
     }
   }, [pathname, setSidebarCollapsed]);
   return (
-    <div
-      className={clsx(
-        "flex items-center justify-between p-2 rounded-md cursor-pointer transition-all",
-        isActive ? "bg-gray-200" : "hover:bg-gray-100"
-      )}
-      onClick={() => hasChildren && toggleOpen(item.key)}
-    >
-      <a
-        className="flex items-center gap-3"
-        href={item.href}
-        data-tooltip-id={item.href}
-        data-tooltip-content={item.label}
-      >
-        <span className="text-xl font-medium">{item.icon}</span>
-        {!collapsed && (
-          <span className="text-sm font-medium">{item.label}</span>
+    <>
+      <div
+        className={clsx(
+          "flex items-center justify-between p-2 rounded-md cursor-pointer transition-all",
+          isActive ? "bg-gray-200" : "hover:bg-gray-100"
         )}
-      </a>
-      <Tooltip id={item.href} />
-      {!collapsed && hasChildren && (
-        <span className="text-xs">
-          {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
-        </span>
+        onClick={() => hasChildren && toggleOpen(item.key)}
+      >
+        <a
+          className="flex items-center gap-3"
+          href={item.href}
+          data-tooltip-id={item.href}
+          data-tooltip-content={item.label}
+        >
+          <span className="text-xl font-medium">{item.icon}</span>
+          {!collapsed && (
+            <span className="text-sm font-medium">{item.label}</span>
+          )}
+        </a>
+        <Tooltip id={item.href} style={{
+          zIndex: 3000
+        }} />
+        {!collapsed && hasChildren && (
+          <span className="text-xs">
+            {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
+          </span>
+        )}
+      </div>
+      {hasChildren && isOpen && !collapsed && (
+        <div className="ml-6 mt-1 space-y-1">
+          {item.children!.map((child) => (
+            <a
+              key={child.key}
+              href={child.href}
+              className={clsx(
+                "flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 text-sm",
+                child.href === pathname && "bg-gray-200 font-semibold"
+              )}
+              data-tooltip-id={child.href}
+              data-tooltip-content={child.label}
+            >
+              {child.icon && (
+                <span className="text-lg">{child.icon}</span>
+              )}
+              {child.label}
+              <Tooltip id={child.href} />
+            </a>
+          ))}
+        </div>
       )}
-    </div>
+    </>
+
   );
 }

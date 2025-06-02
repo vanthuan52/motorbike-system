@@ -17,7 +17,7 @@ export default function MobileLayout() {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
-      <main className="flex-1 overflow-y-auto py-5 scrollbar-hidden">
+      <main className="flex-1 overflow-y-auto py-5 pb-14 scrollbar-hidden">
         <Outlet />
       </main>
       <BottomNav />

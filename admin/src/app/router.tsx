@@ -41,6 +41,14 @@ const InvoicesPage = lazy(
 const InvoicesDetailPage = lazy(
   () => import("@/modules/invoice-management/pages/invoices-details-page")
 );
+const RolesPage = lazy(
+  () =>
+    import("@/modules/roles-permissions/pages/roles-page")
+)
+const PermissionsPage = lazy(
+  () =>
+    import("@/modules/roles-permissions/pages/permissions-page")
+)
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -67,6 +75,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.INVOICES_DETAILS,
         element: <InvoicesDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.ROLES,
+        element: (
+          <RolesPage />
+        ),
+      },
+      {
+        path: ROUTER_PATH.PERMISSIONS,
+        element: (
+          <PermissionsPage />
+        ),
       },
     ],
   },

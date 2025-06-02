@@ -5,7 +5,7 @@ import { RxHome } from "react-icons/rx";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { FiEdit2, FiUsers } from "react-icons/fi";
-import { LiaUsersCogSolid } from "react-icons/lia";
+import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { TbSettingsCode } from "react-icons/tb";
 import { BiCategoryAlt, BiX } from "react-icons/bi";
 import { IoCarSportSharp } from "react-icons/io5";
@@ -66,6 +66,24 @@ const links = [
     label: "Bài viết",
     icon: <FiEdit2 size={24} />,
     href: ROUTER_PATH.POSTS,
+  },
+  {
+    key: "invoices",
+    icon: <LiaFileInvoiceSolid size={24} />,
+    href: ROUTER_PATH.INVOICES,
+    label: "Quản lý hóa đơn",
+  },
+  {
+    key: "roles-permissions",
+    icon: <FiUsers size={24} />,
+    href: ROUTER_PATH.ROLES,
+    label: "Vai trò",
+  },
+  {
+    key: "roles-permissions",
+    icon: <TbSettingsCode size={24} />,
+    href: ROUTER_PATH.PERMISSIONS,
+    label: "Quyền",
   },
 ];
 

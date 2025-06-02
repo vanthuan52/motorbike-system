@@ -16,4 +16,6 @@ export const ROUTER_PATH = {
   POSTS: "/posts",
   INVOICES: "/invoices",
   INVOICES_DETAILS: "/invoices/:id",
+  ROLES: "/roles",
+  PERMISSIONS: "/permissions",
 };
