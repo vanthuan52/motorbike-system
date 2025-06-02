@@ -1,4 +1,3 @@
-// components/AuthCard.tsx
 import React from "react";
 
 const AuthCard: React.FC = () => {

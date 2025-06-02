@@ -1,12 +1,13 @@
 "use client";
+
 import React, { useState } from "react";
+import Link from "next/link";
+import { toast } from "react-toastify";
 import InputField from "@/components/ui/InputField";
 import { validateLogin } from "@/utils/validation/Login";
 import { LoginType } from "@/types/Login";
-import AuthCard from "@/components/Login/AuthCard";
+import AuthCard from "./AuthCard";
 import Button from "@/components/ui/Button/Button";
-import Link from "next/link";
-import { toast } from "react-toastify";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState<LoginType>({
