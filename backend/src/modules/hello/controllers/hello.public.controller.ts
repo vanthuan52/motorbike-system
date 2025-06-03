@@ -1,0 +1,33 @@
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { HelloDoc } from '../docs/hello.doc';
+import { HelperDateService } from '@/common/helper/services/helper.date.service';
+import { Response } from '@/common/response/decorators/response.decorator';
+import { IResponse } from '@/common/response/interfaces/response.interface';
+import { HelloResponseDto } from '../dtos/response/hello.response.dto';
+
+@ApiTags('moduke.public.hello')
+@Controller({
+  version: VERSION_NEUTRAL,
+  path: '/hello',
+})
+export class HelloPublicController {
+  constructor(private readonly helperDateService: HelperDateService) {}
+
+  @HelloDoc()
+  @Response('hello.hello', {
+    cached: true,
+  })
+  @Get('/')
+  async HelloDoc(): Promise<IResponse<HelloResponseDto>> {
+    const today = this.helperDateService.create();
+
+    return {
+      data: {
+        date: today,
+        format: this.helperDateService.formatToIso(today),
+        timestamp: this.helperDateService.getTimestamp(today),
+      },
+    };
+  }
+}

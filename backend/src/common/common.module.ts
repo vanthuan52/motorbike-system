@@ -1,8 +1,7 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
-import { LoggerMiddleware } from '@/app/middleware/logger.middleware';
 import { PaginationModule } from './pagination/pagination.module';
 import { PolicyModule } from '@/modules/policy/policy.module';
 import { HelperModule } from './helper/helper.module';
@@ -53,8 +52,4 @@ import { RequestModule } from './request/request.module';
     PaginationModule.forRoot(),
   ],
 })
-export class CommonModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*path');
-  }
-}
+export class CommonModule {}

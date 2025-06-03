@@ -62,6 +62,10 @@ export class HelperDateService implements IHelperDateService {
     return DateTime.fromJSDate(date).setZone(this.defTz).toRFC2822();
   }
 
+  formatToIso(date: Date): string {
+    return DateTime.fromJSDate(date).setZone(this.defTz).toISO();
+  }
+
   formatToIsoDate(date: Date): string {
     return DateTime.fromJSDate(date).setZone(this.defTz).toISODate();
   }

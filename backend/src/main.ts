@@ -8,10 +8,8 @@ import { Logger as PinoLogger } from 'nestjs-pino';
 import compression from 'compression';
 import { AppModule } from './app/app.module';
 import { AllConfigType } from './config/config.type';
-import { GlobalExceptionFilter } from './app/filters/global-exception.filter';
-import { CustomValidationPipe } from './app/pipes/custom-validation.pipe';
+
 import swaggerInit from '@/swagger';
-import { AllExceptionsFilter } from './app/filters/all-exeptions.filter';
 import { MessageService } from './common/message/services/message.service';
 import { AppEnvDto } from './app/dtos/app.env.dto';
 
@@ -21,7 +19,6 @@ async function bootstrap() {
     bufferLogs: false,
   });
   const configService = app.get(ConfigService<AllConfigType>);
-  const httpAdapterHost = app.get(HttpAdapterHost);
 
   const env: string = configService.getOrThrow<string>('app.env', {
     infer: true,
@@ -62,14 +59,8 @@ async function bootstrap() {
   // Compression
   app.use(compression());
 
-  app.enableShutdownHooks();
+  // Global
   app.setGlobalPrefix(globalPrefix);
-
-  app.useGlobalFilters(
-    new GlobalExceptionFilter(),
-    new AllExceptionsFilter(httpAdapterHost),
-  );
-  app.useGlobalPipes(new CustomValidationPipe());
 
   // For Custom Validation
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
