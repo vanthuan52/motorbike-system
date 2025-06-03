@@ -109,8 +109,12 @@ export class DatabaseRepositoryBase<
     find: RootFilterQuery<Entity>,
     options?: IDatabaseFindOneOptions,
   ): Promise<T | null> {
-    if (!find || typeof find !== 'object' || Object.keys(find).length === 0) {
-      throw new Error('Find criteria must be a non-empty object');
+    // if (!find || typeof find !== 'object' || Object.keys(find).length === 0) {
+    //   throw new Error('Find criteria must be a non-empty object');
+    // }
+
+    if (!find || typeof find !== 'object') {
+      throw new Error('Find criteria must be an object');
     }
 
     const repository = this._repository.findOne<T>({

@@ -11,7 +11,7 @@ import { RoleService } from '../services/role.service';
 export class RoleParsePipe implements PipeTransform {
   constructor(private readonly roleService: RoleService) {}
 
-  async transform(value: any, metadata: ArgumentMetadata) {
+  async transform(value: any) {
     const role = await this.roleService.findOneById(value);
 
     if (!role) {
