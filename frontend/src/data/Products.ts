@@ -1,4 +1,4 @@
-import { Product } from "@/types/users/products/product"
+import { Product } from "@/types/users/products/product";
 
 export const mockProducts: Product[] = [
   {
@@ -6,15 +6,20 @@ export const mockProducts: Product[] = [
     sku: "SKU-001",
     name: "Nhông sên dĩa DID",
     brand_id: "brand-1",
-    description: "Nhiệt luyện và cường lực dập: Đặc điểm nổi bật của D.I.D mà không nhà sản xuất xích khác nào theo kịp đó là công nghệ nhiệt luyện và khả năng kết nối các mắt xích với cường lực gần như tuyệt đối bằng nhau. D.I.D đưa ra thị trường những sợi xích có trọng lượng nhẹ, uyển chuyển nhưng rất mạnh mẽ, độ bền vô địch, chịu được tải trọng lớn. Chống mài mòn : Có nghĩa là xích giữ ít ma sát và tăng độ bền chống lại hao mòn khi vận hành. So với các loại xích khách. Độ chịu giãn: Được kiểm tra bằng cách liên tục tăng dung lượng tải khi sợi sên đã chịu ảnh hưởng sau khi vận hành.",
+    description:
+      "Nhiệt luyện và cường lực dập: Đặc điểm nổi bật của D.I.D mà không nhà sản xuất xích khác nào theo kịp đó là công nghệ nhiệt luyện và khả năng kết nối các mắt xích với cường lực gần như tuyệt đối bằng nhau. D.I.D đưa ra thị trường những sợi xích có trọng lượng nhẹ, uyển chuyển nhưng rất mạnh mẽ, độ bền vô địch, chịu được tải trọng lớn. Chống mài mòn : Có nghĩa là xích giữ ít ma sát và tăng độ bền chống lại hao mòn khi vận hành. So với các loại xích khách. Độ chịu giãn: Được kiểm tra bằng cách liên tục tăng dung lượng tải khi sợi sên đã chịu ảnh hưởng sau khi vận hành.",
     price: 25000,
-    image: ["/images/products/nhong-sen-dia.jpg", "/images/products/nhong-sen-dia-2.jpg"],
+    image: [
+      "/images/products/nhong-sen-dia.jpg",
+      "/images/products/nhong-sen-dia-2.jpg",
+    ],
     stock: 12,
     colors: ["black", "gray"],
     category_id: "vp-1",
+    category_slug: "nhong-sen-dia",
     status: "in_stock",
     origin: "Nhật Bản",
-    slug: "nhong-sen-dia-did"
+    slug: "nhong-sen-dia-did",
   },
   {
     id: "2",
@@ -23,13 +28,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-2",
     description: "Bugi NGK cho hiệu suất đánh lửa tối ưu.",
     price: 18000,
-    image: ["/images/products/bugi-ngk.jpg", "/images/products/bugi-ngk-2.webp"],
+    image: [
+      "/images/products/bugi-ngk.jpg",
+      "/images/products/bugi-ngk-2.webp",
+    ],
     stock: 30,
     colors: ["white"],
     category_id: "vp-2",
+    category_slug: "bugi",
     status: "in_stock",
     origin: "Nhật Bản",
-    slug: "bugi-ngk"
+    slug: "bugi-ngk",
   },
   {
     id: "3",
@@ -38,13 +47,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-3",
     description: "Lốp xe máy Michelin bám đường tốt.",
     price: 48000,
-    image: ["/images/products/lop-michelin.jpg", "/images/products/lop-michelin-2.jpg"],
+    image: [
+      "/images/products/lop-michelin.jpg",
+      "/images/products/lop-michelin-2.jpg",
+    ],
     stock: 0,
     colors: ["black"],
     category_id: "vp-3",
+    category_slug: "lop-xe",
     status: "out_of_stock",
     origin: "Pháp",
-    slug: "lop-michelin-city-grip"
+    slug: "lop-michelin-city-grip",
   },
   {
     id: "4",
@@ -53,13 +66,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-4",
     description: "Dầu nhớt Motul bảo vệ động cơ tối ưu.",
     price: 32000,
-    image: ["/images/products/nhot-motul.png", "/images/products/nhot-motul-2.jpg"],
+    image: [
+      "/images/products/nhot-motul.png",
+      "/images/products/nhot-motul-2.jpg",
+    ],
     stock: 15,
     colors: ["red"],
     category_id: "vp-4",
+    category_slug: "dau-nhot",
     status: "in_stock",
     origin: "Pháp",
-    slug: "dau-nhot-motul-3100"
+    slug: "dau-nhot-motul-3100",
   },
   {
     id: "5",
@@ -72,9 +89,10 @@ export const mockProducts: Product[] = [
     stock: 0,
     colors: ["green", "black"],
     category_id: "vp-5",
+    category_slug: "ac-quy",
     status: "out_of_stock",
     origin: "Thái Lan",
-    slug: "acquy-gs"
+    slug: "acquy-gs",
   },
   {
     id: "6",
@@ -83,13 +101,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-1",
     description: "Phanh đĩa Nissin an toàn, tin cậy.",
     price: 35000,
-    image: ["/images/products/phanh-dia-nissin.webp", "/images/products/phanh-dia-nissin-2.jpg"],
+    image: [
+      "/images/products/phanh-dia-nissin.webp",
+      "/images/products/phanh-dia-nissin-2.jpg",
+    ],
     stock: 8,
     colors: ["gray"],
     category_id: "vp-1",
+    category_slug: "phanh",
     status: "in_stock",
     origin: "Nhật Bản",
-    slug: "phanh-dia-nissin"
+    slug: "phanh-dia-nissin",
   },
   {
     id: "7",
@@ -98,13 +120,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-2",
     description: "Lọc gió K&N tăng hiệu suất động cơ.",
     price: 22000,
-    image: ["/images/products/loc-gio-kn.jpg", "/images/products/loc-gio-kn-2.jpg"],
+    image: [
+      "/images/products/loc-gio-kn.jpg",
+      "/images/products/loc-gio-kn-2.jpg",
+    ],
     stock: 5,
     colors: ["red", "black"],
     category_id: "vp-2",
+    category_slug: "loc-gio",
     status: "in_stock",
     origin: "Mỹ",
-    slug: "loc-gio-kn"
+    slug: "loc-gio-kn",
   },
   {
     id: "8",
@@ -113,13 +139,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-3",
     description: "Đèn pha LED Osram siêu sáng.",
     price: 27000,
-    image: ["/images/products/den-led-osram.webp", "/images/products/den-led-osram.png"],
+    image: [
+      "/images/products/den-led-osram.webp",
+      "/images/products/den-led-osram.png",
+    ],
     stock: 0,
     colors: ["white"],
     category_id: "vp-3",
+    category_slug: "den-pha",
     status: "out_of_stock",
     origin: "Đức",
-    slug: "den-led-osram"
+    slug: "den-led-osram",
   },
   {
     id: "9",
@@ -128,13 +158,18 @@ export const mockProducts: Product[] = [
     brand_id: "brand-4",
     description: "Gương chiếu hậu Rizoma thời trang.",
     price: 15000,
-    image: ["/images/products/guong-rizoma.jpg", "/images/products/guong-rizoma-22.jpg", "/images/products/guong-rizoma-3.jpg"],
+    image: [
+      "/images/products/guong-rizoma.jpg",
+      "/images/products/guong-rizoma-22.jpg",
+      "/images/products/guong-rizoma-3.jpg",
+    ],
     stock: 20,
     colors: ["black", "gray"],
     category_id: "vp-4",
+    category_slug: "guong",
     status: "in_stock",
     origin: "Ý",
-    slug: "guong-chieu-hau-rizoma"
+    slug: "guong-chieu-hau-rizoma",
   },
   {
     id: "10",
@@ -143,12 +178,17 @@ export const mockProducts: Product[] = [
     brand_id: "brand-5",
     description: "Ống xả Akrapovic tăng công suất động cơ.",
     price: 60000,
-    image: ["/images/products/ong-xa-akrapovic-2.jpg", "/images/products/ong-xa-akrapovic.webp", "/images/products/ong-xa-akrapovic-3.webp"],
+    image: [
+      "/images/products/ong-xa-akrapovic-2.jpg",
+      "/images/products/ong-xa-akrapovic.webp",
+      "/images/products/ong-xa-akrapovic-3.webp",
+    ],
     stock: 3,
     colors: ["gray"],
     category_id: "vp-5",
+    category_slug: "ong-xa",
     status: "in_stock",
     origin: "Slovenia",
-    slug: "ong-xa-akrapovic"
+    slug: "ong-xa-akrapovic",
   },
-]
+];

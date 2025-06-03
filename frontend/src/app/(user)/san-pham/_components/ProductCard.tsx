@@ -37,7 +37,8 @@ export default function ProductCard({ product, layout = "grid" }: ProductCardPro
                 " bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300 ease-in-out p-4 gap-4 relative"
             }
             style={{
-                minHeight: layout === "list" ? 180 : undefined,
+                minHeight: layout === "list" ? 180 : 200,
+                maxHeight: 300
             }}
         >
             {product.status && (

@@ -8,4 +8,5 @@ export interface VehiclePart {
   quantity: number;
   status: boolean;
   images?: string[];
+  slug: string;
 }
