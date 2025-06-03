@@ -13,6 +13,10 @@ const NAV_ITEMS = [
   { href: ROUTER_PATH.ABOUT, label: "Giới thiệu" },
   { href: ROUTER_PATH.BLOG, label: "Blog" },
   { href: ROUTER_PATH.CONTACT, label: "Liên hệ" },
+  {
+    href: ROUTER_PATH.CATEGORY,
+    label: "Danh mục",
+  }
 ];
 
 export default function Header() {
@@ -88,9 +92,8 @@ export default function Header() {
         </div>
         {/* Mobile Menu Panel */}
         <div
-          className={`fixed top-0 right-0 h-full w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
-            isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`fixed top-0 right-0 h-full w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           <div className="flex flex-col h-full p-4 space-y-4 mt-7">
             <div className="flex justify-between items-center mb-2">
