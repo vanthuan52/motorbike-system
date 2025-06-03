@@ -99,7 +99,7 @@ export default function ProductCard({ product, layout = "grid" }: ProductCardPro
                     <Eye size={16} style={{ color: "#111827" }} />
                 </button>
             </div>
-            <CustomLink href={`/products/${product.slug}`}>
+            <CustomLink href={`/san-pham/${product.slug}`}>
                 <div className={layout === "list" ? "flex-1 flex flex-col justify-between h-full transition-all duration-300" : "transition-all duration-300"}>
                     <div>
                         <h4 className="text-base font-semibold text-gray-900 line-clamp-2">{product.name}</h4>
