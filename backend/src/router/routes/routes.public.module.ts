@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { RoleAdminController } from '@/modules/role/controllers/role.admin.controller';
+import { HelloPublicController } from '@/modules/hello/controllers/hello.public.controller';
 import { RoleModule } from '@/modules/role/role.module';
 
 @Module({
-  controllers: [RoleAdminController],
+  controllers: [HelloPublicController],
   providers: [],
   exports: [],
   imports: [RoleModule],
 })
-export class RoutesAdminModule {}
+export class RoutesPublicModule {}

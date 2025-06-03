@@ -50,7 +50,7 @@ export default registerAs<AppConfig>('app', () => {
     name: process.env.APP_NAME ?? 'nestjs-mongodb-motorbike',
     timezone: process.env.APP_TIMEZONE || 'Asia/Ho_Chi_Minh',
     env: process.env.NODE_ENV || 'development',
-    globalPrefix: process.env.GLOBAL_PREFIX || 'api',
+    globalPrefix: process.env.GLOBAL_PREFIX || '/api',
     versioning: {
       enable: process.env.URL_VERSIONING_ENABLE === 'true',
       prefix: 'v',
