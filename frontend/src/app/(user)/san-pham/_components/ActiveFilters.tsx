@@ -47,20 +47,22 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
                 </span>
             ))}
             {/* Category filter */}
-            {filters.categories.map(catId => {
-                const cat = mockDataTableVehiclePart.find(c => c.id === catId)
+            {filters.categories.map(slug => {
+                const cat = mockDataTableVehiclePart.find(c => c.slug === slug)
+                console.log(cat);
+
                 return (
                     <span
-                        key={catId}
+                        key={slug}
                         className="flex items-center bg-gray-200 text-black rounded-[30px] px-4 py-1 text-sm"
                     >
-                        {cat ? cat.name : catId}
+                        {cat ? cat.name : slug}
                         <button
                             className="ml-2 cursor-pointer text-lg font-bold text-gray-500 hover:text-red-500"
                             onClick={() =>
                                 setFilters(prev => ({
                                     ...prev,
-                                    categories: prev.categories.filter(id => id !== catId)
+                                    categories: prev.categories.filter(slug => slug !== slug)
                                 }))
                             }
                             aria-label="Xóa filter"

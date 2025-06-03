@@ -1,13 +1,14 @@
-import { Metadata } from "next";
+"use client";
 import ProductListPage from "./_components/ProductListPage";
-export const metadata: Metadata = {
-  title: "Sản phẩm",
-  description: "Sản phẩm của chúng tôi",
-};
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
 export default function page() {
   return (
-    <div className="w-full">
-      <ProductListPage />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="w-full">
+        <ProductListPage />
+      </div>
+    </QueryClientProvider>
   );
 }
