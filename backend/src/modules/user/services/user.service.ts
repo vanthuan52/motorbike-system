@@ -7,6 +7,7 @@ import { UserRepository } from '../repository/user.repository';
 import { HelperDateService } from '@/common/helper/services/helper.date.service';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import {
+  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
@@ -67,9 +68,7 @@ export class UserService implements IUserService {
     return this.userRepository.getTotal(find, options);
   }
 
-  createRawQueryFindAllWithRoleAndCountry(
-    find?: Record<string, any>,
-  ): PipelineStage[] {
+  createRawQueryFindAllWithRole(find?: Record<string, any>): PipelineStage[] {
     return [
       {
         $lookup: {
@@ -93,10 +92,18 @@ export class UserService implements IUserService {
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<IUserEntity[]> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithRoleAndCountry(find);
+    const pipeline: PipelineStage[] = this.createRawQueryFindAllWithRole(find);
 
     return this.userRepository.findAllAggregate<IUserEntity>(pipeline, options);
+  }
+
+  async getTotalWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseAggregateOptions,
+  ): Promise<number> {
+    const pipeline: PipelineStage[] = this.createRawQueryFindAllWithRole(find);
+
+    return this.userRepository.getTotalAggregate(pipeline, options);
   }
 
   async findOneById(
@@ -132,6 +139,41 @@ export class UserService implements IUserService {
     return this.userRepository.findOne<UserDoc>(
       DatabaseHelperQueryContain('email', email, { fullWord: true }),
       options,
+    );
+  }
+
+  async findOneWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<IUserDoc | null> {
+    const actualFind = find ?? {};
+
+    return this.userRepository.findOne<IUserDoc>(actualFind, {
+      ...options,
+      join: true,
+    });
+  }
+
+  async findOneWithRoleById(
+    _id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<IUserDoc | null> {
+    return this.userRepository.findOneById<IUserDoc>(_id, {
+      ...options,
+      join: true,
+    });
+  }
+
+  async findAllActiveWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllOptions,
+  ): Promise<IUserDoc[]> {
+    return this.userRepository.findAll<IUserDoc>(
+      { ...find, status: ENUM_USER_STATUS.ACTIVE },
+      {
+        ...options,
+        join: this.userRepository._joinActive,
+      },
     );
   }
 

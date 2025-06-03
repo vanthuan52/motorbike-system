@@ -1,5 +1,6 @@
 import { PipelineStage } from 'mongoose';
 import {
+  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
@@ -40,14 +41,17 @@ export interface IUserService {
     options?: IDatabaseGetTotalOptions,
   ): Promise<number>;
 
-  createRawQueryFindAllWithRoleAndCountry(
-    find?: Record<string, any>,
-  ): PipelineStage[];
+  createRawQueryFindAllWithRole(find?: Record<string, any>): PipelineStage[];
 
   findAllWithRole(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<IUserEntity[]>;
+
+  getTotalWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseAggregateOptions,
+  ): Promise<number>;
 
   findOneById(_id: string, options?: IDatabaseOptions): Promise<UserDoc | null>;
 
@@ -65,6 +69,21 @@ export interface IUserService {
     options?: IDatabaseFindOneOptions,
   ): Promise<UserDoc | null>;
 
+  findOneWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<IUserDoc | null>;
+
+  findOneWithRoleById(
+    _id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<IUserDoc | null>;
+
+  findAllActiveWithRole(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllOptions,
+  ): Promise<IUserDoc[]>;
+
   findAllActive(
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,
@@ -79,6 +98,7 @@ export interface IUserService {
     _id: string,
     options?: IDatabaseOptions,
   ): Promise<IUserDoc | null>;
+
   findOneActiveByEmail(
     email: string,
     options?: IDatabaseOptions,

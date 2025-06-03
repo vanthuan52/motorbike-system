@@ -1,8 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RoleService } from '../services/role.service';
-import { RoleAdminListDoc } from '../docs/role.admin.doc';
-import { ResponsePaging } from '@/common/response/decorators/response.decorator';
+import {
+  RoleAdminCreateDoc,
+  RoleAdminGetDoc,
+  RoleAdminListDoc,
+} from '../docs/role.admin.doc';
+import {
+  Response,
+  ResponsePaging,
+} from '@/common/response/decorators/response.decorator';
 import {
   ENUM_POLICY_ACTION,
   ENUM_POLICY_ROLE_TYPE,
@@ -26,9 +40,18 @@ import {
   ROLE_DEFAULT_POLICY_ROLE_TYPE,
 } from '../constants/role.list.constant';
 import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { IResponsePaging } from '@/common/response/interfaces/response.interface';
+import {
+  IResponse,
+  IResponsePaging,
+} from '@/common/response/interfaces/response.interface';
 import { RoleListResponseDto } from '../dtos/response/role.list.response.dto';
 import { RoleDoc } from '../entities/role.entity';
+import { RoleParsePipe } from '../pipes/role.parse.pipe';
+import { RoleGetResponseDto } from '../dtos/response/role.get.response.dto';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { RoleCreateRequestDto } from '../dtos/request/role.create.request.dto';
+import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { ENUM_ROLE_STATUS_CODE_ERROR } from '../enums/role.status-code.enum';
 
 @ApiTags('modules.admin.role')
 @Controller({
@@ -84,6 +107,57 @@ export class RoleAdminController {
     return {
       _pagination: { total, totalPage },
       data: mapRoles,
+    };
+  }
+
+  @RoleAdminGetDoc()
+  @Response('role.get')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.ROLE,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/get/:role')
+  async get(
+    @Param('role', RequestRequiredPipe, RoleParsePipe) role: RoleDoc,
+  ): Promise<IResponse<RoleGetResponseDto>> {
+    const mapRole: RoleGetResponseDto = this.roleService.mapGet(role);
+
+    return { data: mapRole };
+  }
+
+  @RoleAdminCreateDoc()
+  @Response('role.create')
+  // @PolicyAbilityProtected({
+  //   subject: ENUM_POLICY_SUBJECT.ROLE,
+  //   action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+  // })
+  // @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  // @UserProtected()
+  // @AuthJwtAccessProtected()
+  @Post('/create')
+  async create(
+    @Body() { name, description, type, permissions }: RoleCreateRequestDto,
+  ): Promise<IResponse<DatabaseIdResponseDto>> {
+    const exist: boolean = await this.roleService.existByName(name);
+    if (exist) {
+      throw new ConflictException({
+        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.EXIST,
+        message: 'role.error.exist',
+      });
+    }
+
+    const create = await this.roleService.create({
+      name,
+      description,
+      type,
+      permissions,
+    });
+
+    return {
+      data: { _id: create.id },
     };
   }
 }

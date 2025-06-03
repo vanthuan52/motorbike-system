@@ -6,7 +6,7 @@ import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 export interface IRequestApp<
   T extends Express.User = IAuthJwtAccessTokenPayload,
 > extends Request {
-  // apiKey?: ApiKeyPayloadDto;
+  //apiKey?: ApiKeyPayloadDto;
   user?: T;
 
   __user?: IUserDoc;
