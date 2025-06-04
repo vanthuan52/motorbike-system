@@ -1,4 +1,4 @@
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   UserDocParamsId,
   UserDocQueryRoleType,
@@ -14,6 +14,9 @@ import {
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
+import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
+import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 
 export function UserAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -47,6 +50,23 @@ export function UserAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<UserProfileResponseDto>('user.get', {
       dto: UserProfileResponseDto,
+    }),
+  );
+}
+
+export function UserAdminCreateDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'create a user',
+    }),
+    DocRequest({
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserCreateRequestDto,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<DatabaseIdResponseDto>('user.create', {
+      httpStatus: HttpStatus.CREATED,
+      dto: DatabaseIdResponseDto,
     }),
   );
 }

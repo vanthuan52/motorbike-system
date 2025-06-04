@@ -108,14 +108,14 @@ export class UserService implements IUserService {
 
   async findOneById(
     _id: string,
-    options?: IDatabaseOptions,
+    options?: IDatabaseFindOneOptions,
   ): Promise<UserDoc | null> {
     return this.userRepository.findOneById<UserDoc>(_id, options);
   }
 
   async findOne(
     find: Record<string, any>,
-    options?: IDatabaseOptions,
+    options?: IDatabaseFindOneOptions,
   ): Promise<UserDoc | null> {
     return this.userRepository.findOne<UserDoc>(find, options);
   }
