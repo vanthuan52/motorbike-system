@@ -9,6 +9,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { Error as MongooseError } from 'mongoose';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { HelperDateService } from '@/common/helper/services/helper.date.service';
 import { MessageService } from '@/common/message/services/message.service';
@@ -42,6 +43,64 @@ export class AppGeneralFilter implements ExceptionFilter {
       const statusHttp = exception.getStatus();
 
       httpAdapter.reply(ctx.getResponse(), response, statusHttp);
+      return;
+    }
+
+    if (exception instanceof MongooseError.ValidationError) {
+      this.logger.log('Caught a Mongoose ValidationError');
+
+      const statusHttp = HttpStatus.BAD_REQUEST;
+      const statusCode = HttpStatus.BAD_REQUEST;
+
+      const messagePath = `http.${statusHttp}`;
+
+      const errors = Object.keys(exception.errors).map((key) => {
+        const error = exception.errors[key];
+
+        return {
+          property: error.path,
+          constraints: {
+            [error.kind]: error.message,
+          },
+        };
+      });
+
+      const today = this.helperDateService.create();
+      const xLanguage: string =
+        request.__language ??
+        this.configService.get<ENUM_MESSAGE_LANGUAGE>('message.language');
+      const xTimestamp = this.helperDateService.getTimestamp(today);
+      const xTimezone = this.helperDateService.getZone(today);
+      const xVersion =
+        request.__version ??
+        this.configService.get<string>('app.versioning.version');
+
+      const metadata: ResponseMetadataDto = {
+        language: xLanguage,
+        timestamp: xTimestamp,
+        timezone: xTimezone,
+        path: request.path,
+        version: xVersion,
+      };
+
+      const message: string = this.messageService.setMessage(messagePath, {
+        customLanguage: xLanguage,
+      });
+
+      const responseBody: IAppException = {
+        statusCode,
+        message,
+        errors,
+        _metadata: metadata,
+      };
+
+      response
+        .setHeader('x-custom-lang', xLanguage)
+        .setHeader('x-timestamp', xTimestamp)
+        .setHeader('x-timezone', xTimezone)
+        .setHeader('x-version', xVersion)
+        .status(statusHttp)
+        .json(responseBody);
 
       return;
     }

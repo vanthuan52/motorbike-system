@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   HttpStatus,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
@@ -26,6 +27,7 @@ import { IResponse } from '../interfaces/response.interface';
 export class ResponseInterceptor
   implements NestInterceptor<Promise<ResponseDto>>
 {
+  private readonly logger = new Logger(ResponseInterceptor.name);
   constructor(
     private readonly reflector: Reflector,
     private readonly messageService: MessageService,
@@ -111,6 +113,7 @@ export class ResponseInterceptor
           response.setHeader('x-version', xVersion);
           response.status(httpStatus);
 
+          this.logger.log('YOu go hereeee');
           return {
             statusCode,
             message,
