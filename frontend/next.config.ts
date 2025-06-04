@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
             : process.env.NEXT_PUBLIC_SERVER_PORT,
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "randomuser.me",
+        pathname: "/**",
+      },
     ],
   },
   devIndicators: false,

@@ -1,3 +1,7 @@
+"use client";
+import { motion } from "framer-motion";
+import Image from "next/image";
+
 interface Testimonial {
   name: string;
   content: string;
@@ -33,29 +37,59 @@ const testimonials: Testimonial[] = [
 
 export default function TestimonialsSection() {
   return (
-    <section className="bg-white py-20">
-      <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+    <section className='bg-white py-20'>
+      <div className='container mx-auto px-4'>
+        <motion.h2
+          className='text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12'
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           Khách hàng nói gì về chúng tôi?
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        </motion.h2>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8'>
           {testimonials.map((t, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className="bg-gray-50 border border-gray-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+              className='bg-gray-50 border border-gray-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center'
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ amount: 0.2 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.1 * idx,
+                ease: "easeOut",
+              }}
             >
-              <div className="flex items-center gap-4 mb-4">
-                <img
-                  src={t.avatar}
-                  alt={t.name}
-                  className="w-14 h-14 rounded-full object-cover "
-                />
-                <h3 className="text-lg font-semibold text-gray-800">
+              <div className='flex flex-col items-center mb-4'>
+                <div className='relative w-14 h-14 mb-2'>
+                  <Image
+                    src={t.avatar}
+                    alt={t.name}
+                    className='rounded-full object-cover'
+                    fill
+                    sizes='56px'
+                  />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-800'>
                   {t.name}
                 </h3>
               </div>
-              <p className="text-gray-600 text-sm">{t.content}</p>
-            </div>
+              <motion.p
+                className='text-gray-600 text-sm '
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ amount: 0.2 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.18 + 0.1 * idx,
+                  ease: "easeOut",
+                }}
+              >
+                {t.content}
+              </motion.p>
+            </motion.div>
           ))}
         </div>
       </div>

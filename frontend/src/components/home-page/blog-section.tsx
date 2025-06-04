@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 interface BlogPost {
   title: string;
   excerpt: string;
@@ -33,30 +35,67 @@ const blogPosts: BlogPost[] = [
 
 export default function BlogSection() {
   return (
-    <section className="bg-gray-100 py-20">
-      <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12">
+    <section className='bg-gray-100 py-20'>
+      <div className='container'>
+        <motion.h2
+          className='text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12'
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           Kiến thức bảo dưỡng hữu ích
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        </motion.h2>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
           {blogPosts.map((post, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition duration-300"
+              className='bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition duration-300'
             >
-              <img
+              <motion.img
                 src={post.image}
                 alt={post.title}
-                className="w-full h-48 object-cover"
+                className='w-full h-48 object-cover'
+                initial={{ scale: 0.92, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ amount: 0.3 }}
+                whileHover={{ scale: 1.05 }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.08 * index,
+                  ease: "easeOut",
+                }}
               />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <div className='p-6'>
+                <motion.h3
+                  className='text-xl font-semibold text-gray-900 mb-2'
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ amount: 0.3 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.14 + 0.08 * index,
+                    ease: "easeOut",
+                  }}
+                >
                   {post.title}
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">{post.excerpt}</p>
+                </motion.h3>
+                <motion.p
+                  className='text-sm text-gray-600 mb-4'
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ amount: 0.3 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.18 + 0.08 * index,
+                    ease: "easeOut",
+                  }}
+                >
+                  {post.excerpt}
+                </motion.p>
                 <a
                   href={post.slug}
-                  className="text-blue-600 font-medium hover:underline"
+                  className='text-blue-600 font-medium hover:underline'
                 >
                   Xem thêm →
                 </a>
