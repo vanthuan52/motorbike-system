@@ -10,6 +10,19 @@ import { RequestValidationException } from './exceptions/request.validation.exce
 import { RequestTimeoutInterceptor } from './interceptors/request.timeout.interceptor';
 import { IsPasswordConstraint } from './validations/request.is-password.validation';
 import { IsCustomEmailContraint } from './validations/request.custom-email.validation';
+import {
+  DateGreaterThanConstraint,
+  DateGreaterThanEqualConstraint,
+} from './validations/request.date-greater-than.validation';
+import { DateLessThanEqualConstraint } from './validations/request.date-less-than.validation';
+import {
+  GreaterThanEqualOtherPropertyConstraint,
+  GreaterThanOtherPropertyConstraint,
+} from './validations/request.greater-than-other-property.validation';
+import {
+  LessThanEqualOtherPropertyConstraint,
+  LessThanOtherPropertyConstraint,
+} from './validations/request.less-than-other-property.validation';
 
 @Module({})
 export class RequestModule {
@@ -34,8 +47,15 @@ export class RequestModule {
                 new RequestValidationException(errors),
             }),
         },
+        DateGreaterThanEqualConstraint,
+        DateGreaterThanConstraint,
+        DateLessThanEqualConstraint,
+        GreaterThanEqualOtherPropertyConstraint,
+        GreaterThanOtherPropertyConstraint,
         IsPasswordConstraint,
         IsCustomEmailContraint,
+        LessThanEqualOtherPropertyConstraint,
+        LessThanOtherPropertyConstraint,
       ],
     };
   }

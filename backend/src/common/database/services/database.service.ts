@@ -116,4 +116,37 @@ export class DatabaseService implements IDatabaseService {
       },
     };
   }
+
+  filterLte<T = string>(
+    field: string,
+    filterValue: T,
+  ): Record<string, { $lte: T }> {
+    return {
+      [field]: {
+        $lte: filterValue,
+      },
+    };
+  }
+
+  filterGte<T = string>(
+    field: string,
+    filterValue: T,
+  ): Record<string, { $gte: T }> {
+    return {
+      [field]: {
+        $gte: filterValue,
+      },
+    };
+  }
+
+  aggregateIncrement(
+    field: string,
+    incrementValue: number,
+  ): Record<string, any> {
+    return {
+      $inc: {
+        [field]: incrementValue,
+      },
+    };
+  }
 }

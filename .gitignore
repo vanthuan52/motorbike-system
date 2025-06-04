@@ -2,6 +2,8 @@
 /dist
 /node_modules
 /build
+/backend/src/metadata.ts
+/backend/data/swagger.json
 
 # Logs
 logs

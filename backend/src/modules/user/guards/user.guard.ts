@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserService } from '../services/user.service';
@@ -14,6 +15,7 @@ import { ENUM_ROLE_STATUS_CODE_ERROR } from '@/modules/role/enums/role.status-co
 
 @Injectable()
 export class UserGuard implements CanActivate {
+  private readonly logger = new Logger(UserGuard.name);
   constructor(
     private readonly reflector: Reflector,
     private readonly userService: UserService,
@@ -30,12 +32,15 @@ export class UserGuard implements CanActivate {
 
     // Using Optional Chaining to fix error on
     // Property 'user' does not exist on type 'IAuthJwtAccessTokenPayload | undefined'
+    // const { user } = request.user;
     const user = request.user?.user ?? 'user-id-not-found';
+    this.logger.log(`user: ${user}`);
 
     const userWithRole: IUserDoc | null =
       await this.userService.findOneWithRoleById(user);
 
     if (!userWithRole) {
+      this.logger.log(`user not found`);
       throw new ForbiddenException({
         statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'user.error.notFound',
