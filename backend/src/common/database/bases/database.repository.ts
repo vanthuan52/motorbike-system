@@ -3,6 +3,7 @@ import {
   PipelineStage,
   PopulateOptions,
   RootFilterQuery,
+  Document,
   UpdateQuery,
 } from 'mongoose';
 import {

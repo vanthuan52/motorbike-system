@@ -2,16 +2,22 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Get,
   Param,
+  Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RoleService } from '../services/role.service';
 import {
   RoleAdminCreateDoc,
+  RoleAdminDeleteDoc,
   RoleAdminGetDoc,
+  RoleAdminInactiveDoc,
   RoleAdminListDoc,
+  RoleAdminUpdateDoc,
 } from '../docs/role.admin.doc';
 import {
   Response,
@@ -52,6 +58,9 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RoleCreateRequestDto } from '../dtos/request/role.create.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { ENUM_ROLE_STATUS_CODE_ERROR } from '../enums/role.status-code.enum';
+import { RoleUpdateRequestDto } from '../dtos/request/role.update.request.dto';
+import { RoleIsActivePipe } from '../pipes/role.is-active.pipe';
+import { RoleIsUsedPipe } from '../pipes/role.is-used.pipe';
 
 @ApiTags('modules.admin.role')
 @Controller({
@@ -130,13 +139,13 @@ export class RoleAdminController {
 
   @RoleAdminCreateDoc()
   @Response('role.create')
-  // @PolicyAbilityProtected({
-  //   subject: ENUM_POLICY_SUBJECT.ROLE,
-  //   action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
-  // })
-  // @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  // @UserProtected()
-  // @AuthJwtAccessProtected()
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.ROLE,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
   @Post('/create')
   async create(
     @Body() { name, description, type, permissions }: RoleCreateRequestDto,
@@ -159,5 +168,97 @@ export class RoleAdminController {
     return {
       data: { _id: create.id },
     };
+  }
+
+  @RoleAdminUpdateDoc()
+  @Response('role.update')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.ROLE,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Put('/update/:role')
+  async update(
+    @Param('role', RequestRequiredPipe, RoleParsePipe) role: RoleDoc,
+    @Body() { description, permissions, type }: RoleUpdateRequestDto,
+  ): Promise<IResponse<DatabaseIdResponseDto>> {
+    await this.roleService.update(role as RoleDoc, {
+      description,
+      permissions,
+      type,
+    });
+
+    return {
+      data: { _id: role._id },
+    };
+  }
+
+  @RoleAdminInactiveDoc()
+  @Response('role.inactive')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.ROLE,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Patch('/update/:role/inactive')
+  async inactive(
+    @Param(
+      'role',
+      RequestRequiredPipe,
+      RoleParsePipe,
+      new RoleIsActivePipe([true]),
+    )
+    role: RoleDoc,
+  ): Promise<void> {
+    await this.roleService.inactive(role);
+
+    return;
+  }
+
+  @RoleAdminInactiveDoc()
+  @Response('role.inactive')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.ROLE,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Patch('/update/:role/active')
+  async active(
+    @Param(
+      'role',
+      RequestRequiredPipe,
+      RoleParsePipe,
+      new RoleIsActivePipe([false]),
+    )
+    role: RoleDoc,
+  ): Promise<void> {
+    await this.roleService.active(role);
+
+    return;
+  }
+
+  @RoleAdminDeleteDoc()
+  @Response('role.delete')
+  // @PolicyAbilityProtected({
+  //   subject: ENUM_POLICY_SUBJECT.ROLE,
+  //   action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.DELETE],
+  // })
+  // @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  // @UserProtected()
+  // @AuthJwtAccessProtected()
+  @Delete('/delete/:role')
+  async delete(
+    @Param('role', RequestRequiredPipe, RoleParsePipe, RoleIsUsedPipe)
+    role: RoleDoc,
+  ): Promise<void> {
+    await this.roleService.delete(role);
+
+    return;
   }
 }
