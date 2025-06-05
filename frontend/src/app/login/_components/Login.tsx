@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import InputField from "@/components/ui/InputField";
 import { validateLogin } from "@/utils/validation/Login";
 import { LoginType } from "@/types/Login";
+import AuthCard from "@/app/login/_components/AuthCard";
 import AuthCard from "./AuthCard";
 import Button from "@/components/ui/Button/Button";
 

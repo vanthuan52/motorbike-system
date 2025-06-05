@@ -20,7 +20,7 @@ export default function UserProfile({
     <>
       <Banner />
       <AvatarSection
-        photo={user.photo || "/images/avatar/default.jpg"}
+        photo={user.photo || "/images/avatar/default-avatar.jpeg"}
         firstName={user.first_name || ""}
         lastName={user.last_name || ""}
       />

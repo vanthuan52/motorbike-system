@@ -20,9 +20,9 @@ export const mockVehicles: Vehicle[] = [
     vehicle_model: "Air Blade",
     color: "Đỏ",
     engine_number: "ENG123456",
-    chassis_number: "CHS987654",
+    chassis_number: "CHH987654",
     vehicle_type_id: "vt-001",
-    image_file_name: "/images/avatar/avatar1.jpeg",
+    image_file_name: "",
   },
   {
     id: "veh-002",
@@ -33,6 +33,6 @@ export const mockVehicles: Vehicle[] = [
     engine_number: "ENG654321",
     chassis_number: "CHS123456",
     vehicle_type_id: "vt-002",
-    image_file_name: "/images/avatar/avatar1.jpeg",
+    image_file_name: "",
   },
 ];

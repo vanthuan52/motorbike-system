@@ -3,8 +3,8 @@ export interface ScheduleType {
   customer: string;
   phone: string;
   staff: { id: number; name: string } | null;
-  schedule_date: string; // ISO
-  time_slot: string; // e.g. '08:00 - 10:00'
+  schedule_date: string; 
+  time_slot: string;
   status: boolean;
 }
 

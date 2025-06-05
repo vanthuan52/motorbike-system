@@ -1,0 +1,36 @@
+import {MaintenanceSchedule} from "../types/types"
+
+export const MaintenanceScheduleMocks: MaintenanceSchedule[] = [
+  {
+    id: 1,
+    first_name: "Nguyễn",
+    last_name: "An",
+    email: "an.nguyen@example.com",
+    phone_number: "0123456789",
+    vehicle_type: "Xe ga",
+    vehicle_brand: "Honda",
+    service_type: "Bảo dưỡng",
+    vehicle_number: "29A-12345",
+    date: "2025-06-10",
+    time: "09:30",
+    address: "123 Đường A, Quận B",
+    note: "Không có",
+    status: "confirmed", 
+  },
+  {
+    id: 2,
+    first_name: "Trần",
+    last_name: "Bình",
+    email: "binh.tran@example.com",
+    phone_number: "0987654321",
+    vehicle_type: "Xe số",
+    vehicle_brand: "Yamaha",
+    service_type: "Thay dầu",
+    vehicle_number: "30B-67890",
+    date: "2025-06-11",
+    time: "14:00",
+    address: "456 Đường C, Quận D",
+    note: "Cần kiểm tra phanh",
+    status: "pending", 
+  },
+];
