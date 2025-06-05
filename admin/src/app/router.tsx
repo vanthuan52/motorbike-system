@@ -3,11 +3,13 @@ import { createBrowserRouter } from "react-router-dom";
 import { ROUTER_PATH } from "@/constants/router-path";
 import NotFoundPage from "@/pages/not-found-page";
 import AppLayout from "@/layout/app-layout";
-import ProtectedRoute from "./protected-route";
 
 const HomePage = lazy(() => import("@/pages/home-page"));
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
 const LoginPage = lazy(() => import("@/modules/auth/pages/login-page"));
+const Dashboard = lazy(
+  () => import("@/modules/dashboard/pages/dashboard")
+);
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
 );
@@ -27,6 +29,14 @@ const VehicleType = lazy(
 const VehiclePartsPage = lazy(
   () => import("@/modules/vehicle-parts/pages/vehicle-part-page")
 );
+
+const MaintenanceSchedule = lazy(
+  () => import("@/modules/maintenance-schedule/pages/maintenance-schedule")
+)
+
+const Maintenance = lazy(
+  () => import("@/modules/maintenance/pages/maintenance")
+)
 
 const CustomerPage = lazy(
   () => import("@/modules/customer-management/pages/customer-page")
@@ -59,6 +69,7 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: ROUTER_PATH.DASHBOARD, element: <Dashboard /> },
       { path: ROUTER_PATH.EMPLOYEES, element: <EmployeesPage /> },
       { path: ROUTER_PATH.EMPLOYEES_DETAILS, element: <EmployeeDetailsPage /> },
       { path: ROUTER_PATH.POSTS, element: <PostPage /> },
@@ -66,6 +77,8 @@ export const router = createBrowserRouter([
       { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
       { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
       { path: ROUTER_PATH.VEHICLE_PART, element: <VehiclePartsPage /> },
+      { path: ROUTER_PATH.MAINTENANCE_SCHEDULE, element: <MaintenanceSchedule /> },
+      { path: ROUTER_PATH.MAINTENANCE, element: <Maintenance /> },
       { path: ROUTER_PATH.CUSTOMERS, element: <CustomerPage /> },
       {
         path: `${ROUTER_PATH.CUSTOMERS}/:id`,

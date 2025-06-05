@@ -1,18 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useEffect, useState } from "react";
-import { ColumnsType } from "antd/es/table";
-import { toast } from "react-toastify";
-import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+
 import moment from "moment";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { mockDataTableMaintenance } from "@/data/TableData";
-import { MaintenanceManagementTypes } from "@/types/MaintenanceManagementTypes";
-import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
-import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
-import TableReuse from "@/components/ui/Table/Table";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { ColumnsType } from "antd/es/table";
+import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+
 import { formatVND } from "@/helpers/formatVND";
+import TableReuse from "@/components/ui/table/table";
+import { MaintenanceManagementTypes } from "@/types/maintenance";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
+import { PageHeaderReuse } from "@/components/ui/admin/PageHeaderReuse";
+
+import { mockDataTableMaintenance } from "../data/mockMaintenance";
+
 import MaintenanceModal from "./MaintenanceModal";
+
 export default function Maintenance() {
   const [dataSource, setDataSource] = useState<MaintenanceManagementTypes[]>(
     []

@@ -1,7 +1,7 @@
-import React from "react";
-import { Modal, Descriptions } from "antd";
-import type { ScheduleType } from "./data/mockSchedule";
 import moment from "moment";
+import { Modal, Descriptions } from "antd";
+
+import type { ScheduleType } from "../data/mockSchedule";
 
 interface Props {
   visible: boolean;
