@@ -1,13 +1,13 @@
 // app/dashboard/page.tsx
 "use client";
 
-import RecentOrders from "@/app/(admin)/admin/dashboard/components/RecentOrders";
-import StatCard from "@/app/(admin)/admin/dashboard/components/StatCard";
-import TechnicianList from "@/app/(admin)/admin/dashboard/components/TechnicianList";
+import RecentOrders from "./RecentOrders";
+import StatCard from "./StatCard";
+import TechnicianList from "./TechnicianList";
 import { Banknote, Newspaper, Settings } from "lucide-react";
 import dynamic from "next/dynamic";
 const DashboardChart = dynamic(
-  () => import("@/app/(admin)/admin/dashboard/components/DashboardChart"),
+  () => import("./DashboardChart"),
   {
     ssr: false,
   }

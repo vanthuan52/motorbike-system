@@ -1,16 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Button, Skeleton, message, Popconfirm, Tooltip } from "antd";
-import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
-import { mockScheduleList, ScheduleType } from "./data/mockSchedule";
+import type { ColumnsType } from "antd/es/table";
+import { useEffect, useState } from "react";
+import { Button, Skeleton, message, Popconfirm, Tooltip } from "antd";
+
+import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
+import TableReuse from "@/components/ui/table/table";
+import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
+import { PageHeaderReuse } from "@/components/ui/admin/PageHeaderReuse";
+
+import { mockScheduleList, ScheduleType } from "../data/mockSchedule";
+
 import ScheduleAssignModal from "./ScheduleAssignModal";
 import ScheduleDetailModal from "./ScheduleDetailModal";
-import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
-import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
-import TableReuse from "@/components/ui/Table/Table";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 export default function ScheduleList() {
   const [dataSource, setDataSource] = useState<ScheduleType[]>([]);

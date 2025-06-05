@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
-import { Modal, Form, Input, DatePicker, Select, message } from "antd";
-import type { Moment } from "moment";
-import type { ScheduleType } from "./data/mockSchedule";
 import moment from "moment";
+import  { useEffect } from "react";
+import type { Moment } from "moment";
+import { Modal, Form, Input, DatePicker, Select, message } from "antd";
+
+import type { ScheduleType } from "../data/mockSchedule";
 
 interface FormValues {
   customer: string;

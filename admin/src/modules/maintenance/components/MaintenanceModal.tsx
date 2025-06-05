@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
 import {
   Modal,
   Form,
@@ -10,9 +9,10 @@ import {
   message,
   InputNumber,
 } from "antd";
-import type { Moment } from "moment";
+import  { useEffect } from "react";
 import moment from "moment";
-import { MaintenanceManagementTypes } from "@/types/MaintenanceManagementTypes";
+import type { Moment } from "moment";
+import { MaintenanceManagementTypes } from "@/types/maintenance";
 
 interface FormValues {
   customer: string;
