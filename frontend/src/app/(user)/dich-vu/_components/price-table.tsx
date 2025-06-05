@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion, useAnimation, useInView } from "framer-motion";
 
 type Service = {
   name: string;
@@ -39,50 +40,132 @@ const services: Service[] = [
 
 export default function PriceTable() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setScrollDirection(currentY > lastScrollY.current ? "down" : "up");
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section className="py-16 bg-gray-100">
-      <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+    <section className='py-16 bg-gray-100'>
+      <div className='container'>
+        <h2 className='text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10'>
           Bảng giá dịch vụ
         </h2>
 
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {services.map((service, index) => (
-            <div
+            <FadeCard
               key={index}
-              className="bg-white rounded-xl shadow-md overflow-hidden transition"
-            >
-              <button
-                onClick={() => toggle(index)}
-                className="flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {service.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">{service.price}</p>
-                </div>
-                {openIndex === index ? (
-                  <ChevronUp className="w-6 h-6 text-gray-500" />
-                ) : (
-                  <ChevronDown className="w-6 h-6 text-gray-500" />
-                )}
-              </button>
-
-              {openIndex === index && (
-                <div className="px-6 pb-4 text-sm text-gray-600">
-                  {service.note}
-                </div>
-              )}
-            </div>
+              index={index}
+              service={service}
+              isOpen={openIndex === index}
+              onToggle={() => toggle(index)}
+              scrollDirection={scrollDirection}
+            />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function FadeCard({
+  service,
+  index,
+  isOpen,
+  onToggle,
+  scrollDirection,
+}: {
+  service: Service;
+  index: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  scrollDirection: "down" | "up";
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false, margin: "0px 0px -100px 0px" });
+  const controls = useAnimation();
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+          duration: 0.6,
+          delay: index * 0.1,
+          ease: "easeOut",
+        },
+      });
+    } else {
+      controls.start({
+        opacity: 0,
+        y: scrollDirection === "down" ? -30 : 30,
+        scale: 0.95,
+      });
+    }
+  }, [inView, controls, scrollDirection, index]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{
+        opacity: 0,
+        y: scrollDirection === "down" ? -30 : 30,
+        scale: 0.95,
+      }}
+      animate={controls}
+      className='bg-white rounded-xl shadow-md overflow-hidden transition'
+    >
+      <button
+        onClick={onToggle}
+        className='flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none'
+      >
+        {/* Bọc nội dung button trong motion.div để fade-in khi mở */}
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: isOpen ? 0.7 : 1 }}
+          transition={{ duration: 0.3 }}
+          className='flex justify-between items-center w-full'
+        >
+          <div>
+            <h3 className='text-lg font-semibold text-gray-800'>
+              {service.name}
+            </h3>
+            <p className='text-sm text-gray-500'>{service.price}</p>
+          </div>
+          {isOpen ? (
+            <ChevronUp className='w-6 h-6 text-gray-500' />
+          ) : (
+            <ChevronDown className='w-6 h-6 text-gray-500' />
+          )}
+        </motion.div>
+      </button>
+
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className='px-6 pb-4 text-sm text-gray-600'
+        >
+          {service.note}
+        </motion.div>
+      )}
+    </motion.div>
   );
 }
