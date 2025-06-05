@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
 import { Star, Quote } from "lucide-react";
+import Image from "next/image";
+import { motion } from "framer-motion";
 
 const certifications = [
   {
@@ -30,62 +33,98 @@ const testimonials = [
 
 const CertificationAndTestimonials = () => {
   return (
-    <section className="bg-gray-50 py-20 md:py-28">
-      <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+    <section className='bg-gray-50 py-20 md:py-28'>
+      <div className='container'>
+        <motion.h2
+          className='text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12'
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           Chứng Nhận & Đánh Giá
-        </h2>
+        </motion.h2>
 
-        <div className="grid md:grid-cols-2 gap-10 mb-20">
+        <div className='grid md:grid-cols-2 gap-10 mb-20'>
           {certifications.map((cert, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className="flex items-center gap-6 bg-white p-6 rounded-xl shadow-md"
+              className='flex items-center gap-6 bg-white p-6 rounded-xl shadow-md'
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ amount: 0.2 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.1 * idx,
+                ease: "easeOut",
+              }}
             >
-              <img
-                src={cert.image}
-                alt={cert.name}
-                className="w-16 h-16 object-contain"
-              />
+              <div className='relative w-16 h-16 flex-shrink-0'>
+                <Image
+                  src={cert.image}
+                  alt={cert.name}
+                  fill
+                  className='object-contain rounded'
+                  sizes='64px'
+                />
+              </div>
               <div>
-                <h3 className="font-semibold text-lg text-gray-800">
+                <h3 className='font-semibold text-lg text-gray-800'>
                   {cert.name}
                 </h3>
-                <p className="text-gray-600 text-sm">{cert.description}</p>
+                <p className='text-gray-600 text-sm'>{cert.description}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <h3 className="text-2xl font-semibold text-center text-gray-800 mb-8">
+        <motion.h3
+          className='text-2xl font-semibold text-center text-gray-800 mb-8'
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+        >
           Khách Hàng Nói Gì Về Chúng Tôi
-        </h3>
-        <div className="grid md:grid-cols-2 gap-10">
+        </motion.h3>
+        <div className='grid md:grid-cols-2 gap-10'>
           {testimonials.map((testi, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className="bg-white p-6 rounded-xl shadow-md flex flex-col gap-4"
+              className='bg-white p-6 rounded-xl shadow-md flex flex-col gap-4'
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ amount: 0.2 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.1 * idx,
+                ease: "easeOut",
+              }}
             >
-              <div className="flex items-center gap-4">
-                <img
-                  src={testi.avatar}
-                  alt={testi.name}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
+              <div className='flex items-center gap-4'>
+                <div className='relative w-14 h-14'>
+                  <Image
+                    src={testi.avatar}
+                    alt={testi.name}
+                    fill
+                    className='rounded-full object-cover'
+                    sizes='56px'
+                  />
+                </div>
                 <div>
-                  <p className="font-semibold text-gray-800">{testi.name}</p>
-                  <div className="flex text-yellow-400">
+                  <p className='font-semibold text-gray-800'>{testi.name}</p>
+                  <div className='flex text-yellow-400'>
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={16} fill="currentColor" />
+                      <Star key={i} size={16} fill='currentColor' />
                     ))}
                   </div>
                 </div>
               </div>
-              <div className="text-gray-600 italic flex gap-2 items-start">
-                <Quote size={18} className="text-indigo-400 mt-1" />
+              <div className='text-gray-600 italic flex gap-2 items-start'>
+                <Quote size={18} className='text-indigo-400 mt-1' />
                 <p>{testi.comment}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

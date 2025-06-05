@@ -1,5 +1,8 @@
+"use client";
 import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok } from "react-icons/fa";
 import React from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
 
 const communityActivities = [
   {
@@ -18,67 +21,81 @@ const communityActivities = [
 
 const SocialCommunitySection = () => {
   return (
-    <section className="bg-white py-20 md:py-28">
-      <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8">
+    <section className='bg-white py-20 md:py-28'>
+      <div className='container'>
+        <h2 className='text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8'>
           Theo Dõi Chúng Tôi
         </h2>
-        <div className="flex justify-center gap-6 mb-16">
+        <div className='flex justify-center gap-6 mb-16'>
           <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-blue-600 text-3xl hover:scale-110 transition-transform"
+            href='https://facebook.com'
+            target='_blank'
+            rel='noreferrer'
+            className='text-blue-600 text-3xl hover:scale-110 transition-transform'
           >
             <FaFacebookF />
           </a>
           <a
-            href="https://instagram.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-pink-500 text-3xl hover:scale-110 transition-transform"
+            href='https://instagram.com'
+            target='_blank'
+            rel='noreferrer'
+            className='text-pink-500 text-3xl hover:scale-110 transition-transform'
           >
             <FaInstagram />
           </a>
           <a
-            href="https://youtube.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-red-600 text-3xl hover:scale-110 transition-transform"
+            href='https://youtube.com'
+            target='_blank'
+            rel='noreferrer'
+            className='text-red-600 text-3xl hover:scale-110 transition-transform'
           >
             <FaYoutube />
           </a>
           <a
-            href="https://tiktok.com"
-            target="_blank"
-            rel="noreferrer"
-            className="text-black text-3xl hover:scale-110 transition-transform"
+            href='https://tiktok.com'
+            target='_blank'
+            rel='noreferrer'
+            className='text-black text-3xl hover:scale-110 transition-transform'
           >
             <FaTiktok />
           </a>
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+        <h2 className='text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12'>
           Hoạt Động Cộng Đồng
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-10'>
           {communityActivities.map((item, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className="rounded-2xl shadow-md overflow-hidden bg-gray-50 hover:shadow-xl transition-shadow"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.6,
+                delay: idx * 0.2,
+                ease: "easeOut",
+              }}
+              viewport={{ amount: 0.2 }}
+              className='rounded-2xl shadow-md overflow-hidden bg-gray-50 hover:shadow-xl transition-shadow'
             >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-52 object-cover"
-              />
-              <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2 text-gray-800">
+              console.log('motion', motion);
+              <div className='relative w-full h-48'>
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className='object-cover'
+                  sizes='100vw'
+                  priority={idx === 0}
+                />
+              </div>
+              <div className='p-5'>
+                <h3 className='text-xl font-semibold mb-2 text-gray-800'>
                   {item.title}
                 </h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
+                <p className='text-gray-600 text-sm'>{item.description}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

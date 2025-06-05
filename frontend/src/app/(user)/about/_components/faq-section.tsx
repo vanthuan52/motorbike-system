@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 
 const faqData = [
   {
@@ -34,21 +35,35 @@ const FaqSection = () => {
   };
 
   return (
-    <section className="bg-white py-20 md:py-28">
-      <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+    <section className='bg-white py-20 md:py-28'>
+      <div className='container'>
+        <motion.h2
+          className='text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12'
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ amount: 0.3 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           Câu Hỏi Thường Gặp
-        </h2>
+        </motion.h2>
 
-        <div className="space-y-6">
+        <div className='space-y-6'>
           {faqData.map((faq, index) => (
-            <div
+            <motion.div
               key={index}
-              className="border border-gray-200 rounded-xl shadow-sm"
+              className='border border-gray-200 rounded-xl shadow-sm'
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ amount: 0.2 }}
+              transition={{
+                duration: 0.6,
+                delay: 0.1 * index,
+                ease: "easeOut",
+              }}
             >
               <button
                 onClick={() => toggle(index)}
-                className="flex justify-between items-center w-full px-6 py-4 text-left text-gray-800 font-medium focus:outline-none"
+                className='flex justify-between items-center w-full px-6 py-4 text-left text-gray-800 font-medium focus:outline-none'
               >
                 {faq.question}
                 <ChevronDown
@@ -58,11 +73,16 @@ const FaqSection = () => {
                 />
               </button>
               {openIndex === index && (
-                <div className="px-6 pb-4 text-gray-600 text-sm">
+                <motion.div
+                  className='px-6 pb-4 text-gray-600 text-sm'
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
                   {faq.answer}
-                </div>
+                </motion.div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
