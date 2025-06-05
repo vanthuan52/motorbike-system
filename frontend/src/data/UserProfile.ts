@@ -9,7 +9,7 @@ export const mockUser: UserType = {
   password: null,
   type: "CUSTOMER",
   status: "ACTIVE",
-  photo: "/images/avatar/avatar1.jpeg",
+  photo: "",
   gender: "MALE",
   dob: "1990-05-10",
   address: "123 Đường Lê Lợi",

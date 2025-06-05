@@ -7,6 +7,8 @@ import { ROUTER_PATH } from "@/constant/router-path";
 import NavLink from "./NavLink";
 import TopBar from "./TopBar";
 import SearchOverlay from "./SearchOverlay";
+import UserAvatar from "./UserAvatar";
+import { mockUser } from "@/data/UserProfile";
 
 const NAV_ITEMS = [
   { href: ROUTER_PATH.SERVICES, label: "Dịch vụ" },
@@ -26,6 +28,8 @@ export default function Header() {
   const [selectedLang, setSelectedLang] = useState<"VN" | "EN">("VN");
   const pathname = usePathname();
 
+  const user = mockUser;
+  
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
@@ -66,9 +70,19 @@ export default function Header() {
         />
         {/* Nav Bar */}
         <div className="container flex items-center justify-between py-2">
-          <CustomLink href="/" className="text-xl font-bold">
-            Logo name.
-          </CustomLink>
+          <div className="flex items-center gap-4">
+            {/* Menu button on the left */}
+            <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+
+            {/* Logo */}
+            <CustomLink href="/" className="text-xl font-bold">
+              Logo name.
+            </CustomLink>
+          </div>
+
+          {/* Desktop navigation */}
           <nav className="hidden md:flex gap-6 font-medium">
             {NAV_ITEMS.map(({ href, label }) => (
               <NavLink
@@ -79,17 +93,18 @@ export default function Header() {
               />
             ))}
           </nav>
+
+          {/* Right action */}
           <div className="flex gap-4">
             <CustomLink href={ROUTER_PATH.MAINTAIN_REGISTRATION}>
               <button className="bg-black text-white font-medium px-5 py-2 rounded-md cursor-pointer">
                 Đặt lịch
               </button>
             </CustomLink>
-            <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
-            </button>
+              <UserAvatar user={user} />
           </div>
         </div>
+
         {/* Mobile Menu Panel */}
         <div
           className={`fixed top-0 right-0 h-full w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"

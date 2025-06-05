@@ -84,12 +84,13 @@ const MyVehicleModal = ({
     >
       <div className="flex flex-col md:flex-row p-6 gap-6">
         <div className="flex flex-col items-center justify-center flex-none w-full md:w-[180px]">
-          <div className="w-full max-w-[180px] h-[180px] border-2 border-dashed border-gray-300 rounded-md mb-3 flex justify-center items-center overflow-hidden bg-gray-50">
+          <div className="w-full max-w-[180px] h-[180px] border-2 border-dashed border-gray-300 rounded-md mb-3 flex justify-center items-center overflow-hidden bg-gray-50 relative">
             {imagePreview ? (
               <img
                 src={imagePreview}
                 alt="Ảnh xe"
-                className="w-full h-full object-cover"
+                style={{ objectFit: "cover" }}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (
               <span className="text-gray-400 text-center">Chưa có ảnh</span>
@@ -115,7 +116,7 @@ const MyVehicleModal = ({
         </div>
 
         <div className="flex-1">
-          <Form form={form} layout="vertical" className="max-w-full">
+          <Form  layout="vertical" className="max-w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 name="license_plate"

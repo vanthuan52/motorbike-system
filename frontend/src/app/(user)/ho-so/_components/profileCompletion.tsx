@@ -8,7 +8,7 @@ export default function ProfileCompletion({
   completionPercent,
 }: ProfileCompletionProps) {
   return (
-    <div className="mt-10 max-w-4xl mx-auto bg-white shadow rounded-lg p-6">
+    <div className="mt-10 bg-white shadow rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-4 text-violet-700">
         Tiến độ hoàn thành hồ sơ
       </h2>

@@ -5,7 +5,7 @@ import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
 import {
   PlusCircleOutlined,
   EditOutlined,
-  DeleteOutlined,
+  DeleteOutlined
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Vehicle } from "@/types/Vehicle";
@@ -13,6 +13,7 @@ import MyVehicleModal from "./MyVehicleModal";
 import { mockVehicleTypes } from "@/data/MyVehicle";
 import TableReuse from "@/components/ui/Table/Table";
 import type { ColumnsType } from "antd/es/table";
+import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 
 interface MyVehicleProps {
   vehicles: Vehicle[];
@@ -23,6 +24,7 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -73,11 +75,18 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
       title: "Ảnh xe",
       dataIndex: "image_file_name",
       render: (url: string) => (
-        <img
-          src={url}
-          alt="vehicle"
-          className="w-16 h-12 object-cover rounded-md"
-        />
+        <div
+          style={{ width: 64, height: 48, position: "relative" }}
+          className="rounded-md overflow-hidden"
+        >
+          <img
+            src={url || "/images/avatar/default-avatar-moto.webp"}
+            alt="Vehicle"
+            width={64}
+            height={48}
+            style={{ objectFit: "cover" }}
+          />
+        </div>
       ),
     },
     {
@@ -112,10 +121,7 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
       render: (_: any, record: Vehicle) => (
         <div className="flex justify-center gap-2">
           <Tooltip title="Sửa">
-            <Button
-              icon={<EditOutlined />}
-              onClick={() => handleEdit(record)}
-            />
+            <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
           </Tooltip>
           <Popconfirm
             title="Xác nhận xóa xe?"
@@ -132,20 +138,31 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
     },
   ];
 
+ 
+  const filteredVehicles = vehicleData.filter(
+    (vehicle) =>
+      vehicle.license_plate?.toLowerCase().includes(searchText.toLowerCase()) ||
+      vehicle.vehicle_model?.toLowerCase().includes(searchText.toLowerCase()) ||
+      vehicle.vehicle_type_id?.toLowerCase().includes(searchText.toLowerCase()) ||
+      vehicle.engine_number?.toLowerCase().includes(searchText.toLowerCase()) ||
+      vehicle.chassis_number?.toLowerCase().includes(searchText.toLowerCase()) ||
+      vehicle.color?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
   return (
     <div className="sm:px-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Xe của tôi</h2>
-        <Button
-          icon={<PlusCircleOutlined />}
-          type="primary"
-          onClick={handleAdd}
-        >
+        <Button icon={<PlusCircleOutlined />} type="primary" onClick={handleAdd}>
           Thêm xe
         </Button>
       </div>
 
       <div className="bg-white rounded-lg p-4 border border-gray-200">
+        <div className="mb-4">
+          <SearchInputReuse onChange={(text) => setSearchText(text)} />
+        </div>
+
         {loading ? (
           <div className="space-y-4 w-full">
             {Array.from({ length: 5 }).map((_, idx) => (
@@ -163,7 +180,7 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
           </div>
         ) : (
           <TableReuse
-            dataSource={vehicleData}
+            dataSource={filteredVehicles}
             columns={columns}
             rowKey="id"
             pagination={{ pageSize: 5 }}
