@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CacheModule, CacheOptions } from '@nestjs/cache-manager';
 import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
 import { PaginationModule } from './pagination/pagination.module';
 import { PolicyModule } from '@/modules/policy/policy.module';
@@ -35,6 +36,18 @@ import { RequestModule } from './request/request.module';
       inject: [DatabaseOptionService],
       useFactory: (databaseService: DatabaseOptionService) =>
         databaseService.createOptions(),
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: async (
+        configService: ConfigService,
+      ): Promise<CacheOptions> => ({
+        max: configService.get<number>('redis.cached.max'),
+        ttl: configService.get<number>('redis.cached.ttl'),
+        stores: [],
+      }),
+      inject: [ConfigService],
     }),
     PinoLoggerModule.forRootAsync({
       imports: [LoggerOptionModule],

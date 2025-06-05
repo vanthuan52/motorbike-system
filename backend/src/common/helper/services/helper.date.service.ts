@@ -51,7 +51,10 @@ export class HelperDateService implements IHelperDateService {
   }
 
   getZoneOffset(date: Date): string {
-    return DateTime.fromJSDate(date).setZone(this.defTz).offsetNameShort;
+    const offset = DateTime.fromJSDate(date).setZone(
+      this.defTz,
+    ).offsetNameShort;
+    return offset ?? '';
   }
 
   getTimestamp(date: Date): number {
@@ -59,19 +62,23 @@ export class HelperDateService implements IHelperDateService {
   }
 
   formatToRFC2822(date: Date): string {
-    return DateTime.fromJSDate(date).setZone(this.defTz).toRFC2822();
+    const result = DateTime.fromJSDate(date).setZone(this.defTz).toRFC2822();
+    return result ?? '';
   }
 
   formatToIso(date: Date): string {
-    return DateTime.fromJSDate(date).setZone(this.defTz).toISO();
+    const result = DateTime.fromJSDate(date).setZone(this.defTz).toISO();
+    return result ?? '';
   }
 
   formatToIsoDate(date: Date): string {
-    return DateTime.fromJSDate(date).setZone(this.defTz).toISODate();
+    const result = DateTime.fromJSDate(date).setZone(this.defTz).toISODate();
+    return result ?? '';
   }
 
   formatToIsoTime(date: Date): string {
-    return DateTime.fromJSDate(date).setZone(this.defTz).toISOTime();
+    const result = DateTime.fromJSDate(date).setZone(this.defTz).toISOTime();
+    return result ?? '';
   }
 
   create(date?: Date, options?: IHelperDateCreateOptions): Date {
