@@ -2,11 +2,12 @@ import { Request } from 'express';
 import { ResponsePagingMetadataPaginationRequestDto } from '@/common/response/dtos/response.paging.dto';
 import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.interface';
 import { IUserDoc } from '@/modules/user/interfaces/user.interface';
+import { ApiKeyPayloadDto } from '@/modules/api-key/dtos/api-key.payload.dto';
 
 export interface IRequestApp<
   T extends Express.User = IAuthJwtAccessTokenPayload,
 > extends Request {
-  //apiKey?: ApiKeyPayloadDto;
+  apiKey?: ApiKeyPayloadDto;
   user?: T;
 
   __user?: IUserDoc;
