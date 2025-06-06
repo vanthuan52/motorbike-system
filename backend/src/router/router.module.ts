@@ -3,6 +3,7 @@ import { RouterModule as NestJsRouterModule } from '@nestjs/core';
 import { RoutesAdminModule } from './routes/routes.admin.module';
 import { RoutesPublicModule } from './routes/routes.public.module';
 import { RoutesSystemModule } from './routes/routes.system.module';
+import { RoutesSharedModule } from './routes/routes.shared.module';
 
 @Module({
   providers: [],
@@ -11,6 +12,7 @@ import { RoutesSystemModule } from './routes/routes.system.module';
   imports: [
     RoutesAdminModule,
     RoutesSystemModule,
+    RoutesSharedModule,
     NestJsRouterModule.register([
       {
         path: '/admin',
@@ -23,6 +25,10 @@ import { RoutesSystemModule } from './routes/routes.system.module';
       {
         path: '/system',
         module: RoutesSystemModule,
+      },
+      {
+        path: '/shared',
+        module: RoutesSharedModule,
       },
     ]),
   ],
