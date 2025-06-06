@@ -7,15 +7,24 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyAdminController } from '@/modules/api-key/controllers/api-key.admin.controller';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
+import { SessionAdminController } from '@/modules/session/controllers/session.admin.controller';
 
 @Module({
   controllers: [
     RoleAdminController,
     UserAdminController,
     ApiKeyAdminController,
+    SessionAdminController,
   ],
   providers: [],
   exports: [],
-  imports: [RoleModule, UserModule, AuthModule, SessionModule, ApiKeyModule],
+  imports: [
+    RoleModule,
+    UserModule,
+    AuthModule,
+    SessionModule,
+    ApiKeyModule,
+    SessionModule,
+  ],
 })
 export class RoutesAdminModule {}

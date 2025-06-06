@@ -38,7 +38,7 @@ export default function CartPage() {
             2
           </span>
           <CustomLink
-            href="/chi-tiet-thanh-toan"
+            href={subtotal === 0 ? "#" : "/chi-tiet-thanh-toan"}
             className="ml-2 sm:ml-1 text-gray-400 transition-colors group-hover:!text-orange-500"
           >
             <span className="hidden sm:block">Chi tiết thanh toán</span>

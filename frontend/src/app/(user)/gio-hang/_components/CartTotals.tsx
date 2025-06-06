@@ -31,15 +31,21 @@ export default function CartTotals({ subtotal }: { subtotal: number }) {
         <span>Tổng cộng</span>
         <span>{total.toLocaleString()} đ</span>
       </div>
-      <button
-        className={clsx(
-          "w-full mt-4 py-2 rounded bg-orange-500 text-white font-semibold hover:bg-orange-600 transition"
-        )}
-      >
-        <CustomLink href="/chi-tiet-thanh-toan">
+      <CustomLink href={total === 0 ? "#" : "/chi-tiet-thanh-toan"}>
+        <button
+          className={clsx(
+            "w-full mt-4 py-2 rounded bg-orange-500 text-white font-semibold hover:bg-orange-600 transition",
+            total === 0 && "opacity-60 cursor-not-allowed"
+          )}
+          disabled={total === 0}
+          tabIndex={total === 0 ? -1 : 0}
+          onClick={(e) => {
+            if (total === 0) e.preventDefault();
+          }}
+        >
           Tiến hành thanh toán
-        </CustomLink>
-      </button>
+        </button>
+      </CustomLink>
     </div>
   );
 }

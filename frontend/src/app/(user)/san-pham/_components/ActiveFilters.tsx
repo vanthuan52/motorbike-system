@@ -1,15 +1,15 @@
-import { mockDataTableVehiclePart } from "@/data/TableData"
+import { mockDataTableVehiclePart } from "@/data/TableData";
 
-type StatusType = "in_stock" | "out_of_stock" | "out_of_business"
+type StatusType = "in_stock" | "out_of_stock" | "out_of_business";
 type FilterState = {
-    status: StatusType[]
-    price: [number, number]
-    categories: string[]
-}
+    status: StatusType[];
+    price: [number, number];
+    categories: string[];
+};
 
 interface Props {
-    filters: FilterState
-    setFilters: React.Dispatch<React.SetStateAction<FilterState>>
+    filters: FilterState;
+    setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
 }
 
 export default function ActiveFilters({ filters, setFilters }: Props) {
@@ -17,14 +17,14 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
         filters.status.length > 0 ||
         filters.categories.length > 0 ||
         filters.price[0] > 0 ||
-        filters.price[1] < 10000000
+        filters.price[1] < 10000000;
 
-    if (!hasFilter) return null
+    if (!hasFilter) return null;
 
     return (
         <div className="flex flex-wrap items-center gap-2 mb-2">
             {/* Status filter */}
-            {filters.status.map(status => (
+            {filters.status.map((status) => (
                 <span
                     key={status}
                     className="flex items-center bg-gray-200 text-black rounded-[30px] px-4 py-1 text-sm"
@@ -35,9 +35,9 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
                     <button
                         className="ml-2 cursor-pointer text-lg font-bold text-gray-500 hover:text-red-500"
                         onClick={() =>
-                            setFilters(prev => ({
+                            setFilters((prev) => ({
                                 ...prev,
-                                status: prev.status.filter(s => s !== status)
+                                status: prev.status.filter((s) => s !== status),
                             }))
                         }
                         aria-label="Xóa filter"
@@ -47,10 +47,8 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
                 </span>
             ))}
             {/* Category filter */}
-            {filters.categories.map(slug => {
-                const cat = mockDataTableVehiclePart.find(c => c.slug === slug)
-                console.log(cat);
-
+            {filters.categories.map((slug) => {
+                const cat = mockDataTableVehiclePart.find((c) => c.slug === slug);
                 return (
                     <span
                         key={slug}
@@ -60,9 +58,9 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
                         <button
                             className="ml-2 cursor-pointer text-lg font-bold text-gray-500 hover:text-red-500"
                             onClick={() =>
-                                setFilters(prev => ({
+                                setFilters((prev) => ({
                                     ...prev,
-                                    categories: prev.categories.filter(slug => slug !== slug)
+                                    categories: prev.categories.filter((slug) => slug !== slug),
                                 }))
                             }
                             aria-label="Xóa filter"
@@ -70,18 +68,19 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
                             ×
                         </button>
                     </span>
-                )
+                );
             })}
             {/* Price filter */}
             {(filters.price[0] > 0 || filters.price[1] < 10000000) && (
                 <span className="flex items-center bg-gray-200 text-black rounded-[30px] px-4 py-1 text-sm">
-                    {filters.price[0].toLocaleString()} - {filters.price[1].toLocaleString()} VNĐ
+                    {filters.price[0].toLocaleString()} -{" "}
+                    {filters.price[1].toLocaleString()} VNĐ
                     <button
                         className="ml-2 cursor-pointer text-lg font-bold text-gray-500 hover:text-red-500"
                         onClick={() =>
-                            setFilters(prev => ({
+                            setFilters((prev) => ({
                                 ...prev,
-                                price: [0, 10000000]
+                                price: [0, 10000000],
                             }))
                         }
                         aria-label="Xóa filter"
@@ -97,12 +96,12 @@ export default function ActiveFilters({ filters, setFilters }: Props) {
                     setFilters({
                         status: [],
                         price: [0, 10000000],
-                        categories: []
+                        categories: [],
                     })
                 }
             >
                 Clear all
             </button>
         </div>
-    )
+    );
 }

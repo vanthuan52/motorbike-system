@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Divider, Input } from "antd";
-import {
-  fetchProductsByIds,
-  ProductDetail,
-} from "../../gio-hang/_components/cart-api";
-import { fakeCartItems } from "../../gio-hang/_components/CartTable";
+import { fetchProductsByIds } from "../../gio-hang/_components/cart-api";
 import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { Product } from "@/types/users/products/product";
+import { IMG_PLACEHOLDER } from "@/constant/application";
 
 type Props = {
   shippingCost: number;
@@ -20,20 +20,21 @@ export default function CartSummary({
   onTotalChange,
   onSubmit,
 }: Props) {
-  const [products, setProducts] = useState<ProductDetail[]>([]);
+  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    fetchProductsByIds(fakeCartItems.map((i) => i.id)).then((data) => {
+    fetchProductsByIds(cartItems.map((i) => String(i.id))).then((data) => {
       const productsWithQuantity = data.map((prod) => {
-        const cartItem = fakeCartItems.find((item) => item.id === prod.id);
+        const cartItem = cartItems.find((item) => item.id === prod.id);
         return { ...prod, quantity: cartItem?.quantity || 1 };
       });
       setProducts(productsWithQuantity);
       setLoading(false);
     });
-  }, []);
+  }, [cartItems]);
 
   const subTotal = products.reduce(
     (acc, item) => acc + item.price * (item.quantity || 1),
@@ -65,7 +66,7 @@ export default function CartSummary({
               <div key={item.id} className="flex gap-3 relative">
                 <div className="relative w-16 h-16 rounded overflow-hidden bg-gray-100 shrink-0">
                   <Image
-                    src={item.image}
+                    src={item.image[0] || IMG_PLACEHOLDER}
                     alt={item.name}
                     className="object-contain w-full h-full"
                     fill
