@@ -13,4 +13,5 @@ export interface Product {
   status: "in_stock" | "out_of_stock" | "out_of_business";
   origin: string;
   slug: string;
+  quantity?: number;
 }
