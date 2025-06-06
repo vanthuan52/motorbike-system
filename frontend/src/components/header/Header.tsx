@@ -15,6 +15,8 @@ import TopBar from "./TopBar";
 import SearchOverlay from "./SearchOverlay";
 import UserAvatar from "./UserAvatar";
 import { mockUser } from "@/data/UserProfile";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 const NAV_ITEMS = [
   { href: ROUTER_PATH.SERVICES, label: "Dịch vụ" },
@@ -59,7 +61,8 @@ export default function Header() {
       document.body.style.width = originalWidth;
     };
   }, [showSearch]);
-
+  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   return (
     <div>
       <SearchOverlay
@@ -108,8 +111,13 @@ export default function Header() {
               </button>
             </CustomLink> */}
             <CustomLink href={ROUTER_PATH.CART}>
-              <button className="p-2 flex items-center justify-center rounded-full border border-gray-300">
+              <button className="p-2 flex items-center justify-center rounded-full border border-gray-300 relative cursor-pointer">
                 <ShoppingCart size={18} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full z-10">
+                    {cartCount}
+                  </span>
+                )}
               </button>
             </CustomLink>
 
