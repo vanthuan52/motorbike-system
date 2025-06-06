@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion, useInView } from "framer-motion";
 
 type FAQ = {
   question: string;
@@ -26,6 +27,54 @@ const faqs: FAQ[] = [
   },
 ];
 
+function FAQItem({
+  faq,
+  index,
+  isOpen,
+  onToggle,
+}: {
+  faq: FAQ;
+  index: number;
+  isOpen: boolean;
+  onToggle: (index: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: false });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 10 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.15 }}
+      className='bg-white rounded-xl shadow-md overflow-hidden transition'
+    >
+      <button
+        onClick={() => onToggle(index)}
+        className='flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none'
+      >
+        <h3 className='text-lg font-semibold text-gray-800'>{faq.question}</h3>
+        {isOpen ? (
+          <ChevronUp className='w-6 h-6 text-gray-500' />
+        ) : (
+          <ChevronDown className='w-6 h-6 text-gray-500' />
+        )}
+      </button>
+
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className='px-6 pb-4 text-sm text-gray-600'
+        >
+          {faq.answer}
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
+
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -34,38 +83,21 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="py-16 bg-gray-100">
-      <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+    <section className='py-16 bg-gray-100'>
+      <div className='container'>
+        <h2 className='text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10'>
           Hỏi đáp thường gặp (FAQ)
         </h2>
 
-        <div className="space-y-4">
+        <div className='space-y-4'>
           {faqs.map((faq, index) => (
-            <div
+            <FAQItem
               key={index}
-              className="bg-white rounded-xl shadow-md overflow-hidden transition"
-            >
-              <button
-                onClick={() => toggle(index)}
-                className="flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none"
-              >
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {faq.question}
-                </h3>
-                {openIndex === index ? (
-                  <ChevronUp className="w-6 h-6 text-gray-500" />
-                ) : (
-                  <ChevronDown className="w-6 h-6 text-gray-500" />
-                )}
-              </button>
-
-              {openIndex === index && (
-                <div className="px-6 pb-4 text-sm text-gray-600">
-                  {faq.answer}
-                </div>
-              )}
-            </div>
+              faq={faq}
+              index={index}
+              isOpen={openIndex === index}
+              onToggle={toggle}
+            />
           ))}
         </div>
       </div>
