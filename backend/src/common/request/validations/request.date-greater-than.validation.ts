@@ -13,8 +13,9 @@ export class DateGreaterThanEqualConstraint
   implements ValidatorConstraintInterface
 {
   validate(value: any, args: ValidationArguments): Promise<boolean> | boolean {
-    const [date] = args?.constraints;
-    return value >= date;
+    const [dateToCompare] = args?.constraints;
+
+    return value >= dateToCompare;
   }
 }
 
