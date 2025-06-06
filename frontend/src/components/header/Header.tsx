@@ -1,7 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  ShoppingBag,
+  ShoppingBasket,
+  ShoppingCart,
+  X,
+} from "lucide-react";
 import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import { ROUTER_PATH } from "@/constant/router-path";
 import NavLink from "./NavLink";
@@ -18,7 +24,7 @@ const NAV_ITEMS = [
   {
     href: ROUTER_PATH.CATEGORY,
     label: "Danh mục",
-  }
+  },
 ];
 
 export default function Header() {
@@ -29,7 +35,7 @@ export default function Header() {
   const pathname = usePathname();
 
   const user = mockUser;
-  
+
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
@@ -96,19 +102,26 @@ export default function Header() {
 
           {/* Right action */}
           <div className="flex gap-4">
-            <CustomLink href={ROUTER_PATH.MAINTAIN_REGISTRATION}>
+            {/* <CustomLink href={ROUTER_PATH.MAINTAIN_REGISTRATION}>
               <button className="bg-black text-white font-medium px-5 py-2 rounded-md cursor-pointer">
                 Đặt lịch
               </button>
+            </CustomLink> */}
+            <CustomLink href={ROUTER_PATH.CART}>
+              <button className="p-2 flex items-center justify-center rounded-full border border-gray-300">
+                <ShoppingCart size={18} />
+              </button>
             </CustomLink>
-              <UserAvatar user={user} />
+
+            <UserAvatar user={user} />
           </div>
         </div>
 
         {/* Mobile Menu Panel */}
         <div
-          className={`fixed top-0 right-0 h-full w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
-            }`}
+          className={`fixed top-0 right-0 h-full w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+            isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
         >
           <div className="flex flex-col h-full p-4 space-y-4 mt-7">
             <div className="flex justify-between items-center mb-2">

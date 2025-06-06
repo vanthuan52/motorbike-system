@@ -21,10 +21,10 @@ export default function TopBar({
         <Link href={`tel:${APP_INFO.HOTLINE}`}>
           Hotline: {APP_INFO.HOTLINE}
         </Link>
-        <div className="flex items-center gap-4">
-          <CustomLink href="login">
+        <div className="flex items-center gap-1">
+          {/* <CustomLink href="login">
             <User2 size={24} />
-          </CustomLink>
+          </CustomLink> */}
           <button
             type="button"
             onClick={onSearchClick}
