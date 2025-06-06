@@ -10,6 +10,7 @@ import SharingContent from "@/app/(user)/blog/[slug]/_components/SharingContent"
 import RelatedBlogs from "@/app/(user)/blog/[slug]/_components/RelatedBlogs";
 import CommentsList from "@/app/(user)/blog/[slug]/_components/CommentsList";
 import CommentForm from "@/app/(user)/blog/[slug]/_components/CommentForm";
+import BlogNotFound from "@/app/(user)/blog/[slug]/_components/BlogNotFound";
 
 export default function BlogDetails() {
   const { slug } = useParams();
@@ -20,7 +21,7 @@ export default function BlogDetails() {
     e.preventDefault();
     console.log("Submitted comment:", form);
   };
-  if (!blog) return <div>Không tìm thấy bài viết.</div>;
+  if (!blog) return <BlogNotFound />;
 
   return (
     <div className="w-full mt-10">
