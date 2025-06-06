@@ -14,6 +14,7 @@ import {
   CustomerServiceOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { User2 } from "lucide-react";
 
 interface UserAvatarProps {
   user?: UserType | null;
@@ -28,12 +29,20 @@ type MenuItem = {
 
 const MENU_ITEMS: MenuItem[] = [
   { label: "Hồ sơ cá nhân", href: "/ho-so", icon: <UserOutlined /> },
-  { label: "Lịch hẹn bảo dưỡng", href: "/lich-hen-bao-duong", icon: <CalendarOutlined /> },
+  {
+    label: "Lịch hẹn bảo dưỡng",
+    href: "/lich-hen-bao-duong",
+    icon: <CalendarOutlined />,
+  },
   { label: "Xe của tôi", href: "/quan-ly-phuong-tien", icon: <CarOutlined /> },
-  { label: "Lịch sử bảo dưỡng", href: "/lich-su-bao-duong", icon: <HistoryOutlined /> },
+  {
+    label: "Lịch sử bảo dưỡng",
+    href: "/lich-su-bao-duong",
+    icon: <HistoryOutlined />,
+  },
   { label: "Cài đặt tài khoản", href: "/cai-dat", icon: <SettingOutlined /> },
-  { label: "Hỗ trợ", href: "/ho-tro", icon: <CustomerServiceOutlined  /> },
-  { label: "Đăng xuất", href: "/logout", icon: <LogoutOutlined  /> },
+  { label: "Hỗ trợ", href: "/ho-tro", icon: <CustomerServiceOutlined /> },
+  { label: "Đăng xuất", href: "/logout", icon: <LogoutOutlined /> },
 ];
 
 export default function UserAvatar({ user, className }: UserAvatarProps) {
@@ -42,7 +51,10 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setMenuOpen(false);
       }
     }
@@ -58,7 +70,7 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
     <div ref={containerRef} className={clsx("relative", className)}>
       <button
         onClick={() => setMenuOpen((open) => !open)}
-        className="w-10 h-10 rounded-full overflow-hidden border border-gray-300 bg-gray-100 flex items-center justify-center focus:outline-none"
+        className="rounded-full overflow-hidden border border-gray-300 flex items-center justify-center focus:outline-none p-2"
         aria-label="User menu"
       >
         {user?.photo ? (
@@ -68,11 +80,12 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
             className="object-cover w-full h-full"
           />
         ) : (
-          <img
-            src="/images/avatar/default-avatar.jpeg"
-            alt="Default avatar"
-            className="object-cover w-full h-full"
-        />
+          <User2 className="object-cover" size={18} />
+          //   <img
+          //     src="/images/avatar/default-avatar.jpeg"
+          //     alt="Default avatar"
+          //     className="object-cover w-full h-full"
+          // />
         )}
       </button>
 

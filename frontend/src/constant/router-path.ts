@@ -8,6 +8,8 @@ export const ROUTER_PATH = {
   MAINTAIN_REGISTRATION: "/dang-ky-bao-duong-xe",
   LOGIN: "/login",
   REGISTER: "/register",
+  CART: "/gio-hang",
+  CHECKOUT: "/thanh-toan",
   ADMIN: {
     INDEX: "/admin",
     DASHBOARD: "/admin/dashboard",
