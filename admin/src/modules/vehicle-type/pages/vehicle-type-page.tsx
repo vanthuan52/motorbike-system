@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ColumnsType } from "antd/es/table";
-import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import { Button, Popconfirm, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { mockDataTableVehicleType } from "../mocks/vehicle-type";
 import { VehicleType } from "../types";
@@ -11,13 +11,14 @@ import { SearchInput } from "@/components/ui/search-input";
 import Table from "@/components/ui/table/table";
 import VehicleTypeModal from "../components/vehicle-type-modal";
 import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function VehicleTypes() {
   const [dataSource, setDataSource] = useState<VehicleType[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [assignVisible, setAssignVisible] = useState(false);
   const [selected, setSelected] = useState<VehicleType | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => {
       setDataSource(mockDataTableVehicleType);
@@ -147,17 +148,17 @@ export default function VehicleTypes() {
         </div>
 
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex gap-4">
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable
+            columns={[
+              { title: "STT", width: 100, height: 50 },
+              { title: "Mã hãng xe", width: 100, height: 50 },
+              { title: "Tên loại xe", width: 100, height: 50 },
+              { title: "Mô tả", width: 100, height: 50 },
+              { title: "Trạng thái", width: 100, height: 50 },
+              { title: "Hành động", width: 100, height: 50 },
+            ]}
+            rows={5}
+          />
         ) : (
           <Table
             dataSource={dataSource}

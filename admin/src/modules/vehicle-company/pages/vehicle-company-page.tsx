@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
-import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import { Button, Popconfirm, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { mockDataTableVehicleCompany } from "../mocks/vehicle-company";
 import { VehicleCompanyTypes } from "../types";
@@ -10,6 +10,7 @@ import { PageHeading } from "@/components/page-heading";
 import { SearchInput } from "@/components/ui/search-input";
 import Table from "@/components/ui/table/table";
 import VehicleCompanyModal from "../components/vehicle-company-modal";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function VehicleCompany() {
   const [dataSource, setDataSource] = useState<VehicleCompanyTypes[]>([]);
@@ -18,7 +19,7 @@ export default function VehicleCompany() {
   const [selected, setSelected] = useState<VehicleCompanyTypes | undefined>(
     undefined
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => {
       setDataSource(mockDataTableVehicleCompany);
@@ -137,17 +138,15 @@ export default function VehicleCompany() {
         </div>
 
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex gap-4">
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable columns={
+            [
+              { title: "STT", width: 60, height: 20 },
+              { title: "Tên hãng xe" },
+              { title: "Mô tả" },
+              { title: "Trạng thái" },
+              { title: "Hành động" },
+            ]
+          } rows={5} />
         ) : (
           <Table
             dataSource={dataSource}

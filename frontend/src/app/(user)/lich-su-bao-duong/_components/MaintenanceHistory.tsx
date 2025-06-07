@@ -6,20 +6,20 @@ import {
   DatePicker,
   Popconfirm,
   Select,
-  Skeleton,
   Tooltip,
 } from "antd";
 import { DeleteOutlined, SearchOutlined, StopOutlined, } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween"; 
+import isBetween from "dayjs/plugin/isBetween";
 import { MaintenanceHistoryCustomer } from "../types/types";
 import { maintenanceHistoryCustomers as initialData } from "../mocks/maintenance-history";
 import TableReuse from "@/components/ui/Table/Table";
 import type { ColumnsType } from "antd/es/table";
 import type { RangePickerProps } from "antd/es/date-picker";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
-dayjs.extend(isBetween); 
+dayjs.extend(isBetween);
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -96,23 +96,23 @@ const MaintenanceHistory = () => {
       title: "Hành động",
       key: "actions",
       align: "center" as const,
-     render: (_: any, record: MaintenanceHistoryCustomer) =>
-    record.status === "Hoàn thành" ? (
-    <Popconfirm
-      title="Xác nhận xóa bản ghi này?"
-      onConfirm={() => handleDelete(record.id)}
-      okText="Xóa"
-      cancelText="Hủy"
-    >
-      <Tooltip title="Xóa">
-        <Button danger icon={<DeleteOutlined />} />
-      </Tooltip>
-    </Popconfirm>
-  ) : (
-    <Tooltip title="Không thể xóa">
-      <StopOutlined className="text-gray-400 text-lg" />
-    </Tooltip>
-  ),
+      render: (_: any, record: MaintenanceHistoryCustomer) =>
+        record.status === "Hoàn thành" ? (
+          <Popconfirm
+            title="Xác nhận xóa bản ghi này?"
+            onConfirm={() => handleDelete(record.id)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Tooltip title="Xóa">
+              <Button danger icon={<DeleteOutlined />} />
+            </Tooltip>
+          </Popconfirm>
+        ) : (
+          <Tooltip title="Không thể xóa">
+            <StopOutlined className="text-gray-400 text-lg" />
+          </Tooltip>
+        ),
 
     },
   ];
@@ -146,17 +146,18 @@ const MaintenanceHistory = () => {
 
       <div className="bg-white rounded-lg p-4 border border-gray-200">
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex flex-wrap gap-4 items-center">
-                <Skeleton.Input active style={{ width: 100, height: 32 }} />
-                <Skeleton.Input active style={{ width: 120, height: 32 }} />
-                <Skeleton.Input active style={{ width: 100, height: 32 }} />
-                <Skeleton.Input active style={{ width: 120, height: 32 }} />
-                <Skeleton.Input active style={{ width: 100, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable
+            columns={[
+              { title: "Tên xe", width: 150 },
+              { title: "Biển số", width: 100 },
+              { title: "Ngày", width: 120 },
+              { title: "Khung giờ", width: 120 },
+              { title: "Trạng thái", width: 120 },
+              { title: "Tổng chi phí", width: 120 },
+              { title: "Hành động", width: 100 },
+            ]}
+            rows={5}
+          />
         ) : (
           <div className="overflow-x-auto">
             <TableReuse

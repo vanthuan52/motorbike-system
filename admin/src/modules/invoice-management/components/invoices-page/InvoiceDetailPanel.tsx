@@ -1,4 +1,4 @@
-import { Button, Select, Tag, Skeleton, Divider } from "antd";
+import { Button, Select, Tag, Divider } from "antd";
 import dayjs from "dayjs";
 import { InvoiceManagement, Product } from "../../types";
 import { IoClose } from "react-icons/io5";
@@ -6,6 +6,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { paymentStatusColor, statusColor, paymentMethodLabel, shippingMethodLabel, COLOR_VI } from "../../utils/constants";
 import { mockDataTableManageCustomers } from "../../../customer-management/mocks/customer-data";
 import { formatVND } from "../../utils/formatVND";
+import SkeletonDetailPanel from "./SkeletonDetailPanel";
 export default function InvoiceDetailPanel({
     selectedRow,
     panelVisible,
@@ -29,11 +30,7 @@ export default function InvoiceDetailPanel({
             style={{ willChange: "transform" }}
         >
             {loading ? (
-                <Skeleton
-                    active
-                    paragraph={{ rows: 12 }}
-                    avatar={{ shape: "square", size: 40 }}
-                />
+                <SkeletonDetailPanel />
             ) : (
                 <>
                     <div className="flex items-center justify-between mb-2">
