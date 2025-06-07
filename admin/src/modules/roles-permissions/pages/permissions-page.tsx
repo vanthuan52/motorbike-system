@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Modal, Form, Input, Popconfirm, Tooltip } from "antd";
 import Table from "@/components/ui/table/table";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { allPermissions as mockPermissions } from "../mocks/role-permissions";
 import { PageHeading } from "@/components/page-heading";
 import { toast } from "react-toastify";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export interface PermissionItem {
     value: string;
@@ -12,12 +13,20 @@ export interface PermissionItem {
 }
 
 export default function PermissionsPage() {
-    const [permissions, setPermissions] = useState<PermissionItem[]>(mockPermissions);
+    const [permissions, setPermissions] = useState<PermissionItem[]>();
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editingPermission, setEditingPermission] = useState<PermissionItem | null>(null);
     const [form] = Form.useForm();
-
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        setLoading(true);
+        setPermissions(mockPermissions);
+        setTimeout(() => {
+            setLoading(false);
+        }, 800);
+    }, []);
+    if (!permissions) return null;
     const handleCreate = () => {
         setEditingPermission(null);
         form.resetFields();
@@ -105,13 +114,22 @@ export default function PermissionsPage() {
                 onClickAdd={handleCreate}
                 addButtonLabel="Thêm quyền"
             />
-            <Table
-                columns={columns}
-                dataSource={permissions}
-                rowKey="value"
-                pagination={{ pageSize: 10 }}
-                className="bg-white rounded shadow"
-            />
+            {loading ? (
+                <SkeletonTable columns={
+                    [
+                        { title: "Mã quyền", width: 200, height: 20 },
+                        { title: "Tên quyền", width: 200, height: 20 },
+                        { title: "Hành động", width: 100, height: 20 },
+                    ]
+                } rows={10} />
+            ) : (
+                <Table
+                    columns={columns}
+                    dataSource={permissions}
+                    rowKey="value"
+                    pagination={{ pageSize: 10 }}
+                    className="bg-white rounded shadow"
+                />)}
             <Modal
                 open={modalOpen}
                 title={editingPermission ? "Sửa quyền" : "Thêm quyền"}

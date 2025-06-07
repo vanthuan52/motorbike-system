@@ -1,16 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { roles as mockRoles } from "../mocks/role-permissions";
 import { Role } from "../types";
 import { PageHeading } from "@/components/page-heading";
 import RolesTable from "../components/RolesTable";
 import RoleModal from "../components/modal/RoleModal";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function RolesPage() {
-    const [roles, setRoles] = useState<Role[]>(mockRoles);
+    const [roles, setRoles] = useState<Role[]>();
     const [modalOpen, setModalOpen] = useState(false);
     const [editingRole, setEditingRole] = useState<Role | null>(null);
-
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        setLoading(true);
+        setRoles(mockRoles);
+        setTimeout(() => {
+            setLoading(false);
+        }, 800);
+    }, []);
+    if (!roles) return null;
     const handleCreate = () => {
         setEditingRole(null);
         setModalOpen(true);
@@ -44,11 +53,21 @@ export default function RolesPage() {
                 onClickAdd={handleCreate}
                 addButtonLabel="Thêm vai trò"
             />
-            <RolesTable
-                roles={roles}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-            />
+            {loading ? (
+                <SkeletonTable columns={
+                    [
+                        { title: "Tên vai trò", width: 200, height: 20 },
+                        { title: "Mô tả", width: 200, height: 20 },
+                        { title: "Quyền", width: 300, height: 20 },
+                        { title: "Hành động", width: 100, height: 20 },
+                    ]
+                } rows={5} />
+            ) : (
+                <RolesTable
+                    roles={roles}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />)}
             <RoleModal
                 open={modalOpen}
                 onCancel={() => setModalOpen(false)}

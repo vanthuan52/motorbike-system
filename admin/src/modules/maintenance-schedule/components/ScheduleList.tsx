@@ -1,9 +1,7 @@
-"use client";
-
 import moment from "moment";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
-import { Button, Skeleton, message, Popconfirm, Tooltip } from "antd";
+import { Button, message, Popconfirm, Tooltip } from "antd";
 
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -15,6 +13,7 @@ import { mockScheduleList, ScheduleType } from "../data/mockSchedule";
 
 import ScheduleAssignModal from "./ScheduleAssignModal";
 import ScheduleDetailModal from "./ScheduleDetailModal";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function ScheduleList() {
   const [dataSource, setDataSource] = useState<ScheduleType[]>([]);
@@ -132,7 +131,18 @@ export default function ScheduleList() {
         }
       />
       {loading ? (
-        <Skeleton active paragraph={{ rows: 5 }} />
+        <SkeletonTable
+          columns={[
+            { title: "ID", width: 50 },
+            { title: "Khách hàng", width: 100 },
+            { title: "SĐT", width: 100 },
+            { title: "Nhân viên", width: 100 },
+            { title: "Ngày", width: 100 },
+            { title: "Khung giờ", width: 100 },
+            { title: "Trạng thái", width: 100 },
+          ]}
+          rows={5}
+        />
       ) : (
         <TableReuse
           columns={columns}

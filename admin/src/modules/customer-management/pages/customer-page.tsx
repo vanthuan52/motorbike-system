@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
-import { Button, Skeleton, Space, Tag } from "antd";
+import { Button, Space, Tag } from "antd";
 import { mockDataTableManageCustomers } from "@/modules/customer-management/mocks/customer-data";
 import { PageHeading } from "@/components/page-heading";
 import { SearchInput } from "@/components/ui/search-input";
@@ -10,6 +10,7 @@ import Table from "@/components/ui/table/table";
 import SelectField from "@/components/ui/select-field";
 import { Link } from "react-router-dom";
 import { EyeOutlined } from "@ant-design/icons";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 const ROUTER_PATH = {
   CUSTOMERS: "/customers",
@@ -128,20 +129,19 @@ export default function Customers() {
         </div>
 
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex gap-4">
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable
+            columns={[
+              { title: "STT", width: 100, height: 50 },
+              { title: "Họ tên", width: 100, height: 50 },
+              { title: "Email", width: 100, height: 50 },
+              { title: "Số điện thoại", width: 100, height: 50 },
+              { title: "Giới tính", width: 100, height: 50 },
+              { title: "Trạng thái", width: 100, height: 50 },
+              { title: "Địa chi", width: 100, height: 50 },
+              { title: "Hành động", width: 100, height: 50 },
+            ]}
+            rows={5}
+          />
         ) : (
           <Table
             dataSource={dataSource}

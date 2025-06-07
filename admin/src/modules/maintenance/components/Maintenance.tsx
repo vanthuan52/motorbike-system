@@ -17,6 +17,7 @@ import { PageHeaderReuse } from "@/components/ui/admin/PageHeaderReuse";
 import { mockDataTableMaintenance } from "../data/mockMaintenance";
 
 import MaintenanceModal from "./MaintenanceModal";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function Maintenance() {
   const [dataSource, setDataSource] = useState<MaintenanceManagementTypes[]>(
@@ -165,17 +166,19 @@ export default function Maintenance() {
         </div>
 
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex gap-4">
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable
+            columns={[
+              { title: "ID", width: 50 },
+              { title: "Khách hàng", width: 100 },
+              { title: "Số điện thoại", width: 100 },
+              { title: "Nhân viên", width: 100 },
+              { title: "Ngày bảo dưỡng", width: 100 },
+              { title: "Tổng chi phí", width: 100 },
+              { title: "Trạng thái", width: 100 },
+              { title: "Hành động", width: 100 },
+            ]}
+            rows={5}
+          />
         ) : (
           <TableReuse
             dataSource={dataSource}
