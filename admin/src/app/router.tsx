@@ -58,6 +58,9 @@ const PermissionsPage = lazy(
 const ProductsPage = lazy(
   () => import("@/modules/products/pages/products-page")
 );
+const ProductDetailsPage = lazy(
+  () => import("@/modules/products/pages/product-details-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -102,6 +105,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.PRODUCTS,
         element: <ProductsPage />,
+      },
+      {
+        path: ROUTER_PATH.PRODUCTS_DETAILS,
+        element: <ProductDetailsPage />,
       },
     ],
   },

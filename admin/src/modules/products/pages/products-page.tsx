@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
-import Table from "@/components/ui/table/table";
+import { useNavigate } from "react-router-dom";
 import { Button, Popconfirm, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 import type { UploadFile } from "antd/es/upload/interface";
+import { ColumnsType } from "antd/es/table";
 import { Product } from "../types";
+import Table from "@/components/ui/table/table";
 import { mockProducts } from "../mocks/Products";
 import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
-import { toast } from "react-toastify";
-import { ColumnsType } from "antd/es/table";
 import ProductsModal from "../components/ProductsModal";
 import { PageHeading } from "@/components/page-heading";
-import ViewProductModal from "../components/ViewProductModal";
 import SkeletonTable from "@/components/ui/SkeletonTable";
+import { ROUTER_PATH } from "@/constants/router-path";
 
 export default function ProductsPage() {
   const [dataSource, setDataSource] = useState<Product[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [assignVisible, setAssignVisible] = useState(false);
-  const [assignVisibleView, setAssignVisibleView] = useState(false);
   const [selected, setSelected] = useState<Product | undefined>(undefined);
-  const [selectedView, setSelectedView] = useState<Product | undefined>(
-    undefined
-  );
   const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const navigate = useNavigate();
   useEffect(() => {
     const timer = setTimeout(() => {
       setDataSource(mockProducts);
@@ -51,15 +49,15 @@ export default function ProductsPage() {
         : []
     );
   };
-  const openView = (record: Product) => {
-    setSelectedView(record);
-    setAssignVisibleView(true);
+  const handleView = (record: Product) => {
+    navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}`);
   };
   const handleAssignSubmit = (values: Product) => {
     if (isEdit && selected) {
       setDataSource((prev) =>
         prev.map((item) => (item.id === selected.id ? values : item))
       );
+      handleView(values);
       toast.success("Cập nhật sản phẩm thành công");
     } else {
       const newId = (() => {
@@ -70,6 +68,7 @@ export default function ProductsPage() {
         return `vt-${max + 1}`;
       })();
       setDataSource((prev) => [...prev, { ...values, id: newId }]);
+      handleView(values);
       toast.success("Tạo sản phẩm mới thành công");
     }
     setAssignVisible(false);
@@ -171,7 +170,7 @@ export default function ProductsPage() {
             <Button
               icon={<EyeOutlined />}
               size="small"
-              onClick={() => openView(record)}
+              onClick={() => handleView(record)}
             />
           </Tooltip>
           <Tooltip title="Chỉnh sửa">
@@ -234,11 +233,6 @@ export default function ProductsPage() {
         onSubmit={handleAssignSubmit}
         fileList={fileList}
         setFileList={setFileList}
-      />
-      <ViewProductModal
-        initialData={selectedView}
-        visible={assignVisibleView}
-        onCancel={() => setAssignVisibleView(false)}
       />
     </div>
   );
