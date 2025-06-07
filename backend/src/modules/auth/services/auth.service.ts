@@ -16,6 +16,7 @@ import { HelperDateService } from '@/common/helper/services/helper.date.service'
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import { ConfigService } from '@nestjs/config';
 import { HelperHashService } from '@/common/helper/services/helper.hash.service';
+import { DEFAULT_USER_PASSWORD } from '../constants/auth.constant';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -251,6 +252,10 @@ export class AuthService implements IAuthService {
 
   createPasswordRandom(): string {
     return this.helperStringService.random(10);
+  }
+
+  createDefaultPassword(): string {
+    return DEFAULT_USER_PASSWORD;
   }
 
   checkPasswordExpired(passwordExpired: Date): boolean {

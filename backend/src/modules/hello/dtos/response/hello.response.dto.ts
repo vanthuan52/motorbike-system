@@ -6,7 +6,7 @@ export class HelloResponseDto {
     required: true,
     example: faker.date.recent(),
   })
-  date;
+  date: Date;
 
   @ApiProperty({
     required: true,

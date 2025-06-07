@@ -10,11 +10,11 @@ import { PaginationPagingPipe } from '../pipes/pagination.paging.pipe';
 import { PaginationOrderPipe } from '../pipes/pagination.order.pipe';
 import { PaginationFilterInBooleanPipe } from '../pipes/pagination.filter-in-boolean.pipe';
 import { PaginationFilterInEnumPipe } from '../pipes/pagination.filter-in-enum.pipe';
-import { PaginationFilterNinEnumPipe } from '../pipes/pagination.filter-nin-enum.pipe';
 import { PaginationFilterStringContainPipe } from '../pipes/pagination.filter-string-contain.pipe';
 import { PaginationFilterDateBetweenPipe } from '../pipes/pagination.filter-date-between.pipe';
 import { PaginationFilterEqualPipe } from '../pipes/pagination.filter-equal.pipe';
 import { PaginationFilterNotEqualPipe } from '../pipes/pagination.filter-not-equal.pipe';
+import { PaginationFilterInPipe } from '../pipes/pagination.filter-in.pipe';
 
 export function PaginationQuery(
   options?: IPaginationQueryOptions,
@@ -53,15 +53,13 @@ export function PaginationQueryFilterInEnum<T>(
   );
 }
 
-export function PaginationQueryFilterNinEnum<T>(
+export function PaginationQueryFilterIn<T>(
   field: string,
-  defaultValue: T,
-  defaultEnum: Record<string, any>,
   options?: IPaginationFilterOptions,
 ): ParameterDecorator {
   return Query(
     options?.queryField ?? field,
-    PaginationFilterNinEnumPipe<T>(field, defaultValue, defaultEnum, options),
+    PaginationFilterInPipe<T>(field, options),
   );
 }
 

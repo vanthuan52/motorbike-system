@@ -1,5 +1,6 @@
 import { _Object } from '@aws-sdk/client-s3';
 import {
+  IAwsS3ConfigBucket,
   IAwsS3DeleteDirOptions,
   IAwsS3GetItemsOptions,
   IAwsS3Options,
@@ -15,6 +16,7 @@ import { AwsS3PresignRequestDto } from '../dtos/request/aws.s3-presign.request.d
 import { AwsS3MultipartDto } from '../dtos/aws.s3-multipart.dto';
 
 export interface IAwsS3Service {
+  getConfig(options?: IAwsS3Options): IAwsS3ConfigBucket;
   onModuleInit(): void;
   checkConnection(options?: IAwsS3Options): Promise<boolean>;
   checkBucket(options?: IAwsS3Options): Promise<boolean>;
@@ -60,9 +62,10 @@ export interface IAwsS3Service {
   ): Promise<void>;
   presignPutItem(
     key: string,
+    size: number,
     options?: IAwsS3PresignOptions,
   ): Promise<AwsS3PresignResponseDto>;
-  presignPutItemMultipart(
+  presignPutItemPart(
     key: string,
     uploadId: string,
     partNumber: number,
