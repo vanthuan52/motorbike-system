@@ -12,3 +12,8 @@ export interface IHelperEmailValidation {
   validated: boolean;
   messagePath?: string;
 }
+
+export interface IHelperPhoneValidation {
+  validated: boolean;
+  messagePath?: string;
+}

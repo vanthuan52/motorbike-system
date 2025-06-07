@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IHelperStringService } from '../interfaces/helper.string-service.interface';
 import {
   IHelperEmailValidation,
+  IHelperPhoneValidation,
   IHelperStringPasswordOptions,
 } from '../interfaces/helper.interface';
 
@@ -58,6 +59,22 @@ export class HelperStringService implements IHelperStringService {
 
   formatCurrency(num: number, locale: string): string {
     return num.toLocaleString(locale);
+  }
+
+  checkIsPhoneNumber(value: string): IHelperPhoneValidation {
+    const regex = new RegExp(/^\d{10,15}$/);
+    const valid = regex.test(value);
+
+    if (!valid) {
+      return {
+        validated: false,
+        messagePath: 'request.phone.invalid',
+      };
+    }
+
+    return {
+      validated: true,
+    };
   }
 
   checkCustomEmail(value: string): IHelperEmailValidation {

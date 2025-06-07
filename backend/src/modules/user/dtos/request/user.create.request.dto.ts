@@ -1,7 +1,9 @@
+import { IsPhoneNumber } from '@/common/request/validations/request.is-phone-number.validation';
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -44,5 +46,8 @@ export class UserCreateRequestDto {
     maxLength: 15,
     minLength: 10,
   })
+  @IsOptional()
+  @IsString()
+  @IsPhoneNumber()
   phone?: string;
 }

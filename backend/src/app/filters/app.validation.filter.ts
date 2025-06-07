@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
@@ -13,8 +13,6 @@ import { IAppException } from '../interfaces/app.interface';
 
 @Catch(RequestValidationException)
 export class AppValidationFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AppValidationFilter.name);
-
   constructor(
     private readonly messageService: MessageService,
     private readonly configService: ConfigService,

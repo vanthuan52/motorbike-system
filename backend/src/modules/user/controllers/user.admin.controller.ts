@@ -240,19 +240,19 @@ export class UserAdminController {
 
   @UserAdminUpdateDoc()
   @Response('user.update')
-  // @PolicyAbilityProtected({
-  //   subject: ENUM_POLICY_SUBJECT.USER,
-  //   action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
-  // })
-  // @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  // @UserProtected()
-  // @AuthJwtAccessProtected()
-  // @ApiKeyProtected()
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ApiKeyProtected()
   @Put('/update/:user')
   async update(
     @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
     user: UserDoc,
-    //@AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('user') updatedBy: string,
     @Body() { name, role, phone }: UserUpdateRequestDto,
   ): Promise<void> {
     const checkRole = await this.roleService.findOneActiveById(role);
@@ -264,11 +264,9 @@ export class UserAdminController {
     }
 
     try {
-      await this.userService.update(
-        user,
-        { name, role, phone },
-        {} as IDatabaseSaveOptions,
-      );
+      await this.userService.update(user, { name, role, phone }, {
+        actionBy: updatedBy,
+      } as IDatabaseSaveOptions);
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
@@ -309,17 +307,12 @@ export class UserAdminController {
       });
     }
 
-    const session: ClientSession =
-      await this.databaseService.createTransaction();
-
     try {
       await this.userService.updateStatus(
         user,
         { status },
-        { session, actionBy },
+        {} as IDatabaseSaveOptions,
       );
-
-      await this.databaseService.commitTransaction(session);
 
       return {
         _metadata: {
@@ -331,8 +324,6 @@ export class UserAdminController {
         },
       };
     } catch (err: unknown) {
-      await this.databaseService.abortTransaction(session);
-
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',
