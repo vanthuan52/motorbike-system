@@ -18,4 +18,5 @@ export const ROUTER_PATH = {
   INVOICES_DETAILS: "/invoices/:id",
   ROLES: "/roles",
   PERMISSIONS: "/permissions",
+  PRODUCTS: "/products",
 };
