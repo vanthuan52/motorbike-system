@@ -19,4 +19,5 @@ export const ROUTER_PATH = {
   ROLES: "/roles",
   PERMISSIONS: "/permissions",
   PRODUCTS: "/products",
+  PRODUCTS_DETAILS: "/products/:slug",
 };
