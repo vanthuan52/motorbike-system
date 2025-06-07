@@ -70,7 +70,7 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       whitelist: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false,
       disableErrorMessages: false,
       exceptionFactory: (errors) => {
         return new RequestValidationException(errors);

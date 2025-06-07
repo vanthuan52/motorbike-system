@@ -1,5 +1,6 @@
 import {
   IHelperEmailValidation,
+  IHelperPhoneValidation,
   IHelperStringPasswordOptions,
 } from './helper.interface';
 
@@ -12,6 +13,7 @@ export interface IHelperStringService {
     options?: IHelperStringPasswordOptions,
   ): boolean;
   formatCurrency(num: number, locale: string): string;
+  checkIsPhoneNumber(value: string): IHelperPhoneValidation;
   checkCustomEmail(value: string): IHelperEmailValidation;
   checkWildcardUrl(url: string, patterns: string[]): boolean;
 }
