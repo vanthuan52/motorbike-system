@@ -5,6 +5,7 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   Param,
   Patch,
@@ -72,7 +73,10 @@ import { ENUM_ROLE_STATUS_CODE_ERROR } from '@/modules/role/enums/role.status-co
 import { ENUM_USER_STATUS_CODE_ERROR } from '../enums/user.status-code.enum';
 import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
-import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.interface';
+import {
+  IDatabaseCreateOptions,
+  IDatabaseSaveOptions,
+} from '@/common/database/interfaces/database.interface';
 import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
 import { UserNotSelfPipe } from '../pipes/user.not-self.pipe';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
@@ -84,6 +88,7 @@ import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.r
   path: '/user',
 })
 export class UserAdminController {
+  private readonly logger = new Logger(UserAdminController.name);
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly paginationService: PaginationService,
@@ -203,8 +208,8 @@ export class UserAdminController {
       },
     );
 
-    const session: ClientSession =
-      await this.databaseService.createTransaction();
+    // const session: ClientSession =
+    //   await this.databaseService.createTransaction();
 
     try {
       const created = await this.userService.create(
@@ -215,17 +220,16 @@ export class UserAdminController {
         },
         password,
         ENUM_USER_SIGN_UP_FROM.ADMIN,
-        { session, actionBy: createdBy } as IDatabaseCreateOptions,
+        { actionBy: createdBy } as IDatabaseCreateOptions,
       );
 
-      await this.databaseService.commitTransaction(session);
+      // await this.databaseService.commitTransaction(session);
 
       return {
         data: { _id: created._id },
       };
     } catch (err: unknown) {
-      await this.databaseService.abortTransaction(session);
-
+      //await this.databaseService.abortTransaction(session);
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',
@@ -236,19 +240,19 @@ export class UserAdminController {
 
   @UserAdminUpdateDoc()
   @Response('user.update')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @ApiKeyProtected()
+  // @PolicyAbilityProtected({
+  //   subject: ENUM_POLICY_SUBJECT.USER,
+  //   action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+  // })
+  // @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  // @UserProtected()
+  // @AuthJwtAccessProtected()
+  // @ApiKeyProtected()
   @Put('/update/:user')
   async update(
     @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
     user: UserDoc,
-    @AuthJwtPayload('user') updatedBy: string,
+    //@AuthJwtPayload('user') updatedBy: string,
     @Body() { name, role, phone }: UserUpdateRequestDto,
   ): Promise<void> {
     const checkRole = await this.roleService.findOneActiveById(role);
@@ -259,20 +263,13 @@ export class UserAdminController {
       });
     }
 
-    const session: ClientSession =
-      await this.databaseService.createTransaction();
-
     try {
       await this.userService.update(
         user,
         { name, role, phone },
-        { session, actionBy: updatedBy },
+        {} as IDatabaseSaveOptions,
       );
-
-      await this.databaseService.commitTransaction(session);
     } catch (err: unknown) {
-      await this.databaseService.abortTransaction(session);
-
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',
