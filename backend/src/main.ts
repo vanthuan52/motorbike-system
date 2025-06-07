@@ -1,5 +1,5 @@
 import { HttpAdapterHost, NestApplication, NestFactory } from '@nestjs/core';
-import { Logger, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NextFunction } from 'express';
 import { plainToInstance } from 'class-transformer';
@@ -12,6 +12,7 @@ import { AllConfigType } from './config/config.type';
 import swaggerInit from '@/swagger';
 import { MessageService } from './common/message/services/message.service';
 import { AppEnvDto } from './app/dtos/app.env.dto';
+import { RequestValidationException } from './common/request/exceptions/request.validation.exception';
 
 async function bootstrap() {
   const app: NestApplication = await NestFactory.create(AppModule, {
@@ -64,6 +65,18 @@ async function bootstrap() {
 
   // For Custom Validation
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      disableErrorMessages: false,
+      exceptionFactory: (errors) => {
+        return new RequestValidationException(errors);
+      },
+    }),
+  );
 
   // Versioning
   if (versionEnable) {
