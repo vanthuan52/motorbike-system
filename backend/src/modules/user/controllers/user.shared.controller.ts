@@ -68,22 +68,15 @@ export class UserSharedController {
     user: UserDoc,
     @Body() body: UserUpdateProfileRequestDto,
   ): Promise<void> {
-    const session: ClientSession =
-      await this.databaseService.createTransaction();
-
     try {
       await this.userService.updateProfile(
         user,
         {
           ...body,
         },
-        { session, actionBy: user._id } as IDatabaseSaveOptions,
+        { actionBy: user._id } as IDatabaseSaveOptions,
       );
-
-      await this.databaseService.commitTransaction(session);
     } catch (err: unknown) {
-      await this.databaseService.abortTransaction(session);
-
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',

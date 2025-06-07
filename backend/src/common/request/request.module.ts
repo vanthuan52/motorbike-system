@@ -23,6 +23,7 @@ import {
   LessThanEqualOtherPropertyConstraint,
   LessThanOtherPropertyConstraint,
 } from './validations/request.less-than-other-property.validation';
+import { IsPhoneNumberConstraint } from './validations/request.is-phone-number.validation';
 
 @Module({})
 export class RequestModule {
@@ -53,6 +54,7 @@ export class RequestModule {
         GreaterThanEqualOtherPropertyConstraint,
         GreaterThanOtherPropertyConstraint,
         IsPasswordConstraint,
+        IsPhoneNumberConstraint,
         IsCustomEmailContraint,
         LessThanEqualOtherPropertyConstraint,
         LessThanOtherPropertyConstraint,

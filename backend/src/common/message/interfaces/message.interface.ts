@@ -13,6 +13,7 @@ export interface IMessageSetOptions extends IMessageErrorOptions {
 export interface IMessageValidationError {
   property: string;
   message: string;
+  constraints?: { [type: string]: string };
 }
 
 export interface IMessageValidationImportErrorParam {
