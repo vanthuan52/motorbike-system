@@ -48,7 +48,7 @@ export class UserEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    ref: RoleEntity.name,
+    ref: () => RoleEntity.name,
     index: true,
     trim: true,
   })

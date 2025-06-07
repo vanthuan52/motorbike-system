@@ -3,11 +3,13 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { SessionSharedController } from '@/modules/session/controllers/session.shared.controller';
 import { SessionModule } from '@/modules/session/session.module';
 import { UserModule } from '@/modules/user/user.module';
+import { UserSharedController } from '@/modules/user/controllers/user.shared.controller';
+import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 
 @Module({
-  controllers: [SessionSharedController],
+  controllers: [SessionSharedController, UserSharedController],
   providers: [],
   exports: [],
-  imports: [UserModule, AuthModule, SessionModule],
+  imports: [UserModule, AuthModule, SessionModule, ApiKeyModule],
 })
 export class RoutesSharedModule {}

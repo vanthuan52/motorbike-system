@@ -37,11 +37,11 @@ import {
   HeadObjectCommand,
   HeadObjectCommandInput,
   HeadObjectCommandOutput,
-  NoSuchKey,
   HeadBucketCommandOutput,
   HeadBucketCommand,
   HeadBucketCommandInput,
   ListBucketsCommand,
+  NotFound,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { plainToInstance } from 'class-transformer';
@@ -50,6 +50,7 @@ import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
 import {
   IAwsS3Config,
   IAwsS3DeleteDirOptions,
+  IAwsS3FileInfo,
   IAwsS3GetItemsOptions,
   IAwsS3Options,
   IAwsS3PresignOptions,
@@ -67,7 +68,7 @@ import { AwsS3PresignRequestDto } from '@/modules/aws/dtos/request/aws.s3-presig
 import { AwsS3ResponseDto } from '@/modules/aws/dtos/response/aws.s3-response.dto';
 
 import { AwsS3PresignMultiPartResponseDto } from '@/modules/aws/dtos/response/aws.s3-presign-multipart.response.dto';
-import { FILE_SIZE_IN_BYTES } from '@/common/file/file.constant';
+import { ENUM_FILE_MIME } from '@/common/file/enums/file.enum';
 
 @Injectable()
 export class AwsS3Service implements OnModuleInit, IAwsS3Service {
@@ -105,17 +106,22 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       : this.config.public;
   }
 
-  getFileInfo(key: string) {
+  getFileInfo(key: string): IAwsS3FileInfo {
     const pathWithFilename: string = `/${key}`;
     const filename: string = key.substring(
       key.lastIndexOf('/') + 1,
       key.length,
     );
-    const mime: string = filename.substring(
+    const extension: string = filename.substring(
       filename.lastIndexOf('.') + 1,
       filename.length,
     );
-    return { pathWithFilename, filename, mime };
+    // @ts-ignore
+    const mime: ENUM_FILE_MIME = Object.values(ENUM_FILE_MIME).find((e) =>
+      e.toLowerCase().endsWith(extension.toLowerCase()),
+    );
+
+    return { pathWithFilename, filename, extension, mime };
   }
 
   async checkConnection(options?: IAwsS3Options): Promise<boolean> {
@@ -290,7 +296,6 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
       mime,
       size: file?.size!,
-      duration: file?.duration,
     };
   }
 
@@ -327,7 +332,6 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
       mime,
       size: file?.size!,
-      duration: file?.duration,
     };
   }
 
@@ -455,7 +459,6 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
       mime,
-      duration: file?.duration,
       size: file?.size!,
       lastPartNumber: 0,
       maxPartNumber: maxPartNumber,
@@ -503,7 +506,6 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       size: file?.size!,
       lastPartNumber: 0,
       maxPartNumber: maxPartNumber,
-      duration: file?.duration,
       parts: [],
     };
   }
@@ -590,6 +592,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
 
   async presignPutItem(
     key: string,
+    size: number,
     options?: IAwsS3PresignOptions,
   ): Promise<AwsS3PresignResponseDto> {
     if (key.startsWith('/')) {
@@ -597,50 +600,51 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     }
 
     const config = this.getConfig(options);
-    if (!config.client) throw new Error('Client have not been starting');
 
-    const headCommand = new HeadObjectCommand({
-      Bucket: config.bucket,
-      Key: key,
-    });
+    if (!options?.forceUpdate) {
+      const headCommand = new HeadObjectCommand({
+        Bucket: config.bucket,
+        Key: key,
+      });
 
-    try {
-      await config.client.send<HeadObjectCommandInput, HeadObjectCommandOutput>(
-        headCommand,
-      );
+      try {
+        await config.client!.send<
+          HeadObjectCommandInput,
+          HeadObjectCommandOutput
+        >(headCommand);
 
-      throw new Error(`Key ${key} is already exist`);
-    } catch (error: unknown) {
-      if (!(error instanceof NoSuchKey)) {
-        throw error;
+        throw new Error(`Key ${key} is already exists.`);
+      } catch (error: unknown) {
+        if (!(error instanceof NotFound)) {
+          throw error;
+        }
       }
     }
 
-    const filename: string = key.substring(
-      key.lastIndexOf('/') + 1,
-      key.length,
-    );
-    const mime: string = filename.substring(
-      filename.lastIndexOf('.') + 1,
-      filename.length,
-    );
-
-    const size = options?.allowedSize ?? FILE_SIZE_IN_BYTES;
+    const { extension, mime } = this.getFileInfo(key);
     const command = new PutObjectCommand({
       Bucket: config.bucket,
       Key: key,
       ContentType: mime,
       ContentLength: size,
+      ChecksumAlgorithm: 'SHA256',
     });
     const expiresIn = options?.expired ?? this.presignExpired;
-    const presignUrl = await getSignedUrl(config.client, command, {
+
+    const presignUrl = await getSignedUrl(config.client!, command, {
       expiresIn,
     });
 
-    return { expiredIn: this.presignExpired, presignUrl: presignUrl, key };
+    return {
+      expiredIn: this.presignExpired,
+      presignUrl: presignUrl,
+      key,
+      mime,
+      extension,
+    };
   }
 
-  async presignPutItemMultipart(
+  async presignPutItemPart(
     key: string,
     uploadId: string,
     partNumber: number,
@@ -651,7 +655,26 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     }
 
     const config = this.getConfig(options);
-    if (!config.client) throw new Error('Client have not been starting');
+
+    const headCommand = new HeadObjectCommand({
+      Bucket: config.bucket,
+      Key: key,
+    });
+
+    if (!options?.forceUpdate) {
+      try {
+        await config.client!.send<
+          HeadObjectCommandInput,
+          HeadObjectCommandOutput
+        >(headCommand);
+
+        throw new Error(`Key ${key} is already exist.`);
+      } catch (error: unknown) {
+        if (!(error instanceof NotFound)) {
+          throw error;
+        }
+      }
+    }
 
     const uploadPartCommand: UploadPartCommand = new UploadPartCommand({
       Bucket: config.bucket,
@@ -660,8 +683,9 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       UploadId: uploadId,
     });
 
+    const { extension, mime } = this.getFileInfo(key);
     const expiresIn = options?.expired ?? this.presignExpired;
-    const presignUrl = await getSignedUrl(config.client, uploadPartCommand, {
+    const presignUrl = await getSignedUrl(config.client!, uploadPartCommand, {
       expiresIn,
     });
 
@@ -671,6 +695,8 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       key,
       partNumber,
       uploadId,
+      mime,
+      extension,
     };
   }
 
