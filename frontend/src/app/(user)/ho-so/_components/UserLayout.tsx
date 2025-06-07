@@ -2,17 +2,12 @@
 
 import { mockUser } from "@/data/UserProfile";
 import UserProfile from "./userProfile";
-import UserSidebar from "./UserSidebar";
+import UserLayout from "@/layout/UserLayout";
 
-export default function UserLayout() {
+export default function layout() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <div>
-        <UserSidebar />
-      </div>
-      <main className="flex-grow p-4 overflow-auto">
-        <UserProfile user={mockUser} completionPercent={70} />
-      </main>
-    </div>
+    <UserLayout>
+      <UserProfile user={mockUser} completionPercent={70} />
+    </UserLayout>
   );
 }
