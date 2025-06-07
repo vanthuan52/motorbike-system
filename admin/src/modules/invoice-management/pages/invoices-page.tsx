@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Drawer } from "antd";
 import { mockInvoices } from "../mocks/Invoices";
 import InvoiceTable from "../components/invoices-page/InvoiceTable";
@@ -7,6 +7,7 @@ import InvoiceDetailPanel from "../components/invoices-page/InvoiceDetailPanel";
 import InvoiceHeader from "../components/invoices-page/InvoiceHeader";
 import CustomPagination from "../components/invoices-page/CustomPagination";
 import InvoiceCreateModal from "../components/invoices-page/InvoiceCreateModal";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function InvoicesPage() {
     const [selectedRow, setSelectedRow] = useState<typeof mockInvoices[0] | null>(null);
@@ -21,7 +22,17 @@ export default function InvoicesPage() {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [current, setCurrent] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const [dataSource, setDataSource] = useState(mockInvoices);
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        setLoading(true);
+        setDataSource(mockInvoices);
+        const timeout = setTimeout(() => {
+            setLoading(false);
+        }, 1000);
 
+        return () => clearTimeout(timeout);
+    }, []);
     const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 
     const handleSelectRow = (row: typeof mockInvoices[0] | null, keys: React.Key[]) => {
@@ -46,7 +57,7 @@ export default function InvoicesPage() {
         setTimeout(() => setLoadingTable(false), 400);
     };
 
-    const filteredData = mockInvoices.filter(inv => {
+    const filteredData = dataSource.filter(inv => {
         const matchSearch =
             !search ||
             inv.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -86,25 +97,42 @@ export default function InvoicesPage() {
                     onCreateInvoice={() => setCreateModalOpen(true)}
                     handleExportExcel={handleExportExcel}
                 />
-
-                <InvoiceTable
-                    data={pagedData}
-                    onSelectRow={(row, keys) => handleSelectRow(row, keys)}
-                    selectedRow={selectedRow || undefined}
-                    selectedRowKeys={selectedRowKeys}
-                    setSelectedRowKeys={setSelectedRowKeys}
-                    loading={loadingTable}
-                />
-                <CustomPagination
-                    current={current}
-                    pageSize={pageSize}
-                    total={filteredData.length}
-                    onChange={(page, size) => {
-                        setCurrent(page);
-                        setPageSize(size);
-                    }}
-                    pageSizeOptions={[10, 20, 50, 100]}
-                />
+                {loading ? (
+                    <SkeletonTable
+                        columns={[
+                            { title: "", width: 50, height: 50 },
+                            { title: "Mã hoá đơn", width: 100, height: 20 },
+                            { title: "Sản phẩm" },
+                            { title: "Loại phụ tùng" },
+                            { title: "Thanh toán" },
+                            { title: "Địa chỉ" },
+                            { title: "Ngày giao hàng" },
+                            { title: "Tổng tiền" },
+                        ]}
+                        rows={5}
+                    />
+                ) : (
+                    <>
+                        <InvoiceTable
+                            data={pagedData}
+                            onSelectRow={(row, keys) => handleSelectRow(row, keys)}
+                            selectedRow={selectedRow || undefined}
+                            selectedRowKeys={selectedRowKeys}
+                            setSelectedRowKeys={setSelectedRowKeys}
+                            loading={loadingTable}
+                        />
+                        <CustomPagination
+                            current={current}
+                            pageSize={pageSize}
+                            total={filteredData.length}
+                            onChange={(page, size) => {
+                                setCurrent(page);
+                                setPageSize(size);
+                            }}
+                            pageSizeOptions={[10, 20, 50, 100]}
+                        />
+                    </>
+                )}
             </div>
             {isMobile ? (
                 <Drawer

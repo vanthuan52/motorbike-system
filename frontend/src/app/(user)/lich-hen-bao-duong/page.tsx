@@ -1,6 +1,6 @@
 "use client";
 
-import UserSidebar from "../ho-so/_components/UserSidebar";
+import UserSidebar from "../../../components/ui/User/UserSidebar";
 import MaintenanceSchedule from "./_components/MaintenanceSchedule";
 
 export default function MaintenanceScheduleLayout() {

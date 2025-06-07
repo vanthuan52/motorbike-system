@@ -14,13 +14,14 @@ import { GreenSwitch } from "@/components/ui/switch";
 import { SearchInput } from "@/components/ui/search-input";
 
 import VehiclePartModal from "@/modules/vehicle-parts/components/vehicle-part-modal";
+import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function VehiclePartsPage() {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [isEdit, setIsEdit] = useState(false);
   const [assignVisible, setAssignVisible] = useState(false);
   const [selected, setSelected] = useState<any | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -141,17 +142,16 @@ export default function VehiclePartsPage() {
         </div>
 
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex gap-4">
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-                <Skeleton.Input active style={{ width: 300, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable
+            columns={[
+              { title: "STT", width: 50, height: 20 },
+              { title: "Mã hãng xe", width: 100, height: 20 },
+              { title: "Tên phụ tùng", width: 100, height: 20 },
+              { title: "Trạng thái", width: 100, height: 20 },
+              { title: "Hành động", width: 100, height: 20 },
+            ]}
+            rows={5}
+          />
         ) : (
           <Table
             dataSource={dataSource}

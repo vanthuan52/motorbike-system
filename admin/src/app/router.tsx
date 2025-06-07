@@ -7,15 +7,13 @@ import AppLayout from "@/layout/app-layout";
 const HomePage = lazy(() => import("@/pages/home-page"));
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
 const LoginPage = lazy(() => import("@/modules/auth/pages/login-page"));
-const Dashboard = lazy(
-  () => import("@/modules/dashboard/pages/dashboard")
-);
+const Dashboard = lazy(() => import("@/modules/dashboard/pages/dashboard"));
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
 );
 const EmployeeDetailsPage = lazy(
   () => import("@/modules/employees/pages/employees-detail-page")
-)
+);
 const MessagesPage = lazy(
   () => import("@/modules/messages/pages/messages-page")
 );
@@ -32,11 +30,11 @@ const VehiclePartsPage = lazy(
 
 const MaintenanceSchedule = lazy(
   () => import("@/modules/maintenance-schedule/pages/maintenance-schedule")
-)
+);
 
 const Maintenance = lazy(
   () => import("@/modules/maintenance/pages/maintenance")
-)
+);
 
 const CustomerPage = lazy(
   () => import("@/modules/customer-management/pages/customer-page")
@@ -52,13 +50,14 @@ const InvoicesDetailPage = lazy(
   () => import("@/modules/invoice-management/pages/invoices-details-page")
 );
 const RolesPage = lazy(
-  () =>
-    import("@/modules/roles-permissions/pages/roles-page")
-)
+  () => import("@/modules/roles-permissions/pages/roles-page")
+);
 const PermissionsPage = lazy(
-  () =>
-    import("@/modules/roles-permissions/pages/permissions-page")
-)
+  () => import("@/modules/roles-permissions/pages/permissions-page")
+);
+const ProductsPage = lazy(
+  () => import("@/modules/products/pages/products-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -77,7 +76,10 @@ export const router = createBrowserRouter([
       { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
       { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
       { path: ROUTER_PATH.VEHICLE_PART, element: <VehiclePartsPage /> },
-      { path: ROUTER_PATH.MAINTENANCE_SCHEDULE, element: <MaintenanceSchedule /> },
+      {
+        path: ROUTER_PATH.MAINTENANCE_SCHEDULE,
+        element: <MaintenanceSchedule />,
+      },
       { path: ROUTER_PATH.MAINTENANCE, element: <Maintenance /> },
       { path: ROUTER_PATH.CUSTOMERS, element: <CustomerPage /> },
       {
@@ -91,15 +93,15 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTER_PATH.ROLES,
-        element: (
-          <RolesPage />
-        ),
+        element: <RolesPage />,
       },
       {
         path: ROUTER_PATH.PERMISSIONS,
-        element: (
-          <PermissionsPage />
-        ),
+        element: <PermissionsPage />,
+      },
+      {
+        path: ROUTER_PATH.PRODUCTS,
+        element: <ProductsPage />,
       },
     ],
   },

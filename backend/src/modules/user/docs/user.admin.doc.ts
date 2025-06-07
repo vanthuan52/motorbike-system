@@ -17,6 +17,8 @@ import { UserProfileResponseDto } from '../dtos/response/user.profile.response.d
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
+import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
 
 export function UserAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -68,5 +70,43 @@ export function UserAdminCreateDoc(): MethodDecorator {
       httpStatus: HttpStatus.CREATED,
       dto: DatabaseIdResponseDto,
     }),
+  );
+}
+
+export function UserAdminUpdateDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'update a user',
+    }),
+    DocRequest({
+      params: UserDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserUpdateRequestDto,
+    }),
+    DocAuth({
+      xApiKey: true,
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('user.update'),
+  );
+}
+
+export function UserAdminUpdateStatusDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'update status of user',
+    }),
+    DocRequest({
+      params: UserDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserUpdateStatusRequestDto,
+    }),
+    DocAuth({
+      xApiKey: true,
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('user.updateStatus'),
   );
 }

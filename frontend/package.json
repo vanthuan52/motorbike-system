@@ -43,7 +43,8 @@
     "sass": "^1.87.0",
     "swiper": "^11.2.6",
     "validator": "^13.15.0",
-    "vietnam-provinces": "^0.0.4"
+    "vietnam-provinces": "^0.0.4",
+    "win-node-env": "^0.6.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

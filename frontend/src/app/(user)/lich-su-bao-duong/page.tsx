@@ -1,17 +1,12 @@
 "use client";
 
-import UserSidebar from "../ho-so/_components/UserSidebar";
+import UserLayout from "@/layout/UserLayout";
 import MaintenanceHistory from "./_components/MaintenanceHistory";
 
 export default function MaintenanceHistoryLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <aside>
-        <UserSidebar />
-      </aside>
-      <main className="flex-grow p-6 overflow-auto">
-        <MaintenanceHistory />
-      </main>
-    </div>
+    <UserLayout>
+      <MaintenanceHistory />
+    </UserLayout>
   );
 }

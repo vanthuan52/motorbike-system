@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import { Button, Popconfirm, Tooltip } from "antd";
 import {
   PlusCircleOutlined,
   EditOutlined,
@@ -14,6 +14,10 @@ import { mockVehicleTypes } from "@/data/MyVehicle";
 import TableReuse from "@/components/ui/Table/Table";
 import type { ColumnsType } from "antd/es/table";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
+import Image from "next/image";
+import { IMG_PLACEHOLDER } from "@/constant/application";
+import Skeleton from "../../../../components/ui/SkeletonTable";
+import SkeletonTable from "../../../../components/ui/SkeletonTable";
 
 interface MyVehicleProps {
   vehicles: Vehicle[];
@@ -79,12 +83,13 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
           style={{ width: 64, height: 48, position: "relative" }}
           className="rounded-md overflow-hidden"
         >
-          <img
-            src={url || "/images/avatar/default-avatar-moto.webp"}
+          <Image
+            src={url || IMG_PLACEHOLDER}
             alt="Vehicle"
             width={64}
             height={48}
-            style={{ objectFit: "cover" }}
+            className="object-contain w-full h-full"
+            priority
           />
         </div>
       ),
@@ -138,7 +143,7 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
     },
   ];
 
- 
+
   const filteredVehicles = vehicleData.filter(
     (vehicle) =>
       vehicle.license_plate?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -164,20 +169,19 @@ const MyVehicle = ({ vehicles }: MyVehicleProps) => {
         </div>
 
         {loading ? (
-          <div className="space-y-4 w-full">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div key={idx} className="flex gap-4 items-center">
-                <Skeleton.Avatar active size={64} shape="square" />
-                <Skeleton.Input active style={{ width: 120, height: 32 }} />
-                <Skeleton.Input active style={{ width: 150, height: 32 }} />
-                <Skeleton.Input active style={{ width: 120, height: 32 }} />
-                <Skeleton.Input active style={{ width: 120, height: 32 }} />
-                <Skeleton.Input active style={{ width: 100, height: 32 }} />
-                <Skeleton.Input active style={{ width: 80, height: 32 }} />
-                <Skeleton.Input active style={{ width: 140, height: 32 }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonTable
+            columns={[
+              { title: "Ảnh xe" },
+              { title: "Biển số" },
+              { title: "Loại xe" },
+              { title: "Dòng xe" },
+              { title: "Số máy" },
+              { title: "Số khung" },
+              { title: "Màu sắc" },
+              { title: "Hành động" },
+            ]}
+            rows={5}
+          />
         ) : (
           <TableReuse
             dataSource={filteredVehicles}

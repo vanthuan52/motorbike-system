@@ -8,8 +8,8 @@ import { FiEdit2, FiUsers } from "react-icons/fi";
 import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { TbSettingsCode } from "react-icons/tb";
 import { BiCategoryAlt, BiX } from "react-icons/bi";
-import { IoCarSportSharp } from "react-icons/io5";
 import { ROUTER_PATH } from "@/constants/router-path";
+import { FaMotorcycle } from "react-icons/fa";
 
 type MobileMenuModalProps = {
   isOpen: boolean;
@@ -34,7 +34,7 @@ const links = [
   },
   {
     label: "Hãng xe",
-    icon: <IoCarSportSharp size={24} />,
+    icon: <FaMotorcycle size={24} />,
     href: ROUTER_PATH.VEHICLE_COMPANY,
   },
   {
@@ -84,6 +84,12 @@ const links = [
     icon: <TbSettingsCode size={24} />,
     href: ROUTER_PATH.PERMISSIONS,
     label: "Quyền",
+  },
+  {
+    key: "products",
+    icon: <FaMotorcycle size={24} />,
+    href: ROUTER_PATH.PRODUCTS,
+    label: "Sản phẩm",
   },
 ];
 
