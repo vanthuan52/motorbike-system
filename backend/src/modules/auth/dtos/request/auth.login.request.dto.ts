@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export class AuthSignInRequestDto {
+export class AuthLoginRequestDto {
   @ApiProperty({
     required: true,
     example: faker.internet.email(),
@@ -19,5 +19,5 @@ export class AuthSignInRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  password: String;
+  password: string;
 }

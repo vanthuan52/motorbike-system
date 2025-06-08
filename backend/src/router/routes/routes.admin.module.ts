@@ -8,11 +8,13 @@ import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyAdminController } from '@/modules/api-key/controllers/api-key.admin.controller';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { SessionAdminController } from '@/modules/session/controllers/session.admin.controller';
+import { AuthAdminController } from '@/modules/auth/controllers/auth.admin.controller';
 
 @Module({
   controllers: [
     RoleAdminController,
     UserAdminController,
+    AuthAdminController,
     ApiKeyAdminController,
     SessionAdminController,
   ],

@@ -1,3 +1,3 @@
-import { AuthSignInResponseDto } from './auth.sign-in.response.dto';
+import { AuthLoginResponseDto } from './auth.login.response.dto';
 
-export class AuthRefreshResponseDto extends AuthSignInResponseDto {}
+export class AuthRefreshResponseDto extends AuthLoginResponseDto {}
