@@ -78,6 +78,8 @@ function FAQItem({
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  const buttonRef = useRef(null);
+  const isInView = useInView(buttonRef, { once: false });
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -99,6 +101,32 @@ export default function FAQSection() {
               onToggle={toggle}
             />
           ))}
+        </div>
+
+        <div className='flex justify-center mt-8'>
+          <motion.div
+            ref={buttonRef}
+            initial={{ opacity: 0, y: 10 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: 0.5 }}
+            className='flex justify-center mt-8'
+          >
+            <motion.a
+              href='/cau-hoi-thuong-gap'
+              className='bg-blue-600 !text-white font-semibold px-6 py-3 rounded-full text-lg hover:bg-blue-500 transition shadow-md'
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Xem thêm
+              <motion.span
+                className='inline-block transition-transform'
+                whileHover={{ x: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                →
+              </motion.span>
+            </motion.a>
+          </motion.div>
         </div>
       </div>
     </section>
