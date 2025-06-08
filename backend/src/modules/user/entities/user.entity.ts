@@ -42,7 +42,7 @@ export class UserEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
     trim: true,
-    select: false,
+    type: String,
   })
   password: string;
 
