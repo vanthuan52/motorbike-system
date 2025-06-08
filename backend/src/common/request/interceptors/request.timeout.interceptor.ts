@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
   RequestTimeoutException,
 } from '@nestjs/common';
@@ -25,14 +26,14 @@ import { ENUM_REQUEST_STATUS_CODE_ERROR } from '../enums/request.status-code.enu
 export class RequestTimeoutInterceptor
   implements NestInterceptor<Promise<any>>
 {
-  private readonly maxTimeoutInSecond: number;
+  private readonly maxTimeoutInMs: number;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly reflector: Reflector,
   ) {
-    this.maxTimeoutInSecond =
-      this.configService.get<number>('middleware.timeout')! || 30;
+    this.maxTimeoutInMs =
+      this.configService.get<number>('middleware.timeout') || 30000;
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<void> {
@@ -62,7 +63,7 @@ export class RequestTimeoutInterceptor
         );
       } else {
         return next.handle().pipe(
-          timeout(this.maxTimeoutInSecond),
+          timeout(this.maxTimeoutInMs),
           catchError((err) => {
             if (err instanceof TimeoutError) {
               throw new RequestTimeoutException({
