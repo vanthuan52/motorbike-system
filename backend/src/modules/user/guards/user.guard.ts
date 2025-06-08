@@ -34,13 +34,11 @@ export class UserGuard implements CanActivate {
     // Property 'user' does not exist on type 'IAuthJwtAccessTokenPayload | undefined'
     // const { user } = request.user;
     const user = request.user?.user ?? 'user-id-not-found';
-    this.logger.log(`user: ${user}`);
 
     const userWithRole: IUserDoc | null =
       await this.userService.findOneWithRoleById(user);
 
     if (!userWithRole) {
-      this.logger.log(`user not found`);
       throw new ForbiddenException({
         statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'user.error.notFound',

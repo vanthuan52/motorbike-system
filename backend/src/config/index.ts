@@ -6,6 +6,7 @@ import docConfig from './doc.config';
 import helperConfig from './helper.config';
 import messageConfig from './message.config';
 import userConfig from './user.config';
+import middlewareConfig from './middleware.config';
 
 export default [
   appConfig,
@@ -16,4 +17,5 @@ export default [
   debugConfig,
   messageConfig,
   userConfig,
+  middlewareConfig,
 ];

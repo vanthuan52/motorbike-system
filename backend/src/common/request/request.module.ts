@@ -36,18 +36,19 @@ export class RequestModule {
           provide: APP_INTERCEPTOR,
           useClass: RequestTimeoutInterceptor,
         },
-        {
-          provide: APP_PIPE,
-          useFactory: () =>
-            new ValidationPipe({
-              transform: true,
-              skipUndefinedProperties: true,
-              forbidUnknownValues: true,
-              errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-              exceptionFactory: async (errors: ValidationError[]) =>
-                new RequestValidationException(errors),
-            }),
-        },
+        // {
+        //   provide: APP_PIPE,
+        //   useFactory: () =>
+        //     new ValidationPipe({
+        //       transform: true,
+        //       whitelist: true,
+        //       forbidNonWhitelisted: false,
+        //       disableErrorMessages: false,
+        //       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        //       exceptionFactory: async (errors) =>
+        //         new RequestValidationException(errors),
+        //     }),
+        // },
         DateGreaterThanEqualConstraint,
         DateGreaterThanConstraint,
         DateLessThanEqualConstraint,
