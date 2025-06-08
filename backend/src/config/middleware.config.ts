@@ -19,7 +19,8 @@ export default registerAs(
         maxFileSize: bytes('100kb'), // 100kb
       },
     },
-    timeout: ms('30s'), // 30s based on ms module
+    //timeout: ms('30s'), // 30s based on ms module
+    timeout: 30000,
     cors: {
       allowMethod: ['GET', 'DELETE', 'PUT', 'PATCH', 'POST', 'HEAD', 'OPTIONS'],
       allowOrigin: process.env.MIDDLEWARE_CORS_ORIGIN?.split(',') ?? [],
