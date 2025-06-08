@@ -32,13 +32,10 @@ export class RequestTimeoutInterceptor
     private readonly reflector: Reflector,
   ) {
     this.maxTimeoutInSecond =
-      this.configService.get<number>('middleware.timeout') || 30;
+      this.configService.get<number>('middleware.timeout')! || 30;
   }
 
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler<Promise<any>>,
-  ): Observable<any> | Promise<Observable<any>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<void> {
     if (context.getType() === 'http') {
       const customTimeout = this.reflector.get<boolean>(
         REQUEST_CUSTOM_TIMEOUT_META_KEY,
@@ -57,10 +54,9 @@ export class RequestTimeoutInterceptor
             if (err instanceof TimeoutError) {
               throw new RequestTimeoutException({
                 statusCode: ENUM_REQUEST_STATUS_CODE_ERROR.TIMEOUT,
-                message: 'http.clientError.requestTimeout',
+                message: 'http.clientError.requestTimeOut',
               });
             }
-
             return throwError(() => err);
           }),
         );
@@ -71,7 +67,7 @@ export class RequestTimeoutInterceptor
             if (err instanceof TimeoutError) {
               throw new RequestTimeoutException({
                 statusCode: ENUM_REQUEST_STATUS_CODE_ERROR.TIMEOUT,
-                message: 'http.clientError.requestTimeout',
+                message: 'http.clientError.requestTimeOut',
               });
             }
             return throwError(() => err);

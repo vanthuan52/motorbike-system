@@ -12,7 +12,8 @@ export class UserRepository extends DatabaseRepositoryBase<
     {
       path: 'role',
       localField: 'role',
-      foreignField: RoleEntity.name,
+      foreignField: '_id',
+      model: RoleEntity.name,
       justOne: true,
       match: {
         isActive: true,

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
 
-export class AuthSignInResponseDto {
+export class AuthLoginResponseDto {
   @ApiProperty({
     example: 'Bearer',
     required: true,

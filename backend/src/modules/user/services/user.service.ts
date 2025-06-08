@@ -205,7 +205,7 @@ export class UserService implements IUserService {
 
   async findOneActiveById(
     _id: string,
-    options?: IDatabaseOptions,
+    options?: IDatabaseFindOneOptions,
   ): Promise<IUserDoc | null> {
     return this.userRepository.findOne<IUserDoc>(
       { _id, status: ENUM_USER_STATUS.ACTIVE },
@@ -266,6 +266,7 @@ export class UserService implements IUserService {
     const create: UserEntity = new UserEntity();
     create.name = name;
     create.email = email.toLowerCase();
+    create.phone = phone;
     create.role = role;
     create.status = ENUM_USER_STATUS.ACTIVE;
     create.password = passwordHash;

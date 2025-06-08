@@ -17,6 +17,7 @@ import { HelperStringService } from '@/common/helper/services/helper.string.serv
 import { ConfigService } from '@nestjs/config';
 import { HelperHashService } from '@/common/helper/services/helper.hash.service';
 import { DEFAULT_USER_PASSWORD } from '../constants/auth.constant';
+import { AuthLoginResponseDto } from '../dtos/response/auth.login.response.dto';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -266,7 +267,7 @@ export class AuthService implements IAuthService {
     return today > passwordExpiredConvert;
   }
 
-  createToken(user: IUserDoc, session: string) {
+  createToken(user: IUserDoc, session: string): AuthLoginResponseDto {
     const loginDate = this.helperDateService.create();
     const roleType = user.role.type;
 
@@ -298,7 +299,10 @@ export class AuthService implements IAuthService {
     };
   }
 
-  refreshToken(user: IUserDoc, refreshTokenFromRequest: string) {
+  refreshToken(
+    user: IUserDoc,
+    refreshTokenFromRequest: string,
+  ): AuthLoginResponseDto {
     const roleType = user.role.type;
 
     const payloadRefreshToken = this.payload<IAuthJwtRefreshTokenPayload>(

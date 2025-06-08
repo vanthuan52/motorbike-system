@@ -1,22 +1,19 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { isUUID } from 'class-validator';
 import { ENUM_AUTH_STATUS_CODE_ERROR } from '../../enums/auth.status-code.enum';
-import { IAuthJwtAccessTokenPayload } from '../../interfaces/auth.interface';
+import {
+  IAuthJwtAccessTokenPayload,
+  IAuthJwtRefreshTokenPayload,
+} from '../../interfaces/auth.interface';
 
 @Injectable()
 export class AuthJwtRefreshGuard extends AuthGuard('jwtRefresh') {
-  handleRequest<TUser = any>(
+  handleRequest<T = IAuthJwtRefreshTokenPayload>(
     err: any,
     user: any,
     info: any,
-    context: ExecutionContext,
-    status?: any,
-  ): TUser {
+  ): T {
     if (err || !user) {
       throw new UnauthorizedException({
         statusCode: ENUM_AUTH_STATUS_CODE_ERROR.JWT_REFRESH_TOKEN,
