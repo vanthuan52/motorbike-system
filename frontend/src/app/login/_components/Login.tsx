@@ -1,52 +1,46 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { toast } from "react-toastify";
-import InputField from "@/components/ui/InputField";
-import { validateLogin } from "@/utils/validation/Login";
-import { LoginType } from "@/types/Login";
+import { useRouter } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import AuthCard from "./AuthCard";
 import Button from "@/components/ui/Button/Button";
+import { LoginCredentials } from "@/features/auth/types";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  LoginCredentialsFormType,
+  loginCredentialsSchema,
+} from "@/features/auth/validations/auth.schema";
+import { authActions } from "@/features/auth/store/auth-slice";
+import { Form, FormItem } from "@/components/ui/Form";
+import CustomInput from "@/components/CustomInput";
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState<LoginType>({
-    email: "",
-    password: "",
+  const router = useRouter();
+
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, loading, error } = useAppSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+
+  const form = useForm<LoginCredentials>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    resolver: yupResolver(loginCredentialsSchema),
   });
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof LoginType, string>>
-  >({});
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: keyof LoginType
-  ) => {
-    const value = e.target.value;
-    const updatedData = { ...formData, [field]: value };
-    setFormData(updatedData);
-
-    const fieldError = validateLogin(updatedData)[field];
-    setErrors({ ...errors, [field]: fieldError });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const validationErrors = validateLogin(formData);
-    if (validationErrors.email || validationErrors.password) {
-      setErrors(validationErrors);
-      return;
-    }
-    try {
-      setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
-        toast.success("Đăng nhập thành công!");
-      }, 1000);
-    } catch {
-      toast.error("Đăng nhập không thành công. Vui lòng thử lại.");
-    }
+  const onSubmit: SubmitHandler<LoginCredentialsFormType> = async (values) => {
+    dispatch(authActions.loginCredentials(values));
   };
 
   return (
@@ -60,38 +54,45 @@ export default function LoginPage() {
             <p className="text-base lg:text-lg text-gray-400 mb-6">
               Chào mừng bạn đã quay trở lại
             </p>
-            <form onSubmit={handleSubmit} className="my-10">
-              <InputField
-                label="Email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={(e) => handleChange(e, "email")}
-                placeholder="example@gmail.com"
-                error={errors.email}
-                className="font-semibold"
-              />
-              <InputField
-                label="Mật khẩu"
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={(e) => handleChange(e, "password")}
-                placeholder="Nhập mật khẩu"
-                error={errors.password}
-                className="font-semibold"
-              />
-              <Button
-                label="Đăng Nhập"
-                type="submit"
-                className="w-full h-[45px] cursor-pointer"
-                loading={loading}
-              />
-            </form>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="my-10 flex gap-4 flex-col"
+              >
+                <FormItem>
+                  <CustomInput
+                    control={form.control}
+                    label="Email"
+                    type="email"
+                    name="email"
+                    placeholder="example@gmail.com"
+                  />
+                </FormItem>
+                <FormItem>
+                  <CustomInput
+                    control={form.control}
+                    label="Mật khẩu"
+                    type="password"
+                    name="password"
+                    placeholder="Nhập mật khẩu"
+                  />
+                </FormItem>
+                <span>
+                  {error && <p className="text-[16px] text-red-500">{error}</p>}
+                </span>
+                <Button
+                  label="Đăng Nhập"
+                  type="submit"
+                  className="w-full h-[45px] cursor-pointer"
+                  disabled={loading}
+                />
+              </form>
+            </Form>
+
             <p className="text-base lg:text-lg mt-4 text-center font-semibold text-gray-500">
               Bạn chưa có tài khoản?{" "}
               <Link
-                href="register"
+                href="/register"
                 className=" font-bold hover:transform hover:scale-105 duration-200"
               >
                 Đăng Ký
