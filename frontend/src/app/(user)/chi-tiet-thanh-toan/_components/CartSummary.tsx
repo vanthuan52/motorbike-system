@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Divider, Input } from "antd";
-import { fetchProductsByIds } from "../../gio-hang/_components/cart-api";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { fetchProductsByIds } from "../../gio-hang/_components/cart-api";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { Product } from "@/types/users/products/product";
 import { IMG_PLACEHOLDER } from "@/constant/application";
 

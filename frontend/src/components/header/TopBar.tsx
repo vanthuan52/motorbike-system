@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { User2, Search } from "lucide-react";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { APP_INFO } from "@/constant/application";
 import LanguageDropdown from "./LanguageDropdown";
 

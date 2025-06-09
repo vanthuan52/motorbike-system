@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { blogs } from "@/data/BlogsData";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
+
 interface BlogCardProps {
   blog: (typeof blogs)[number];
   variant?: "main" | "secondary" | "default";

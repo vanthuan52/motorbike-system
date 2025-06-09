@@ -1,4 +1,4 @@
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 
 interface NavLinkProps {
   href: string;
