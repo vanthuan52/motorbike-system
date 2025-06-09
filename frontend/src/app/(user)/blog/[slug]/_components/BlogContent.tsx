@@ -1,6 +1,6 @@
-import { Eye, Mail } from "lucide-react";
 import Image from "next/image";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { Eye, Mail } from "lucide-react";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 
 interface BlogSection {
   title: string;

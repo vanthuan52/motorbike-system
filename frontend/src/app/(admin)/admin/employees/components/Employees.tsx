@@ -12,7 +12,7 @@ import { PageHeaderReuse } from "@/components/ui/Admin/PageHeaderReuse";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 import TableReuse from "@/components/ui/Table/Table";
 import SelectField from "@/components/ui/SelectField";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { toast } from "react-toastify";
 import { EmployeeType } from "@/types/Employees";
 import EmployeesModal from "./EmployeesModal";

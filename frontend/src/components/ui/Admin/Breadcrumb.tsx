@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 
 interface BreadcrumbItem {
   label: string;

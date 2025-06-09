@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import { Suspense, useState } from "react";
 import { motion } from "framer-motion";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 
 const CartTable = dynamic(() => import("./CartTable"), { ssr: false });
 const CartTotals = dynamic(() => import("./CartTotals"), { ssr: false });

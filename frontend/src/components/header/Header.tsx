@@ -1,22 +1,18 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import {
-  Menu,
-  ShoppingBag,
-  ShoppingBasket,
-  ShoppingCart,
-  X,
-} from "lucide-react";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { useSelector } from "react-redux";
+import { Menu, ShoppingCart, X } from "lucide-react";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { ROUTER_PATH } from "@/constant/router-path";
 import NavLink from "./NavLink";
 import TopBar from "./TopBar";
 import SearchOverlay from "./SearchOverlay";
 import UserAvatar from "./UserAvatar";
 import { mockUser } from "@/data/UserProfile";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import "./styles.css";
 
 const NAV_ITEMS = [
   { href: ROUTER_PATH.SERVICES, label: "Dịch vụ" },

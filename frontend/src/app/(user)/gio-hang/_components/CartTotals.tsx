@@ -1,6 +1,7 @@
 "use client";
+
 import clsx from "clsx";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 
 export default function CartTotals({ subtotal }: { subtotal: number }) {
   const shipping = subtotal > 0 ? 45000 : 0;
