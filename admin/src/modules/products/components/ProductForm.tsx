@@ -264,7 +264,7 @@ export default function ProductForm({
           <Form.Item
             label="Tình trạng"
             name="status"
-            rules={[{ required: true, message: "Bắt buộc" }]}
+            rules={[{ required: true, message: "Vui lòng chọn tình trạng" }]}
             className="md:col-span-1"
           >
             <Select placeholder="Chọn tình trạng" size="large">
@@ -284,12 +284,7 @@ export default function ProductForm({
             />
           </Form.Item>
           <Form.Item label="Mô tả" name="description" className="md:col-span-2">
-            <Input.TextArea
-              row
-              my-10s={2}
-              placeholder="Nhập mô tả"
-              size="large"
-            />
+            <Input.TextArea rows={2} placeholder="Nhập mô tả" size="large" />
           </Form.Item>
         </div>
         <div className="sm:col-span-2 md:col-span-4 flex justify-end gap-2 w-full">

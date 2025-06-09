@@ -34,7 +34,7 @@ export default function ProductDetailsPage() {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    if (searchParams.get("edit") === "1") {
+    if (searchParams.get("edit")) {
       setIsEdit(true);
     }
   }, [location.search]);
