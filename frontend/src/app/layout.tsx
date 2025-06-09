@@ -8,6 +8,7 @@ import ToastProvider from "@/components/Toast/ToastProvider";
 import { HandleProgressOnComplete } from "@/lib/nprogress/HandleOnProgressComplete";
 import { PageProps } from "@/types/application";
 import ReduxProvider from "@/store/ReduxProvider";
+import AppInitializer from "./AppInitializer";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -41,11 +42,16 @@ export default function RootLayout({
   return (
     <AntdRegistry>
       <html lang="en">
-
         <body className={`${montserrat.variable} antialiased`}>
-          <ReduxProvider>{children}</ReduxProvider>
+          <ReduxProvider>
+            <div>
+              <AppInitializer />
+            </div>
+            {children}
+          </ReduxProvider>
         </body>
       </html>
+
       <ToastProvider />
       <HandleProgressOnComplete />
     </AntdRegistry>

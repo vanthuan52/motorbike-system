@@ -1,81 +1,43 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Button, Popconfirm, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { toast } from "react-toastify";
-import type { UploadFile } from "antd/es/upload/interface";
 import { ColumnsType } from "antd/es/table";
 import { Product } from "../types";
 import Table from "@/components/ui/table/table";
 import { mockProducts } from "../mocks/Products";
 import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
-import ProductsModal from "../components/ProductsModal";
 import { PageHeading } from "@/components/page-heading";
 import SkeletonTable from "@/components/ui/SkeletonTable";
 import { ROUTER_PATH } from "@/constants/router-path";
+import { RootState } from "@/store";
+import { productsActions } from "../store/products-slice";
 
 export default function ProductsPage() {
-  const [dataSource, setDataSource] = useState<Product[]>([]);
-  const [isEdit, setIsEdit] = useState(false);
-  const [assignVisible, setAssignVisible] = useState(false);
-  const [selected, setSelected] = useState<Product | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { products, isLoading } = useSelector(
+    (state: RootState) => state.products
+  );
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDataSource(mockProducts);
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    dispatch(productsActions.fetchProductsRequest());
+  }, [dispatch]);
   const openCreate = () => {
-    setIsEdit(false);
-    setSelected(undefined);
-    setAssignVisible(true);
+    navigate(ROUTER_PATH.CREATE_PRODUCT);
   };
   const openEdit = (record: Product) => {
-    setIsEdit(true);
-    setSelected(record);
-    setAssignVisible(true);
-    setFileList(
-      record.image
-        ? record.image.map((url, idx) => ({
-            uid: `${idx}`,
-            name: url.split("/").pop() || `image-${idx}`,
-            status: "done",
-            url,
-          }))
-        : []
-    );
+    handleView(record, true);
   };
-  const handleView = (record: Product) => {
-    navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}`);
-  };
-  const handleAssignSubmit = (values: Product) => {
-    if (isEdit && selected) {
-      setDataSource((prev) =>
-        prev.map((item) => (item.id === selected.id ? values : item))
-      );
-      handleView(values);
-      toast.success("Cập nhật sản phẩm thành công");
+  const handleView = (record: Product, editMode = false) => {
+    if (editMode) {
+      navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}?edit=1`);
     } else {
-      const newId = (() => {
-        const ids = dataSource
-          .map((item) => Number(item.id.replace("vt-", "")))
-          .filter((num) => !isNaN(num));
-        const max = ids.length ? Math.max(...ids) : 0;
-        return `vt-${max + 1}`;
-      })();
-      setDataSource((prev) => [...prev, { ...values, id: newId }]);
-      handleView(values);
-      toast.success("Tạo sản phẩm mới thành công");
+      navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}`);
     }
-    setAssignVisible(false);
   };
-  const handleDelete = (id: string) => {
-    setDataSource((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Xóa sản phẩm thành công");
+  const handleDelete = (slug: string) => {
+    dispatch(productsActions.deleteProductRequest(slug));
   };
   const categoryMap = Object.fromEntries(
     mockDataTableVehiclePart.map((item) => [item.id, item.name])
@@ -196,13 +158,13 @@ export default function ProductsPage() {
   ];
 
   return (
-    <div className="sm:px-4 pt-8 sm:pt-0">
+    <div className="sm:px-4 my-10 sm:pt-0">
       <PageHeading
         title="Sản phẩm"
         onClickAdd={openCreate}
         addButtonLabel="Thêm sản phẩm"
       />
-      {loading ? (
+      {isLoading ? (
         <SkeletonTable
           columns={[
             { title: "ID", width: 100, height: 50 },
@@ -219,21 +181,12 @@ export default function ProductsPage() {
         />
       ) : (
         <Table
-          dataSource={dataSource}
+          dataSource={products}
           columns={columns}
           rowKey="id"
           pagination={{ pageSize: 5 }}
         />
       )}
-      <ProductsModal
-        visible={assignVisible}
-        mode={isEdit ? "edit" : "create"}
-        initialData={selected}
-        onCancel={() => setAssignVisible(false)}
-        onSubmit={handleAssignSubmit}
-        fileList={fileList}
-        setFileList={setFileList}
-      />
     </div>
   );
 }

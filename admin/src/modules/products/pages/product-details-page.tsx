@@ -1,8 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
-import { Tag, Button } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { Tag, Button, Form } from "antd";
+import { toast } from "react-toastify";
+import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
+import type { UploadFile } from "antd/es/upload/interface";
 import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
 import { IMG_PLACEHOLDER } from "@/constants/application";
 import SkeletonProductDetails from "../components/SkeletonProductDetails";
@@ -10,12 +12,9 @@ import ProductInfo from "../components/ProductInfo";
 import ProductImageGallery from "../components/ProductImageGallery";
 import { RootState } from "@/store";
 import { productsActions } from "../store/products-slice";
-
-const statusMap = {
-  in_stock: { color: "green", label: "Còn hàng" },
-  out_of_stock: { color: "red", label: "Hết hàng" },
-  out_of_business: { color: "gray", label: "Ngừng Kinh doanh" },
-};
+import ProductForm from "../components/ProductForm";
+import { statusMap } from "../constant";
+import SkeletonProductForm from "../components/SkeletonProductForm";
 
 function formatPrice(price: number) {
   return `${price.toLocaleString("vi-VN")} vnđ`;
@@ -23,17 +22,36 @@ function formatPrice(price: number) {
 
 export default function ProductDetailsPage() {
   const params = useParams();
+  const location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { productDetail, isDetailLoading } = useSelector(
     (state: RootState) => state.products
   );
 
+  const [isEdit, setIsEdit] = useState(false);
+  const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get("edit") === "1") {
+      setIsEdit(true);
+    }
+  }, [location.search]);
   useEffect(() => {
     if (params.slug) {
       dispatch(productsActions.fetchProductDetailRequest(params.slug));
     }
   }, [dispatch, params.slug]);
+
+  useEffect(() => {
+    if (productDetail) {
+      form.setFieldsValue({
+        ...productDetail,
+        colors: productDetail.colors || [],
+      });
+    }
+  }, [productDetail, form]);
 
   const categoryName = useMemo(() => {
     if (!productDetail) return "";
@@ -42,6 +60,10 @@ export default function ProductDetailsPage() {
     );
     return found?.name || productDetail.category_id;
   }, [productDetail]);
+
+  if (isDetailLoading && isEdit) {
+    return <SkeletonProductForm />;
+  }
 
   if (isDetailLoading) {
     return <SkeletonProductDetails />;
@@ -60,22 +82,48 @@ export default function ProductDetailsPage() {
       ? productDetail.image
       : [IMG_PLACEHOLDER];
 
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      await dispatch(productsActions.updateProductRequest(values));
+      toast.success("Cập nhật sản phẩm thành công!");
+      setIsEdit(false);
+      dispatch(productsActions.fetchProductDetailRequest(params.slug));
+    } catch {
+      toast.error("Có lỗi xảy ra khi cập nhật!");
+    }
+  };
+
+  if (isEdit) {
+    return (
+      <ProductForm
+        initialValues={productDetail}
+        onSubmit={handleSave}
+        onCancel={() => setIsEdit(false)}
+        mode="edit"
+        fileList={fileList}
+        setFileList={setFileList}
+      />
+    );
+  }
   return (
-    <div className="sm:px-4 my-10 sm:mt-2 mx-4 bg-white rounded-xl shadow p-6">
-      <div className="flex gap-2 items-center mb-6 w-full">
+    <div className="sm:px-4 mt-10 mb-3 sm:mt-10 sm:mb-3 lg:my-8 mx-4 bg-white rounded-xl shadow p-6">
+      <div className="flex gap-2 items-center mb-2 w-full">
         <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>
           Quay lại
         </Button>
-        <div className="sm:text-2xl font-bold">
-          Chi tiết sản phẩm{" "}
-          <span className="text-gray-500">{productDetail.name}</span>
-        </div>
+        <Button icon={<EditOutlined />} onClick={() => setIsEdit(true)}>
+          Chỉnh sửa
+        </Button>
+      </div>
+      <div className="sm:text-2xl font-bold flex-1 mb-2">
+        Chi tiết sản phẩm{" "}
+        <span className="text-gray-500">{productDetail.name}</span>
       </div>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex flex-col items-center w-full lg:w-1/2">
           <ProductImageGallery images={images} />
         </div>
-
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
           <ProductInfo label="Mã sản phẩm" value={productDetail.sku} />
           <ProductInfo label="Tên sản phẩm" value={productDetail.name} />

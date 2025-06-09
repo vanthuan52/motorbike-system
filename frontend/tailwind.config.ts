@@ -6,7 +6,7 @@ const config: Config = {
   theme: {
     extend: {},
     screens: {
-      md: "769px", // 👈 đổi md thành 769px
+      md: "769px",
     },
   },
   plugins: [],
