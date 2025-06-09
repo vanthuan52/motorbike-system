@@ -5,7 +5,7 @@ import { Avatar } from "antd";
 import { MdOutlineSearch } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { UserMessage } from "@/types/Messages";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 interface ChatHeaderProps {
   user: UserMessage;
   onToggleMediaSidebar: () => void;

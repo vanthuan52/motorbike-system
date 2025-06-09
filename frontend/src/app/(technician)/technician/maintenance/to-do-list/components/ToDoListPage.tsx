@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Checkbox, Button, Card, Popover } from "antd";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
 import { FaArrowLeft } from "react-icons/fa";
 import { BiInfoCircle } from "react-icons/bi";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 
 const partLabels: Record<string, string> = {
   glass: "Kính",

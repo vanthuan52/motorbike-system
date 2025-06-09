@@ -1,9 +1,9 @@
-import { IMG_PLACEHOLDER } from "@/constant/application";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
-import { Product } from "@/types/users/products/product";
+import { useState } from "react";
 import { ConfigProvider, Image } from "antd";
 import { Eye } from "lucide-react";
-import { useState } from "react";
+import { IMG_PLACEHOLDER } from "@/constant/application";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
+import { Product } from "@/types/users/products/product";
 
 interface ProductCardProps {
   product: Product;

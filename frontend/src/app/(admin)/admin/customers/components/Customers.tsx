@@ -8,7 +8,7 @@ import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
 import TableReuse from "@/components/ui/Table/Table";
 
 import SelectField from "@/components/ui/SelectField";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { Eye } from "lucide-react";
 export default function Customers() {
   const [dataSource, setDataSource] = useState(mockDataTableManageCustomers);

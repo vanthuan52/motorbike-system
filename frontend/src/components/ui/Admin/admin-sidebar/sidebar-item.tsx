@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Tooltip } from "antd";
 import { useEffect } from "react";
 import { SidebarMenuItem } from "@/types/application";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { usePathname } from "next/navigation";
 interface Props {
   item: SidebarMenuItem;

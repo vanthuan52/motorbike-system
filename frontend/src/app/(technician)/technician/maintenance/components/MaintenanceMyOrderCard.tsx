@@ -1,7 +1,7 @@
 import { Wrench } from "lucide-react";
 import moment from "moment";
 import { Appointment } from "@/types/Appointment";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 interface Props {
   order: Appointment;
   getCustomerName: (id: string) => string;
@@ -46,12 +46,8 @@ export default function MaintenanceMyOrderCard({
           </select>
         </div>
       </div>
-      <CustomLink
-        href={`/technician/maintenance/${order.id}`}
-        >
-       <Wrench
-        className="text-gray-500 mt-1 cursor-pointer"
-      />
+      <CustomLink href={`/technician/maintenance/${order.id}`}>
+        <Wrench className="text-gray-500 mt-1 cursor-pointer" />
       </CustomLink>
     </div>
   );

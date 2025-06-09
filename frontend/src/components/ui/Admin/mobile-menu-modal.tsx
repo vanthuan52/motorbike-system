@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { RxHome } from "react-icons/rx";
 import { ROUTER_PATH } from "@/constant/router-path";
-import { CustomLink } from "@/shared/components/CustomerLink/CustomLink";
+import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { FiEdit2, FiUsers } from "react-icons/fi";
