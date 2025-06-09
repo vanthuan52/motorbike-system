@@ -9,7 +9,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import {
   updateCartItem,
   deleteFromCart,
-} from "@/store/features/cart/cart-slice";
+} from "@/features/cart/store/cart-slice";
 import { fetchProductsByIds } from "./cart-api";
 import Skeleton from "./Skeleton";
 import { Product } from "@/types/users/products/product";
@@ -98,8 +98,15 @@ export default function CartTable({
                 >
                   <div className="flex justify-center items-center">
                     <div className="py-1 sm:py-2 px-1 sm:px-2 align-middle">
-                      <RiDeleteBin6Line size={24} onClick={() => handleRemove(p.id)} className="cursor-pointer hover:text-red-500" />
-                      <FaHeart size={24} className="cursor-pointer hover:text-pink-500 hover:!fill-pink-500 mt-2" />
+                      <RiDeleteBin6Line
+                        size={24}
+                        onClick={() => handleRemove(p.id)}
+                        className="cursor-pointer hover:text-red-500"
+                      />
+                      <FaHeart
+                        size={24}
+                        className="cursor-pointer hover:text-pink-500 hover:!fill-pink-500 mt-2"
+                      />
                     </div>
                     <div className="py-1 sm:py-2 px-1 sm:px-2">
                       <div className="flex items-center gap-2 sm:gap-3">

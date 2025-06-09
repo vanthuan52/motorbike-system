@@ -4,7 +4,7 @@ import { CiHeart } from "react-icons/ci";
 import { Product } from "@/types/users/products/product";
 import { mockDataTableVehiclePart } from "@/data/TableData";
 import { toast } from "react-toastify";
-import { addToCart } from "@/store/features/cart/cart-slice";
+import { addToCart } from "@/features/cart/store/cart-slice";
 import { useDispatch } from "react-redux";
 interface ProductInfoProps {
   product: Product;

@@ -1,15 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { LoginCredentials } from "../types";
 
 interface AuthState {
   isAuthenticated: boolean;
-  isLoading: boolean;
+  loading: boolean;
   error: string | null;
-  user?: any; // need to fix
+  user?: any;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
-  isLoading: false,
+  loading: false,
   error: null,
   user: undefined,
 };
@@ -18,38 +19,51 @@ export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // // need to fix
-    login: (state, action: PayloadAction<any>) => {
+    loginCredentials: (state, action: PayloadAction<LoginCredentials>) => {
       state.isAuthenticated = false;
-      state.isLoading = true;
+      state.loading = true;
       state.error = null;
     },
-    loginSuccess: (state) => {
+    loginCredentialsSuccess: (state) => {
       state.isAuthenticated = true;
-      state.isLoading = false;
+      state.loading = false;
       state.error = null;
     },
-    loginFailure: (state, action: PayloadAction<string>) => {
+    loginCredentialsFailure: (state, action: PayloadAction<string>) => {
       state.isAuthenticated = false;
-      state.isLoading = false;
+      state.loading = false;
       state.error = action.payload;
     },
 
     register: (state, action: PayloadAction<any>) => {
-      state.isLoading = true;
+      state.loading = true;
       state.error = null;
     },
     registerSuccess: (state) => {
-      state.isLoading = false;
+      state.loading = false;
       state.error = null;
     },
     registerFailure: (state, action: PayloadAction<string>) => {
-      state.isLoading = false;
+      state.loading = false;
       state.error = action.payload;
     },
 
     clearAuthError: (state) => {
       state.error = null;
+    },
+
+    rehydrateAuth: (state) => {
+      state.loading = true;
+    },
+    rehydrateSuccess: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.loading = false;
+    },
+    rehydrateFailure: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.loading = false;
     },
   },
 });
