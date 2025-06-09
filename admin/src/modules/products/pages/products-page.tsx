@@ -31,7 +31,7 @@ export default function ProductsPage() {
   };
   const handleView = (record: Product, editMode = false) => {
     if (editMode) {
-      navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}?edit=1`);
+      navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}?edit=${record.id}`);
     } else {
       navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}`);
     }

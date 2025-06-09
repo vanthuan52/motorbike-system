@@ -20,5 +20,5 @@ export const ROUTER_PATH = {
   PERMISSIONS: "/permissions",
   PRODUCTS: "/products",
   PRODUCTS_DETAILS: "/products/:slug",
-  CREATE_PRODUCT: "/products/create",
+  CREATE_PRODUCT: "/products/new",
 };

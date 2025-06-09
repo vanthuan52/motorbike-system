@@ -63,7 +63,7 @@ const ProductDetailsPage = lazy(
 );
 const CreateProductPage = lazy(
   () => import("@/modules/products/pages/create-product-page")
-)
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
