@@ -51,6 +51,33 @@ export const productsSlice = createSlice({
       state.detailError = action.payload;
       state.productDetail = null;
     },
+    updateProductRequest(state) {
+      state.error = null;
+    },
+    updateProductSuccess(state) {
+      state.error = null;
+    },
+    updateProductFailure(state, action) {
+      state.error = action.payload;
+    },
+    createProductRequest(state) {
+      state.error = null;
+    },
+    createProductSuccess(state) {
+      state.error = null;
+    },
+    createProductFailure(state, action) {
+      state.error = action.payload;
+    },
+    deleteProductRequest(state, action) {
+      state.error = null;
+    },
+    deleteProductSuccess(state) {
+      state.error = null;
+    },
+    deleteProductFailure(state, action) {
+      state.error = action.payload;
+    },
   },
 });
 
