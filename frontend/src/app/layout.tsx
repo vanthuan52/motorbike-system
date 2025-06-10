@@ -44,9 +44,7 @@ export default function RootLayout({
       <html lang="en">
         <body className={`${montserrat.variable} antialiased`}>
           <ReduxProvider>
-            <div>
-              <AppInitializer />
-            </div>
+            <AppInitializer />
             {children}
           </ReduxProvider>
         </body>

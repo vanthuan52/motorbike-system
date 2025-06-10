@@ -8,7 +8,7 @@ function AppInitializer() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(authActions.rehydrateAuth());
+    dispatch(authActions.getUserProfile());
   }, [dispatch]);
 
   return null;

@@ -32,7 +32,6 @@ import { UserUserDeleteDoc } from '../docs/user.user.doc';
 })
 export class UserUserController {
   constructor(
-    private readonly databaseService: DatabaseService,
     private readonly userService: UserService,
     private readonly messageService: MessageService,
     private readonly sessionService: SessionService,
@@ -48,23 +47,16 @@ export class UserUserController {
   async delete(
     @AuthJwtPayload('user', UserParsePipe) user: UserDoc,
   ): Promise<void> {
-    const session: ClientSession =
-      await this.databaseService.createTransaction();
-
     try {
       await this.userService.softDelete(user, {
-        session,
         actionBy: user._id,
       });
 
-      await this.sessionService.updateManyRevokeByUser(user._id, {
-        session,
-      } as IDatabaseUpdateManyOptions);
-
-      await this.databaseService.commitTransaction(session);
+      await this.sessionService.updateManyRevokeByUser(
+        user._id,
+        {} as IDatabaseUpdateManyOptions,
+      );
     } catch (err: unknown) {
-      await this.databaseService.abortTransaction(session);
-
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',

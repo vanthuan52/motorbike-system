@@ -1,5 +1,3 @@
-"use client";
-
 import { CameraOutlined } from "@ant-design/icons";
 
 export default function Banner() {
@@ -12,7 +10,7 @@ export default function Banner() {
       />
       <button className="absolute right-4 bottom-4 bg-white px-3 py-1 rounded-md shadow hover:bg-gray-100 text-sm flex items-center gap-1">
         <CameraOutlined style={{ fontSize: 16 }} />
-            <span className="hidden sm:inline">Thêm ảnh bìa</span>
+        <span className="hidden sm:inline">Thêm ảnh bìa</span>
       </button>
     </div>
   );

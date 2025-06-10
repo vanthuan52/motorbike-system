@@ -1,56 +1,65 @@
-import { AxiosError } from "axios";
-import { publicApi } from "@/api";
+import localStorageHelper from "@/utils/local-storage.helper";
 import {
   AuthLoginResponse,
   AuthLoginResponseData,
+  AuthRefreshTokenResponse,
   AuthRefreshTokenResponseData,
   LoginCredentials,
 } from "./types";
-import { API_ENDPOINTS } from "@/constant/api-endpoint";
-import { ApiErrorResponse } from "@/types/api.type";
+import {
+  ACCESS_TOKEN_EXPIRES_IN_KEY,
+  ACCESS_TOKEN_KEY,
+} from "@/constant/constant";
 
 const authService = {
   loginCredentials: async (
     credentials: LoginCredentials
   ): Promise<AuthLoginResponseData> => {
     try {
-      const response = await publicApi.post<AuthLoginResponse>(
-        API_ENDPOINTS.AUTH_LOGIN_CREDENTIAL,
-        credentials
-      );
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify(credentials),
+        headers: { "Content-Type": "application/json" },
+      });
 
-      if (response.data.statusCode === 200 && response.data.data) {
-        const { tokenType, roleType, expiresIn, accessToken, refreshToken } =
-          response.data.data;
-        return { tokenType, roleType, expiresIn, accessToken, refreshToken };
-      } else {
-        throw new Error(response.data.message || "Login failed. Try again.");
+      const result: AuthLoginResponse = await response.json();
+
+      if (!response.ok || !result.data) {
+        throw new Error(result?.message || "Login failed. Try again.");
       }
-    } catch (error: any) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      throw new Error(
-        axiosError.response?.data.message || "An unexpected error."
+      localStorageHelper.setItem(ACCESS_TOKEN_KEY, result.data.accessToken);
+      localStorageHelper.setItem(
+        ACCESS_TOKEN_EXPIRES_IN_KEY,
+        result.data.expiresIn.toString()
       );
+      return result.data;
+    } catch (error: any) {
+      throw new Error(error?.message || "An unexpected error.");
     }
   },
 
   refreshToken: async (): Promise<AuthRefreshTokenResponseData> => {
     try {
-      const response = await publicApi.post<AuthLoginResponse>(
-        API_ENDPOINTS.AUTH_REFRESH_TOKEN
-      );
-      if (response.data.statusCode === 200 && response.data.data) {
-        const { tokenType, roleType, expiresIn, accessToken, refreshToken } =
-          response.data.data;
-        return { tokenType, roleType, expiresIn, accessToken, refreshToken };
-      } else {
-        throw new Error(response.data.message || "Refresh token failed.");
+      const response = await fetch("/api/auth/refresh-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const result: AuthRefreshTokenResponse = await response.json();
+
+      if (!response.ok || !result.data) {
+        throw new Error(result?.message || "Refresh token failed");
       }
-    } catch (error: any) {
-      const axiosError = error as AxiosError<ApiErrorResponse>;
-      throw new Error(
-        axiosError.response?.data.message || "An unexpected error."
+
+      localStorageHelper.setItem(ACCESS_TOKEN_KEY, result.data.accessToken);
+      localStorageHelper.setItem(
+        ACCESS_TOKEN_EXPIRES_IN_KEY,
+        result.data.expiresIn.toString()
       );
+
+      return result.data;
+    } catch (error: any) {
+      throw new Error(error?.message || "An unexpected error.");
     }
   },
 };

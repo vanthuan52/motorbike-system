@@ -47,7 +47,7 @@ export class UserSharedController {
   @Response('user.profile')
   @UserProtected()
   @AuthJwtAccessProtected()
-  @ApiKeyProtected()
+  //@ApiKeyProtected()
   @Get('/profile')
   async profile(
     @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserActiveParsePipe)

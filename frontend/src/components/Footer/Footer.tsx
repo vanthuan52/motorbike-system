@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { CustomLink } from "../../components/CustomerLink/CustomLink";
 import { ROUTER_PATH } from "@/constant/router-path";
 
@@ -134,7 +133,7 @@ export default function Footer() {
                   href="#"
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2 justify-center"
                 >
-                  <Image
+                  <img
                     src="/images/google-play.png"
                     alt="Google Play"
                     width={130}
@@ -148,7 +147,7 @@ export default function Footer() {
                   href="#"
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2 justify-center"
                 >
-                  <Image
+                  <img
                     src="/images/apple-store.png"
                     alt="Apple Store"
                     width={130}

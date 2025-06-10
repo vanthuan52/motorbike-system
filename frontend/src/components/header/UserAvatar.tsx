@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { UserType } from "@/types/User";
-
 import {
   CalendarOutlined,
   CarOutlined,
@@ -14,7 +12,11 @@ import {
   CustomerServiceOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { User2 } from "lucide-react";
+import { LogIn, User2 } from "lucide-react";
+import { useAppSelector } from "@/store";
+import { ROUTER_PATH } from "@/constant/router-path";
+import { UserType } from "@/types/User";
+import { CustomLink } from "../CustomerLink/CustomLink";
 
 interface UserAvatarProps {
   user?: UserType | null;
@@ -28,24 +30,38 @@ type MenuItem = {
 };
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: "Hồ sơ cá nhân", href: "/ho-so", icon: <UserOutlined /> },
+  { label: "Hồ sơ cá nhân", href: ROUTER_PATH.ACCOUNT, icon: <UserOutlined /> },
   {
     label: "Lịch hẹn bảo dưỡng",
-    href: "/lich-hen-bao-duong",
+    href: ROUTER_PATH.SERVICE_APPOINTMENT,
     icon: <CalendarOutlined />,
   },
-  { label: "Xe của tôi", href: "/quan-ly-phuong-tien", icon: <CarOutlined /> },
+  {
+    label: "Xe của tôi",
+    href: ROUTER_PATH.VEHICLE_MANAGEMENT,
+    icon: <CarOutlined />,
+  },
   {
     label: "Lịch sử bảo dưỡng",
-    href: "/lich-su-bao-duong",
+    href: ROUTER_PATH.SERVICE_HISTORY,
     icon: <HistoryOutlined />,
   },
-  { label: "Cài đặt tài khoản", href: "/cai-dat", icon: <SettingOutlined /> },
-  { label: "Hỗ trợ", href: "/ho-tro", icon: <CustomerServiceOutlined /> },
-  { label: "Đăng xuất", href: "/logout", icon: <LogoutOutlined /> },
+  {
+    label: "Cài đặt tài khoản",
+    href: ROUTER_PATH.SETTING,
+    icon: <SettingOutlined />,
+  },
+  {
+    label: "Hỗ trợ",
+    href: ROUTER_PATH.SUPPORT,
+    icon: <CustomerServiceOutlined />,
+  },
+  { label: "Đăng xuất", href: ROUTER_PATH.LOGOUT, icon: <LogoutOutlined /> },
 ];
 
 export default function UserAvatar({ user, className }: UserAvatarProps) {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -81,27 +97,35 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
           />
         ) : (
           <User2 className="object-cover" size={18} />
-          //   <img
-          //     src="/images/avatar/default-avatar.jpeg"
-          //     alt="Default avatar"
-          //     className="object-cover w-full h-full"
-          // />
         )}
       </button>
 
       {menuOpen && (
         <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50">
-          {MENU_ITEMS.map(({ label, href, icon }) => (
-            <Link
-              key={label}
-              href={href}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-700 text-sm cursor-pointer"
+          {isAuthenticated ? (
+            <>
+              {MENU_ITEMS.map(({ label, href, icon }) => (
+                <CustomLink
+                  key={label}
+                  href={href}
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-700 text-sm cursor-pointer"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {icon}
+                  <span>{label}</span>
+                </CustomLink>
+              ))}
+            </>
+          ) : (
+            <CustomLink
+              href={ROUTER_PATH.LOGIN}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-black text-sm cursor-pointer"
               onClick={() => setMenuOpen(false)}
             >
-              {icon}
-              <span>{label}</span>
-            </Link>
-          ))}
+              <LogIn size={18} />
+              <span>Login</span>
+            </CustomLink>
+          )}
         </div>
       )}
     </div>
