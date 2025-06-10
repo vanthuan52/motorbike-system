@@ -11,10 +11,9 @@ const sections: PolicySection[] = [
     title: "1. Giới thiệu",
     content: (
       <p>
-        <strong>Motobike</strong> cam kết bảo vệ quyền
-        riêng tư và thông tin cá nhân của bạn. Chính sách này giải thích cách
-        chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ thông tin cá nhân khi
-        bạn sử dụng dịch vụ.
+        <strong>Motobike</strong> cam kết bảo vệ quyền riêng tư và thông tin cá
+        nhân của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử
+        dụng, lưu trữ và bảo vệ thông tin cá nhân khi bạn sử dụng dịch vụ.
       </p>
     ),
   },
@@ -29,7 +28,8 @@ const sections: PolicySection[] = [
           <strong>Dữ liệu kỹ thuật:</strong> IP, trình duyệt, thiết bị truy cập.
         </li>
         <li>
-          <strong>Dữ liệu sử dụng:</strong> lịch sử truy cập, đặt lịch bảo dưỡng.
+          <strong>Dữ liệu sử dụng:</strong> lịch sử truy cập, đặt lịch bảo
+          dưỡng.
         </li>
         <li>
           <strong>Dữ liệu cookies:</strong> theo dõi hành vi sử dụng.
@@ -164,32 +164,36 @@ export default function PrivacyPolicyAccordion() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        Chính sách bảo mật
-      </h2>
-      <div className="space-y-4">
-        {sections.map((section, index) => (
-          <div
-            key={index}
-            className="border border-gray-200 rounded-lg shadow-sm"
-          >
-            <button
-              onClick={() => toggle(index)}
-              className="w-full text-left px-4 py-3 bg-white hover:bg-gray-50 rounded-t-lg flex justify-between items-center"
+    <div className="py-8">
+      <div className="container">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Chính sách bảo mật
+        </h2>
+        <div className="space-y-4">
+          {sections.map((section, index) => (
+            <div
+              key={index}
+              className="border border-gray-200 rounded-lg shadow-sm"
             >
-              <span className="font-medium text-gray-800">{section.title}</span>
-              <span className="text-xl text-gray-500">
-                {openIndex === index ? "−" : "+"}
-              </span>
-            </button>
-            {openIndex === index && (
-              <div className="px-4 py-3 bg-gray-50 text-gray-700">
-                {section.content}
-              </div>
-            )}
-          </div>
-        ))}
+              <button
+                onClick={() => toggle(index)}
+                className="w-full text-left px-4 py-3 bg-white hover:bg-gray-50 rounded-t-lg flex justify-between items-center"
+              >
+                <span className="font-medium text-gray-800">
+                  {section.title}
+                </span>
+                <span className="text-xl text-gray-500">
+                  {openIndex === index ? "−" : "+"}
+                </span>
+              </button>
+              {openIndex === index && (
+                <div className="px-4 py-3 bg-gray-50 text-gray-700">
+                  {section.content}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

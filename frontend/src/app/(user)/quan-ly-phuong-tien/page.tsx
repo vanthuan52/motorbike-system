@@ -1,5 +1,5 @@
 import React from "react";
-import MyVehicleLayout from "./_components/MyVehicleLayout";
+import MyVehicle from "./_components/MyVehicle";
 export default function page() {
-  return <MyVehicleLayout />;
+  return <MyVehicle />;
 }

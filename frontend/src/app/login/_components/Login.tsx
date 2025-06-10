@@ -16,6 +16,7 @@ import {
 import { authActions } from "@/features/auth/store/auth-slice";
 import { Form, FormItem } from "@/components/ui/Form";
 import CustomInput from "@/components/CustomInput";
+import { ROUTER_PATH } from "@/constant/router-path";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,6 +25,12 @@ export default function LoginPage() {
   const { isAuthenticated, loading, error } = useAppSelector(
     (state) => state.auth
   );
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace(ROUTER_PATH.HOME);
+    }
+  }, [isAuthenticated]);
 
   const form = useForm<LoginCredentials>({
     defaultValues: {

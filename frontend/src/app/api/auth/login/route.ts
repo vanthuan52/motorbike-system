@@ -9,6 +9,7 @@ import {
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/constant/constant";
 import { APP_CONFIG } from "@/config";
 import { formatToApiUrl } from "@/utils/format-to-api-url";
+import { convertTimeToSeconds } from "@/utils/jwt.utils";
 
 /**
  * API route: /api/auth/login
@@ -69,7 +70,7 @@ export async function POST(req: NextRequest) {
       secure: APP_CONFIG.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 15,
+      maxAge: convertTimeToSeconds(APP_CONFIG.ACCESS_TOKEN_EXPIRED) || 60 * 60, // 1 hour
     });
 
     (await cookieStore).set(REFRESH_TOKEN_KEY, responseData.refreshToken, {
@@ -77,7 +78,9 @@ export async function POST(req: NextRequest) {
       secure: APP_CONFIG.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge:
+        convertTimeToSeconds(APP_CONFIG.REFRESH_TOKEN_EXPIRED) ||
+        60 * 60 * 24 * 7, // 7 days
     });
 
     return NextResponse.json({

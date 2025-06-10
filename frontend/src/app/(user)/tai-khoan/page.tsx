@@ -11,7 +11,9 @@ import ProfileUpdateForm from "./_components/profile-update-form";
 import ProfileCompletion from "./_components/profile-completion";
 
 function page() {
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user, loading } = useAppSelector(
+    (state) => state.auth
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -21,7 +23,7 @@ function page() {
   }, [isAuthenticated]);
 
   return (
-    <div>
+    <div className="container">
       <Banner />
       <AvatarSection user={user} />
       <UserInfo user={user} />

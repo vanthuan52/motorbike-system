@@ -46,7 +46,9 @@ const MaintenanceScheduleList = () => {
   const [data, setData] = useState<MaintenanceSchedule[]>([]);
   const [filteredData, setFilteredData] = useState<MaintenanceSchedule[]>([]);
   const [dateRange, setDateRange] = useState<any>(null);
-  const [editingItem, setEditingItem] = useState<MaintenanceSchedule | null>(null);
+  const [editingItem, setEditingItem] = useState<MaintenanceSchedule | null>(
+    null
+  );
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
@@ -94,9 +96,11 @@ const MaintenanceScheduleList = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-r">
+    <div className="py-8 min-h-screen bg-gradient-to-r">
       <div className="mb-6 flex items-center gap-3">
-        <h2 className="text-xl font-semibold text-gray-800">Lịch hẹn bảo dưỡng</h2>
+        <h2 className="text-xl font-semibold text-gray-800">
+          Lịch hẹn bảo dưỡng
+        </h2>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
@@ -106,11 +110,8 @@ const MaintenanceScheduleList = () => {
           className="w-full sm:w-auto"
           placeholder={["Từ ngày", "Đến ngày"]}
         />
-       
-        <Button
-          icon={<SearchOutlined />}
-          onClick={handleFilter} type="primary"
-        >
+
+        <Button icon={<SearchOutlined />} onClick={handleFilter} type="primary">
           Tìm kiếm
         </Button>
       </div>
@@ -135,7 +136,9 @@ const MaintenanceScheduleList = () => {
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-                  <ClockCircleOutlined style={{ fontSize: 16, color: "#3B82F6" }} />
+                  <ClockCircleOutlined
+                    style={{ fontSize: 16, color: "#3B82F6" }}
+                  />
                   {item.time}
                 </div>
 

@@ -7,8 +7,8 @@ import "@ant-design/v5-patch-for-react-19";
 import ToastProvider from "@/components/Toast/ToastProvider";
 import { HandleProgressOnComplete } from "@/lib/nprogress/HandleOnProgressComplete";
 import { PageProps } from "@/types/application";
-import ReduxProvider from "@/store/ReduxProvider";
-import AppInitializer from "./AppInitializer";
+import ReduxProvider from "@/components/ReduxProvider";
+import AppInitializer from "./app-initializer";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -23,7 +23,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata | null> {
   try {
     return {
-      title: "Title",
+      title: "Motorbike",
       description: "Description",
       keywords: "abc",
       metadataBase: null,
@@ -47,11 +47,10 @@ export default function RootLayout({
             <AppInitializer />
             {children}
           </ReduxProvider>
+          <ToastProvider />
+          <HandleProgressOnComplete />
         </body>
       </html>
-
-      <ToastProvider />
-      <HandleProgressOnComplete />
     </AntdRegistry>
   );
 }
