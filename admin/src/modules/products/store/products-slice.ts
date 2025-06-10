@@ -3,6 +3,7 @@ import { Product } from "../types";
 
 interface ProductsState {
   products: Product[];
+  total: number;
   isLoading: boolean;
   error: string | null;
   productDetail: Product | null;
@@ -12,6 +13,7 @@ interface ProductsState {
 
 const initialState: ProductsState = {
   products: [],
+  total: 0,
   isLoading: false,
   error: null,
   productDetail: null,
@@ -23,13 +25,14 @@ export const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-    fetchProductsRequest(state) {
+    fetchProductsRequest(state, action) {
       state.isLoading = true;
       state.error = null;
     },
     fetchProductsSuccess(state, action) {
       state.isLoading = false;
-      state.products = action.payload;
+      state.products = action.payload.products;
+      state.total = action.payload.total;
       state.error = null;
     },
     fetchProductsFailure(state, action) {

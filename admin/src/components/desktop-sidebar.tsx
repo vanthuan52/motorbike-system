@@ -12,7 +12,6 @@ import { FiEdit2, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
 import { FaMotorcycle, FaUserShield } from "react-icons/fa";
-import { IoMdAdd } from "react-icons/io";
 const menuItems = [
   {
     key: "Home",
@@ -110,20 +109,7 @@ const menuItems = [
     key: "products",
     icon: <FaMotorcycle />,
     label: "Sản phẩm",
-    children: [
-      {
-        key: "products",
-        icon: <FaMotorcycle />,
-        href: ROUTER_PATH.PRODUCTS,
-        label: "Sản phẩm",
-      },
-      {
-        key: "create-product",
-        icon: <IoMdAdd />,
-        href: ROUTER_PATH.CREATE_PRODUCT,
-        label: "Thêm sản phẩm",
-      },
-    ],
+    href: ROUTER_PATH.PRODUCTS,
   },
 ];
 

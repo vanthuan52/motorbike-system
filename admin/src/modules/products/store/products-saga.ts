@@ -5,12 +5,14 @@ import { ApiResponse, Product } from "../types";
 import { productsActions } from "./products-slice";
 import { toast } from "react-toastify";
 
-function* fetchProductsHandler() {
+function* fetchProductsHandler(action: any) {
   try {
+    const payload = action.payload;
     const { data }: ApiResponse<{ products: Product[] }> = yield call(
-      productsService.getProducts
+      productsService.getProducts,
+      payload
     );
-    yield put(productsActions.fetchProductsSuccess(data.products));
+    yield put(productsActions.fetchProductsSuccess(data));
   } catch (error: any) {
     yield put(productsActions.fetchProductsFailure(error.message));
   }

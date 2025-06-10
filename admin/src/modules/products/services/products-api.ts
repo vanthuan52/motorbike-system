@@ -4,16 +4,40 @@ import { ApiResponse } from "../types";
 import { Product } from "../types";
 
 const MOCK_API = true;
-const MOCK_DELAY = 1000;
-const mockGetProducts = (): Promise<ApiResponse<{ products: Product[] }>> => {
+const MOCK_DELAY = 500;
+type ProductFilter = {
+  name?: string;
+  category_id?: string;
+  page?: number;
+  limit?: number;
+};
+const mockGetProducts = (
+  filter?: ProductFilter
+): Promise<ApiResponse<{ products: Product[]; total: number }>> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const response: ApiResponse<{ products: Product[] }> = {
+      let filtered = mockProducts;
+      if (filter?.name) {
+        filtered = filtered.filter((p) =>
+          p.name.toLowerCase().includes(filter.name!.toLowerCase())
+        );
+      }
+      if (filter?.category_id) {
+        filtered = filtered.filter((p) => p.category_id === filter.category_id);
+      }
+      const page = filter?.page || 1;
+      const limit = filter?.limit || 10;
+      const start = (page - 1) * limit;
+      const end = start + limit;
+      const paged = filtered.slice(start, end);
+
+      const response: ApiResponse<{ products: Product[]; total: number }> = {
         status: true,
         statusCode: 200,
         message: "",
         data: {
-          products: mockProducts,
+          products: paged,
+          total: filtered.length,
         },
       };
 
@@ -134,8 +158,10 @@ const mockDeleteProduct = (
   });
 };
 const productsService = {
-  getProducts(): Promise<ApiResponse<{ products: Product[] }>> {
-    if (MOCK_API) return mockGetProducts();
+  getProducts(
+    filter?: ProductFilter
+  ): Promise<ApiResponse<{ products: Product[] }>> {
+    if (MOCK_API) return mockGetProducts(filter);
     return axios.get("/products");
   },
   getProductDetails(
