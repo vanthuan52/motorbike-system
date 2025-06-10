@@ -1,17 +1,13 @@
 "use client";
 
 import { useParams } from "next/navigation";
-
 import { motion } from "framer-motion";
-import clsx from "clsx";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import Image from "next/image";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
+import Image from "next/image";
 import { mockCategories } from "../../mocks/Categories";
 
 export default function CategoryDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
-
   const category = mockCategories.find((cat) => cat.slug === slug);
 
   if (!category) {
@@ -21,10 +17,10 @@ export default function CategoryDetailsPage() {
           Không tìm thấy danh mục
         </div>
         <CustomLink
-          className="flex items-center gap-2 px-4 py-2 rounded-[30px] bg-orange-400 !! hover:bg-orange-500 transition cursor-pointer"
           href="/danh-muc"
+          className="text-orange-500 hover:underline text-sm"
         >
-          <FaChevronLeft /> Quay lại
+          Quay lại danh mục
         </CustomLink>
       </div>
     );
@@ -35,51 +31,45 @@ export default function CategoryDetailsPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={clsx(
-          "bg-white rounded-2xl shadow-lg p-4 md:p-8 flex flex-col md:flex-row gap-8 items-center"
-        )}
+        className="bg-white rounded-xl shadow p-6 md:p-10 flex flex-col md:flex-row gap-8 items-start"
       >
-        <div className="flex-shrink-0 w-full md:w-1/3 flex justify-center items-center">
+        {/* Image section */}
+        <div className="w-full md:w-1/3 flex justify-center md:justify-start">
           <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]">
             <Image
               src={category.image}
               alt={category.name}
               fill
               sizes="(max-width: 768px) 220px, 260px"
-              className="object-contain rounded-xl"
+              className="object-contain rounded-md"
               priority
             />
           </div>
         </div>
-        <div className="flex-1 flex flex-col justify-center">
+
+        {/* Content section */}
+        <div className="flex-1">
           <h1 className="text-2xl md:text-3xl font-bold mb-4 text-orange-600">
             {category.name}
           </h1>
-          <p className="text-gray-700 text-base md:text-lg mb-6 whitespace-pre-line">
+          <p className="text-gray-700 text-base md:text-lg mb-6 whitespace-pre-line leading-relaxed">
             {category.description}
           </p>
-          <div className="flex flex-wrap gap-3 mt-2">
+
+          {/* Refactored link section */}
+          <div className="flex items-center gap-2 text-sm text-black font-normal">
             <CustomLink
-              className={clsx(
-                "inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold",
-                "bg-orange-400 !text-white shadow hover:bg-orange-500 transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-orange-300"
-              )}
               href="/danh-muc"
+              className="hover:!underline transition"
             >
-              <FaChevronLeft className="text-base" />
               Quay lại danh sách
             </CustomLink>
+            <span>|</span>
             <CustomLink
               href={`/san-pham?danh-muc=${slug}`}
-              className={clsx(
-                "inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-semibold",
-                "bg-white !text-orange-600 border border-orange-400 shadow hover:bg-orange-50 hover:border-orange-500 transition-all duration-200",
-                "focus:outline-none focus:ring-2 focus:ring-orange-200"
-              )}
+              className="hover:!underline transition"
             >
               Xem sản phẩm
-              <FaChevronRight className="text-base" />
             </CustomLink>
           </div>
         </div>
