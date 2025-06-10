@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Popconfirm, Tooltip } from "antd";
+import { Button, Col, Input, Popconfirm, Row, Select, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
 import { Product } from "../types";
@@ -17,24 +17,26 @@ import { productsActions } from "../store/products-slice";
 export default function ProductsPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { products, isLoading } = useSelector(
+  const [payload, setPayload] = useState({
+    name: "",
+    category_id: null,
+    page: 1,
+    limit: 5,
+  });
+  const { products, isLoading, total } = useSelector(
     (state: RootState) => state.products
   );
   useEffect(() => {
-    dispatch(productsActions.fetchProductsRequest());
-  }, [dispatch]);
+    dispatch(productsActions.fetchProductsRequest(payload));
+  }, [dispatch, payload]);
   const openCreate = () => {
     navigate(ROUTER_PATH.CREATE_PRODUCT);
   };
   const openEdit = (record: Product) => {
-    handleView(record, true);
+    handleView(record);
   };
-  const handleView = (record: Product, editMode = false) => {
-    if (editMode) {
-      navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}?edit=${record.id}`);
-    } else {
-      navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}`);
-    }
+  const handleView = (record: Product) => {
+    navigate(`${ROUTER_PATH.PRODUCTS}/${record.slug}`);
   };
   const handleDelete = (slug: string) => {
     dispatch(productsActions.deleteProductRequest(slug));
@@ -156,7 +158,9 @@ export default function ProductsPage() {
       ),
     },
   ];
-
+  const handleResetFilter = () => {
+    setPayload({ name: "", category_id: null, page: 1, limit: 5 });
+  };
   return (
     <div className="sm:px-4 my-10 sm:pt-0">
       <PageHeading
@@ -164,6 +168,37 @@ export default function ProductsPage() {
         onClickAdd={openCreate}
         addButtonLabel="Thêm sản phẩm"
       />
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col>
+          <Input
+            placeholder="Tìm theo tên sản phẩm"
+            value={payload.name}
+            onChange={(e) => setPayload({ ...payload, name: e.target.value })}
+            allowClear
+            style={{ width: 200 }}
+          />
+        </Col>
+        <Col>
+          <Select
+            placeholder="Chọn danh mục"
+            value={payload.category_id}
+            onChange={(e) => setPayload({ ...payload, category_id: e })}
+            allowClear
+            style={{ width: 180 }}
+          >
+            {Object.entries(categoryMap).map(([id, name]) => (
+              <Select.Option key={id} value={id}>
+                {name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Col>
+        <Col>
+          <Button type="primary" onClick={() => handleResetFilter()}>
+            Đặt lại
+          </Button>
+        </Col>
+      </Row>
       {isLoading ? (
         <SkeletonTable
           columns={[
@@ -184,7 +219,18 @@ export default function ProductsPage() {
           dataSource={products}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 5 }}
+          pagination={{
+            pageSize: payload.limit,
+            current: payload.page,
+            total: total,
+            onChange: (page, pageSize) => {
+              setPayload((prev) => ({
+                ...prev,
+                page,
+                limit: pageSize,
+              }));
+            },
+          }}
         />
       )}
     </div>
