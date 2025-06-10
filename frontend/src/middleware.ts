@@ -28,7 +28,6 @@ const ADMIN_ONLY_ROUTES = ["/admin"];
 
 const AUTH_COOKIE_KEY = ACCESS_TOKEN_KEY;
 
-// fuction to determine if the route requires authentication
 function isProtectedRoute(pathname: string): boolean {
   return AUTH_ROUTES.some((route) => pathname.startsWith(route));
 }
@@ -58,12 +57,15 @@ export function middleware(request: NextRequest) {
   }
 
   if (accessToken) {
-    if (pathname === ROUTER_PATH.LOGIN || pathname === ROUTER_PATH.REGISTER) {
-      return NextResponse.redirect(new URL(ROUTER_PATH.HOME, request.url));
-    }
-
     try {
       const decoded = jwtDecode<AuthJwtAccessTokenPayload>(accessToken);
+
+      // Token not valid
+      if (!decoded) {
+        const loginUrl = request.nextUrl.clone();
+        loginUrl.pathname = ROUTER_PATH.LOGIN;
+        return NextResponse.redirect(loginUrl);
+      }
 
       if (isTokenExpired(decoded.exp)) {
         console.log("is token expired");
@@ -71,6 +73,12 @@ export function middleware(request: NextRequest) {
         loginUrl.pathname = ROUTER_PATH.LOGIN;
         loginUrl.searchParams.set("expired", "1");
         return NextResponse.redirect(loginUrl);
+      }
+
+      if (pathname === ROUTER_PATH.LOGIN || pathname === ROUTER_PATH.REGISTER) {
+        const homeUrl = request.nextUrl.clone();
+        homeUrl.pathname = ROUTER_PATH.HOME;
+        return NextResponse.redirect(homeUrl);
       }
 
       if (

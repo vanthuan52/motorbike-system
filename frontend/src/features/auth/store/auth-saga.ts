@@ -33,6 +33,7 @@ function* registerHandler(action: PayloadAction<any>) {
 function* getProfileSaga() {
   try {
     const userProfile: UserProfile = yield call(userService.getProfile);
+    console.log("user: ", userProfile);
     yield put(authActions.getUserProfileSuccess(userProfile));
   } catch (error: any) {
     yield put(authActions.getUserProfileFailure());
