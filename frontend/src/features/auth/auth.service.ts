@@ -6,10 +6,7 @@ import {
   AuthRefreshTokenResponseData,
   LoginCredentials,
 } from "./types";
-import {
-  ACCESS_TOKEN_EXPIRES_IN_KEY,
-  ACCESS_TOKEN_KEY,
-} from "@/constant/constant";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from "@/constant/constant";
 
 const authService = {
   loginCredentials: async (
@@ -28,10 +25,7 @@ const authService = {
         throw new Error(result?.message || "Login failed. Try again.");
       }
       localStorageHelper.setItem(ACCESS_TOKEN_KEY, result.data.accessToken);
-      localStorageHelper.setItem(
-        ACCESS_TOKEN_EXPIRES_IN_KEY,
-        result.data.expiresIn.toString()
-      );
+      localStorageHelper.setItem(REFRESH_TOKEN_KEY, result.data.refreshToken);
       return result.data;
     } catch (error: any) {
       throw new Error(error?.message || "An unexpected error.");
@@ -51,11 +45,8 @@ const authService = {
         throw new Error(result?.message || "Refresh token failed");
       }
 
-      localStorageHelper.setItem(ACCESS_TOKEN_KEY, result.data.accessToken);
-      localStorageHelper.setItem(
-        ACCESS_TOKEN_EXPIRES_IN_KEY,
-        result.data.expiresIn.toString()
-      );
+      //localStorageHelper.setItem(ACCESS_TOKEN_KEY, result.data.accessToken);
+      //localStorageHelper.setItem(REFRESH_TOKEN_KEY, result.data.refreshToken);
 
       return result.data;
     } catch (error: any) {

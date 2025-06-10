@@ -18,13 +18,23 @@ import Image from "next/image";
 import { UserType } from "@/types/User";
 import { ROUTER_PATH } from "@/constant/router-path";
 
-const customerSidebarItems = [
+interface SidebarItem {
+  label: string;
+  icon: any;
+  href: string;
+  children?: any[];
+}
+const customerSidebarItems: SidebarItem[] = [
   { label: "Trang chủ", icon: HomeOutlined, href: ROUTER_PATH.HOME },
-  { label: "Hồ sơ cá nhân", icon: UserOutlined, href: ROUTER_PATH.PROFILE },
   {
     label: "Lịch hẹn bảo dưỡng",
     icon: CalendarOutlined,
     href: ROUTER_PATH.SERVICE_APPOINTMENT,
+  },
+  {
+    label: "Tài khoản",
+    icon: IdcardOutlined,
+    href: ROUTER_PATH.ACCOUNT,
   },
   {
     label: "Xe của tôi",
@@ -42,16 +52,9 @@ const customerSidebarItems = [
     href: ROUTER_PATH.ORDER_HISTORY,
   },
   {
-    label: "Cài đặt & Chinh sách bảo mật",
-    icon: SettingOutlined,
-    children: [
-      { label: "Tài khoản", href: ROUTER_PATH.ACCOUNT, icon: IdcardOutlined },
-      {
-        label: "Chinh sách bảo mật",
-        href: ROUTER_PATH.POLICY,
-        icon: LockOutlined,
-      },
-    ],
+    label: "Chính sách bảo mật",
+    icon: LockOutlined,
+    href: ROUTER_PATH.POLICY,
   },
   { label: "Hỗ trợ", icon: CustomerServiceOutlined, href: ROUTER_PATH.SUPPORT },
   { label: "Đăng xuất", icon: LogoutOutlined, href: ROUTER_PATH.LOGOUT },

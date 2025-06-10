@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { UserProfileResponse, UserProfileResponseData } from "./types";
 import { ApiErrorResponse } from "@/types/api.type";
-import { sharedApi } from "@/services";
+import { sharedApi } from "@/lib/axios";
 import { API_ENDPOINTS } from "@/constant/api-endpoint";
 
 const userService = {

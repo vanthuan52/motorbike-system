@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { Button, DatePicker, Popconfirm, Select, Tooltip } from "antd";
 import {
-  Button,
-  DatePicker,
-  Popconfirm,
-  Select,
-  Tooltip,
-} from "antd";
-import { DeleteOutlined, SearchOutlined, StopOutlined, } from "@ant-design/icons";
+  DeleteOutlined,
+  SearchOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
@@ -26,9 +24,13 @@ const { Option } = Select;
 
 const MaintenanceHistory = () => {
   const [data, setData] = useState<MaintenanceHistoryCustomer[]>([]);
-  const [filteredData, setFilteredData] = useState<MaintenanceHistoryCustomer[]>([]);
+  const [filteredData, setFilteredData] = useState<
+    MaintenanceHistoryCustomer[]
+  >([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined
+  );
   const [dateRange, setDateRange] = useState<RangePickerProps["value"]>(null);
 
   useEffect(() => {
@@ -113,61 +115,66 @@ const MaintenanceHistory = () => {
             <StopOutlined className="text-gray-400 text-lg" />
           </Tooltip>
         ),
-
     },
   ];
 
   return (
-    <div className="sm:px-4 px-2">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        Lịch sử bảo dưỡng
-      </h2>
+    <div className="py-8">
+      <div className="container">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Lịch sử bảo dưỡng
+        </h2>
 
-      <div className="flex flex-wrap gap-2 sm:gap-4 mb-4">
-        <RangePicker
-          format="YYYY-MM-DD"
-          onChange={(values) => setDateRange(values)}
-          className="w-full sm:w-auto"
-          placeholder={["Từ ngày", "Đến ngày"]}
-        />
-        <Select
-          placeholder="Trạng thái"
-          allowClear
-          onChange={(value) => setStatusFilter(value)}
-          className="w-full sm:w-[150px]"
-        >
-          <Option value="Hoàn thành">Hoàn thành</Option>
-          <Option value="Chưa hoàn thành">Chưa hoàn thành</Option>
-        </Select>
-        <Button icon={<SearchOutlined />} onClick={handleFilter} type="primary">
-          Tìm kiếm
-        </Button>
-      </div>
-
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "Tên xe", width: 150 },
-              { title: "Biển số", width: 100 },
-              { title: "Ngày", width: 120 },
-              { title: "Khung giờ", width: 120 },
-              { title: "Trạng thái", width: 120 },
-              { title: "Tổng chi phí", width: 120 },
-              { title: "Hành động", width: 100 },
-            ]}
-            rows={5}
+        <div className="flex flex-wrap gap-2 sm:gap-4 mb-4">
+          <RangePicker
+            format="YYYY-MM-DD"
+            onChange={(values) => setDateRange(values)}
+            className="w-full sm:w-auto"
+            placeholder={["Từ ngày", "Đến ngày"]}
           />
-        ) : (
-          <div className="overflow-x-auto">
-            <TableReuse
-              dataSource={filteredData}
-              columns={columns}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
+          <Select
+            placeholder="Trạng thái"
+            allowClear
+            onChange={(value) => setStatusFilter(value)}
+            className="w-full sm:w-[150px]"
+          >
+            <Option value="Hoàn thành">Hoàn thành</Option>
+            <Option value="Chưa hoàn thành">Chưa hoàn thành</Option>
+          </Select>
+          <Button
+            icon={<SearchOutlined />}
+            onClick={handleFilter}
+            type="primary"
+          >
+            Tìm kiếm
+          </Button>
+        </div>
+
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
+          {loading ? (
+            <SkeletonTable
+              columns={[
+                { title: "Tên xe", width: 150 },
+                { title: "Biển số", width: 100 },
+                { title: "Ngày", width: 120 },
+                { title: "Khung giờ", width: 120 },
+                { title: "Trạng thái", width: 120 },
+                { title: "Tổng chi phí", width: 120 },
+                { title: "Hành động", width: 100 },
+              ]}
+              rows={5}
             />
-          </div>
-        )}
+          ) : (
+            <div className="overflow-x-auto">
+              <TableReuse
+                dataSource={filteredData}
+                columns={columns}
+                rowKey="id"
+                pagination={{ pageSize: 5 }}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

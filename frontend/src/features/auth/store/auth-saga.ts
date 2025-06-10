@@ -8,10 +8,7 @@ import { UserProfile } from "@/features/user/types";
 
 function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
-    const loginData: UserAuthInfo = yield call(
-      authService.loginCredentials,
-      action.payload
-    );
+    yield call(authService.loginCredentials, action.payload);
     yield put(authActions.loginCredentialsSuccess());
     yield put(authActions.getUserProfile());
   } catch (error: any) {
@@ -30,10 +27,10 @@ function* registerHandler(action: PayloadAction<any>) {
   }
 }
 
-function* getProfileSaga() {
+function* getProfileHandler() {
   try {
     const userProfile: UserProfile = yield call(userService.getProfile);
-    console.log("user: ", userProfile);
+
     yield put(authActions.getUserProfileSuccess(userProfile));
   } catch (error: any) {
     yield put(authActions.getUserProfileFailure());
@@ -43,5 +40,5 @@ function* getProfileSaga() {
 export function* authSaga() {
   yield takeLatest(authActions.loginCredentials, loginCredentialsHandler);
   yield takeLatest(authActions.register, registerHandler);
-  yield takeLatest(authActions.getUserProfile, getProfileSaga);
+  yield takeLatest(authActions.getUserProfile.type, getProfileHandler);
 }

@@ -2,9 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { jwtDecode } from "jwt-decode";
 import { ROUTER_PATH } from "./constant/router-path";
 import { ACCESS_TOKEN_KEY } from "./constant/constant";
-import { AuthJwtAccessTokenPayload } from "./features/auth/types";
 import { isTokenExpired } from "./utils/jwt.utils";
-import { ENUM_POLICY_ROLE_TYPE } from "./features/role/types";
+import { AuthJwtAccessTokenPayload } from "./features/auth/types";
 
 const AUTH_ROUTES = [ROUTER_PATH.ACCOUNT];
 
@@ -26,8 +25,6 @@ const PUBLIC_ROUTES = [
 
 const ADMIN_ONLY_ROUTES = ["/admin"];
 
-const AUTH_COOKIE_KEY = ACCESS_TOKEN_KEY;
-
 function isProtectedRoute(pathname: string): boolean {
   return AUTH_ROUTES.some((route) => pathname.startsWith(route));
 }
@@ -36,64 +33,24 @@ function isAdminRoute(pathname: string): boolean {
   return ADMIN_ONLY_ROUTES.some((route) => pathname.startsWith(route));
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const accessToken = request.cookies.get(ACCESS_TOKEN_KEY)?.value;
   const { pathname } = request.nextUrl;
-  const accessToken = request.cookies.get(AUTH_COOKIE_KEY)?.value;
 
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.match(/\.(.*)$/)
-  ) {
-    return NextResponse.next();
-  }
+  if (isProtectedRoute(pathname)) {
+    if (!accessToken) {
+      console.log("Token not found");
+      const url = request.nextUrl.clone();
+      url.pathname = ROUTER_PATH.LOGIN;
+      return NextResponse.redirect(url);
+    }
 
-  if (isProtectedRoute(pathname) && !accessToken) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = ROUTER_PATH.LOGIN;
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  if (accessToken) {
-    try {
-      const decoded = jwtDecode<AuthJwtAccessTokenPayload>(accessToken);
-
-      // Token not valid
-      if (!decoded) {
-        const loginUrl = request.nextUrl.clone();
-        loginUrl.pathname = ROUTER_PATH.LOGIN;
-        return NextResponse.redirect(loginUrl);
-      }
-
-      if (isTokenExpired(decoded.exp)) {
-        console.log("is token expired");
-        const loginUrl = request.nextUrl.clone();
-        loginUrl.pathname = ROUTER_PATH.LOGIN;
-        loginUrl.searchParams.set("expired", "1");
-        return NextResponse.redirect(loginUrl);
-      }
-
-      if (pathname === ROUTER_PATH.LOGIN || pathname === ROUTER_PATH.REGISTER) {
-        const homeUrl = request.nextUrl.clone();
-        homeUrl.pathname = ROUTER_PATH.HOME;
-        return NextResponse.redirect(homeUrl);
-      }
-
-      if (
-        isAdminRoute(pathname) &&
-        decoded.role !== ENUM_POLICY_ROLE_TYPE.ADMIN
-      ) {
-        const unauthorizedUrl = request.nextUrl.clone();
-        unauthorizedUrl.pathname = ROUTER_PATH.UNAUTHORIZIED;
-        return NextResponse.redirect(unauthorizedUrl);
-      }
-    } catch (err: any) {
-      const loginUrl = request.nextUrl.clone();
-      loginUrl.pathname = ROUTER_PATH.LOGIN;
-      loginUrl.searchParams.set("invalid", "1");
-      return NextResponse.redirect(loginUrl);
+    const decoded: AuthJwtAccessTokenPayload = jwtDecode(accessToken);
+    if (isTokenExpired(decoded.exp)) {
+      console.log("Token is expired");
+      const url = request.nextUrl.clone();
+      url.pathname = ROUTER_PATH.LOGIN;
+      return NextResponse.redirect(url);
     }
   }
 
