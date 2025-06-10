@@ -25,12 +25,6 @@ export default function LoginPage() {
     (state) => state.auth
   );
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      router.push("/");
-    }
-  }, [isAuthenticated, router]);
-
   const form = useForm<LoginCredentials>({
     defaultValues: {
       email: "",
