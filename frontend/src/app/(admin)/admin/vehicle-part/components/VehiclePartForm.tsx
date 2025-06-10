@@ -12,7 +12,7 @@ import {
   Image,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { getBase64 } from "@/utils/fileUtils";
+import { getBase64 } from "@/utils/file.utils";
 import { GreenSwitch } from "@/components/ui/Switch";
 import { VehiclePart } from "@/types/VehiclePart";
 import type { GetProp, UploadFile, UploadProps } from "antd";
@@ -116,6 +116,7 @@ export default function VehiclePartModal({
       const part: VehiclePart = {
         id: initialData?.id?.toString() ?? "0",
         vehicle_type_id: values.vehicle_type_id,
+        slug: values.code,
         name: values.name,
         code: values.code,
         average_life: values.average_life,

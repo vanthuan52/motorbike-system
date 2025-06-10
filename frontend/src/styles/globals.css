@@ -1,6 +1,5 @@
 @import "nprogress/nprogress.css";
 @import "tailwindcss";
-@tailwind utilities;
 
 :root {
   --background: #ffffff;
@@ -41,6 +40,7 @@ li {
 
 @layer utilities {
   /* UI */
+
   .input-class {
     @apply text-[16px] leading-[24px] placeholder:text-[16px] rounded-lg border border-gray-300 text-gray-900 placeholder:text-gray-500 transition-all duration-200 ease-in-out;
     @apply focus:border-1 focus:border-blue-500 focus:outline-none;

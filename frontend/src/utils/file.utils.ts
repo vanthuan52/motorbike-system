@@ -1,4 +1,3 @@
-// src/utils/fileUtils.ts
 export const getBase64 = (file: Blob): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();

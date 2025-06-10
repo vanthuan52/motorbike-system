@@ -1,29 +1,17 @@
-"use client";
+import { UserProfile } from "@/features/user/types";
+import {
+  CalendarOutlined,
+  EnvironmentOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
-import { CalendarOutlined, EnvironmentOutlined, MailOutlined, PhoneOutlined, UserOutlined } from "@ant-design/icons";
+type UserInfoProps = {
+  user: UserProfile | null;
+};
 
-interface UserInfoProps {
-  email: string;
-  phone: string;
-  dob: string;
-  gender: "MALE" | "FEMALE" | null;
-  ward: string;
-  district: string;
-  city: string;
-}
-
-export default function UserInfo({
-  email,
-  phone,
-  dob,
-  gender,
-  ward,
-  district,
-  city,
-}: UserInfoProps) {
-  const genderText =
-    gender === "MALE" ? "Nam" : gender === "FEMALE" ? "Nữ" : "Khác";
-
+export default function UserInfo({ user }: UserInfoProps) {
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
@@ -35,20 +23,22 @@ export default function UserInfo({
       <div className="flex-1">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-sm">
           <div className="flex items-center gap-2">
-            <MailOutlined style={{ fontSize: 18 }} /> <span>{email}</span>
+            <MailOutlined style={{ fontSize: 18 }} /> <span>{user?.email}</span>
           </div>
           <div className="flex items-center gap-2">
-            <PhoneOutlined style={{ fontSize: 18 }} /> <span>{phone}</span>
+            <PhoneOutlined style={{ fontSize: 18 }} />{" "}
+            <span>{user?.phone}</span>
           </div>
           <div className="flex items-center gap-2">
-            <CalendarOutlined style={{ fontSize: 18 }} /> <span>{formatDate(dob)}</span>
+            <CalendarOutlined style={{ fontSize: 18 }} />{" "}
+            <span>{formatDate(new Date().toDateString())}</span>
           </div>
           <div className="flex items-center gap-2">
-            <UserOutlined style={{ fontSize: 18 }} /> <span>{genderText}</span>
+            <UserOutlined style={{ fontSize: 18 }} /> <span>{"Unknown"}</span>
           </div>
           <div className="flex items-center gap-2">
             <EnvironmentOutlined style={{ fontSize: 18 }} />
-            <span>{`${ward}, ${district}, ${city}`}</span>
+            <span>{`${""}, ${""}, ${""}`}</span>
           </div>
         </div>
       </div>

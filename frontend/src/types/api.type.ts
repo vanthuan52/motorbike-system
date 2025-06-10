@@ -7,6 +7,7 @@ export interface ApiResponseMetadata {
 }
 
 export interface ApiResponse<T = undefined> {
+  success?: boolean;
   statusCode: number;
   message: string;
   _metadata?: ApiResponseMetadata;
@@ -14,6 +15,7 @@ export interface ApiResponse<T = undefined> {
 }
 
 export interface ApiErrorResponse {
+  success?: boolean;
   statusCode: number;
   message: string;
   _metadata?: ApiResponseMetadata;

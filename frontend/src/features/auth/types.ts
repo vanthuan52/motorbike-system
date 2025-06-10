@@ -1,4 +1,5 @@
 import { ApiResponse } from "@/types/api.type";
+import { ENUM_POLICY_ROLE_TYPE } from "../role/types";
 
 export type RoleType = "USER" | "TECHNICIAN" | "MANAGER" | "ADMIN";
 
@@ -6,14 +7,6 @@ export enum ENUM_AUTH_LOGIN_FROM {
   CREDENTIAL = "CREDENTIAL",
   SOCIAL_GOOGLE = "SOCIAL_GOOGLE",
   SOCIAL_APPLE = "SOCIAL_APPLE",
-}
-
-export enum ENUM_POLICY_ROLE_TYPE {
-  SUPER_ADMIN = "SUPER_ADMIN",
-  ADMIN = "ADMIN",
-  MANAGER = "MANAGER",
-  TECHNICIAN = "TECHNICIAN",
-  USER = "USER",
 }
 
 export interface LoginCredentials {
@@ -34,7 +27,7 @@ export type AuthLoginResponse = ApiResponse<AuthLoginResponseData>;
 export type AuthRefreshTokenResponse =
   ApiResponse<AuthRefreshTokenResponseData>;
 
-export interface IAuthJwtAccessTokenPayload {
+export interface AuthJwtAccessTokenPayload {
   loginDate: Date;
   loginFrom: ENUM_AUTH_LOGIN_FROM;
   user: string;
@@ -50,8 +43,8 @@ export interface IAuthJwtAccessTokenPayload {
   sub?: string;
 }
 
-export type IAuthJwtRefreshTokenPayload = Omit<
-  IAuthJwtAccessTokenPayload,
+export type AuthJwtRefreshTokenPayload = Omit<
+  AuthJwtAccessTokenPayload,
   "role" | "type" | "email"
 >;
 

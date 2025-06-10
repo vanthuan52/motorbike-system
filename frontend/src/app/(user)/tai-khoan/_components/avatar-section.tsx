@@ -1,23 +1,16 @@
-"use client";
-
 import { CameraOutlined } from "@ant-design/icons";
+import { UserProfile } from "@/features/user/types";
 
 interface AvatarSectionProps {
-  photo: string;
-  firstName: string;
-  lastName: string;
+  user: UserProfile | null;
 }
 
-export default function AvatarSection({
-  photo,
-  firstName,
-  lastName,
-}: AvatarSectionProps) {
+export default function AvatarSection({ user }: AvatarSectionProps) {
   return (
     <div className="relative z-10 -mt-20 flex flex-col items-center">
       <div className="relative w-28 h-28 rounded-full border-4 border-white shadow-md bg-gray-200 overflow-visible">
         <img
-          src={photo}
+          src={"/images/avatar.png"}
           alt="Avatar người dùng"
           className="object-cover rounded-full"
         />
@@ -25,7 +18,7 @@ export default function AvatarSection({
           <CameraOutlined style={{ fontSize: 16 }} />
         </button>
       </div>
-      <h1 className="mt-4 text-3xl font-semibold">{`${firstName} ${lastName}`}</h1>
+      <h1 className="mt-4 text-3xl font-semibold">{`${user?.name}`}</h1>
     </div>
   );
 }

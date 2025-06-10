@@ -17,8 +17,10 @@ export const ROUTER_PATH = {
   ORDER_HISTORY: "/lich-su-mua-hang",
   ACCOUNT: "/tai-khoan",
   POLICY: "/chinh-sach-bao-mat",
-  SUPPORT: "/support",
   LOGOUT: "/logout",
+  SETTING: "/cai-dat",
+  SUPPORT: "/ho-tro",
+  UNAUTHORIZIED: "/unauthorized",
   ADMIN: {
     INDEX: "/admin",
     DASHBOARD: "/admin/dashboard",

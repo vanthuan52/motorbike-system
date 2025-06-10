@@ -1,6 +1,7 @@
-"use client";
+import { UserProfile } from "@/features/user/types";
 
 interface ProfileCompletionProps {
+  user: UserProfile | null;
   completionPercent: number;
 }
 
