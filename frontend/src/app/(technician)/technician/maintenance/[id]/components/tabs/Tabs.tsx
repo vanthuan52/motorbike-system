@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
-
 import PartsFormTab from "./PartsFormTab";
 import { buildMaintenanceHistory } from "./buildMaintenanceHistory";
 import { parts } from "./parts";
 import { MaintenanceHistory } from "@/types/technician/MaintenanceHistory";
 import { maintenanceHistories } from "@/data/technician/MaintenanceHistory";
-import { useRouter } from "next/navigation";
+
 interface TabsProps {
   tabKey: string;
   vehicleID?: string;
@@ -15,16 +14,23 @@ interface TabsProps {
 
 function getNearestHistory(histories: MaintenanceHistory[]) {
   const today = dayjs();
-  return histories.reduce((nearest, curr) => {
-    const currDiff = Math.abs(today.diff(dayjs(curr.date)));
-    const nearestDiff = nearest ? Math.abs(today.diff(dayjs(nearest.date))) : Infinity;
-    return currDiff < nearestDiff ? curr : nearest;
-  }, undefined as MaintenanceHistory | undefined);
+  return histories.reduce(
+    (nearest, curr) => {
+      const currDiff = Math.abs(today.diff(dayjs(curr.date)));
+      const nearestDiff = nearest
+        ? Math.abs(today.diff(dayjs(nearest.date)))
+        : Infinity;
+      return currDiff < nearestDiff ? curr : nearest;
+    },
+    undefined as MaintenanceHistory | undefined
+  );
 }
 
 export default function Tabs({ tabKey, vehicleID }: TabsProps) {
   const router = useRouter();
-  const histories = maintenanceHistories.filter((history) => history.vehicle_id === vehicleID);
+  const histories = maintenanceHistories.filter(
+    (history) => history.vehicle_id === vehicleID
+  );
   const nearest = getNearestHistory(histories);
   const [loadingButton, setLoadingButton] = useState(false);
   const handleSubmit = (values: any, notes: any, type: string) => {
@@ -40,16 +46,21 @@ export default function Tabs({ tabKey, vehicleID }: TabsProps) {
       percentage_after_maintenance: values.percentage_after_maintenance,
     });
     if (type === "before") {
-      localStorage.setItem("maintenance_before_data", JSON.stringify(newHistory));
+      localStorage.setItem(
+        "maintenance_before_data",
+        JSON.stringify(newHistory)
+      );
       router.push(`/technician/maintenance/to-do-list`);
     } else {
-      // ...xử lý cho after
+      // to do
     }
   };
   if (tabKey === "nearest" && histories.length === 0) {
     return (
       <div className="text-center flex flex-col items-center justify-center h-full">
-        <h2 className="text-xl font-bold">Khách hàng chưa từng bảo dưỡng trước đây</h2>
+        <h2 className="text-xl font-bold">
+          Khách hàng chưa từng bảo dưỡng trước đây
+        </h2>
       </div>
     );
   }
@@ -61,21 +72,23 @@ export default function Tabs({ tabKey, vehicleID }: TabsProps) {
           initialValues={
             nearest
               ? Object.fromEntries(
-                parts.map((part) => [
-                  part.key,
-                  nearest.details[part.key as keyof typeof nearest.details]?.value ?? undefined,
-                ])
-              )
+                  parts.map((part) => [
+                    part.key,
+                    nearest.details[part.key as keyof typeof nearest.details]
+                      ?.value ?? undefined,
+                  ])
+                )
               : {}
           }
           initialNotes={
             nearest
               ? Object.fromEntries(
-                parts.map((part) => [
-                  part.key,
-                  nearest.details[part.key as keyof typeof nearest.details]?.note ?? "",
-                ])
-              )
+                  parts.map((part) => [
+                    part.key,
+                    nearest.details[part.key as keyof typeof nearest.details]
+                      ?.note ?? "",
+                  ])
+                )
               : {}
           }
           disabled
@@ -83,10 +96,21 @@ export default function Tabs({ tabKey, vehicleID }: TabsProps) {
         />
       )}
       {tabKey === "note_before_maintenance" && (
-        <PartsFormTab onSubmit={(values, notes) => handleSubmit(values, notes, "before")} showActions showBefore loadingButton={loadingButton} />
+        <PartsFormTab
+          onSubmit={(values, notes) => handleSubmit(values, notes, "before")}
+          showActions
+          showBefore
+          loadingButton={loadingButton}
+        />
       )}
       {tabKey === "note_after_maintenance" && (
-        <PartsFormTab onSubmit={(values, notes) => handleSubmit(values, notes, "after")} showActions showBefore showAfter loadingButton={loadingButton} />
+        <PartsFormTab
+          onSubmit={(values, notes) => handleSubmit(values, notes, "after")}
+          showActions
+          showBefore
+          showAfter
+          loadingButton={loadingButton}
+        />
       )}
     </div>
   );

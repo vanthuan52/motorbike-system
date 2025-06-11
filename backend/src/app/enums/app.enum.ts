@@ -1,4 +1,4 @@
-export enum ENUM_APP_ENVIRONMENT {
+export enum ENUM_NODE_ENVIRONMENT {
   PRODUCTION = 'production',
   MIGRATION = 'migration',
   STAGING = 'staging',

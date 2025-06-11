@@ -40,7 +40,7 @@ You can follow the guideline below to run it
 > Very limited documentation
 
 - Stateful Authorization, using `redis-session` and `JWT`.
-- If you change the environment value of `APP_ENV` to `production`, it will disable Documentation.
+- If you change the environment value of `NODE_ENV` to `production`, it will disable Documentation.
 
 ## TODO
 

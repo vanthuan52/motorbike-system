@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ENUM_APP_ENVIRONMENT } from '@/app/enums/app.enum';
+import { ENUM_NODE_ENVIRONMENT } from '@/app/enums/app.enum';
 import { ConfigService } from '@nestjs/config';
 import { Params } from 'nestjs-pino';
 import { HelperDateService } from '@/common/helper/services/helper.date.service';
@@ -12,7 +12,7 @@ import { IRequestApp } from '@/common/request/interfaces/request.interface';
 
 @Injectable()
 export class LoggerOptionService {
-  private readonly env: ENUM_APP_ENVIRONMENT;
+  private readonly env: ENUM_NODE_ENVIRONMENT;
   private readonly name: string;
   private readonly version: string;
 
@@ -29,7 +29,7 @@ export class LoggerOptionService {
     private readonly helperDateService: HelperDateService,
     private readonly helperStringService: HelperStringService,
   ) {
-    this.env = this.configService.get<ENUM_APP_ENVIRONMENT>('app.env')!;
+    this.env = this.configService.get<ENUM_NODE_ENVIRONMENT>('app.env')!;
     this.name = this.configService.get<string>('app.name')!;
     this.version = this.configService.get<string>('app.version')!;
 

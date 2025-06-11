@@ -21,7 +21,7 @@ Settings are organized into category-specific DTOs, all combined in SettingCoreR
 ```typescript
 export class SettingCoreResponseDto {
   name: string; // Application name
-  env: ENUM_APP_ENVIRONMENT; // Current environment
+  env: ENUM_NODE_ENVIRONMENT; // Current environment
   timeout: number; // Request timeout
   timeoutUnit: ENUM_SETTING_UNIT; // Unit for timeout
   file: SettingFileResponseDto; // File-related settings
@@ -38,7 +38,7 @@ Each category-specific DTO contains related settings. For example, the Auth sett
 ```typescript
 export class SettingCoreResponseDto {
   name: string; // Application name
-  env: ENUM_APP_ENVIRONMENT; // Current environment
+  env: ENUM_NODE_ENVIRONMENT; // Current environment
   timeout: number; // Request timeout
   timeoutUnit: ENUM_SETTING_UNIT; // Unit for timeout
   file: SettingFileResponseDto; // File-related settings

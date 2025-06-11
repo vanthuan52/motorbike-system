@@ -6,7 +6,7 @@
 // } from '@nestjs/mongoose';
 // import mongoose from 'mongoose';
 // import { AllConfigType } from '@/config/config.type';
-// import { ENUM_APP_ENVIRONMENT } from '@/app/enums/app.enum';
+// import { ENUM_NODE_ENVIRONMENT } from '@/app/enums/app.enum';
 
 // // With no injectable, it's useless
 // class MongooseConfigService implements MongooseOptionsFactory {
@@ -31,12 +31,12 @@
 //       infer: true,
 //     });
 
-//     if (env !== ENUM_APP_ENVIRONMENT.PRODUCTION) {
+//     if (env !== ENUM_NODE_ENVIRONMENT.PRODUCTION) {
 //       mongoose.set('debug', debug);
 //     }
 
 //     const mongooseOptions: MongooseModuleOptions = {
-//       autoIndex: env !== ENUM_APP_ENVIRONMENT.PRODUCTION,
+//       autoIndex: env !== ENUM_NODE_ENVIRONMENT.PRODUCTION,
 //     };
 
 //     if (uri) {

@@ -2,10 +2,10 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { CommandModule, CommandService } from 'nestjs-command';
 import { MigrationModule } from './migration/migration.module';
-import { ENUM_APP_ENVIRONMENT } from '@/app/enums/app.enum';
+import { ENUM_NODE_ENVIRONMENT } from '@/app/enums/app.enum';
 
 async function bootstrap() {
-  process.env.APP_ENV = ENUM_APP_ENVIRONMENT.MIGRATION;
+  process.env.NODE_ENV = ENUM_NODE_ENVIRONMENT.MIGRATION;
 
   const app = await NestFactory.createApplicationContext(MigrationModule, {
     logger: ['error', 'fatal'],

@@ -52,7 +52,7 @@ Contains general application settings:
 ```typescript
 {
   name: process.env.APP_NAME,                                       // Application name used throughout the system
-  env: process.env.APP_ENV,                                         // Current environment (development, production, etc.)
+  env: process.env.NODE_ENV,                                         // Current environment (development, production, etc.)
   timezone: process.env.APP_TIMEZONE,                               // Default timezone for date operations
   version: version,                                                 // Application version imported from package.json
   globalPrefix: '/api',                                             // Global prefix for all API endpoints
@@ -269,7 +269,7 @@ Here's a comprehensive list of supported environment variables
 ### Application Settings
 
 - **`APP_NAME`** (required): Name of the application
-- **`APP_ENV`** (required): Environment type (development, production, etc.) based on `ENUM_APP_ENV`
+- **`NODE_ENV`** (required): Environment type (development, production, etc.) based on `ENUM_NODE_ENV`
 - **`APP_TIMEZONE`** (required): Timezone for the application (e.g., Asia/Jakarta)
 - **`APP_LANGUAGE`** (required): Default language for the application (e.g., en)
 - **`HTTP_HOST`** (required): Host for the HTTP server (e.g., localhost)

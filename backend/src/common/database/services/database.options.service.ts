@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { ENUM_APP_ENVIRONMENT } from '@/app/enums/app.enum';
+import { ENUM_NODE_ENVIRONMENT } from '@/app/enums/app.enum';
 import { IDatabaseOptionService } from '../interfaces/database.option-service.interface';
 
 @Injectable()
@@ -31,11 +31,11 @@ export class DatabaseOptionService implements IDatabaseOptionService {
       'database.poolOptions',
     );
 
-    if (env !== ENUM_APP_ENVIRONMENT.PRODUCTION) {
+    if (env !== ENUM_NODE_ENVIRONMENT.PRODUCTION) {
       mongoose.set('debug', debug);
     }
 
-    if (env === ENUM_APP_ENVIRONMENT.MIGRATION) {
+    if (env === ENUM_NODE_ENVIRONMENT.MIGRATION) {
       timeoutOptions = {
         serverSelectionTimeoutMS: 60 * 1000, // 60 secs
         socketTimeoutMS: 300 * 1000, // 5 minutes
@@ -51,7 +51,7 @@ export class DatabaseOptionService implements IDatabaseOptionService {
     }
 
     const mongooseOptions: MongooseModuleOptions = {
-      autoIndex: env !== ENUM_APP_ENVIRONMENT.PRODUCTION,
+      autoIndex: env !== ENUM_NODE_ENVIRONMENT.PRODUCTION,
       appName: name,
       retryWrites: true,
       retryReads: true,

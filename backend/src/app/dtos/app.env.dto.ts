@@ -10,7 +10,7 @@ import {
   IsEnum,
   IsOptional,
 } from 'class-validator';
-import { ENUM_APP_ENVIRONMENT, ENUM_APP_TIMEZONE } from '../enums/app.enum';
+import { ENUM_NODE_ENVIRONMENT, ENUM_APP_TIMEZONE } from '../enums/app.enum';
 import { ENUM_MESSAGE_LANGUAGE } from '@/common/message/enums/message.enum';
 
 export class AppEnvDto {
@@ -22,8 +22,8 @@ export class AppEnvDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  @IsEnum(ENUM_APP_ENVIRONMENT)
-  APP_ENV: ENUM_APP_ENVIRONMENT;
+  @IsEnum(ENUM_NODE_ENVIRONMENT)
+  NODE_ENV: ENUM_NODE_ENVIRONMENT;
 
   @IsString()
   @IsNotEmpty()
