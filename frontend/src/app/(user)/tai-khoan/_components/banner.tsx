@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { CameraOutlined } from "@ant-design/icons";
 
 export default function Banner() {

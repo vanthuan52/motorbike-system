@@ -1,5 +1,6 @@
-// notification-sidebar.tsx
+/* eslint-disable @next/next/no-img-element */
 "use client";
+
 import React, { useState } from "react";
 import { X, MessageSquare, Bell } from "lucide-react";
 
@@ -46,7 +47,6 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({
 
   return (
     <div className="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-50 flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <h2 className="text-lg font-semibold">
           {activeTab === "noti" ? "Thông báo" : "Chat"}
@@ -59,7 +59,6 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({
         </button>
       </div>
 
-      {/* Tabs */}
       <div className="flex border-b">
         <button
           onClick={() => setActiveTab("noti")}
@@ -117,13 +116,17 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({
                 />
                 <div className="flex-1">
                   <h3 className="font-medium">{chat.user}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{chat.lastMessage}</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {chat.lastMessage}
+                  </p>
                 </div>
                 <span className="text-xs text-gray-400 ml-2">{chat.time}</span>
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500">Không có cuộc trò chuyện nào</p>
+            <p className="text-center text-gray-500">
+              Không có cuộc trò chuyện nào
+            </p>
           ))}
       </div>
     </div>

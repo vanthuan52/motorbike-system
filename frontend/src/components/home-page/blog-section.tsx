@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CustomLink } from "../CustomerLink/CustomLink";
 
 interface BlogPost {
   title: string;
@@ -93,12 +94,12 @@ export default function BlogSection() {
                 >
                   {post.excerpt}
                 </motion.p>
-                <a
+                <CustomLink
                   href={post.slug}
                   className="text-blue-600 font-medium hover:underline"
                 >
                   Xem thêm →
-                </a>
+                </CustomLink>
               </div>
             </div>
           ))}

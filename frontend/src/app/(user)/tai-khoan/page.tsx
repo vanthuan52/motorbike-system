@@ -11,7 +11,7 @@ import ProfileUpdateForm from "./_components/profile-update-form";
 import ProfileCompletion from "./_components/profile-completion";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-function page() {
+function Page() {
   const { isAuthenticated, user, loading } = useAppSelector(
     (state) => state.auth
   );
@@ -38,4 +38,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

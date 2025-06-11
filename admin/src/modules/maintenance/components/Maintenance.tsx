@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
 import moment from "moment";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
-import { Button, Popconfirm, Skeleton, Tooltip } from "antd";
+import { Button, Popconfirm, Tooltip } from "antd";
 
 import { formatVND } from "@/helpers/formatVND";
 import TableReuse from "@/components/ui/table/table";
@@ -33,11 +30,14 @@ export default function Maintenance() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDataSource(
-        mockDataTableMaintenance.map((item) => ({
-          ...item,
-          id: String(item.id),
-          phone: Number(item.phone),
-        }))
+        mockDataTableMaintenance.map(
+          (item) =>
+            ({
+              ...item,
+              id: String(item.id),
+              phone: item.phone,
+            }) as MaintenanceManagementTypes
+        )
       );
       setLoading(false);
     }, 800);
@@ -153,12 +153,12 @@ export default function Maintenance() {
               setDataSource(
                 mockDataTableMaintenance
                   .filter((item) =>
-                    item.customer.toLowerCase().includes(text.toLowerCase())
+                    item.customer?.toLowerCase().includes(text.toLowerCase())
                   )
                   .map((item) => ({
                     ...item,
                     id: String(item.id),
-                    phone: Number(item.phone),
+                    phone: item.phone,
                   }))
               )
             }

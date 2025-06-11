@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: "Lịch bảo dưỡng",
   description: "",
 };
-export default function page() {
+export default function Page() {
   return <TechnicianMaintenancePage />;
 }

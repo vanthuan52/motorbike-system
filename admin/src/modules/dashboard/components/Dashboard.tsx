@@ -5,13 +5,9 @@ import RecentOrders from "./RecentOrders";
 import StatCard from "./StatCard";
 import TechnicianList from "./TechnicianList";
 import { Banknote, Newspaper, Settings } from "lucide-react";
-import dynamic from "next/dynamic";
-const DashboardChart = dynamic(
-  () => import("./DashboardChart"),
-  {
-    ssr: false,
-  }
-);
+
+import DashboardChart from "./DashboardChart";
+
 const stats = [
   {
     title: "Tổng doanh thu",

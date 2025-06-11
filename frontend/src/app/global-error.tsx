@@ -16,7 +16,7 @@ const GlobalError = ({
     return () => {
       reset();
     };
-  }, [error]);
+  }, [error, reset]);
 
   return (
     <html>

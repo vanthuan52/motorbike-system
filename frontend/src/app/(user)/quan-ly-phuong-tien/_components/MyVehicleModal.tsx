@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -116,7 +117,7 @@ const MyVehicleModal = ({
         </div>
 
         <div className="flex-1">
-          <Form  layout="vertical" className="max-w-full">
+          <Form layout="vertical" className="max-w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 name="license_plate"

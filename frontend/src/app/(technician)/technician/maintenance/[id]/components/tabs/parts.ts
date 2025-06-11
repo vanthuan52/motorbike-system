@@ -1,4 +1,10 @@
-export const parts = [
+export interface PartProperty {
+  key: string;
+  label: string;
+  name: string;
+}
+
+export const parts: PartProperty[] = [
   { key: "glass", label: "Kính", name: "glass" },
   { key: "fork", label: "Phuộc", name: "fork" },
   { key: "brake", label: "Phanh", name: "brake" },

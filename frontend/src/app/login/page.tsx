@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   title: "Đăng nhập | Motorbike",
   description: "Trang đăng nhập người dùng hệ thống Motorbike",
 };
-export default function page() {
+export default function Page() {
   return <LoginPage />;
 }

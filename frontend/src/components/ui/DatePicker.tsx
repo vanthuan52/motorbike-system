@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { forwardRef } from "react";
 import ReactDatePicker, { registerLocale } from "react-datepicker";
 import { vi } from "date-fns/locale/vi";
