@@ -5,6 +5,7 @@ import { LoginCredentials, UserAuthInfo } from "../types";
 import authService from "../auth.service";
 import userService from "@/features/user/user.service";
 import { UserProfile } from "@/features/user/types";
+import { clearTokens } from "@/utils/jwt.utils";
 
 function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
@@ -37,8 +38,18 @@ function* getProfileHandler() {
   }
 }
 
+function* logoutHandler() {
+  try {
+    clearTokens();
+    yield put(authActions.logoutSuccess());
+  } catch {
+    yield put(authActions.logoutFailure());
+  }
+}
+
 export function* authSaga() {
   yield takeLatest(authActions.loginCredentials, loginCredentialsHandler);
   yield takeLatest(authActions.register, registerHandler);
   yield takeLatest(authActions.getUserProfile.type, getProfileHandler);
+  yield takeLatest(authActions.logout, logoutHandler);
 }

@@ -70,6 +70,15 @@ export const authSlice = createSlice({
     },
 
     logout: (state) => {
+      state.loading = true;
+    },
+    logoutSuccess: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+    },
+    logoutFailure: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.loading = false;

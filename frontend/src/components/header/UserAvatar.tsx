@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import clsx from "clsx";
 import {
   CalendarOutlined,
@@ -13,10 +12,13 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { LogIn, User2 } from "lucide-react";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { ROUTER_PATH } from "@/constant/router-path";
 import { UserType } from "@/types/User";
 import { CustomLink } from "../CustomerLink/CustomLink";
+import { authActions } from "@/features/auth/store/auth-slice";
+import { useRouter } from "next/navigation";
+import { notificationActions } from "@/features/notification/store/notification-slice";
 
 interface UserAvatarProps {
   user?: UserType | null;
@@ -56,10 +58,11 @@ const MENU_ITEMS: MenuItem[] = [
     href: ROUTER_PATH.SUPPORT,
     icon: <CustomerServiceOutlined />,
   },
-  { label: "Đăng xuất", href: ROUTER_PATH.LOGOUT, icon: <LogoutOutlined /> },
 ];
 
 export default function UserAvatar({ user, className }: UserAvatarProps) {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,6 +84,17 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuOpen]);
+
+  const logout = () => {
+    router.push(ROUTER_PATH.HOME);
+    dispatch(authActions.logout());
+    dispatch(
+      notificationActions.notify({
+        type: "success",
+        message: "Đăng xuất thành công!",
+      })
+    );
+  };
 
   return (
     <div ref={containerRef} className={clsx("relative", className)}>
@@ -115,6 +129,13 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
                   <span>{label}</span>
                 </CustomLink>
               ))}
+              <div
+                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-700 text-sm cursor-pointer"
+                onClick={() => logout()}
+              >
+                <LogoutOutlined />
+                <span>Logout</span>
+              </div>
             </>
           ) : (
             <CustomLink

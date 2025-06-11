@@ -31,7 +31,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text,
 }) => {
   const spinner = (
-    <div className="flex flex-col items-center justify-center space-y-2">
+    <div className="z-100 flex flex-col items-center justify-center space-y-2">
       <div
         className={clsx(
           "animate-spin rounded-full",
@@ -47,7 +47,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   if (!overlay) return spinner;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       {spinner}
     </div>
   );

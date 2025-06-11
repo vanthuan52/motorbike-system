@@ -12,9 +12,10 @@ import {
   REGISTER,
 } from "redux-persist";
 import rootSaga from "./root-saga";
-import { authReducer } from "../features/auth/store";
-import { cartReducer } from "../features/cart/store";
+import { authReducer } from "@/features/auth/store";
+import { cartReducer } from "@/features/cart/store";
 import storage from "@/utils/ssr-safe-storage";
+import { notificationReducer } from "@/features/notification/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -29,6 +30,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
+  notification: notificationReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
