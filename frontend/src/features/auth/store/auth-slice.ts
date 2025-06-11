@@ -68,6 +68,13 @@ export const authSlice = createSlice({
       state.user = null;
       state.loading = false;
     },
+
+    logout: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+    },
   },
 });
 

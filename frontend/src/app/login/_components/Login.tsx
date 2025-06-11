@@ -28,9 +28,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace(ROUTER_PATH.HOME);
+      router.push(ROUTER_PATH.HOME);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   const form = useForm<LoginCredentials>({
     defaultValues: {
@@ -90,7 +90,7 @@ export default function LoginPage() {
               </form>
             </Form>
 
-            <p className="text-base lg:text-lg mt-4 text-center font-semibold text-gray-500">
+            <div className="text-base lg:text-lg mt-4 text-center font-semibold text-gray-500">
               Bạn chưa có tài khoản?{" "}
               <Link
                 href="/register"
@@ -98,7 +98,7 @@ export default function LoginPage() {
               >
                 Đăng Ký
               </Link>
-            </p>
+            </div>
           </div>
         </div>
         <div className="w-full lg:w-1/2 p-6 hidden lg:block">

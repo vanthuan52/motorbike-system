@@ -17,6 +17,7 @@ const GlobalError = ({
       reset();
     };
   }, [error]);
+
   return (
     <html>
       <body>
