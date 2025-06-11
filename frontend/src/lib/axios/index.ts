@@ -74,6 +74,7 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
         if (!refreshToken) {
           clearTokens();
           processQueue(error);
+          isRefreshing = false;
           return Promise.reject(error);
         }
 
@@ -107,7 +108,9 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
           processQueue(null, newAccessToken);
           return instance(originalRequest);
         } catch (refreshError) {
+          clearTokens();
           processQueue(refreshError);
+          isRefreshing = false;
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;

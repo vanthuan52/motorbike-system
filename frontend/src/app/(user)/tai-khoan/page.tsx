@@ -9,6 +9,7 @@ import UserInfo from "./_components/user-info";
 import AvatarSection from "./_components/avatar-section";
 import ProfileUpdateForm from "./_components/profile-update-form";
 import ProfileCompletion from "./_components/profile-completion";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 function page() {
   const { isAuthenticated, user, loading } = useAppSelector(
@@ -23,7 +24,7 @@ function page() {
   }, [isAuthenticated, loading, router]);
 
   if (loading) {
-    return <div>Đang tải thông tin người dùng...</div>;
+    return <LoadingSpinner text="Waiting..." />;
   }
 
   return (
