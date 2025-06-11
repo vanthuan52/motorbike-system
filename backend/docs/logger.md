@@ -132,9 +132,9 @@ Sentry.init({
   release: appConfigs.version,
   integrations: [nodeProfilingIntegration()],
   tracesSampleRate:
-    appConfigs.env === ENUM_APP_ENVIRONMENT.PRODUCTION ? 0.3 : 1.0,
+    appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION ? 0.3 : 1.0,
   profilesSampleRate:
-    appConfigs.env === ENUM_APP_ENVIRONMENT.PRODUCTION ? 0.1 : 0.5,
+    appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION ? 0.1 : 0.5,
   normalizeDepth: 3,
   maxValueLength: 1000,
   attachStacktrace: false,
@@ -187,7 +187,7 @@ tracesSampler: samplingContext => {
     const transaction = samplingContext?.transactionContext;
 
     if (
-        appConfigs.env === ENUM_APP_ENVIRONMENT.PRODUCTION &&
+        appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION &&
         transaction?.data?.status === 'ok'
     ) {
         // Only sample 5% of successful transactions
@@ -195,7 +195,7 @@ tracesSampler: samplingContext => {
     }
 
     // Use normal sampling rate for errors or non-production
-    return appConfigs.env === ENUM_APP_ENVIRONMENT.PRODUCTION
+    return appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION
         ? 0.3
         : 1.0;
 },

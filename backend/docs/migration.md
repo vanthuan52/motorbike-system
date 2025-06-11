@@ -30,7 +30,7 @@ The entry point for all migrations is the `src/cli.ts` file, which creates a Nes
 
 ```typescript
 async function bootstrap() {
-  process.env.APP_ENV = ENUM_APP_ENVIRONMENT.MIGRATION;
+  process.env.NODE_ENV = ENUM_NODE_ENVIRONMENT.MIGRATION;
 
   const app = await NestFactory.createApplicationContext(MigrationModule, {
     logger: ['error', 'fatal'],

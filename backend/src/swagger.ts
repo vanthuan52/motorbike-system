@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
-import { ENUM_APP_ENVIRONMENT } from '@/app/enums/app.enum';
+import { ENUM_NODE_ENVIRONMENT } from '@/app/enums/app.enum';
 import { AllConfigType } from './config/config.type';
 
 export default async function (app: NestApplication) {
@@ -23,7 +23,7 @@ export default async function (app: NestApplication) {
     infer: true,
   });
 
-  if (env !== ENUM_APP_ENVIRONMENT.PRODUCTION) {
+  if (env !== ENUM_NODE_ENVIRONMENT.PRODUCTION) {
     const documentBuild = new DocumentBuilder()
       .setTitle(docName)
       .setDescription(docDesc)

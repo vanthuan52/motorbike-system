@@ -1,1 +1,1 @@
-export const APP_ENV_META_KEY = 'AppEnvMetaKey';
+export const NODE_ENV_META_KEY = 'AppEnvMetaKey';
