@@ -94,7 +94,7 @@ export default function CartTable({
               return (
                 <div
                   key={p.id}
-                  className="border-b border-gray-200 bg-white rounded-xl flex w-full justify-between items-center"
+                  className="border-b border-gray-200 bg-white rounded-xl flex w-full justify-between items-center mb-1"
                 >
                   <div className="flex justify-center items-center">
                     <div className="py-1 sm:py-2 px-1 sm:px-2 align-middle">
@@ -109,7 +109,7 @@ export default function CartTable({
                       />
                     </div>
                     <div className="py-1 sm:py-2 px-1 sm:px-2">
-                      <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-[260px]">
                         <div className="relative rounded overflow-hidden bg-gray-100 border border-gray-200 w-10 h-10 sm:w-16 sm:h-16">
                           <Image
                             src={p.image[0]}
