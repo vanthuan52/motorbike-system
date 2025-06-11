@@ -17,10 +17,14 @@ function page() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isAuthenticated) {
       router.push(ROUTER_PATH.LOGIN);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loading, router]);
+
+  if (loading) {
+    return <div>Đang tải thông tin người dùng...</div>;
+  }
 
   return (
     <div className="container">

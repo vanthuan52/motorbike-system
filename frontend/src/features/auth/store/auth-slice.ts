@@ -55,6 +55,7 @@ export const authSlice = createSlice({
 
     getUserProfile: (state) => {
       state.loading = true;
+      state.error = null;
     },
 
     getUserProfileSuccess: (state, action: PayloadAction<UserProfile>) => {
