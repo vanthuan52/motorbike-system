@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { ROUTER_PATH } from "@/constants/router-path";
 import NotFoundPage from "@/pages/not-found-page";
 import AppLayout from "@/layout/app-layout";
+import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-part-detail-page";
 
 const HomePage = lazy(() => import("@/pages/home-page"));
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
@@ -82,6 +83,10 @@ export const router = createBrowserRouter([
       { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
       { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
       { path: ROUTER_PATH.VEHICLE_PART, element: <VehiclePartsPage /> },
+      {
+        path: `${ROUTER_PATH.VEHICLE_PART}/:action/:id`,
+        element: <VehiclePartDetailPage />,
+      },
       {
         path: ROUTER_PATH.MAINTENANCE_SCHEDULE,
         element: <MaintenanceSchedule />,
