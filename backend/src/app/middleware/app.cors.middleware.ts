@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import cors, { CorsOptions } from 'cors';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response, NextFunction } from 'express';
@@ -8,6 +8,7 @@ export class AppCorsMiddleware implements NestMiddleware {
   private readonly allowOrigin: string | boolean | string[];
   private readonly allowMethod: string[];
   private readonly allowHeader: string[];
+  private readonly logger = new Logger(AppCorsMiddleware.name);
 
   constructor(private readonly configService: ConfigService) {
     this.allowOrigin = this.configService.get<string | boolean | string[]>(

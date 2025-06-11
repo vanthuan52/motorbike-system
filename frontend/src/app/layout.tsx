@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import { Montserrat } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
-import ToastProvider from "@/components/Toast/ToastProvider";
+import ToastProvider from "@/features/notification/components/toast-provider";
 import { HandleProgressOnComplete } from "@/lib/nprogress/HandleOnProgressComplete";
 import { PageProps } from "@/types/application";
 import ReduxProvider from "@/components/ReduxProvider";
 import AppInitializer from "./app-initializer";
+import GlobalLoading from "@/components/ui/global-loading";
 import "@/styles/globals.css";
 
 const montserrat = Montserrat({
@@ -45,6 +46,7 @@ export default function RootLayout({
         <body className={`${montserrat.variable} antialiased`}>
           <ReduxProvider>
             <AppInitializer />
+            <GlobalLoading />
             {children}
           </ReduxProvider>
           <ToastProvider />
