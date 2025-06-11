@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Montserrat } from "next/font/google";
-import "@/styles/globals.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
 import ToastProvider from "@/components/Toast/ToastProvider";
@@ -9,6 +8,7 @@ import { HandleProgressOnComplete } from "@/lib/nprogress/HandleOnProgressComple
 import { PageProps } from "@/types/application";
 import ReduxProvider from "@/components/ReduxProvider";
 import AppInitializer from "./app-initializer";
+import "@/styles/globals.css";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
