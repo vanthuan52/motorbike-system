@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import PartsFormTab from "./PartsFormTab";
 import { buildMaintenanceHistory } from "./buildMaintenanceHistory";
-import { parts } from "./parts";
 import { MaintenanceHistory } from "@/types/technician/MaintenanceHistory";
 import { maintenanceHistories } from "@/data/technician/MaintenanceHistory";
 
@@ -67,34 +66,6 @@ export default function Tabs({ tabKey, vehicleID }: TabsProps) {
 
   return (
     <div>
-      {tabKey === "nearest" && (
-        <PartsFormTab
-          initialValues={
-            nearest
-              ? Object.fromEntries(
-                  parts.map((part) => [
-                    part.key,
-                    nearest.details[part.key as keyof typeof nearest.details]
-                      ?.value ?? undefined,
-                  ])
-                )
-              : {}
-          }
-          initialNotes={
-            nearest
-              ? Object.fromEntries(
-                  parts.map((part) => [
-                    part.key,
-                    nearest.details[part.key as keyof typeof nearest.details]
-                      ?.note ?? "",
-                  ])
-                )
-              : {}
-          }
-          disabled
-          showBefore
-        />
-      )}
       {tabKey === "note_before_maintenance" && (
         <PartsFormTab
           onSubmit={(values, notes) => handleSubmit(values, notes, "before")}

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { CustomLink } from "@/components/CustomerLink/CustomLink";

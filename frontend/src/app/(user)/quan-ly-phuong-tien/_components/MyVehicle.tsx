@@ -33,7 +33,7 @@ const MyVehicle = () => {
       setLoading(false);
     }, 800);
     return () => clearTimeout(timer);
-  }, [mockVehicles]);
+  }, []);
 
   const getVehicleTypeName = (id: string) =>
     mockVehicleTypes.find((vt) => vt.id === id)?.name || "Không xác định";

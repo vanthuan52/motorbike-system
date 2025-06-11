@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Image } from "antd";
 import { Wrench, CheckCircle, X } from "lucide-react";
 import moment from "moment";
@@ -61,14 +60,14 @@ export default function MaintenanceWaitingCard({
       appointment.status === "prepare"
         ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
         : appointment.status === "wait_for_execution"
-        ? "bg-orange-100 text-orange-700 border border-orange-300"
-        : appointment.status === "in_progress"
-        ? "bg-blue-100 text-blue-700 border border-blue-300"
-        : appointment.status === "is_done"
-        ? "bg-green-100 text-green-700 border border-green-300"
-        : appointment.status === "cancelled"
-        ? "bg-red-100 text-red-700 border border-red-300"
-        : "bg-gray-100 text-gray-500 border border-gray-200"
+          ? "bg-orange-100 text-orange-700 border border-orange-300"
+          : appointment.status === "in_progress"
+            ? "bg-blue-100 text-blue-700 border border-blue-300"
+            : appointment.status === "is_done"
+              ? "bg-green-100 text-green-700 border border-green-300"
+              : appointment.status === "cancelled"
+                ? "bg-red-100 text-red-700 border border-red-300"
+                : "bg-gray-100 text-gray-500 border border-gray-200"
     }
   `}
           >

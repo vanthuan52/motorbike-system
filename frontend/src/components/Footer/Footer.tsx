@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { CustomLink } from "../../components/CustomerLink/CustomLink";
 import { ROUTER_PATH } from "@/constant/router-path";
 
@@ -35,21 +36,21 @@ export default function Footer() {
       <div className="container">
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-8 py-10 max-sm:max-w-sm max-sm:mx-auto gap-y-8">
           <div className="col-span-full mb-10 lg:col-span-2 lg:mb-0">
-            <a
+            <CustomLink
               href="/"
               className="flex justify-center lg:justify-start text-xl font-bold"
             >
               Logo name.
-            </a>
+            </CustomLink>
             <p className="py-8 text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">
               Lorem ipsum dolor sit amet, consectetur adipisicing elit.
             </p>
-            <a
+            <CustomLink
               href="#"
               className="py-2.5 px-5 block w-fit bg-black rounded-full shadow-sm text-sm !text-white mx-auto transition-all duration-500 lg:mx-0 hover:bg-white hover:!text-black"
             >
               Contact us
-            </a>
+            </CustomLink>
           </div>
           <div className="lg:mx-auto text-left ">
             <h4 className="text-lg text-gray-900 font-medium mb-7">Công ty</h4>
@@ -87,17 +88,20 @@ export default function Footer() {
             </h4>
             <ul className="text-sm transition-all duration-500">
               <li className="mb-6">
-                <a
+                <CustomLink
                   href="cau-hoi-thuong-gap"
                   className="text-gray-600 hover:text-gray-900"
                 >
                   FAQs
-                </a>
+                </CustomLink>
               </li>
               <li className="mb-6">
-                <a href="#" className=" text-gray-600 hover:text-gray-900">
+                <CustomLink
+                  href="#"
+                  className=" text-gray-600 hover:text-gray-900"
+                >
                   Chính sách bảo mật
-                </a>
+                </CustomLink>
               </li>
             </ul>
           </div>
@@ -106,19 +110,28 @@ export default function Footer() {
             <h4 className="text-lg text-gray-900 font-medium mb-7">Blogs</h4>
             <ul className="text-sm  transition-all duration-500">
               <li className="mb-6">
-                <a href="#" className=" text-gray-600 hover:text-gray-900">
+                <CustomLink
+                  href="#"
+                  className=" text-gray-600 hover:text-gray-900"
+                >
                   Mẹo hay
-                </a>
+                </CustomLink>
               </li>
               <li className="mb-6">
-                <a href="#" className=" text-gray-600 hover:text-gray-900">
+                <CustomLink
+                  href="#"
+                  className=" text-gray-600 hover:text-gray-900"
+                >
                   Tin mới nhất
-                </a>
+                </CustomLink>
               </li>
               <li>
-                <a href="#" className=" text-gray-600 hover:text-gray-900">
+                <CustomLink
+                  href="#"
+                  className=" text-gray-600 hover:text-gray-900"
+                >
                   Sự kiện
-                </a>
+                </CustomLink>
               </li>
             </ul>
           </div>
@@ -129,7 +142,7 @@ export default function Footer() {
             </h4>
             <ul className="text-sm transition-all duration-500 flex flex-col items-center">
               <li className="mb-6">
-                <a
+                <CustomLink
                   href="#"
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2 justify-center"
                 >
@@ -140,10 +153,10 @@ export default function Footer() {
                     height={60}
                   />
                   <span className="sr-only">Google Play</span>
-                </a>
+                </CustomLink>
               </li>
               <li className="mb-6">
-                <a
+                <CustomLink
                   href="#"
                   className="text-gray-600 hover:text-gray-900 flex items-center gap-2 justify-center"
                 >
@@ -154,7 +167,7 @@ export default function Footer() {
                     height={60}
                   />
                   <span className="sr-only">Apple Store</span>
-                </a>
+                </CustomLink>
               </li>
             </ul>
           </div>
@@ -163,11 +176,14 @@ export default function Footer() {
         <div className="py-7 border-t border-gray-200">
           <div className="flex items-center justify-center flex-col lg:justify-between lg:flex-row">
             <span className="text-sm text-gray-500 ">
-              ©<a href="https://pagedone.io/">Logoname</a> 2025, All rights
-              reserved.
+              ©
+              <CustomLink href="https://pagedone.io/" target="_blank">
+                Logoname
+              </CustomLink>{" "}
+              2025, All rights reserved.
             </span>
             <div className="flex mt-4 space-x-4 sm:justify-center lg:mt-0 ">
-              <a
+              <CustomLink
                 href="#"
                 className="w-9 h-9 rounded-full bg-gray-700 flex justify-center items-center hover:bg-indigo-600"
               >
@@ -186,8 +202,8 @@ export default function Footer() {
                     />
                   </g>
                 </svg>
-              </a>
-              <a
+              </CustomLink>
+              <CustomLink
                 href="#"
                 className="w-9 h-9 rounded-full bg-gray-700 flex justify-center items-center hover:bg-indigo-600"
               >
@@ -202,8 +218,8 @@ export default function Footer() {
                     fill="currentColor"
                   />
                 </svg>
-              </a>
-              <a
+              </CustomLink>
+              <CustomLink
                 href="#"
                 className="w-9 h-9 rounded-full bg-gray-700 flex justify-center items-center hover:bg-indigo-600"
               >
@@ -218,8 +234,8 @@ export default function Footer() {
                     fill="currentColor"
                   />
                 </svg>
-              </a>
-              <a
+              </CustomLink>
+              <CustomLink
                 href="#"
                 className="w-9 h-9 rounded-full bg-gray-700 flex justify-center items-center hover:bg-indigo-600"
               >
@@ -236,7 +252,7 @@ export default function Footer() {
                     fill="currentColor"
                   />
                 </svg>
-              </a>
+              </CustomLink>
             </div>
           </div>
         </div>

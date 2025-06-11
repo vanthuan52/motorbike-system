@@ -1,10 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import Button from '@/components/ui/Button/Button'
-import Datepicker from '@/components/ui/DatePicker'
-import InputField from '@/components/ui/InputField'
-import SelectField from '@/components/ui/SelectField'
-import { BadgeCheck, Bike, Bolt, Clock, Hash, Mail, MapPin, NotebookPen, Phone, User } from 'lucide-react'
-import React from 'react'
+import Button from "@/components/ui/Button/Button";
+import Datepicker from "@/components/ui/DatePicker";
+import InputField from "@/components/ui/InputField";
+import SelectField from "@/components/ui/SelectField";
+import {
+  BadgeCheck,
+  Bike,
+  Bolt,
+  Clock,
+  Hash,
+  Mail,
+  MapPin,
+  NotebookPen,
+  Phone,
+  User,
+} from "lucide-react";
+import React from "react";
 
 interface props {
   formData: any;
@@ -164,5 +174,5 @@ export default function FormMaintenance({
         />
       </div>
     </form>
-  )
+  );
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { SkeletonCard } from "./SkeletonCard";
