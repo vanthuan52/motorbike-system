@@ -9,7 +9,7 @@ export const GreenSwitch = ({ className = "", checked, ...props }: Props) => {
   return (
     <Switch
       {...props}
-      checked={checked}
+      checked={!!checked}
       className={clsx(
         "!align-middle !border-none",
         checked

@@ -20,10 +20,18 @@ const MessagesPage = lazy(
 const VehicleCompanyPage = lazy(
   () => import("@/modules/vehicle-company/pages/vehicle-company-page")
 );
-const VehicleType = lazy(
-  () => import("@/modules/vehicle-type/pages/vehicle-type-page")
-);
-
+// const VehicleType = lazy(
+//   () => import("@/modules/vehicle-type/pages/vehicle-type-page")
+// );
+const CategoryPage = lazy(
+  () => import("@/modules/category/pages/category")
+)
+const CategoryDetailsPage = lazy(
+  () => import("@/modules/category/pages/category-details-page")
+)
+const CreateCategoryPage = lazy(
+  () => import("@/modules/category/pages/create-category-page")
+)
 const VehiclePartsPage = lazy(
   () => import("@/modules/vehicle-parts/pages/vehicle-part-page")
 );
@@ -80,8 +88,15 @@ export const router = createBrowserRouter([
       { path: ROUTER_PATH.POSTS, element: <PostPage /> },
       { path: ROUTER_PATH.MESSAGES, element: <MessagesPage /> },
       { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
-      { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
-      { path: ROUTER_PATH.VEHICLE_PART, element: <VehiclePartsPage /> },
+      // { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
+      { path: ROUTER_PATH.CATEGORY, element: <CategoryPage /> },
+      {
+        path: ROUTER_PATH.CATEGORY_DETAILS, element: <CategoryDetailsPage />,
+      },
+      {
+        path: ROUTER_PATH.CREATE_CATEGORY, element: <CreateCategoryPage />,
+      },
+      { path: ROUTER_PATH.CATEGORY, element: <VehiclePartsPage /> },
       {
         path: ROUTER_PATH.MAINTENANCE_SCHEDULE,
         element: <MaintenanceSchedule />,
