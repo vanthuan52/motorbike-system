@@ -8,6 +8,7 @@ import createSagaMiddleware from "redux-saga";
 import rootSaga from "./root-saga";
 import { authReducer } from "@/modules/auth/store";
 import { productsReducer } from "@/modules/products/store";
+import { categoriesReducer } from "@/modules/category/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -15,6 +16,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     products: productsReducer,
+    categories: categoriesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(sagaMiddleware),

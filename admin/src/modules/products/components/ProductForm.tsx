@@ -18,6 +18,7 @@ import {
   SaveOutlined,
   ArrowLeftOutlined,
   UploadOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
 import { Product } from "../types";
@@ -297,7 +298,7 @@ export default function ProductForm({
         <div className="flex justify-end gap-2 w-full mt-4">
           <Button
             type="primary"
-            icon={<SaveOutlined />}
+            icon={mode === "edit" ? <SaveOutlined /> : <PlusOutlined />}
             onClick={handleFinish}
             loading={loading}
           >

@@ -43,9 +43,9 @@ const links = [
     href: ROUTER_PATH.VEHICLE_TYPE,
   },
   {
-    label: "Phụ tùng",
+    label: "Danh mục phụ tùng",
     icon: <TbSettingsCode size={24} />,
-    href: ROUTER_PATH.VEHICLE_PART,
+    href: ROUTER_PATH.CATEGORY,
   },
   {
     label: "Nhân viên",
