@@ -17,7 +17,7 @@ import {
   ArrowLeftOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
-import { CustomerType } from "@/modules/customer-management/types/types";
+import { CustomerType } from "@/modules/customer-management/types";
 import { mockDataTableManageCustomers } from "@/modules/customer-management/mocks/customer-data";
 import CustomerVehicles from "@/modules/customer-management/components/customer-vehicle";
 import { vehicleData } from "@/modules/customer-management/mocks/customer-vehicle";
