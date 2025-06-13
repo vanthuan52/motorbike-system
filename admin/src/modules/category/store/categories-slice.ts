@@ -66,7 +66,7 @@ export const categoriesSlice = createSlice({
     updateCategoryRequest(state, action) {
       state.error = null;
       const { slug, category } = action.payload;
-      const idx = state.categories.findIndex((cat) => cat.slug === slug);
+      const idx = state.categories.findIndex(cat => cat.slug === slug);
       if (idx !== -1) {
         state.categories[idx] = category;
       }
@@ -80,7 +80,7 @@ export const categoriesSlice = createSlice({
     deleteCategoryRequest(state, action) {
       state.error = null;
       const slug = action.payload;
-      state.categories = state.categories.filter((cat) => cat.slug !== slug);
+      state.categories = state.categories.filter(cat => cat.slug !== slug);
     },
     deleteCategorySuccess(state) {
       state.error = null;
@@ -91,7 +91,7 @@ export const categoriesSlice = createSlice({
     updateStatusCategoryRequest(state, action) {
       state.error = null;
       const { slug, status } = action.payload;
-      const idx = state.categories.findIndex((cat) => cat.slug === slug);
+      const idx = state.categories.findIndex(cat => cat.slug === slug);
       if (idx !== -1) {
         state.categories[idx].status = status;
       }
@@ -99,7 +99,7 @@ export const categoriesSlice = createSlice({
     updateStatusCategorySuccess(state, action) {
       state.error = null;
       const { slug, status } = action.payload;
-      const idx = state.categories.findIndex((cat) => cat.slug === slug);
+      const idx = state.categories.findIndex(cat => cat.slug === slug);
       if (idx !== -1) {
         state.categories[idx].status = status;
       }

@@ -24,7 +24,9 @@ export default function CategoryPage() {
     page: 1,
     limit: 5,
   });
-  const { categories, isLoading, total } = useSelector((state: RootState) => state.categories);
+  const { categories, isLoading, total } = useSelector(
+    (state: RootState) => state.categories
+  );
   useEffect(() => {
     dispatch(categoriesActions.fetchCategoriesRequest(payload));
   }, [dispatch, payload]);
@@ -42,8 +44,8 @@ export default function CategoryPage() {
     dispatch(categoriesActions.deleteCategoryRequest(slug));
   };
   const vehicleCompanyMap = Object.fromEntries(
-    mockDataTableVehicleCompany.map((item) => [item.id, item.name])
-  )
+    mockDataTableVehicleCompany.map(item => [item.id, item.name])
+  );
   const handleUpdateStatus = (status: boolean, record: Category) => {
     dispatch(
       categoriesActions.updateStatusCategoryRequest({
@@ -51,7 +53,7 @@ export default function CategoryPage() {
         status: !status,
       })
     );
-  }
+  };
   const columns: ColumnsType<(typeof mockCategory)[0]> = [
     {
       title: "ID",
@@ -67,17 +69,17 @@ export default function CategoryPage() {
       title: "Mã hãng xe",
       dataIndex: "vehicle_company_id",
       key: "vehicle_company_id",
-      render: (value) => {
-        return vehicleCompanyMap[value]
-      }
+      render: value => {
+        return vehicleCompanyMap[value];
+      },
     },
     {
       title: "Mô tả",
       dataIndex: "description",
       key: "description",
-      render: (value) => {
-        return <span className="line-clamp-2">{value}</span>;
-      }
+      render: value => {
+        return <span className='line-clamp-2'>{value}</span>;
+      },
     },
     {
       title: "Trạng thái",
@@ -86,7 +88,7 @@ export default function CategoryPage() {
       render: (status: boolean, record: Category) => (
         <GreenSwitch
           checked={status}
-          onChange={(checked) => handleUpdateStatus(status, record)}
+          onChange={checked => handleUpdateStatus(status, record)}
         />
       ),
     },
@@ -95,15 +97,15 @@ export default function CategoryPage() {
       key: "action",
       render: (_, record) => (
         <>
-          <Tooltip title="Sửa" className="mr-1">
+          <Tooltip title='Sửa' className='mr-1'>
             <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
           </Tooltip>
 
           <Popconfirm
-            title="Xác nhận xóa?"
+            title='Xác nhận xóa?'
             onConfirm={() => handleDelete(record.id)}
           >
-            <Tooltip title="Xóa">
+            <Tooltip title='Xóa'>
               <Button icon={<DeleteOutlined />} danger />
             </Tooltip>
           </Popconfirm>
@@ -115,27 +117,27 @@ export default function CategoryPage() {
     setPayload({ name: "", vehicle_company_id: null, page: 1, limit: 5 });
   };
   return (
-    <div className="sm:px-4">
+    <div className='sm:px-4'>
       <PageHeading
-        title="Danh mục phụ tùng"
+        title='Danh mục phụ tùng'
         onClickAdd={openCreate}
-        addButtonLabel="Thêm danh mục"
+        addButtonLabel='Thêm danh mục'
       />
       <Row gutter={16} style={{ marginBottom: 16 }}>
         <Col>
           <Input
-            placeholder="Tìm theo tên"
+            placeholder='Tìm theo tên'
             value={payload.name}
-            onChange={(e) => setPayload({ ...payload, name: e.target.value })}
+            onChange={e => setPayload({ ...payload, name: e.target.value })}
             allowClear
             style={{ width: 200 }}
           />
         </Col>
         <Col>
           <Select
-            placeholder="Tìm theo hãng xe"
+            placeholder='Tìm theo hãng xe'
             value={payload.vehicle_company_id}
-            onChange={(e) => setPayload({ ...payload, vehicle_company_id: e })}
+            onChange={e => setPayload({ ...payload, vehicle_company_id: e })}
             allowClear
             style={{ width: 180 }}
           >
@@ -147,7 +149,7 @@ export default function CategoryPage() {
           </Select>
         </Col>
         <Col>
-          <Button type="primary" onClick={() => handleResetFilter()}>
+          <Button type='primary' onClick={() => handleResetFilter()}>
             Đặt lại
           </Button>
         </Col>
@@ -169,12 +171,13 @@ export default function CategoryPage() {
         <Table
           dataSource={categories}
           columns={columns}
-          rowKey="id" pagination={{
+          rowKey='id'
+          pagination={{
             pageSize: payload.limit,
             current: payload.page,
             total: total,
             onChange: (page, pageSize) => {
-              setPayload((prev) => ({
+              setPayload(prev => ({
                 ...prev,
                 page,
                 limit: pageSize,
@@ -183,7 +186,6 @@ export default function CategoryPage() {
           }}
         />
       )}
-
     </div>
   );
 }
