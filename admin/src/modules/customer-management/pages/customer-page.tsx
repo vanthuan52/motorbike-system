@@ -2,21 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
-import { Button, Space, Tag } from "antd";
+import { Button, Popconfirm, Tag, Tooltip } from "antd";
 import { mockDataTableManageCustomers } from "@/modules/customer-management/mocks/customer-data";
 import { PageHeading } from "@/components/page-heading";
 import { SearchInput } from "@/components/ui/search-input";
 import Table from "@/components/ui/table/table";
 import SelectField from "@/components/ui/select-field";
-import { Link } from "react-router-dom";
-import { EyeOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import SkeletonTable from "@/components/ui/SkeletonTable";
+import { toast } from "react-toastify";
 
 const ROUTER_PATH = {
   CUSTOMERS: "/customers",
 };
 
 export default function Customers() {
+  const navigate = useNavigate();
   const [dataSource, setDataSource] = useState(mockDataTableManageCustomers);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -38,20 +40,28 @@ export default function Customers() {
     let filtered = [...mockDataTableManageCustomers];
 
     if (searchText) {
-      filtered = filtered.filter((item) =>
+      filtered = filtered.filter(item =>
         (item.first_name ?? "").toLowerCase().includes(searchText.toLowerCase())
       );
     }
 
     if (payload.gender !== "Tất cả") {
       filtered = filtered.filter(
-        (item) => item.gender === (payload.gender === "Nam" ? "MALE" : "FEMALE")
+        item => item.gender === (payload.gender === "Nam" ? "MALE" : "FEMALE")
       );
     }
 
     setDataSource(filtered);
   }, [searchText, payload.gender]);
 
+  const openEdit = (record: (typeof mockDataTableManageCustomers)[0]) => {
+    navigate(`/customers/${record.id}?edit=1`);
+  };
+
+  const handleDelete = (id: string) => {
+    setDataSource(prev => prev.filter(item => item.id !== id));
+    toast.success("Xóa khách hàng thành công!");
+  };
   const columns: ColumnsType<(typeof mockDataTableManageCustomers)[0]> = [
     {
       title: "STT",
@@ -87,9 +97,9 @@ export default function Customers() {
       key: "status",
       render: (_, record) => (
         <span>
-          {record.status === "ACTIVE" && <Tag color="green">Còn hoạt động</Tag>}
+          {record.status === "ACTIVE" && <Tag color='green'>Còn hoạt động</Tag>}
           {record.status === "INACTIVE" && (
-            <Tag color="yellow">Không còn hoạt động</Tag>
+            <Tag color='yellow'>Không còn hoạt động</Tag>
           )}
         </span>
       ),
@@ -104,27 +114,46 @@ export default function Customers() {
       dataIndex: "action",
       key: "action",
       render: (_, record) => (
-        <Space>
-          <Link to={`${ROUTER_PATH.CUSTOMERS}/${record.id}`}>
-            <Button icon={<EyeOutlined />} />
-          </Link>
-        </Space>
+        <div className='flex items-center justify-center gap-1'>
+          <Tooltip title='Xem chi tiết'>
+            <Link to={`${ROUTER_PATH.CUSTOMERS}/${record.id}`}>
+              <Button icon={<EyeOutlined />} size='small' />
+            </Link>
+          </Tooltip>
+          <Tooltip title='Chỉnh sửa'>
+            <Button
+              icon={<EditOutlined />}
+              size='small'
+              onClick={() => openEdit(record)}
+            />
+          </Tooltip>
+          <Popconfirm
+            title='Bạn chắc chắn muốn xóa khách hàng này?'
+            onConfirm={() => handleDelete(record.id)}
+            okText='Xóa'
+            cancelText='Hủy'
+          >
+            <Tooltip title='Xóa'>
+              <Button icon={<DeleteOutlined />} size='small' danger />
+            </Tooltip>
+          </Popconfirm>
+        </div>
       ),
     },
   ];
 
   return (
-    <div className="sm:px-4">
-      <PageHeading title="Danh sách khách hàng" disabledButton />
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="mb-4 flex gap-4 max-h-[40px] w-full">
+    <div className='sm:px-4'>
+      <PageHeading title='Danh sách khách hàng' disabledButton />
+      <div className='bg-white rounded-lg p-4 border border-gray-200'>
+        <div className='mb-4 flex gap-4 max-h-[40px] w-full'>
           <SearchInput onChange={setSearchText} />
           <SelectField
             value={payload.gender}
-            onChange={(e) => setPayload({ ...payload, gender: e.target.value })}
+            onChange={e => setPayload({ ...payload, gender: e.target.value })}
             options={["Tất cả", "Nam", "Nữ"]}
-            optionLabel="Giới tính"
-            rootClass="!w-[200px]"
+            optionLabel='Giới tính'
+            rootClass='!w-[200px]'
           />
         </div>
 
@@ -146,7 +175,7 @@ export default function Customers() {
           <Table
             dataSource={dataSource}
             columns={columns}
-            rowKey="id"
+            rowKey='id'
             pagination={{ pageSize: 5 }}
           />
         )}
