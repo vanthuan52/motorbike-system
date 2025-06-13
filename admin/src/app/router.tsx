@@ -7,6 +7,7 @@ import LoginPage from "@/modules/auth/pages/login-page";
 import HomePage from "@/pages/home-page";
 import AuthLayout from "@/layout/auth-layout";
 import ProtectedRoute from "./protected-route";
+import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-part-detail-page";
 
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
 const Dashboard = lazy(() => import("@/modules/dashboard/pages/dashboard"));
@@ -171,7 +172,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: `${ROUTER_PATH.VEHICLE_PART}/:action/:id`,
+        path: `${ROUTER_PATH.VEHICLE_TYPE}/:action/:id`,
         element: <VehiclePartDetailPage />,
       },
       {
