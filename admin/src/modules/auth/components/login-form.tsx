@@ -10,7 +10,7 @@ import { FormInput } from "./form-input/form-input";
 import { ROUTER_PATH } from "@/constants/router-path";
 
 const LoginForm = () => {
-  const { isAuthenticated, isLoading, error } = useAppSelector(
+  const { isAuthenticated, loading, error } = useAppSelector(
     (state) => state.auth
   );
   const dispatch = useAppDispatch();
@@ -22,8 +22,8 @@ const LoginForm = () => {
     formState: { errors },
   } = useForm<LoginFormType>({
     defaultValues: {
-      email: "admin@example.com",
-      password: "Abc@12345",
+      email: "",
+      password: "",
     },
     resolver: yupResolver(loginSchema),
   });
@@ -44,11 +44,11 @@ const LoginForm = () => {
 
   const onSubmit: SubmitHandler<LoginFormType> = useCallback(
     (data) => {
-      if (!isLoading) {
-        dispatch(authActions.login(data));
+      if (!loading) {
+        dispatch(authActions.loginCredentials(data));
       }
     },
-    [dispatch, isLoading]
+    [dispatch, loading]
   );
 
   return (
@@ -81,18 +81,9 @@ const LoginForm = () => {
           label="Đăng Nhập"
           type="submit"
           className="w-full h-[45px] cursor-pointer"
-          loading={isLoading}
+          loading={loading}
         />
       </form>
-      <p className="text-base lg:text-lg mt-4 text-center font-semibold text-gray-500">
-        Bạn chưa có tài khoản?{" "}
-        <a
-          href="/register"
-          className=" font-bold hover:transform hover:scale-105 duration-200"
-        >
-          Đăng Ký
-        </a>
-      </p>
     </div>
   );
 };

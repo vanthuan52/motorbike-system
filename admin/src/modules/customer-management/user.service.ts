@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 import { UserProfileResponse, UserProfileResponseData } from "./types";
 import { ApiErrorResponse } from "@/types/api.type";
 import { sharedApi } from "@/lib/axios";
-import { API_ENDPOINTS } from "@/constant/api-endpoint";
+import { API_ENDPOINTS } from "@/constants/api-endpoint";
 
 const userService = {
   getProfile: async (): Promise<UserProfileResponseData> => {
@@ -11,7 +11,7 @@ const userService = {
         API_ENDPOINTS.SHARED.USER_PROFILE
       );
 
-      if (response.status === 200 && response.data.data) {
+      if (response.data.statusCode === 200 && response.data.data) {
         const userProfile = response.data.data;
         return userProfile;
       } else {

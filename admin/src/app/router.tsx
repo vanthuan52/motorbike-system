@@ -3,11 +3,12 @@ import { createBrowserRouter } from "react-router-dom";
 import { ROUTER_PATH } from "@/constants/router-path";
 import NotFoundPage from "@/pages/not-found-page";
 import AppLayout from "@/layout/app-layout";
-import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-part-detail-page";
+import LoginPage from "@/modules/auth/pages/login-page";
+import HomePage from "@/pages/home-page";
+import AuthLayout from "@/layout/auth-layout";
+import ProtectedRoute from "./protected-route";
 
-const HomePage = lazy(() => import("@/pages/home-page"));
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
-const LoginPage = lazy(() => import("@/modules/auth/pages/login-page"));
 const Dashboard = lazy(() => import("@/modules/dashboard/pages/dashboard"));
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
@@ -24,15 +25,13 @@ const VehicleCompanyPage = lazy(
 // const VehicleType = lazy(
 //   () => import("@/modules/vehicle-type/pages/vehicle-type-page")
 // );
-const CategoryPage = lazy(
-  () => import("@/modules/category/pages/category")
-)
+const CategoryPage = lazy(() => import("@/modules/category/pages/category"));
 const CategoryDetailsPage = lazy(
   () => import("@/modules/category/pages/category-details-page")
-)
+);
 const CreateCategoryPage = lazy(
   () => import("@/modules/category/pages/create-category-page")
-)
+);
 const VehiclePartsPage = lazy(
   () => import("@/modules/vehicle-parts/pages/vehicle-part-page")
 );
@@ -76,66 +75,192 @@ const CreateProductPage = lazy(
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
-    element: <LoginPage />,
+    element: (
+      <AuthLayout>
+        <LoginPage />
+      </AuthLayout>
+    ),
   },
   {
     path: ROUTER_PATH.INDEX,
     element: <AppLayout />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: ROUTER_PATH.DASHBOARD, element: <Dashboard /> },
-      { path: ROUTER_PATH.EMPLOYEES, element: <EmployeesPage /> },
-      { path: ROUTER_PATH.EMPLOYEES_DETAILS, element: <EmployeeDetailsPage /> },
-      { path: ROUTER_PATH.POSTS, element: <PostPage /> },
-      { path: ROUTER_PATH.MESSAGES, element: <MessagesPage /> },
-      { path: ROUTER_PATH.VEHICLE_COMPANY, element: <VehicleCompanyPage /> },
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.DASHBOARD,
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.EMPLOYEES,
+        element: (
+          <ProtectedRoute>
+            <EmployeesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.EMPLOYEES_DETAILS,
+        element: (
+          <ProtectedRoute>
+            <EmployeeDetailsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.POSTS,
+        element: (
+          <ProtectedRoute>
+            <PostPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.MESSAGES,
+        element: (
+          <ProtectedRoute>
+            <MessagesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_COMPANY,
+        element: (
+          <ProtectedRoute>
+            <VehicleCompanyPage />
+          </ProtectedRoute>
+        ),
+      },
       // { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
-      { path: ROUTER_PATH.CATEGORY, element: <CategoryPage /> },
       {
-        path: ROUTER_PATH.CATEGORY_DETAILS, element: <CategoryDetailsPage />,
+        path: ROUTER_PATH.CATEGORY,
+        element: (
+          <ProtectedRoute>
+            <CategoryPage />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: ROUTER_PATH.CREATE_CATEGORY, element: <CreateCategoryPage />,
+        path: ROUTER_PATH.CATEGORY_DETAILS,
+        element: (
+          <ProtectedRoute>
+            <CategoryDetailsPage />
+          </ProtectedRoute>
+        ),
       },
-      { path: ROUTER_PATH.CATEGORY, element: <VehiclePartsPage /> },
+      {
+        path: ROUTER_PATH.CREATE_CATEGORY,
+        element: <CreateCategoryPage />,
+      },
+      {
+        path: ROUTER_PATH.CATEGORY,
+        element: (
+          <ProtectedRoute>
+            <VehiclePartsPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: `${ROUTER_PATH.VEHICLE_PART}/:action/:id`,
         element: <VehiclePartDetailPage />,
       },
       {
         path: ROUTER_PATH.MAINTENANCE_SCHEDULE,
-        element: <MaintenanceSchedule />,
+        element: (
+          <ProtectedRoute>
+            <MaintenanceSchedule />
+          </ProtectedRoute>
+        ),
       },
-      { path: ROUTER_PATH.MAINTENANCE, element: <Maintenance /> },
-      { path: ROUTER_PATH.CUSTOMERS, element: <CustomerPage /> },
+      {
+        path: ROUTER_PATH.MAINTENANCE,
+        element: (
+          <ProtectedRoute>
+            <Maintenance />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTER_PATH.CUSTOMERS,
+        element: (
+          <ProtectedRoute>
+            <CustomerPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: `${ROUTER_PATH.CUSTOMERS}/:id`,
-        element: <CustomerDetailPage />,
+        element: (
+          <ProtectedRoute>
+            <CustomerDetailPage />
+          </ProtectedRoute>
+        ),
       },
-      { path: ROUTER_PATH.INVOICES, element: <InvoicesPage /> },
+      {
+        path: ROUTER_PATH.INVOICES,
+        element: (
+          <ProtectedRoute>
+            <InvoicesPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: ROUTER_PATH.INVOICES_DETAILS,
-        element: <InvoicesDetailPage />,
+        element: (
+          <ProtectedRoute>
+            <InvoicesDetailPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: ROUTER_PATH.ROLES,
-        element: <RolesPage />,
+        element: (
+          <ProtectedRoute>
+            <RolesPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: ROUTER_PATH.PERMISSIONS,
-        element: <PermissionsPage />,
+        element: (
+          <ProtectedRoute>
+            <PermissionsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: ROUTER_PATH.PRODUCTS,
-        element: <ProductsPage />,
+        element: (
+          <ProtectedRoute>
+            <ProductsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: ROUTER_PATH.PRODUCTS_DETAILS,
-        element: <ProductDetailsPage />,
+        element: (
+          <ProtectedRoute>
+            <ProductDetailsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: ROUTER_PATH.CREATE_PRODUCT,
-        element: <CreateProductPage />,
+        element: (
+          <ProtectedRoute>
+            <CreateProductPage />
+          </ProtectedRoute>
+        ),
       },
     ],
   },

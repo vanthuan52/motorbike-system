@@ -1,34 +1,45 @@
-import { toast } from "react-toastify";
 import { type PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { LoginFormType } from "../schemas/auth-schema";
-import authApi from "../services/auth-api";
-import { ApiResponse, User } from "../types";
 import { authActions } from "./auth-slice";
+import { LoginCredentials } from "../types";
+import { UserProfile } from "@/modules/customer-management/types";
+import authService from "../auth.service";
+import userService from "@/modules/customer-management/user.service";
+import { clearTokens } from "@/utils/jwt.uitls";
 
-function* loginHandler(action: PayloadAction<LoginFormType>) {
+function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
-    const { message }: ApiResponse<any> = yield call(
-      authApi.login,
-      action.payload
-    );
-    toast.success(message);
-    yield put(authActions.loginSuccess());
+    yield call(authService.loginCredentials, action.payload);
+    yield put(authActions.loginCredentialsSuccess());
+    yield put(authActions.getUserProfile());
   } catch (error: any) {
-    yield put(authActions.loginFailure(error.message || "Login failed"));
+    yield put(
+      authActions.loginCredentialsFailure(error.message || "Login failed")
+    );
   }
 }
 
-function* getCurrentUserHandler() {
+function* getProfileHandler() {
   try {
-    const { data }: ApiResponse<User> = yield call(authApi.getCurrentUser);
-    yield put(authActions.getCurrentUserSuccess(data));
+    const userProfile: UserProfile = yield call(userService.getProfile);
+
+    yield put(authActions.getUserProfileSuccess(userProfile));
   } catch (error: any) {
-    yield put(authActions.getCurrentUserFailure(error.message));
+    yield put(authActions.getUserProfileFailure());
+  }
+}
+
+function* logoutHandler() {
+  try {
+    clearTokens();
+    yield put(authActions.logoutSuccess());
+  } catch {
+    yield put(authActions.logoutFailure());
   }
 }
 
 export function* authSaga() {
-  yield takeLatest(authActions.login, loginHandler);
-  yield takeLatest(authActions.getCurrentUser, getCurrentUserHandler);
+  yield takeLatest(authActions.loginCredentials, loginCredentialsHandler);
+  yield takeLatest(authActions.getUserProfile.type, getProfileHandler);
+  yield takeLatest(authActions.logout, logoutHandler);
 }

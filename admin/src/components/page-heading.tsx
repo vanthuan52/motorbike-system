@@ -3,14 +3,14 @@ import { Button } from "antd";
 interface Props {
   title: string;
   addButtonLabel?: string;
-  onClickAdd?: () => void;
+  onClick?: () => void;
   disabledButton?: boolean;
 }
 
 export const PageHeading = ({
   title,
   addButtonLabel,
-  onClickAdd,
+  onClick,
   disabledButton,
 }: Props) => {
   return (
@@ -25,7 +25,7 @@ export const PageHeading = ({
         <div className="flex justify-center sm:justify-end w-full sm:w-auto">
           <Button
             className="!bg-black !text-white !px-5 min-h-[35px] !font-medium w-full sm:w-auto"
-            onClick={onClickAdd}
+            onClick={onClick}
           >
             {addButtonLabel || "Thêm mới"}
           </Button>

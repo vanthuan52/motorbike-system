@@ -1,60 +1,88 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { jwtDecode } from "jwt-decode";
-import { LoginFormType } from "../schemas/auth-schema";
-import { AuthenticatedUser, User, UserRole } from "../types";
-import { localStorageHelper } from "@/utils/local-storage-helper";
+import { LoginCredentials } from "../types";
+import { UserProfile } from "@/modules/customer-management/types";
 
 interface AuthState {
   isAuthenticated: boolean;
-  isLoading: boolean;
+  loading: boolean;
   error: string | null;
-  user?: AuthenticatedUser;
+  user: UserProfile | null;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
-  isLoading: false,
+  loading: false,
   error: null,
-  user: undefined,
+  user: null,
 };
 
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<LoginFormType>) => {
+    loginCredentials: (state, action: PayloadAction<LoginCredentials>) => {
       state.isAuthenticated = false;
-      state.isLoading = true;
+      state.loading = true;
       state.error = null;
     },
-    loginSuccess: (state) => {
+    loginCredentialsSuccess: (state) => {
       state.isAuthenticated = true;
-      state.isLoading = false;
+      state.loading = false;
       state.error = null;
     },
-    loginFailure: (state, action: PayloadAction<string>) => {
+    loginCredentialsFailure: (state, action: PayloadAction<string>) => {
       state.isAuthenticated = false;
-      state.isLoading = false;
+      state.loading = false;
       state.error = action.payload;
     },
+
+    register: (state, action: PayloadAction<any>) => {
+      state.loading = true;
+      state.error = null;
+    },
+    registerSuccess: (state) => {
+      state.loading = false;
+      state.error = null;
+    },
+    registerFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+
     clearAuthError: (state) => {
       state.error = null;
     },
-    getCurrentUser: (state) => {
-      state.isLoading = true;
-    },
-    getCurrentUserSuccess(state, action: PayloadAction<User>) {
-      const { accessToken } = localStorageHelper.getAuthToken();
-      const { role } = jwtDecode<{ role: UserRole }>(accessToken);
-      state.isLoading = false;
-      state.isAuthenticated = true;
-      state.user = { role: role, ...action.payload };
-    },
-    getCurrentUserFailure(state) {
-      state.isLoading = false;
-      state.isAuthenticated = false;
+
+    getUserProfile: (state) => {
+      state.loading = true;
       state.error = null;
-      state.user = undefined;
+    },
+
+    getUserProfileSuccess: (state, action: PayloadAction<UserProfile>) => {
+      state.isAuthenticated = true;
+      state.user = action.payload;
+      state.loading = false;
+    },
+    getUserProfileFailure: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.loading = false;
+    },
+
+    logout: (state) => {
+      state.loading = true;
+    },
+    logoutSuccess: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+    },
+    logoutFailure: (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.loading = false;
+      state.error = null;
     },
   },
 });

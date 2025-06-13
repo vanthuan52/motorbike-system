@@ -1,7 +1,16 @@
-export const Config = {
-  DOMAIN: import.meta.env.VITE_API_ENDPOINT || "https://localhost:5002/",
+export const APP_CONFIG = {
+  NODE_ENV: import.meta.env.NODE_ENV || "development",
+  BASE_URL: import.meta.env.VITE_BASE_URL || "http://localhost:3000",
+  API_PROTOCOL: import.meta.env.VITE_API_PROTOCOL || "http",
+  API_PREFIX: import.meta.env.VITE_API_PREFIX || "api",
+  API_VERSION: import.meta.env.VITE_API_VERSION || "1",
+  API_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5001",
+  API_URL_PUBLIC: import.meta.env.VITE_API_BASE_URL_PUBLIC || "public",
+  API_URL_SHARED: import.meta.env.VITE_API_BASE_URL_SHARED || "shared",
+  API_URL_ADMIN: import.meta.env.VITE_API_BASE_URL_ADMIN || "admin",
+  API_URL_SYSTEM: import.meta.env.VITE_API_BASE_URL_SYSTEM || "system",
+  API_URL_USER: import.meta.env.VITE_API_BASE_URL_USER || "user",
+  DEFAULT_LOCALE: import.meta.env.VITE_DEFAULT_LOCALE || "vi",
+  ACCESS_TOKEN_EXPIRED: import.meta.env.VITE_ACCESS_TOKEN_EXPIRED || "3m",
+  REFRESH_TOKEN_EXPIRED: import.meta.env.VITE_REFRESH_TOKEN_EXPIRED || "7d",
 };
-
-export const ACCESS_TOKEN = "access_token";
-export const REFRESH_TOKEN = "refresh_token";
-export const EXPIRES_IN = "expires_in";

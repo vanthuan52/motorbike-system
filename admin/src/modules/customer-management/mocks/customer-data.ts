@@ -1,4 +1,4 @@
-import { CustomerType } from "../types/types";
+import { CustomerType } from "../types";
 
 export const mockDataTableManageCustomers: CustomerType[] = [
   {
