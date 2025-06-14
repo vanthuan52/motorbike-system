@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HiOutlineChevronDown, HiOutlineChevronRight } from "react-icons/hi";
 import clsx from "clsx";
 import { Tooltip } from "react-tooltip";
@@ -46,9 +46,9 @@ export default function SidebarItem({
         )}
         onClick={() => hasChildren && toggleOpen(item.key)}
       >
-        <a
+        <Link
           className="flex items-center gap-3"
-          href={item.href}
+          to={item.href || ""}
           data-tooltip-id={item.href}
           data-tooltip-content={item.label}
         >
@@ -56,10 +56,13 @@ export default function SidebarItem({
           {!collapsed && (
             <span className="text-sm font-medium">{item.label}</span>
           )}
-        </a>
-        <Tooltip id={item.href} style={{
-          zIndex: 3000
-        }} />
+        </Link>
+        <Tooltip
+          id={item.href}
+          style={{
+            zIndex: 3000,
+          }}
+        />
         {!collapsed && hasChildren && (
           <span className="text-xs">
             {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
@@ -69,9 +72,9 @@ export default function SidebarItem({
       {hasChildren && isOpen && !collapsed && (
         <div className="ml-6 mt-1 space-y-1">
           {item.children!.map((child) => (
-            <a
+            <Link
               key={child.key}
-              href={child.href}
+              to={child.href || ""}
               className={clsx(
                 "flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 text-sm",
                 child.href === pathname && "bg-gray-200 font-semibold"
@@ -79,16 +82,13 @@ export default function SidebarItem({
               data-tooltip-id={child.href}
               data-tooltip-content={child.label}
             >
-              {child.icon && (
-                <span className="text-lg">{child.icon}</span>
-              )}
+              {child.icon && <span className="text-lg">{child.icon}</span>}
               {child.label}
               <Tooltip id={child.href} />
-            </a>
+            </Link>
           ))}
         </div>
       )}
     </>
-
   );
 }

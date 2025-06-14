@@ -1,89 +1,73 @@
-import React, { useState, useEffect, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useNavigate } from "react-router-dom";
-import { LoginFormType, loginSchema } from "../schemas/auth-schema";
+import {
+  LoginCredentialsFormType,
+  loginCredentialsSchema,
+} from "../schemas/auth-schema";
 import Button from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { authActions } from "../store/auth-slice";
-import { FormInput } from "./form-input/form-input";
-import { ROUTER_PATH } from "@/constants/router-path";
+import { LoginCredentials } from "../types";
+import { Form, FormItem } from "@/components/ui/form";
+import CustomInput from "@/components/ui/custom-input";
 
 const LoginForm = () => {
-  const { isAuthenticated, loading, error } = useAppSelector(
-    (state) => state.auth
-  );
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginFormType>({
+  const { loading, error } = useAppSelector((state) => state.auth);
+
+  const form = useForm<LoginCredentials>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "admin@mail.com",
+      password: "aaAA@123",
     },
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(loginCredentialsSchema),
   });
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(ROUTER_PATH.INDEX, { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
-    return () => {
-      if (error) {
-        dispatch(authActions.clearAuthError());
-      }
-    };
-  }, [dispatch, error]);
-
-  const onSubmit: SubmitHandler<LoginFormType> = useCallback(
-    (data) => {
-      if (!loading) {
-        dispatch(authActions.loginCredentials(data));
-      }
-    },
-    [dispatch, loading]
-  );
+  const onSubmit: SubmitHandler<LoginCredentialsFormType> = async (values) => {
+    dispatch(authActions.loginCredentials(values));
+  };
 
   return (
-    <div className="p-8">
+    <div className="sm:p-8 p-2">
       <h1 className="text-[24px] lg:text-[30px] font-medium mb-1">Xin chào</h1>
       <p className="text-base lg:text-lg text-gray-400 mb-6">
         Chào mừng bạn đã quay trở lại
       </p>
-      <form onSubmit={handleSubmit(onSubmit)} className="my-10">
-        <FormInput<LoginFormType>
-          name="email"
-          label="Email"
-          type="email"
-          placeholder="joe@email.com"
-          register={register}
-          error={errors.email}
-          required
-        />
-
-        <FormInput<LoginFormType>
-          name="password"
-          label="Password"
-          type="password"
-          placeholder="Enter your password"
-          register={register}
-          error={errors.password}
-          required
-        />
-        <Button
-          label="Đăng Nhập"
-          type="submit"
-          className="w-full h-[45px] cursor-pointer"
-          loading={loading}
-        />
-      </form>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="my-10  flex gap-4 flex-col"
+        >
+          <FormItem>
+            <CustomInput
+              control={form.control}
+              label="Email"
+              type="email"
+              placeholder="example@gmail.com"
+              {...form.register("email")}
+            />
+          </FormItem>
+          <FormItem>
+            <CustomInput
+              control={form.control}
+              label="Mật khẩu"
+              type="password"
+              {...form.register("password")}
+              placeholder="Nhập mật khẩu"
+            />
+          </FormItem>
+          <span>
+            {error && <p className="text-[16px] text-red-500">{error}</p>}
+          </span>
+          <Button
+            label="Đăng Nhập"
+            type="submit"
+            className="w-full h-[45px] cursor-pointer"
+            loading={loading}
+          />
+        </form>
+      </Form>
     </div>
   );
 };

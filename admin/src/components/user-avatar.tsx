@@ -1,16 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
+import { RootState, useAppDispatch, useAppSelector } from "@/store";
+import { authActions } from "@/modules/auth/store/auth-slice";
 
-interface UserAvatarProps {
-  name: string;
-  avatarUrl?: string;
-}
+export default function UserAvatar() {
+  const dispatch = useAppDispatch();
 
-export default function UserAvatar({ name, avatarUrl }: UserAvatarProps) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { user } = useAppSelector((state: RootState) => state.auth);
 
   const toggleMenu = () => setOpen(!open);
+
+  const handleLogout = () => {
+    dispatch(authActions.logout());
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -30,11 +34,11 @@ export default function UserAvatar({ name, avatarUrl }: UserAvatarProps) {
         className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
       >
         <img
-          src={avatarUrl || "/images/avatar/default-avatar.png"}
+          src={user?.photo || "/images/avatar/default-avatar.png"}
           alt="Avatar"
           className="w-8 h-8 rounded-full object-cover"
         />
-        <span className="text-sm font-medium text-gray-700">{name}</span>
+        <span className="text-sm font-medium text-gray-700">{user?.name}</span>
         <FaChevronDown className="text-gray-500 text-xs" />
       </button>
 
@@ -46,7 +50,10 @@ export default function UserAvatar({ name, avatarUrl }: UserAvatarProps) {
           <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
             <a href="/admin/settings">Cài đặt</a>
           </button>
-          <button className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 cursor-pointer">
+          <button
+            className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 cursor-pointer"
+            onClick={handleLogout}
+          >
             Đăng xuất
           </button>
         </div>
