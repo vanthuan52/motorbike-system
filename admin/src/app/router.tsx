@@ -9,6 +9,7 @@ import Dashboard from "@/modules/dashboard/pages/dashboard";
 import AuthLayout from "@/layout/auth-layout";
 import ProtectedRoute from "./protected-route";
 import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-part-detail-page";
+import VehicleTypes from "@/modules/vehicle-type/pages/vehicle-type-page";
 
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
 const EmployeesPage = lazy(
@@ -118,7 +119,7 @@ export const router = createBrowserRouter([
         path: ROUTER_PATH.VEHICLE_COMPANY,
         element: <VehicleCompanyPage />,
       },
-      // { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
+      { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleTypes /> },
       {
         path: ROUTER_PATH.CATEGORY,
         element: <CategoryPage />,
