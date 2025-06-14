@@ -5,12 +5,12 @@ import NotFoundPage from "@/pages/not-found-page";
 import AppLayout from "@/layout/app-layout";
 import LoginPage from "@/modules/auth/pages/login-page";
 import HomePage from "@/pages/home-page";
+import Dashboard from "@/modules/dashboard/pages/dashboard";
 import AuthLayout from "@/layout/auth-layout";
 import ProtectedRoute from "./protected-route";
 import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-part-detail-page";
 
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
-const Dashboard = lazy(() => import("@/modules/dashboard/pages/dashboard"));
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
 );
@@ -84,80 +84,48 @@ export const router = createBrowserRouter([
   },
   {
     path: ROUTER_PATH.INDEX,
-    element: <AppLayout />,
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,
-        element: (
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        ),
+        element: <HomePage />,
       },
       {
         path: ROUTER_PATH.DASHBOARD,
-        element: (
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        ),
+        element: <Dashboard />,
       },
       {
         path: ROUTER_PATH.EMPLOYEES,
-        element: (
-          <ProtectedRoute>
-            <EmployeesPage />
-          </ProtectedRoute>
-        ),
+        element: <EmployeesPage />,
       },
       {
         path: ROUTER_PATH.EMPLOYEES_DETAILS,
-        element: (
-          <ProtectedRoute>
-            <EmployeeDetailsPage />
-          </ProtectedRoute>
-        ),
+        element: <EmployeeDetailsPage />,
       },
       {
         path: ROUTER_PATH.POSTS,
-        element: (
-          <ProtectedRoute>
-            <PostPage />
-          </ProtectedRoute>
-        ),
+        element: <PostPage />,
       },
       {
         path: ROUTER_PATH.MESSAGES,
-        element: (
-          <ProtectedRoute>
-            <MessagesPage />
-          </ProtectedRoute>
-        ),
+        element: <MessagesPage />,
       },
       {
         path: ROUTER_PATH.VEHICLE_COMPANY,
-        element: (
-          <ProtectedRoute>
-            <VehicleCompanyPage />
-          </ProtectedRoute>
-        ),
+        element: <VehicleCompanyPage />,
       },
       // { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleType /> },
       {
         path: ROUTER_PATH.CATEGORY,
-        element: (
-          <ProtectedRoute>
-            <CategoryPage />
-          </ProtectedRoute>
-        ),
+        element: <CategoryPage />,
       },
       {
         path: ROUTER_PATH.CATEGORY_DETAILS,
-        element: (
-          <ProtectedRoute>
-            <CategoryDetailsPage />
-          </ProtectedRoute>
-        ),
+        element: <CategoryDetailsPage />,
       },
       {
         path: ROUTER_PATH.CREATE_CATEGORY,
@@ -165,11 +133,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTER_PATH.CATEGORY,
-        element: (
-          <ProtectedRoute>
-            <VehiclePartsPage />
-          </ProtectedRoute>
-        ),
+        element: <VehiclePartsPage />,
       },
       {
         path: `${ROUTER_PATH.VEHICLE_TYPE}/:action/:id`,
@@ -177,91 +141,47 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTER_PATH.MAINTENANCE_SCHEDULE,
-        element: (
-          <ProtectedRoute>
-            <MaintenanceSchedule />
-          </ProtectedRoute>
-        ),
+        element: <MaintenanceSchedule />,
       },
       {
         path: ROUTER_PATH.MAINTENANCE,
-        element: (
-          <ProtectedRoute>
-            <Maintenance />
-          </ProtectedRoute>
-        ),
+        element: <Maintenance />,
       },
       {
         path: ROUTER_PATH.CUSTOMERS,
-        element: (
-          <ProtectedRoute>
-            <CustomerPage />
-          </ProtectedRoute>
-        ),
+        element: <CustomerPage />,
       },
       {
         path: `${ROUTER_PATH.CUSTOMERS}/:id`,
-        element: (
-          <ProtectedRoute>
-            <CustomerDetailPage />
-          </ProtectedRoute>
-        ),
+        element: <CustomerDetailPage />,
       },
       {
         path: ROUTER_PATH.INVOICES,
-        element: (
-          <ProtectedRoute>
-            <InvoicesPage />
-          </ProtectedRoute>
-        ),
+        element: <InvoicesPage />,
       },
       {
         path: ROUTER_PATH.INVOICES_DETAILS,
-        element: (
-          <ProtectedRoute>
-            <InvoicesDetailPage />
-          </ProtectedRoute>
-        ),
+        element: <InvoicesDetailPage />,
       },
       {
         path: ROUTER_PATH.ROLES,
-        element: (
-          <ProtectedRoute>
-            <RolesPage />
-          </ProtectedRoute>
-        ),
+        element: <RolesPage />,
       },
       {
         path: ROUTER_PATH.PERMISSIONS,
-        element: (
-          <ProtectedRoute>
-            <PermissionsPage />
-          </ProtectedRoute>
-        ),
+        element: <PermissionsPage />,
       },
       {
         path: ROUTER_PATH.PRODUCTS,
-        element: (
-          <ProtectedRoute>
-            <ProductsPage />
-          </ProtectedRoute>
-        ),
+        element: <ProductsPage />,
       },
       {
         path: ROUTER_PATH.PRODUCTS_DETAILS,
-        element: (
-          <ProtectedRoute>
-            <ProductDetailsPage />
-          </ProtectedRoute>
-        ),
+        element: <ProductDetailsPage />,
       },
       {
         path: ROUTER_PATH.CREATE_PRODUCT,
-        element: (
-          <ProtectedRoute>
-            <CreateProductPage />
-          </ProtectedRoute>
-        ),
+        element: <CreateProductPage />,
       },
     ],
   },

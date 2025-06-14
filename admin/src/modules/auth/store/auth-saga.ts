@@ -6,12 +6,20 @@ import { UserProfile } from "@/modules/customer-management/types";
 import authService from "../auth.service";
 import userService from "@/modules/customer-management/user.service";
 import { clearTokens } from "@/utils/jwt.uitls";
+import { notificationActions } from "@/modules/notification/store/notification-slice";
 
 function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
     yield call(authService.loginCredentials, action.payload);
-    yield put(authActions.loginCredentialsSuccess());
+
     yield put(authActions.getUserProfile());
+    yield put(
+      notificationActions.notify({
+        type: "success",
+        message: "Đăng xuất thành công!",
+      })
+    );
+    yield put(authActions.loginCredentialsSuccess());
   } catch (error: any) {
     yield put(
       authActions.loginCredentialsFailure(error.message || "Login failed")
@@ -32,6 +40,12 @@ function* getProfileHandler() {
 function* logoutHandler() {
   try {
     clearTokens();
+    yield put(
+      notificationActions.notify({
+        type: "success",
+        message: "Đăng xuất thành công!",
+      })
+    );
     yield put(authActions.logoutSuccess());
   } catch {
     yield put(authActions.logoutFailure());

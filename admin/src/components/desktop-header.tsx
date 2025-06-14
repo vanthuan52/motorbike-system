@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BiBell } from "react-icons/bi";
 import NotificationSidebar from "./sidebar/notification-sidebar";
 import UserAvatar from "./user-avatar";
@@ -47,7 +47,7 @@ const DesktopHeader = () => {
               )}
             </div>
 
-            <UserAvatar name={"Admin"} />
+            <UserAvatar />
           </div>
         </div>
       </div>

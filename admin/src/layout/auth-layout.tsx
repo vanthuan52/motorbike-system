@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { useAppSelector } from "@/store";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const AuthLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -12,13 +13,12 @@ export const AuthLayout: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!loading && isAuthenticated)
       navigate(ROUTER_PATH.INDEX, { replace: true });
-  }, [isAuthenticated, loading]);
-
-  if (loading) return;
+  }, [isAuthenticated, loading, navigate]);
 
   return (
-    <div className='min-h-screen bg-[url("/images/background/bg-login.png")] bg-[length:100%_100%]'>
+    <div className="min-h-screen">
       {children}
+      {loading && <LoadingSpinner overlay />}
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/store";
-import { ROUTER_PATH } from "@/constants/router-path";
 import { ENUM_POLICY_ROLE_TYPE } from "@/modules/role/types";
 import { APP_CONFIG } from "@/constants/config";
+import { Navigate } from "react-router-dom";
+import { ROUTER_PATH } from "@/constants/router-path";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -23,19 +23,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     (state) => state.auth
   );
 
-  if (APP_CONFIG.NODE_ENV === "development") {
-    return <>{children}</>;
-  }
+  // if (APP_CONFIG.NODE_ENV === "development") {
+  //   return <>{children}</>;
+  // }
 
   return !loading ? (
     isAuthenticated ? (
-      rolesRequired.includes(user?.role.type as ENUM_POLICY_ROLE_TYPE) ? (
-        <>{children}</>
-      ) : (
-        <>Access Denied</>
-      )
+      <>{children}</>
     ) : (
-      <Navigate to={ROUTER_PATH.LOGIN} />
+      <>
+        <Navigate to={ROUTER_PATH.LOGIN} />
+      </>
     )
   ) : null;
 };
