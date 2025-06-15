@@ -21,6 +21,16 @@ export class AwsS3PresignRequestDto {
 
   @ApiProperty({
     required: true,
+    example: 1,
+    description: 'Unit in bytes',
+  })
+  @Min(1)
+  @IsInt()
+  @IsNotEmpty()
+  size: number;
+
+  @ApiProperty({
+    required: true,
     example: 1000,
     description: 'Unit in milliseconds',
   })
@@ -32,14 +42,4 @@ export class AwsS3PresignRequestDto {
   })
   @IsOptional()
   duration?: number;
-
-  @ApiProperty({
-    required: true,
-    example: 1,
-    description: 'Unit in bytes',
-  })
-  @Min(1)
-  @IsInt()
-  @IsNotEmpty()
-  size: number;
 }

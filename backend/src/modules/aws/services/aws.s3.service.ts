@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   S3Client,
@@ -52,6 +52,7 @@ import {
   IAwsS3DeleteDirOptions,
   IAwsS3FileInfo,
   IAwsS3GetItemsOptions,
+  IAwsS3MultipartOptions,
   IAwsS3Options,
   IAwsS3PresignOptions,
   IAwsS3PutItem,
@@ -74,6 +75,7 @@ import { ENUM_FILE_MIME } from '@/common/file/enums/file.enum';
 export class AwsS3Service implements OnModuleInit, IAwsS3Service {
   private readonly presignExpired: number;
   private config: IAwsS3Config;
+  private readonly logger = new Logger(AwsS3Service.name);
 
   constructor(private readonly configService: ConfigService) {
     this.presignExpired = this.configService.get<number>(
@@ -89,6 +91,8 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
         secretAccessKey: this.config.public.credential.secret,
       },
       region: this.config.public.region,
+      endpoint: this.config.public.endpoint,
+      forcePathStyle: this.config.public.forcePathStyle,
     });
 
     this.config.private.client = new S3Client({
@@ -97,7 +101,11 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
         secretAccessKey: this.config.private.credential.secret,
       },
       region: this.config.private.region,
+      endpoint: this.config.private.endpoint,
+      forcePathStyle: this.config.private.forcePathStyle,
     });
+
+    this.logger.log(`AWS init ${this.config.public.client}`);
   }
 
   getConfig(options?: IAwsS3Options) {
@@ -160,17 +168,19 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       Bucket: config.bucket,
       Key: key,
     });
+
     const item = await config.client.send<
       HeadObjectCommandInput,
       HeadObjectCommandOutput
     >(headCommand);
-    const { pathWithFilename, mime } = this.getFileInfo(key);
+    const { pathWithFilename, extension, mime } = this.getFileInfo(key);
 
     return {
       bucket: config.bucket,
       key,
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
+      extension,
       mime,
       size: item.ContentLength ?? 0,
     };
@@ -251,13 +261,14 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       GetObjectCommandInput,
       GetObjectCommandOutput
     >(command);
-    const { pathWithFilename, mime } = this.getFileInfo(key);
+    const { pathWithFilename, extension, mime } = this.getFileInfo(key);
 
     return {
       bucket: config.bucket,
       key,
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
+      extension,
       mime,
       data: item.Body,
       size: item.ContentLength!,
@@ -277,7 +288,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     const config = this.getConfig(options);
     if (!config.client) throw new Error('Client have not been starting');
 
-    const { pathWithFilename, mime } = this.getFileInfo(file.key);
+    const { pathWithFilename, extension, mime } = this.getFileInfo(file.key);
     const content: Buffer = file.file;
     const command: PutObjectCommand = new PutObjectCommand({
       Bucket: config.bucket,
@@ -294,6 +305,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       key: file.key,
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
+      extension,
       mime,
       size: file?.size!,
     };
@@ -312,7 +324,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     const config = this.getConfig(options);
     if (!config.client) throw new Error('Client have not been starting');
 
-    const { pathWithFilename, mime } = this.getFileInfo(file.key);
+    const { pathWithFilename, extension, mime } = this.getFileInfo(file.key);
     const content: Buffer = file.file;
     const command: PutObjectCommand = new PutObjectCommand({
       Bucket: config.bucket,
@@ -330,6 +342,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       key: file.key,
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
+      extension,
       mime,
       size: file?.size!,
     };
@@ -426,7 +439,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
   async createMultiPart(
     file: IAwsS3PutItem,
     maxPartNumber: number,
-    options?: IAwsS3Options,
+    options?: IAwsS3MultipartOptions,
   ): Promise<AwsS3MultipartDto> {
     if (file.key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
@@ -439,7 +452,26 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     const config = this.getConfig(options);
     if (!config.client) throw new Error('Client have not been starting');
 
-    const { pathWithFilename, mime } = this.getFileInfo(file.key);
+    const headCommand = new HeadObjectCommand({
+      Bucket: config.bucket,
+      Key: file.key,
+    });
+
+    if (!options?.forceUpdate) {
+      try {
+        await config.client.send<
+          HeadObjectCommandInput,
+          HeadObjectCommandOutput
+        >(headCommand);
+
+        throw new Error(`Key ${file.key} is already exist.`);
+      } catch (error: unknown) {
+        if (!(error instanceof NotFound)) {
+          throw error;
+        }
+      }
+    }
+    const { pathWithFilename, extension, mime } = this.getFileInfo(file.key);
 
     const multiPartCommand: CreateMultipartUploadCommand =
       new CreateMultipartUploadCommand({
@@ -458,6 +490,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       key: file.key,
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
+      extension,
       mime,
       size: file?.size!,
       lastPartNumber: 0,
@@ -482,7 +515,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     const config = this.getConfig(options);
     if (!config.client) throw new Error('Client have not been starting');
 
-    const { pathWithFilename, mime } = this.getFileInfo(file.key);
+    const { pathWithFilename, extension, mime } = this.getFileInfo(file.key);
 
     const multiPartCommand: CreateMultipartUploadCommand =
       new CreateMultipartUploadCommand({
@@ -502,6 +535,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       key: file.key,
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
+      extension,
       mime,
       size: file?.size!,
       lastPartNumber: 0,
@@ -588,6 +622,36 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
     >(abortMultipartCommand);
 
     return;
+  }
+
+  async presignGetItem(
+    key: string,
+    options?: IAwsS3PresignOptions,
+  ): Promise<AwsS3PresignResponseDto> {
+    if (key.startsWith('/')) {
+      throw new Error('Key should not start with "/"');
+    }
+
+    const config = this.getConfig(options);
+
+    const { extension, mime } = this.getFileInfo(key);
+    const command = new GetObjectCommand({
+      Bucket: config.bucket,
+      Key: key,
+    });
+    const expiresIn = options?.expired ?? this.presignExpired;
+
+    const presignUrl = await getSignedUrl(config.client!, command, {
+      expiresIn,
+    });
+
+    return {
+      expiredIn: this.presignExpired,
+      presignUrl: presignUrl,
+      key,
+      mime,
+      extension,
+    };
   }
 
   async presignPutItem(
@@ -701,7 +765,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
   }
 
   mapPresign(
-    { key, size, duration }: AwsS3PresignRequestDto,
+    { key, size }: AwsS3PresignRequestDto,
     options?: IAwsS3Options,
   ): AwsS3Dto {
     if (key.startsWith('/')) {
@@ -710,15 +774,7 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
 
     const config = this.getConfig(options);
 
-    const pathWithFilename: string = `/${key}`;
-    const filename: string = key.substring(
-      key.lastIndexOf('/') + 1,
-      key.length,
-    );
-    const mime: string = filename.substring(
-      filename.lastIndexOf('.') + 1,
-      filename.length,
-    );
+    const { pathWithFilename, extension, mime } = this.getFileInfo(key);
 
     return {
       bucket: config.bucket,
@@ -726,8 +782,8 @@ export class AwsS3Service implements OnModuleInit, IAwsS3Service {
       completedUrl: `${config.baseUrl}${pathWithFilename}`,
       cdnUrl: config.cdnUrl ? `${config.cdnUrl}${pathWithFilename}` : undefined,
       mime,
+      extension,
       size,
-      duration,
     };
   }
 

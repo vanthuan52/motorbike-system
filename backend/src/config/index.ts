@@ -7,12 +7,14 @@ import helperConfig from './helper.config';
 import messageConfig from './message.config';
 import userConfig from './user.config';
 import middlewareConfig from './middleware.config';
+import awsConfig from '@/modules/aws/config/aws.config';
 
 export default [
   appConfig,
   databaseConfig,
   authConfig,
   docConfig,
+  awsConfig,
   helperConfig,
   debugConfig,
   messageConfig,

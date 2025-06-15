@@ -1,8 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import ms from 'ms';
 
-export type AuthConfig = {};
-
 export default registerAs('auth', (): Record<string, any> => {
   return {
     jwt: {

@@ -7,6 +7,7 @@ import {
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 import { RoleEntity } from '@/modules/role/entities/role.entity';
+import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
 
 export const UserTableName = 'users';
 
@@ -53,6 +54,12 @@ export class UserEntity extends DatabaseEntityBase {
     trim: true,
   })
   role: string;
+
+  @DatabaseProp({
+    required: false,
+    schema: AwsS3Schema,
+  })
+  photo?: AwsS3Entity;
 
   @DatabaseProp({
     required: true,

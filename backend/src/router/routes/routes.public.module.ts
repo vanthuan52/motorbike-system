@@ -6,10 +6,23 @@ import { RoleModule } from '@/modules/role/role.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
+import { FilePublicController } from '@/common/file/controllers/file.public.controller';
+import { AwsModule } from '@/modules/aws/aws.module';
 @Module({
-  controllers: [HelloPublicController, AuthPublicController],
+  controllers: [
+    HelloPublicController,
+    AuthPublicController,
+    FilePublicController,
+  ],
   providers: [],
   exports: [],
-  imports: [UserModule, RoleModule, AuthModule, SessionModule, ApiKeyModule],
+  imports: [
+    UserModule,
+    RoleModule,
+    AwsModule,
+    AuthModule,
+    SessionModule,
+    ApiKeyModule,
+  ],
 })
 export class RoutesPublicModule {}

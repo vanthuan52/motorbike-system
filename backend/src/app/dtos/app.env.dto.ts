@@ -17,23 +17,23 @@ export class AppEnvDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  APP_NAME: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(1)
   @IsEnum(ENUM_NODE_ENVIRONMENT)
   NODE_ENV: ENUM_NODE_ENVIRONMENT;
 
   @IsString()
   @IsNotEmpty()
-  @IsEnum(ENUM_MESSAGE_LANGUAGE)
-  APP_LANGUAGE: ENUM_MESSAGE_LANGUAGE;
+  @MinLength(1)
+  APP_NAME: string;
 
   @IsString()
   @IsNotEmpty()
   @IsEnum(ENUM_APP_TIMEZONE)
   APP_TIMEZONE: ENUM_APP_TIMEZONE;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(ENUM_MESSAGE_LANGUAGE)
+  APP_LANGUAGE: ENUM_MESSAGE_LANGUAGE;
 
   @IsNotEmpty()
   @IsString()
@@ -54,26 +54,6 @@ export class AppEnvDto {
   @IsBoolean()
   @IsNotEmpty()
   @Type(() => Boolean)
-  DEBUG_ENABLE: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
-  DEBUG_INTO_FILE: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
-  DEBUG_PRETTIER: boolean;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(1)
-  MIDDLEWARE_CORS_ORIGIN: string;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
   URL_VERSIONING_ENABLE: boolean;
 
   @IsNumber({
@@ -86,6 +66,41 @@ export class AppEnvDto {
   @IsNotEmpty()
   @Type(() => Number)
   URL_VERSION: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  GLOBAL_PREFIX: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  MIDDLEWARE_CORS_ORIGIN: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  DEBUG_ENABLE: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  DEBUG_LEVEL: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  DEBUG_INTO_FILE: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  DEBUG_PRETTIER: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  JOB_ENABLE: boolean;
 
   @IsString()
   @IsOptional()
@@ -113,58 +128,59 @@ export class AppEnvDto {
   DATABASE_DEBUG: boolean;
 
   @IsNotEmpty()
-  @IsOptional()
   @IsString()
   @MinLength(1)
-  AUTH_JWT_ISSUER?: string;
-
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  @MinLength(1)
-  AUTH_JWT_JWKS_URI?: string;
-
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  @MinLength(1)
-  AUTH_JWT_ACCESS_TOKEN_KID?: string;
-
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  @MinLength(1)
-  AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY_PATH?: string;
-
-  @IsString()
-  @IsOptional()
-  @IsNotEmpty()
-  @MinLength(1)
-  AUTH_JWT_ACCESS_TOKEN_PULIC_KEY_PATH?: string;
+  AUTH_JWT_ISSUER: string;
 
   @IsNotEmpty()
-  @IsOptional()
   @IsString()
   @MinLength(1)
-  AUTH_JWT_ACCESS_TOKEN_EXPIRED?: string;
+  AUTH_JWT_AUDIENCE: string;
 
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_REFRESH_TOKEN_KID?: string;
+  AUTH_JWT_JWKS_URI: string;
 
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY_PATH?: string;
+  AUTH_JWT_ACCESS_TOKEN_KID: string;
 
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY_PATH?: string;
+  AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY_PATH: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY_PATH: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  AUTH_JWT_ACCESS_TOKEN_EXPIRED: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  AUTH_JWT_REFRESH_TOKEN_KID: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY_PATH: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY_PATH: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  AUTH_JWT_REFRESH_TOKEN_EXPIRED: string;
 
   @IsOptional()
   @IsString()
@@ -176,11 +192,11 @@ export class AppEnvDto {
 
   @IsOptional()
   @IsString()
-  AWS_S3_PUBLIC_BUCKET?: string;
+  AWS_S3_PUBLIC_REGION?: string;
 
   @IsOptional()
   @IsString()
-  AWS_S3_PUBLIC_REGION?: string;
+  AWS_S3_PUBLIC_BUCKET?: string;
 
   @IsOptional()
   @IsString()
@@ -204,6 +220,38 @@ export class AppEnvDto {
 
   @IsOptional()
   @IsString()
+  MINIO_PUBLIC_CREDENTIAL_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PUBLIC_CREDENTIAL_SECRET?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PUBLIC_BUCKET?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PUBLIC_ENDPOINT?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PRIVATE_CREDENTIAL_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PRIVATE_CREDENTIAL_SECRET?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PRIVATE_BUCKET?: string;
+
+  @IsOptional()
+  @IsString()
+  MINIO_PRIVATE_ENDPOINT?: string;
+
+  @IsOptional()
+  @IsString()
   AWS_SES_CREDENTIAL_KEY?: string;
 
   @IsOptional()
@@ -213,22 +261,6 @@ export class AppEnvDto {
   @IsOptional()
   @IsString()
   AWS_SES_REGION?: string;
-
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
-
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
-
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
-
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
 
   @IsNotEmpty()
   @IsString()
