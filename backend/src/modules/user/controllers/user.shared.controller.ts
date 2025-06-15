@@ -2,14 +2,15 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   InternalServerErrorException,
+  Logger,
+  Post,
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ClientSession } from 'mongoose';
 import { UserService } from '../services/user.service';
-import { DatabaseService } from '@/common/database/services/database.service';
-import { MessageService } from '@/common/message/services/message.service';
 import { Response } from '@/common/response/decorators/response.decorator';
 import { UserProtected } from '../decorators/user.decorator';
 import {
@@ -28,8 +29,15 @@ import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.inte
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
 import {
   UserSharedProfileDoc,
+  UserSharedUpdatePhotoProfileDoc,
   UserSharedUpdateProfileDoc,
+  UserSharedUploadPhotoProfileDoc,
 } from '../docs/user.shared.doc';
+import { UserUploadPhotoRequestDto } from '../dtos/request/user.upload-photo.request.dto';
+import { AwsS3PresignResponseDto } from '@/modules/aws/dtos/response/aws.s3-presign.response.dto';
+import { AwsS3PresignRequestDto } from '@/modules/aws/dtos/request/aws.s3-presign.request.dto';
+import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
+import { AwsS3Service } from '@/modules/aws/services/aws.s3.service';
 
 @ApiTags('modules.shared.user')
 @Controller({
@@ -37,17 +45,16 @@ import {
   path: '/user',
 })
 export class UserSharedController {
+  private readonly logger = new Logger(UserSharedController.name);
   constructor(
-    private readonly databaseService: DatabaseService,
+    private readonly awsS3Service: AwsS3Service,
     private readonly userService: UserService,
-    private readonly messageService: MessageService,
   ) {}
 
   @UserSharedProfileDoc()
   @Response('user.profile')
   @UserProtected()
   @AuthJwtAccessProtected()
-  //@ApiKeyProtected()
   @Get('/profile')
   async profile(
     @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserActiveParsePipe)
@@ -61,7 +68,6 @@ export class UserSharedController {
   @Response('user.updateProfile')
   @UserProtected()
   @AuthJwtAccessProtected()
-  @ApiKeyProtected()
   @Put('/profile/update')
   async updateProfile(
     @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
@@ -87,68 +93,57 @@ export class UserSharedController {
     return;
   }
 
-  // @UserSharedUploadPhotoProfileDoc()
-  // @Response('user.uploadPhotoProfile')
-  // @UserProtected()
-  // @AuthJwtAccessProtected()
-  // @ApiKeyProtected()
-  // @HttpCode(HttpStatus.OK)
-  // @Post('/profile/upload-photo')
-  // async uploadPhotoProfile(
-  //   @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
-  //   user: UserDoc,
-  //   @Body() { mime, size }: UserUploadPhotoRequestDto,
-  // ): Promise<IResponse<AwsS3PresignResponseDto>> {
-  //   const randomFilename: string = this.userService.createRandomFilenamePhoto(
-  //     user._id,
-  //     {
-  //       mime,
-  //       size,
-  //     },
-  //   );
+  @UserSharedUploadPhotoProfileDoc()
+  @Response('user.uploadPhotoProfile')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @HttpCode(HttpStatus.OK)
+  @Post('/profile/upload-photo')
+  async uploadPhotoProfile(
+    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
+    user: UserDoc,
+    @Body() { mime, size }: UserUploadPhotoRequestDto,
+  ): Promise<IResponse<AwsS3PresignResponseDto>> {
+    const randomFilename: string = this.userService.createRandomFilenamePhoto(
+      user._id,
+      {
+        mime,
+        size,
+      },
+    );
 
-  //   const aws: AwsS3PresignResponseDto = await this.awsS3Service.presignPutItem(
-  //     randomFilename,
-  //     size,
-  //   );
+    const aws: AwsS3PresignResponseDto = await this.awsS3Service.presignPutItem(
+      randomFilename,
+      size,
+    );
 
-  //   return {
-  //     data: aws,
-  //   };
-  // }
+    return {
+      data: aws,
+    };
+  }
 
-  // @UserSharedUpdatePhotoProfileDoc()
-  // @Response('user.updatePhotoProfile')
-  // @UserProtected()
-  // @AuthJwtAccessProtected()
-  // @ApiKeyProtected()
-  // @Put('/profile/update-photo')
-  // async updatePhotoProfile(
-  //   @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
-  //   user: UserDoc,
-  //   @Body() body: AwsS3PresignRequestDto,
-  // ): Promise<void> {
-  //   const session: ClientSession =
-  //     await this.databaseService.createTransaction();
+  @UserSharedUpdatePhotoProfileDoc()
+  @Response('user.updatePhotoProfile')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Put('/profile/update-photo')
+  async updatePhotoProfile(
+    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
+    user: UserDoc,
+    @Body() body: AwsS3PresignRequestDto,
+  ): Promise<void> {
+    try {
+      const aws: AwsS3Dto = this.awsS3Service.mapPresign(body);
 
-  //   try {
-  //     const aws: AwsS3Dto = this.awsS3Service.mapPresign(body);
+      await this.userService.updatePhoto(user, aws, {} as IDatabaseSaveOptions);
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
 
-  //     await this.userService.updatePhoto(user, aws, {
-  //       session,
-  //     } as IDatabaseSaveOptions);
-
-  //     await this.databaseService.commitTransaction(session);
-  //   } catch (err: unknown) {
-  //     await this.databaseService.abortTransaction(session);
-
-  //     throw new InternalServerErrorException({
-  //       statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-  //       message: 'http.serverError.internalServerError',
-  //       _error: err,
-  //     });
-  //   }
-
-  //   return;
-  // }
+    return;
+  }
 }

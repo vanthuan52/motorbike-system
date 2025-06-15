@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
-import { Document, PipelineStage } from 'mongoose';
+import { Document, PipelineStage, Types } from 'mongoose';
 import { IUserService } from '../interfaces/user.service.interface';
 import { UserRepository } from '../repository/user.repository';
-import { HelperDateService } from '@/common/helper/services/helper.date.service';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import {
   IDatabaseAggregateOptions,
@@ -47,7 +46,6 @@ export class UserService implements IUserService {
 
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly helperDateService: HelperDateService,
     private readonly configService: ConfigService,
     private readonly helperStringService: HelperStringService,
   ) {
@@ -296,10 +294,10 @@ export class UserService implements IUserService {
     photo: AwsS3Dto,
     options?: IDatabaseSaveOptions,
   ): Promise<UserDoc> {
-    // repository.photo = {
-    //     ...photo,
-    //     size: new Types.Decimal128(photo.size.toString()),
-    // };
+    repository.photo = {
+      ...photo,
+      size: new Types.Decimal128(photo.size.toString()),
+    };
 
     return this.userRepository.save(repository, options);
   }

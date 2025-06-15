@@ -7,6 +7,7 @@ import {
   AwsS3MultipartPartEntity,
   AwsS3MultipartPartSchema,
 } from './aws.s3-multipart-part.entity';
+import { Types } from 'mongoose';
 
 @DatabaseEntity({ timestamps: false, _id: false })
 export class AwsS3MultipartEntity {
@@ -15,6 +16,48 @@ export class AwsS3MultipartEntity {
     type: String,
   })
   uploadId: string;
+
+  @DatabaseProp({
+    required: true,
+    type: String,
+  })
+  bucket: string;
+
+  @DatabaseProp({
+    required: true,
+    type: String,
+  })
+  key: string;
+
+  @DatabaseProp({
+    required: true,
+    type: String,
+  })
+  completedUrl: string;
+
+  @DatabaseProp({
+    required: false,
+    type: String,
+  })
+  cdnUrl?: string;
+
+  @DatabaseProp({
+    required: true,
+    type: String,
+  })
+  mime: string;
+
+  @DatabaseProp({
+    required: true,
+    type: String,
+  })
+  extension: string;
+
+  @DatabaseProp({
+    required: true,
+    type: Types.Decimal128,
+  })
+  size: Types.Decimal128;
 
   @DatabaseProp({
     required: true,
@@ -29,7 +72,6 @@ export class AwsS3MultipartEntity {
   maxPartNumber: number;
 
   @DatabaseProp({
-    required: true,
     schema: AwsS3MultipartPartSchema,
   })
   parts: AwsS3MultipartPartEntity[];

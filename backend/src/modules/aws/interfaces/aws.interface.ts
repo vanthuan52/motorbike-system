@@ -42,6 +42,8 @@ export interface IAwsS3ConfigBucket {
   baseUrl: string;
   cdnUrl?: string;
   client?: S3Client;
+  endpoint?: string;
+  forcePathStyle?: boolean;
 }
 
 export interface IAwsS3Config {

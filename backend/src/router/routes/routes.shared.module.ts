@@ -6,6 +6,7 @@ import { UserModule } from '@/modules/user/user.module';
 import { UserSharedController } from '@/modules/user/controllers/user.shared.controller';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { AuthSharedController } from '@/modules/auth/controllers/auth.shared.controller';
+import { AwsModule } from '@/modules/aws/aws.module';
 
 @Module({
   controllers: [
@@ -15,6 +16,6 @@ import { AuthSharedController } from '@/modules/auth/controllers/auth.shared.con
   ],
   providers: [],
   exports: [],
-  imports: [UserModule, AuthModule, SessionModule, ApiKeyModule],
+  imports: [UserModule, AuthModule, AwsModule, SessionModule, ApiKeyModule],
 })
 export class RoutesSharedModule {}
