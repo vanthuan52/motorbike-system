@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách loại phụ tùng được lấy thành công.",
+  "get": "Chi tiết loại phụ tùng được lấy thành công.",
+  "create": "Tạo mới loại phụ tùng thành công.",
+  "update": "Cập nhật loại phụ tùng thành công.",
+  "delete": "Xóa loại phụ tùng thành công.",
+  "updateStatus": "Trạng thái của loại phụ tùng đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên loại phụ tùng này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy loại phụ tùng bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái loại phụ tùng thất bại.",
+    "deleteFailed": "Xóa loại phụ tùng thất bại.",
+    "createFailed": "Tạo mới loại phụ tùng thất bại.",
+    "slugExisted": "Slug của loại phụ tùng này đã tồn tại."
+  }
+}

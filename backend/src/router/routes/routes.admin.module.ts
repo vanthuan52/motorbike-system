@@ -9,6 +9,8 @@ import { ApiKeyAdminController } from '@/modules/api-key/controllers/api-key.adm
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { SessionAdminController } from '@/modules/session/controllers/session.admin.controller';
 import { AuthAdminController } from '@/modules/auth/controllers/auth.admin.controller';
+import { PartTypeModule } from '@/modules/part-type/part-type.module';
+import { PartTypeAdminController } from '@/modules/part-type/controllers/part-type.admin.controller';
 
 @Module({
   controllers: [
@@ -17,6 +19,7 @@ import { AuthAdminController } from '@/modules/auth/controllers/auth.admin.contr
     AuthAdminController,
     ApiKeyAdminController,
     SessionAdminController,
+    PartTypeAdminController,
   ],
   providers: [],
   exports: [],
@@ -27,6 +30,7 @@ import { AuthAdminController } from '@/modules/auth/controllers/auth.admin.contr
     SessionModule,
     ApiKeyModule,
     SessionModule,
+    PartTypeModule,
   ],
 })
 export class RoutesAdminModule {}
