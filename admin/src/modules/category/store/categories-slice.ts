@@ -1,24 +1,48 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Category } from "../types";
 
-interface CategoriesState {
-  categories: Category[];
-  total: number;
-  isLoading: boolean;
+type AsyncState<T = unknown> = {
+  loading: boolean;
+  success: boolean;
   error: string | null;
-  categoryDetail: Category | null;
-  isDetailLoading: boolean;
-  detailError: string | null;
+  data?: T;
+};
+
+interface CategoriesState {
+  list: {
+    data: Category[];
+    total: number;
+    loading: boolean;
+    error: string | null;
+  };
+  detail: AsyncState<Category | null>;
+  create: AsyncState;
+  update: AsyncState;
+  remove: AsyncState;
+  updateStatus: AsyncState;
 }
 
-const initialState: CategoriesState = {
-  categories: [],
-  total: 0,
-  isLoading: false,
+const initialAsyncState = {
+  loading: false,
+  success: false,
   error: null,
-  categoryDetail: null,
-  isDetailLoading: false,
-  detailError: null,
+};
+
+const initialState: CategoriesState = {
+  list: {
+    data: [],
+    total: 0,
+    loading: false,
+    error: null,
+  },
+  detail: {
+    ...initialAsyncState,
+    data: null,
+  },
+  create: { ...initialAsyncState },
+  update: { ...initialAsyncState },
+  remove: { ...initialAsyncState },
+  updateStatus: { ...initialAsyncState },
 };
 
 export const categoriesSlice = createSlice({
@@ -26,88 +50,83 @@ export const categoriesSlice = createSlice({
   initialState,
   reducers: {
     fetchCategoriesRequest(state, action) {
-      state.isLoading = true;
-      state.error = null;
+      state.list.loading = true;
+      state.list.error = null;
     },
     fetchCategoriesSuccess(state, action) {
-      state.isLoading = false;
-      state.categories = action.payload.categories;
-      state.total = action.payload.total;
-      state.error = null;
+      state.list.loading = false;
+      state.list.data = action.payload.data;
+      state.list.total = action.payload._metadata.pagination.total;
     },
     fetchCategoriesFailure(state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
+      state.list.loading = false;
+      state.list.error = action.payload;
     },
+
     fetchCategoryDetailRequest(state, action) {
-      state.isDetailLoading = true;
-      state.detailError = null;
-      state.categoryDetail = null;
+      state.detail.loading = true;
+      state.detail.error = null;
+      state.detail.data = null;
     },
     fetchCategoryDetailSuccess(state, action) {
-      state.isDetailLoading = false;
-      state.categoryDetail = action.payload;
-      state.detailError = null;
+      state.detail.loading = false;
+      state.detail.success = true;
+      state.detail.data = action.payload;
     },
     fetchCategoryDetailFailure(state, action) {
-      state.isDetailLoading = false;
-      state.detailError = action.payload;
-      state.categoryDetail = null;
+      state.detail.loading = false;
+      state.detail.error = action.payload;
     },
+
     createCategoryRequest(state, action) {
-      state.error = null;
+      state.create = { ...initialAsyncState, loading: true };
     },
     createCategorySuccess(state) {
-      state.error = null;
+      state.create = { ...initialAsyncState, success: true };
     },
     createCategoryFailure(state, action) {
-      state.error = action.payload;
+      state.create = { ...initialAsyncState, error: action.payload };
     },
+
     updateCategoryRequest(state, action) {
-      state.error = null;
-      const { slug, category } = action.payload;
-      const idx = state.categories.findIndex(cat => cat.slug === slug);
-      if (idx !== -1) {
-        state.categories[idx] = category;
-      }
+      state.update = { ...initialAsyncState, loading: true };
     },
     updateCategorySuccess(state) {
-      state.error = null;
+      state.update = { ...initialAsyncState, success: true };
     },
     updateCategoryFailure(state, action) {
-      state.error = action.payload;
+      state.update = { ...initialAsyncState, error: action.payload };
     },
+
     deleteCategoryRequest(state, action) {
-      state.error = null;
-      const slug = action.payload;
-      state.categories = state.categories.filter(cat => cat.slug !== slug);
+      state.remove = { ...initialAsyncState, loading: true };
     },
     deleteCategorySuccess(state) {
-      state.error = null;
+      state.remove = { ...initialAsyncState, success: true };
     },
     deleteCategoryFailure(state, action) {
-      state.error = action.payload;
+      state.remove = { ...initialAsyncState, error: action.payload };
     },
+
     updateStatusCategoryRequest(state, action) {
-      state.error = null;
-      const { slug, status } = action.payload;
-      const idx = state.categories.findIndex(cat => cat.slug === slug);
-      if (idx !== -1) {
-        state.categories[idx].status = status;
-      }
+      state.updateStatus = { ...initialAsyncState, loading: true };
     },
     updateStatusCategorySuccess(state, action) {
-      state.error = null;
-      const { slug, status } = action.payload;
-      const idx = state.categories.findIndex(cat => cat.slug === slug);
-      if (idx !== -1) {
-        state.categories[idx].status = status;
-      }
+      state.updateStatus = { ...initialAsyncState, success: true };
     },
     updateStatusCategoryFailure(state, action) {
-      state.error = action.payload;
+      state.updateStatus = { ...initialAsyncState, error: action.payload };
     },
+    reset(state) {
+      state.list = initialState.list;
+      state.detail = initialState.detail;
+      state.create = initialState.create;
+      state.update = initialState.update;
+      state.remove = initialState.remove;
+      state.updateStatus = initialState.updateStatus;
+    }
   },
 });
+
 export const categoriesActions = categoriesSlice.actions;
 export default categoriesSlice.reducer;
