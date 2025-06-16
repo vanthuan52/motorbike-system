@@ -7,7 +7,7 @@ export const ROUTER_PATH = {
   VEHICLE_COMPANY: "/vehicle-company",
   VEHICLE_TYPE: "/vehicle-type",
   CATEGORY: "/categories",
-  CATEGORY_DETAILS: "/categories/:slug",
+  CATEGORY_DETAILS: "/categories/:id",
   CREATE_CATEGORY: "/categories/new",
   MAINTENANCE_SCHEDULE: "/maintenance-schedule",
   MAINTENANCE: "/maintenance",

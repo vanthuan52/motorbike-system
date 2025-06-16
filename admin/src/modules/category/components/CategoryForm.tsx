@@ -21,7 +21,7 @@ import {
 } from "@ant-design/icons";
 
 import { getBase64 } from "@/modules/vehicle-parts/utils/fillUtils";
-import { Category } from "../types";
+import { Category, PartTypeStatus } from "../types";
 import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
 import { GreenSwitch } from "@/components/ui/switch";
 
@@ -51,13 +51,13 @@ const CategoryForm = ({
         if (initialValues) {
             form.setFieldsValue({
                 ...initialValues,
-
+                status: initialValues.status === PartTypeStatus.ACTIVE,
             });
-            if (initialValues.images && Array.isArray(initialValues.images)) {
+            if (initialValues.photo && Array.isArray(initialValues.photo)) {
                 setFileList(
-                    initialValues.images.map((img, idx) => ({
+                    initialValues.photo.map((img, idx) => ({
                         uid: String(-idx - 1),
-                        name: `image-${idx}.jpg`,
+                        name: `photo-${idx}.jpg`,
                         status: "done",
                         url: img.startsWith("/") ? img : "/" + img,
                     }))
@@ -92,15 +92,16 @@ const CategoryForm = ({
                     ? fileList.map((file: UploadFile) => file.url || file.thumbUrl)
                     : [];
             const category: Category = {
-                id: initialValues?.id ?? "",
+                _id: initialValues?._id ?? "",
                 name: values.name,
                 vehicle_company_id: values.vehicle_company_id,
                 description: values.description,
                 slug: values.slug,
-                status: values.status,
-                images: imageUrls.filter(
-                    (url): url is string => typeof url === "string"
-                ),
+                status: values.status ? PartTypeStatus.ACTIVE : PartTypeStatus.INACTIVE,
+                // photo: imageUrls.filter(
+                //     (url): url is string => typeof url === "string"
+                // ),
+                photo: "",
             };
             onSubmit(category);
         } catch {

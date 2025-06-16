@@ -1,15 +1,14 @@
 import { type PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { categoriesActions } from "./categories-slice";
-import { ApiResponse, Category } from "../types";
-import categoriesService from "../services/categories-api";
 import { toast } from "react-toastify";
+import { categoriesActions } from "./categories-slice";
+import { Category, PartTypeStatus } from "../types";
+import categoriesService from "../services/categories-api";
 
-function* fetchCategoriesHandler(action: PayloadAction<object>) {
+function* fetchCategoriesHandler(action: PayloadAction<object>): Generator<any, void, any> {
   try {
     const payload = action.payload;
-    const { data }: ApiResponse<{ categories: Category[]; total: number }> =
-      yield call(categoriesService.mockGetCategories, payload);
+    const data = yield call(categoriesService.getCategoryList, payload);
     yield put(categoriesActions.fetchCategoriesSuccess(data));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
@@ -17,26 +16,21 @@ function* fetchCategoriesHandler(action: PayloadAction<object>) {
   }
 }
 
-function* fetchCategoryDetailHandler(action: PayloadAction<string>) {
+function* fetchCategoryDetailHandler(action: PayloadAction<string>): Generator<any, void, any> {
   try {
-    const slug = action.payload;
-    const { data }: ApiResponse<{ category: Category | null }> = yield call(
-      categoriesService.mockGetCategoryDetails,
-      slug
-    );
-    yield put(categoriesActions.fetchCategoryDetailSuccess(data.category));
+    const id = action.payload;
+    const data = yield call(categoriesService.getCategoryDetails, id);
+    yield put(categoriesActions.fetchCategoryDetailSuccess(data));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     yield put(categoriesActions.fetchCategoriesFailure(message));
   }
 }
+
 function* createCategoryHandler(action: PayloadAction<{ category: Category }>) {
   try {
     const { category } = action.payload;
-    yield call(
-      (category: Category) => categoriesService.mockCreateCategory(category),
-      category
-    );
+    yield call(categoriesService.createCategory, category);
     toast.success("Tạo danh mục thành công");
     yield put(categoriesActions.createCategorySuccess());
   } catch (error: unknown) {
@@ -46,11 +40,11 @@ function* createCategoryHandler(action: PayloadAction<{ category: Category }>) {
 }
 
 function* updateCategoryHandler(
-  action: PayloadAction<{ category: Category; slug: string }>
+  action: PayloadAction<{ category: Category; id: string }>
 ) {
   try {
-    const { category, slug } = action.payload;
-    yield call(categoriesService.mockUpdateCategory, slug, category);
+    const { category, id } = action.payload;
+    yield call(categoriesService.updateCategory, id, category);
     toast.success("Cập nhật danh mục thành công");
     yield put(categoriesActions.updateCategorySuccess());
   } catch (error: unknown) {
@@ -58,13 +52,11 @@ function* updateCategoryHandler(
     yield put(categoriesActions.updateCategoryFailure(message));
   }
 }
-function* deleteCategoryHandler(action: PayloadAction<{ slug: string }>) {
+
+function* deleteCategoryHandler(action: PayloadAction<{ id: string }>) {
   try {
-    const { slug } = action.payload;
-    yield call(
-      (slug: string) => categoriesService.mockDeleteCategory(slug),
-      slug
-    );
+    const { id } = action.payload;
+    yield call(categoriesService.deleteCategory, id);
     toast.success("Xoá danh mục thành công");
     yield put(categoriesActions.deleteCategorySuccess());
   } catch (error: unknown) {
@@ -72,19 +64,21 @@ function* deleteCategoryHandler(action: PayloadAction<{ slug: string }>) {
     yield put(categoriesActions.deleteCategoryFailure(message));
   }
 }
+
 function* updateCategoryStatusHandler(
-  action: PayloadAction<{ slug: string; status: boolean }>
+  action: PayloadAction<{ id: string; status: PartTypeStatus }>
 ) {
   try {
-    const { slug, status } = action.payload;
-    yield call(categoriesService.mockUpdateCategoryStatus, slug, status);
+    const { id, status } = action.payload;
+    yield call(categoriesService.updateCategoryStatus, id, status);
     toast.success("Cập nhật trang thái danh mục thành công");
-    yield put(categoriesActions.updateStatusCategorySuccess({ slug, status }));
+    yield put(categoriesActions.updateStatusCategorySuccess({ id, status }));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     yield put(categoriesActions.updateStatusCategoryFailure(message));
   }
 }
+
 export function* categoriesRootSaga() {
   yield takeLatest(
     categoriesActions.fetchCategoriesRequest,
