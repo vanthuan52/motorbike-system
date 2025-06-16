@@ -27,7 +27,7 @@ import { RequestModule } from './request/request.module';
       isGlobal: true,
       load: configs,
       cache: true,
-      envFilePath: `.env.${process.env.NODE_ENV || 'production'}`,
+      envFilePath: `.env`,
       expandVariables: false,
     }),
     MongooseModule.forRootAsync({

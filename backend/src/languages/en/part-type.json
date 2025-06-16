@@ -1,0 +1,16 @@
+{
+  "list": "Part types list retrieved successfully.",
+  "get": "Part type details fetched successfully.",
+  "create": "New part type created successfully.",
+  "update": "Part type updated successfully.",
+  "delete": "Part type deleted successfully.",
+  "updateStatus": "Part type status updated to {status}.",
+  "error": {
+    "nameExist": "This part type name already exists.",
+    "notFound": "Sorry, we couldn't find the part type you requested.",
+    "updateStatusFailed": "Failed to update part type status.",
+    "deleteFailed": "Failed to delete part type.",
+    "createFailed": "Failed to create new part type.",
+    "slugExisted": "This part type slug already exists."
+  }
+}
