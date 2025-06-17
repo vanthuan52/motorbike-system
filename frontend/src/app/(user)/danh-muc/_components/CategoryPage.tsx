@@ -1,65 +1,80 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { mockCategories } from "../mocks/Categories";
+import { RootState } from "@/store";
+import { categoriesActions } from "@/features/category/store/category-slice";
+
 import CategoryList from "./CategoryList";
 import Pagination from "./Pagination";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import PageHeading from "./PageHeading";
 import SearchBar from "./SearchBar";
 
-const PAGE_SIZE = 20;
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debounced;
+}
+
+const DEFAULT_FILTER = {
+  search: "",
+  vehicle_company_id: null,
+  page: 1,
+  perPage: 20,
+  status: null,
+};
 
 export default function CategoryPage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const [filter, setFilter] = useState(DEFAULT_FILTER);
+  const debouncedSearch = useDebounce(filter.search, 500);
   const [direction, setDirection] = useState(0);
 
+  const {
+    list: { data: categories, totalPage, loading: isLoading },
+  } = useSelector((state: RootState) => state.categories);
+
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
-  }, [search, page]);
-
-  const filteredCategories = useMemo(
-    () =>
-      mockCategories.filter((cat) =>
-        cat.name.toLowerCase().includes(search.toLowerCase())
-      ),
-    [search]
-  );
-
-  const totalPages = Math.ceil(filteredCategories.length / PAGE_SIZE);
-  const pagedCategories = filteredCategories.slice(
-    (page - 1) * PAGE_SIZE,
-    page * PAGE_SIZE
-  );
-
+    dispatch(
+      categoriesActions.fetchCategoriesRequest({
+        search: debouncedSearch,
+        vehicle_company_id: filter.vehicle_company_id,
+        page: filter.page,
+        perPage: filter.perPage,
+        status: filter.status ?? undefined,
+      })
+    );
+  }, [dispatch, debouncedSearch, filter]);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    setPage(1);
+    setFilter({
+      ...filter,
+      search: e.target.value,
+      page: 1,
+    });
     setDirection(0);
   };
 
-  // Breadcrumbs data
   const breadcrumbs: BreadcrumbItem[] = [
     { label: "Trang chủ", href: "/" },
     { label: "Danh mục phụ tùng" },
   ];
 
   return (
-    <div className="">
+    <div>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full h-auto sm:min-h-[250px] md:min-h-[300px] lg:min-h-[350px] flex items-center"
         style={{
           backgroundImage: `url("/images/motorbike/category-banner.webp")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
-        className="w-full h-auto sm:min-h-[250px] md:min-h-[300px] lg:min-h-[350px] flex items-center"
       >
         <div className="container mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8 text-white">
           <Breadcrumbs
@@ -76,19 +91,19 @@ export default function CategoryPage() {
       </motion.div>
 
       <div className="container sm:mx-auto px-8 sm:px-0 py-2 md:py-4">
-        <SearchBar search={search} handleSearch={handleSearch} />
+        <SearchBar search={filter.search} handleSearch={handleSearch} />
         <CategoryList
-          loading={loading}
-          pagedCategories={pagedCategories}
+          loading={isLoading}
+          pagedCategories={categories}
           direction={direction}
-          search={search}
-          PAGE_SIZE={PAGE_SIZE}
+          search={filter.search}
+          PAGE_SIZE={filter.perPage}
         />
         <Pagination
-          page={page}
-          totalPages={totalPages}
-          loading={loading}
-          setPage={setPage}
+          page={filter.page}
+          totalPages={totalPage}
+          loading={isLoading}
+          setPage={(page) => setFilter((prev) => ({ ...prev, page }))}
           setDirection={setDirection}
         />
       </div>
