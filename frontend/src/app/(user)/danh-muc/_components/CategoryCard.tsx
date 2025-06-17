@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import clsx from "clsx";
 import Image from "next/image";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
+import { Category } from "@/features/category/types";
+import { ROUTER_PATH } from "@/constant/router-path";
+import { getValidImageSrc } from "@/utils/getValidImageSrc";
 
-export default function CategoryCard({ cat }: { cat: any }) {
+export default function CategoryCard({ cat }: { cat: Category }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -13,7 +16,7 @@ export default function CategoryCard({ cat }: { cat: any }) {
     >
       <div className="relative w-full aspect-[4/3] overflow-hidden border border-gray-300">
         <Image
-          src={cat.image}
+          src={getValidImageSrc(cat.photo)}
           alt={cat.name}
           className="object-cover"
           fill
@@ -25,14 +28,14 @@ export default function CategoryCard({ cat }: { cat: any }) {
         <div className="text-xl font-semibold text-gray-800">{cat.name}</div>
         <div className="flex items-center gap-2 text-sm text-black font-normal">
           <CustomLink
-            href={`/danh-muc/${cat.slug}`}
+            href={`${ROUTER_PATH.CATEGORY}/${cat.slug}`}
             className="hover:!underline transition"
           >
             Xem chi tiết
           </CustomLink>
           <span>|</span>
           <CustomLink
-            href={`/san-pham?danh-muc=${cat.slug}`}
+            href={`${ROUTER_PATH.PRODUCT}?danh-muc=${cat.slug}`}
             className="hover:!underline transition"
           >
             Xem sản phẩm

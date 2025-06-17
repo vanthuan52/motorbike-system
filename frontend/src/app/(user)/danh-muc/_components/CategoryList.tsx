@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { SkeletonCard } from "./SkeletonCard";
 import CategoryCard from "./CategoryCard";
+import { Category } from "@/features/category/types";
 
 const listVariants = {
   enter: (direction: number) => ({
@@ -28,7 +29,7 @@ export default function CategoryList({
   PAGE_SIZE,
 }: {
   loading: boolean;
-  pagedCategories: any[];
+  pagedCategories: Category[];
   direction: number;
   search: string;
   PAGE_SIZE: number;
@@ -37,7 +38,7 @@ export default function CategoryList({
     <div className={clsx("relative min-h-[500px]")}>
       <AnimatePresence custom={direction} mode="wait">
         <motion.div
-          key={`${search}-${pagedCategories.length}-${pagedCategories[0]?.id ?? ""}`}
+          key={`${search}-${pagedCategories.length}-${pagedCategories[0]?._id ?? ""}`}
           custom={direction}
           variants={listVariants}
           initial="enter"
@@ -59,7 +60,7 @@ export default function CategoryList({
             </div>
           ) : (
             pagedCategories.map((cat) => (
-              <CategoryCard key={cat.id} cat={cat} />
+              <CategoryCard key={cat._id} cat={cat} />
             ))
           )}
         </motion.div>

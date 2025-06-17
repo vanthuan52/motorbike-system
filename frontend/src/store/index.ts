@@ -14,6 +14,7 @@ import {
 import rootSaga from "./root-saga";
 import { authReducer } from "@/features/auth/store";
 import { cartReducer } from "@/features/cart/store";
+import { categoriesReducer } from "@/features/category/store";
 import storage from "@/utils/ssr-safe-storage";
 import { notificationReducer } from "@/features/notification/store";
 
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
   notification: notificationReducer,
+  categories: categoriesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

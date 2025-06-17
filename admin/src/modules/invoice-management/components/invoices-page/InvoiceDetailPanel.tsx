@@ -29,7 +29,7 @@ export default function InvoiceDetailPanel({
     <div
       className={`
                 absolute top-0 right-0 h-full bg-white p-4 rounded-xl shadow-sm border border-gray-100 w-full
-                sm:min-w-[340px] sm:max-w-[400px] transition-transform duration-300 overflow-auto
+                sm:min-w-[340px] sm:max-w-[800px] transition-transform duration-300 overflow-auto
                 ${panelVisible ? "translate-x-0" : "translate-x-full"}
                 ${panelVisible ? "opacity-100" : "opacity-0 pointer-events-none"}
             `}
@@ -123,7 +123,7 @@ export default function InvoiceDetailPanel({
             </div>
             <div className="flex justify-between py-1">
               <span className="text-gray-500">Địa chỉ</span>
-              <span className="text-right max-w-[160px] truncate">
+              <span className="text-right max-w-[350px] truncate">
                 {selectedRow.address}
               </span>
             </div>
