@@ -23,15 +23,7 @@ import { categoriesActions } from "../store/categories-slice";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
 import STATUS_OPTIONS from "../constants/status";
-
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debounced;
-}
+import { useDebounce } from "../../../hooks/useDebounce";
 
 const DEFAULT_FILTER = {
   search: "",

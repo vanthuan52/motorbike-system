@@ -16,6 +16,7 @@ import { Product } from "@/types/users/products/product";
 import { useRouter } from "next/navigation";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import SearchBar from "../../danh-muc/_components/SearchBar";
+import { DEFAULT_PER_PAGE } from "@/constant/application";
 
 type StatusType = "in_stock" | "out_of_stock" | "out_of_business";
 type FilterState = {
@@ -23,8 +24,6 @@ type FilterState = {
   price: [number, number];
   categories: string[];
 };
-
-const PRODUCTS_PER_PAGE = 12;
 
 export default function ProductListPage() {
   const router = useRouter();
@@ -67,14 +66,14 @@ export default function ProductListPage() {
         ...filters,
         sort,
         page,
-        pageSize: PRODUCTS_PER_PAGE,
+        pageSize: DEFAULT_PER_PAGE,
         search,
       }),
   });
 
   const products = data?.products || [];
   const total = data?.total || 0;
-  const totalPages = Math.ceil(total / PRODUCTS_PER_PAGE);
+  const totalPages = Math.ceil(total / DEFAULT_PER_PAGE);
 
   const handleFilterChange = useCallback((next: Partial<FilterState>) => {
     setFilters((prev) => ({ ...prev, ...next }));
@@ -191,9 +190,9 @@ export default function ProductListPage() {
                       }
                     >
                       {isLoading ? (
-                        Array.from({ length: PRODUCTS_PER_PAGE }).map(
-                          (_, i) => <SkeletonCard key={i} />
-                        )
+                        Array.from({ length: DEFAULT_PER_PAGE }).map((_, i) => (
+                          <SkeletonCard key={i} />
+                        ))
                       ) : products.length === 0 ? (
                         <div className="col-span-full text-center text-gray-500 py-10">
                           Không có sản phẩm phù hợp.
