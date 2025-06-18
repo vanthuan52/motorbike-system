@@ -16,12 +16,12 @@ export default function CategoryDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
   const dispatch = useDispatch();
   const {
-    detail: { data, loading },
+    detail: { data: categoryData, loading },
   } = useSelector((state: RootState) => state.categories);
   useEffect(() => {
     dispatch(categoriesActions.fetchCategoryDetailRequest(slug));
   }, [dispatch, slug]);
-  if (!data) {
+  if (!categoryData) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <div className="text-2xl font-bold text-red-500 mb-4">
@@ -49,8 +49,8 @@ export default function CategoryDetailsPage() {
         <div className="w-full md:w-1/3 flex justify-center md:justify-start">
           <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]">
             <Image
-              src={getValidImageSrc(data.photo)}
-              alt={data.name}
+              src={getValidImageSrc(categoryData.photo)}
+              alt={categoryData.name}
               fill
               sizes="(max-width: 768px) 220px, 260px"
               className="object-contain rounded-md"
@@ -61,10 +61,10 @@ export default function CategoryDetailsPage() {
 
         <div className="flex-1">
           <h1 className="text-2xl md:text-3xl font-bold mb-4 text-orange-600">
-            {data.name}
+            {categoryData.name}
           </h1>
           <p className="text-gray-700 text-base md:text-lg mb-6 whitespace-pre-line leading-relaxed">
-            {data.description}
+            {categoryData.description}
           </p>
 
           <div className="flex items-center gap-2 text-sm text-black font-normal">

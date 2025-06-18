@@ -6,6 +6,7 @@ export const ROUTER_PATH = {
   SERVICES: "/dich-vu",
   CATEGORY: "/danh-muc",
   PRODUCT: "/san-pham",
+  HIRING: "/tuyen-dung",
   MAINTAIN_REGISTRATION: "/dang-ky-bao-duong-xe",
   LOGIN: "/login",
   REGISTER: "/register",

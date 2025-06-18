@@ -10,27 +10,23 @@ import Pagination from "./Pagination";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import PageHeading from "./PageHeading";
 import SearchBar from "./SearchBar";
+import { useDebounce } from "@/hooks/useDebounce";
+import { DEFAULT_PER_PAGE } from "@/constant/application";
+import { PaginationFilter } from "@/interfaces/filter";
 
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debounced;
+interface CategoryFilter extends PaginationFilter {
+  vehicle_company_id?: string | null;
 }
-
-const DEFAULT_FILTER = {
+const defaultCategoryFilter: CategoryFilter = {
   search: "",
-  vehicle_company_id: null,
   page: 1,
-  perPage: 20,
+  perPage: DEFAULT_PER_PAGE,
   status: null,
+  vehicle_company_id: null,
 };
-
 export default function CategoryPage() {
   const dispatch = useDispatch();
-  const [filter, setFilter] = useState(DEFAULT_FILTER);
+  const [filter, setFilter] = useState(defaultCategoryFilter);
   const debouncedSearch = useDebounce(filter.search, 500);
   const [direction, setDirection] = useState(0);
 
