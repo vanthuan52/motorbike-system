@@ -74,6 +74,13 @@ const ProductDetailsPage = lazy(
 const CreateProductPage = lazy(
   () => import("@/modules/products/pages/create-product-page")
 );
+const HiringPage = lazy(() => import("@/modules/hiring/pages/hiring-page"));
+const HiringDetailsPage = lazy(
+  () => import("@/modules/hiring/pages/hiring-details-page")
+);
+const CreateHiringPage = lazy(
+  () => import("@/modules/hiring/pages/create-hiring-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -183,6 +190,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.CREATE_PRODUCT,
         element: <CreateProductPage />,
+      },
+      {
+        path: ROUTER_PATH.HIRING,
+        element: <HiringPage />,
+      },
+      {
+        path: ROUTER_PATH.HIRING_DETAILS,
+        element: <HiringDetailsPage />,
+      },
+      {
+        path: ROUTER_PATH.CREATE_HIRING,
+        element: <CreateHiringPage />,
       },
     ],
   },

@@ -9,7 +9,7 @@ import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { TbSettingsCode } from "react-icons/tb";
 import { BiCategoryAlt, BiX } from "react-icons/bi";
 import { ROUTER_PATH } from "@/constants/router-path";
-import { FaMotorcycle } from "react-icons/fa";
+import { FaBriefcase, FaMotorcycle } from "react-icons/fa";
 
 type MobileMenuModalProps = {
   isOpen: boolean;
@@ -90,6 +90,12 @@ const links = [
     icon: <FaMotorcycle size={24} />,
     href: ROUTER_PATH.PRODUCTS,
     label: "Sản phẩm",
+  },
+  {
+    key: "hirings",
+    icon: <FaBriefcase />,
+    label: "Tuyển dụng",
+    href: ROUTER_PATH.HIRING,
   },
 ];
 
