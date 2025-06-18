@@ -1,9 +1,9 @@
 import { AxiosError, AxiosResponse } from "axios";
 import {
+  ENUM_PART_TYPE_STATUS,
   Order,
   PartTypeResponse,
   PartTypeResponseData,
-  PartTypeStatus,
 } from "./types";
 import { API_ENDPOINTS } from "@/constant/api-endpoint";
 import { userApi } from "@/lib/axios";
@@ -13,7 +13,7 @@ type CategoryFilter = {
   search?: string;
   page?: number;
   perPage?: number;
-  status?: PartTypeStatus;
+  status?: ENUM_PART_TYPE_STATUS;
   orderBy?: Order["orderBy"];
   orderDirection?: Order["orderDirection"];
 };
