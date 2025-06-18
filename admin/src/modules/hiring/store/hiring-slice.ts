@@ -1,34 +1,26 @@
+import { AsyncState } from "@/modules/category/store/categories-slice";
+import { Hiring } from "../types";
 import { createSlice } from "@reduxjs/toolkit";
-import { Category } from "../types";
 
-export type AsyncState<T = unknown> = {
-  loading: boolean;
-  success: boolean;
-  error: string | null;
-  data?: T;
-};
-
-interface CategoriesState {
+interface HiringState {
   list: {
-    data: Category[];
+    data: Hiring[];
     total: number;
     loading: boolean;
     error: string | null;
   };
-  detail: AsyncState<Category | null>;
+  detail: AsyncState<Hiring | null>;
   create: AsyncState;
   update: AsyncState;
   remove: AsyncState;
   updateStatus: AsyncState;
 }
-
-const initialAsyncState = {
+const initialAsyncState: AsyncState = {
   loading: false,
   success: false,
   error: null,
 };
-
-const initialState: CategoriesState = {
+const initialState: HiringState = {
   list: {
     data: [],
     total: 0,
@@ -45,76 +37,76 @@ const initialState: CategoriesState = {
   updateStatus: { ...initialAsyncState },
 };
 
-export const categoriesSlice = createSlice({
-  name: "categories",
+export const hiringSlice = createSlice({
+  name: "hiring",
   initialState,
   reducers: {
-    fetchCategoriesRequest(state, action) {
+    fetchHiringRequest(state, action) {
       state.list.loading = true;
       state.list.error = null;
     },
-    fetchCategoriesSuccess(state, action) {
+    fetchHiringSuccess(state, action) {
       state.list.loading = false;
       state.list.data = action.payload.data;
       state.list.total = action.payload._metadata.pagination.total;
     },
-    fetchCategoriesFailure(state, action) {
+    fetchHiringFailure(state, action) {
       state.list.loading = false;
       state.list.error = action.payload;
     },
 
-    fetchCategoryDetailRequest(state, action) {
+    fetchHiringDetailRequest(state, action) {
       state.detail.loading = true;
       state.detail.error = null;
       state.detail.data = null;
     },
-    fetchCategoryDetailSuccess(state, action) {
+    fetchHiringDetailSuccess(state, action) {
       state.detail.loading = false;
       state.detail.success = true;
       state.detail.data = action.payload;
     },
-    fetchCategoryDetailFailure(state, action) {
+    fetchHiringDetailFailure(state, action) {
       state.detail.loading = false;
       state.detail.error = action.payload;
     },
 
-    createCategoryRequest(state, action) {
+    createHiringRequest(state, action) {
       state.create = { ...initialAsyncState, loading: true };
     },
-    createCategorySuccess(state) {
+    createHiringSuccess(state) {
       state.create = { ...initialAsyncState, success: true };
     },
-    createCategoryFailure(state, action) {
+    createHiringFailure(state, action) {
       state.create = { ...initialAsyncState, error: action.payload };
     },
 
-    updateCategoryRequest(state, action) {
+    updateHiringRequest(state, action) {
       state.update = { ...initialAsyncState, loading: true };
     },
-    updateCategorySuccess(state) {
+    updateHiringSuccess(state) {
       state.update = { ...initialAsyncState, success: true };
     },
-    updateCategoryFailure(state, action) {
+    updateHiringFailure(state, action) {
       state.update = { ...initialAsyncState, error: action.payload };
     },
 
-    deleteCategoryRequest(state, action) {
+    deleteHiringRequest(state, action) {
       state.remove = { ...initialAsyncState, loading: true };
     },
-    deleteCategorySuccess(state) {
+    deleteHiringSuccess(state) {
       state.remove = { ...initialAsyncState, success: true };
     },
-    deleteCategoryFailure(state, action) {
+    deleteHiringFailure(state, action) {
       state.remove = { ...initialAsyncState, error: action.payload };
     },
 
-    updateStatusCategoryRequest(state, action) {
+    updateStatusHiringRequest(state, action) {
       state.updateStatus = { ...initialAsyncState, loading: true };
     },
-    updateStatusCategorySuccess(state, action) {
+    updateStatusHiringSuccess(state, action) {
       state.updateStatus = { ...initialAsyncState, success: true };
     },
-    updateStatusCategoryFailure(state, action) {
+    updateStatusHiringFailure(state, action) {
       state.updateStatus = { ...initialAsyncState, error: action.payload };
     },
     reset(state) {
@@ -128,5 +120,5 @@ export const categoriesSlice = createSlice({
   },
 });
 
-export const categoriesActions = categoriesSlice.actions;
-export default categoriesSlice.reducer;
+export const hiringActions = hiringSlice.actions;
+export default hiringSlice.reducer;

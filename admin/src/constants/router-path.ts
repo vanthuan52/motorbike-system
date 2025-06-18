@@ -23,4 +23,7 @@ export const ROUTER_PATH = {
   PRODUCTS: "/products",
   PRODUCTS_DETAILS: "/products/:slug",
   CREATE_PRODUCT: "/products/new",
+  HIRING: "/hiring",
+  HIRING_DETAILS: "/hiring/:id",
+  CREATE_HIRING: "/hiring/new",
 };

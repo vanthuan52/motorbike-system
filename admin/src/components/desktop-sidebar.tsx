@@ -11,7 +11,7 @@ import { AiOutlineSchedule } from "react-icons/ai";
 import { FiEdit2, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
-import { FaMotorcycle, FaUserShield } from "react-icons/fa";
+import { FaBriefcase, FaMotorcycle, FaUserShield } from "react-icons/fa";
 const menuItems = [
   {
     key: "Home",
@@ -110,6 +110,12 @@ const menuItems = [
     icon: <FaMotorcycle />,
     label: "Sản phẩm",
     href: ROUTER_PATH.PRODUCTS,
+  },
+  {
+    key: "hirings",
+    icon: <FaBriefcase />,
+    label: "Tuyển dụng",
+    href: ROUTER_PATH.HIRING,
   },
 ];
 
