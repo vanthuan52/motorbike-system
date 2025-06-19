@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import clsx from "clsx";
 import { RxHome } from "react-icons/rx";
 import { RiListSettingsLine } from "react-icons/ri";
@@ -49,10 +49,10 @@ export default function BottomNav() {
 
           if (item.href) {
             return (
-              <a key={index} href={item.href} className={baseClass}>
+              <Link key={index} to={item.href} className={baseClass}>
                 {item.icon}
                 <span className="text-xs">{item.label}</span>
-              </a>
+              </Link>
             );
           }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { RxHome } from "react-icons/rx";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
@@ -135,14 +136,14 @@ export default function MobileMenuModal({
               key={index}
             >
               {link.icon}
-              <a
+              <Link
                 key={link.href}
-                href={link.href}
+                to={link.href}
                 onClick={handleClose}
                 className=""
               >
                 {link.label}
-              </a>
+              </Link>
             </div>
           ))}
         </div>
