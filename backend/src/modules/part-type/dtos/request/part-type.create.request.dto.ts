@@ -42,16 +42,16 @@ export class PartTypeCreateRequestDto {
   @MaxLength(500)
   description?: string;
 
-  // @IsOptional()
-  // @IsIn(Object.values(ENUM_PART_TYPE_STATUS))
-  // @ApiProperty({
-  //   example: ENUM_PART_TYPE_STATUS.ACTIVE,
-  //   description: 'Trạng thái hoạt động (active/inactive)',
-  //   required: false,
-  //   enum: ENUM_PART_TYPE_STATUS,
-  //   default: ENUM_PART_TYPE_STATUS.ACTIVE,
-  // })
-  // status?: ENUM_PART_TYPE_STATUS;
+  @IsOptional()
+  @IsIn(Object.values(ENUM_PART_TYPE_STATUS))
+  @ApiProperty({
+    example: ENUM_PART_TYPE_STATUS.ACTIVE,
+    description: 'Trạng thái hoạt động (active/inactive)',
+    required: false,
+    enum: ENUM_PART_TYPE_STATUS,
+    default: ENUM_PART_TYPE_STATUS.ACTIVE,
+  })
+  status?: ENUM_PART_TYPE_STATUS;
 
   @ApiProperty({
     description: 'Ảnh đại diện loại phụ tùng (có thể để trống)',
