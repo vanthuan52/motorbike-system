@@ -11,6 +11,7 @@ import SelectField from "@/components/ui/select-field";
 import { SearchInput } from "@/components/ui/search-input";
 import SkeletonTable from "@/components/ui/SkeletonTable";
 import { PageHeading } from "@/components/page-heading";
+import { Link } from "react-router-dom";
 
 export default function EmployeesPage() {
   const [dataSource, setDataSource] = useState(mockDataTableManageEmployees);
@@ -112,9 +113,9 @@ export default function EmployeesPage() {
       key: "action",
       render: (_, record: any) => (
         <Space>
-          <a href={`/employees/employee-details/${record.id}`}>
+          <Link to={`/employees/employee-details/${record.id}`}>
             <Button icon={<EyeOutlined />} />
-          </a>
+          </Link>
         </Space>
       ),
     },

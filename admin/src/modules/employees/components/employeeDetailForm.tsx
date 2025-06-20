@@ -1,19 +1,12 @@
 import React from "react";
 import { Form, Input, Select, DatePicker, Switch, Row, Col } from "antd";
 import moment from "moment";
-const { Option } = Select;
-const { TextArea } = Input;
 
 export class EmployeeForm extends React.Component<any> {
   render() {
     const {
       form,
       isEditing,
-      provinces,
-      districts,
-      wards,
-      setSelectedProvince,
-      setSelectedDistrict,
       status,
       setStatus,
       employeeData,
@@ -111,8 +104,8 @@ export class EmployeeForm extends React.Component<any> {
                   isEditing ? (
                     <Form.Item name="gender" noStyle>
                       <Select size="large">
-                        <Option value="MALE">Nam</Option>
-                        <Option value="FEMALE">Nữ</Option>
+                        <Select.Option value="MALE">Nam</Select.Option>
+                        <Select.Option value="FEMALE">Nữ</Select.Option>
                       </Select>
                     </Form.Item>
                   ) : (
@@ -180,7 +173,7 @@ export class EmployeeForm extends React.Component<any> {
                     label={<span className="font-semibold">Địa chỉ</span>}
                     name="address"
                   >
-                    <TextArea
+                    <Input.TextArea
                       placeholder="Vui lòng nhập số nhà, tên đường..."
                       rows={2}
                       size="large"
@@ -195,27 +188,6 @@ export class EmployeeForm extends React.Component<any> {
                         }
                         name="city"
                       >
-                        <Select
-                          showSearch
-                          optionFilterProp="children"
-                          placeholder="Chọn Tỉnh/Thành phố"
-                          size="large"
-                          onChange={(value) => {
-                            setSelectedProvince(value);
-                            setSelectedDistrict("");
-                            form.setFieldsValue({
-                              city: value,
-                              district: "",
-                              ward: "",
-                            });
-                          }}
-                        >
-                          {provinces.map((p: any) => (
-                            <Option key={p.code} value={p.name}>
-                              {p.name}
-                            </Option>
-                          ))}
-                        </Select>
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
@@ -225,26 +197,6 @@ export class EmployeeForm extends React.Component<any> {
                         }
                         name="district"
                       >
-                        <Select
-                          showSearch
-                          optionFilterProp="children"
-                          placeholder="Chọn Quận/Huyện"
-                          size="large"
-                          disabled={!form.getFieldValue("city")}
-                          onChange={(value) => {
-                            setSelectedDistrict(value);
-                            form.setFieldsValue({
-                              district: value,
-                              ward: "",
-                            });
-                          }}
-                        >
-                          {districts.map((d: any) => (
-                            <Option key={d.code} value={d.name}>
-                              {d.name}
-                            </Option>
-                          ))}
-                        </Select>
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
@@ -259,11 +211,6 @@ export class EmployeeForm extends React.Component<any> {
                           size="large"
                           disabled={!form.getFieldValue("district")}
                         >
-                          {wards.map((w: any) => (
-                            <Option key={w.code} value={w.name}>
-                              {w.name}
-                            </Option>
-                          ))}
                         </Select>
                       </Form.Item>
                     </Col>

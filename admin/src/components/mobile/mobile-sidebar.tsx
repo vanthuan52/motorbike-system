@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import clsx from "clsx";
 import { HiOutlineX } from "react-icons/hi";
 
@@ -34,15 +35,15 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
         <nav className="p-4 space-y-3">
-          <a href="#" className="block text-gray-700 hover:text-black">
+          <Link to="#" className="block text-gray-700 hover:text-black">
             Trang chủ
-          </a>
-          <a href="#" className="block text-gray-700 hover:text-black">
+          </Link>
+          <Link to="#" className="block text-gray-700 hover:text-black">
             Thông báo
-          </a>
-          <a href="#" className="block text-gray-700 hover:text-black">
+          </Link>
+          <Link to="#" className="block text-gray-700 hover:text-black">
             Tài khoản
-          </a>
+          </Link>
         </nav>
       </aside>
     </>

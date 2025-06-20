@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
 import { MdOutlineSearch } from "react-icons/md";
@@ -47,9 +48,9 @@ export default function ChatHeader({
             />
             <Avatar src={user.avatar} size={40} />
             <div className="ml-3">
-              <a href={`customers/customer-details?id=${user.id}`}>
+              <Link to={`customers/customer-details?id=${user.id}`}>
                 <h3 className="font-semibold">{user.name}</h3>
-              </a>
+              </Link>
               <p className="text-sm text-gray-500">{user.lastSeen}</p>
             </div>
           </div>

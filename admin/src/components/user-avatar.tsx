@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
 import { authActions } from "@/modules/auth/store/auth-slice";
+import { Link } from "react-router-dom";
 
 export default function UserAvatar() {
   const dispatch = useAppDispatch();
@@ -48,7 +49,7 @@ export default function UserAvatar() {
             Hồ sơ cá nhân
           </button>
           <button className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
-            <a href="/admin/settings">Cài đặt</a>
+            <Link to="/admin/settings">Cài đặt</Link>
           </button>
           <button
             className="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 cursor-pointer"

@@ -1,18 +1,12 @@
-"use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Breadcrumb, Form } from "antd";
-import moment from "moment";
-import * as vietnamProvinces from "vietnam-provinces";
 import { BiHome } from "react-icons/bi";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-// import { EmployeeType } from "../types";
 import { useDispatch } from "react-redux";
 import { employeesActions } from "../store/employees-slice";
 import { mockDataTableManageEmployees } from "../mocks/employees";
-
 import EmployeeAvatar from "../components/employeeAvatar";
 import EmployeeHeader from "../components/employeeHeader";
 import EmployeeForm from "../components/employeeDetailForm";
@@ -55,50 +49,8 @@ const EmployeeDetails: React.FC = () => {
 
   const [status, setStatus] = useState(employeeData.status || "ACTIVE");
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedProvince, setSelectedProvince] = useState(
-    employeeData.city || ""
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState(
-    employeeData.district || ""
-  );
-  const [districts, setDistricts] = useState<any[]>([]);
-  const [wards, setWards] = useState<any[]>([]);
   const [form] = Form.useForm();
-  const provinces = vietnamProvinces.getProvinces();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (selectedProvince) {
-      const provinceCode = provinces.find(
-        (p) => p.name === selectedProvince
-      )?.code;
-      const result = provinceCode
-        ? vietnamProvinces.getDistricts(provinceCode)
-        : [];
-      setDistricts(result);
-    }
-  }, [selectedProvince]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      const districtCode = districts.find(
-        (d) => d.name === selectedDistrict
-      )?.code;
-      const result = districtCode
-        ? vietnamProvinces.getWards(districtCode)
-        : [];
-      setWards(result);
-    }
-  }, [selectedDistrict, districts]);
-
-  useEffect(() => {
-    form.setFieldsValue({
-      ...employeeData,
-      dob: employeeData.dob ? moment(employeeData.dob) : undefined,
-    });
-    setSelectedProvince(employeeData.city || "");
-    setSelectedDistrict(employeeData.district || "");
-  }, [employeeData, form]);
 
   const handleFinish = (values: any) => {
     dispatch(
@@ -146,11 +98,6 @@ const EmployeeDetails: React.FC = () => {
       <EmployeeForm
         form={form}
         isEditing={isEditing}
-        provinces={provinces}
-        districts={districts}
-        wards={wards}
-        setSelectedProvince={setSelectedProvince}
-        setSelectedDistrict={setSelectedDistrict}
         status={status}
         setStatus={setStatus}
         employeeData={employeeData}
