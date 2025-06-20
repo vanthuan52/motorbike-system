@@ -8,6 +8,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { CommonModule } from '@/common/common.module';
 import { MigrationPartTypeSeed } from './seeds/migration.part-type.seed';
 import { PartTypeModule } from '@/modules/part-type/part-type.module';
+import { HiringModule } from '@/modules/hiring/hiring.module';
 
 // TODO: Change With Commander
 @Module({
@@ -18,6 +19,7 @@ import { PartTypeModule } from '@/modules/part-type/part-type.module';
     RoleModule,
     UserModule,
     PartTypeModule,
+    HiringModule,
   ],
   providers: [MigrationRoleSeed, MigrationUserSeed, MigrationPartTypeSeed],
   exports: [],
