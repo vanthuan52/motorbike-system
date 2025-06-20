@@ -10,6 +10,8 @@ import { authReducer } from "@/modules/auth/store";
 import { productsReducer } from "@/modules/products/store";
 import { categoriesReducer } from "@/modules/category/store";
 import { notificationReducer } from "@/modules/notification/store";
+import {employeesReducer} from "@/modules/employees/store";
+import {vehicleCompanyReducer} from "@/modules/vehicle-company/store";
 import { hiringReducer } from "@/modules/hiring/store";
 
 const sagaMiddleware = createSagaMiddleware();
@@ -20,6 +22,8 @@ export const store = configureStore({
     notification: notificationReducer,
     products: productsReducer,
     categories: categoriesReducer,
+    employees: employeesReducer,
+    vehicleCompany: vehicleCompanyReducer,
     hiring: hiringReducer,
   },
   middleware: (getDefaultMiddleware) =>

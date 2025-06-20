@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { Modal, Form, Input, Select, message } from "antd";
 import { VehicleCompanyTypes } from "../types";
+import { useDispatch } from "react-redux";
+import { vehicleCompanyActions } from "../store/vehicleCompany-slice";
 
 interface FormValues {
   name: string;
@@ -13,7 +15,6 @@ interface Props {
   mode: "create" | "edit";
   initialData?: VehicleCompanyTypes | null;
   onCancel: () => void;
-  onSubmit: (values: VehicleCompanyTypes) => void;
 }
 
 export default function VehicleCompanyModal({
@@ -21,8 +22,8 @@ export default function VehicleCompanyModal({
   mode,
   initialData,
   onCancel,
-  onSubmit,
 }: Props) {
+  const dispatch = useDispatch();
   const [form] = Form.useForm<FormValues>();
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function VehicleCompanyModal({
         });
       } else {
         form.resetFields();
-        form.setFieldsValue({ status: false });
+        form.setFieldsValue({ status: true });
       }
     }
   }, [visible, form, initialData, mode]);
@@ -43,13 +44,29 @@ export default function VehicleCompanyModal({
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      const company: VehicleCompanyTypes = {
-        id: initialData?.id ?? "",
-        name: values.name,
-        description: values.description,
-        status: values.status,
-      };
-      onSubmit(company);
+
+      if (mode === "create") {
+        dispatch(
+          vehicleCompanyActions.createCompanyRequest({
+            name: values.name,
+            description: values.description,
+            status: values.status,
+          })
+        );
+      } else if (mode === "edit" && initialData?.id) {
+        dispatch(
+          vehicleCompanyActions.updateCompanyRequest({
+            id: initialData.id,
+            data: {
+              name: values.name,
+              description: values.description,
+              status: values.status,
+            },
+          })
+        );
+      }
+
+      onCancel(); // Đóng modal sau khi dispatch
     } catch {
       message.error("Vui lòng kiểm tra lại thông tin.");
     }
@@ -61,7 +78,7 @@ export default function VehicleCompanyModal({
       open={visible}
       onCancel={onCancel}
       onOk={handleOk}
-      destroyOnHidden
+      destroyOnClose
       centered
       okText={mode === "edit" ? "Lưu" : "Thêm"}
       cancelText="Hủy"
@@ -77,10 +94,14 @@ export default function VehicleCompanyModal({
         <Form.Item name="description" label="Mô tả">
           <Input.TextArea placeholder="Nhập mô tả" rows={3} />
         </Form.Item>
-        <Form.Item name="status" label="Trạng thái" valuePropName="value">
+        <Form.Item
+          name="status"
+          label="Trạng thái"
+          rules={[{ required: true, message: "Chọn trạng thái" }]}
+        >
           <Select>
-            <Select.Option value={false}>Ngừng hoạt động</Select.Option>
             <Select.Option value={true}>Đang hoạt động</Select.Option>
+            <Select.Option value={false}>Ngừng hoạt động</Select.Option>
           </Select>
         </Form.Item>
       </Form>

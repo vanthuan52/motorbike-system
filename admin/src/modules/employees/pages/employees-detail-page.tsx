@@ -1,17 +1,32 @@
+"use client";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { BiBriefcase, BiCalendar, BiHome, BiIdCard, BiShield, BiUser } from "react-icons/bi";
-import { Breadcrumb } from "antd";
+import { Breadcrumb, Form } from "antd";
 import moment from "moment";
-import { mockDataTableManageEmployees } from "../mocks/employees";
-import EmployeeInfo from "../components/EmployeeInfo";
+import * as vietnamProvinces from "vietnam-provinces";
+import { BiHome } from "react-icons/bi";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export default function EmployeeDetails() {
-  const params = useParams()
+// import { EmployeeType } from "../types";
+import { useDispatch } from "react-redux";
+import { employeesActions } from "../store/employees-slice";
+import { mockDataTableManageEmployees } from "../mocks/employees";
+
+import EmployeeAvatar from "../components/employeeAvatar";
+import EmployeeHeader from "../components/employeeHeader";
+import EmployeeForm from "../components/employeeDetailForm";
+import EmployeeActions from "../components/employeeActions";
+import EmployeeJobInfo from "../components/employeeJobInfo";
+
+const EmployeeDetails: React.FC = () => {
+  const params = useParams();
   const employeeId = params.id;
 
   const employeeData = mockDataTableManageEmployees.find(
     (employee) => employee.id === employeeId
   );
+
   if (!employeeData) {
     return (
       <div className="text-center text-red-500">
@@ -19,6 +34,7 @@ export default function EmployeeDetails() {
       </div>
     );
   }
+
   const breadcrumbItems = [
     {
       label: "Home",
@@ -36,60 +52,116 @@ export default function EmployeeDetails() {
       label: `${employeeData.first_name} ${employeeData.last_name}`,
     },
   ];
+
+  const [status, setStatus] = useState(employeeData.status || "ACTIVE");
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState(
+    employeeData.city || ""
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    employeeData.district || ""
+  );
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [wards, setWards] = useState<any[]>([]);
+  const [form] = Form.useForm();
+  const provinces = vietnamProvinces.getProvinces();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (selectedProvince) {
+      const provinceCode = provinces.find(
+        (p) => p.name === selectedProvince
+      )?.code;
+      const result = provinceCode
+        ? vietnamProvinces.getDistricts(provinceCode)
+        : [];
+      setDistricts(result);
+    }
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      const districtCode = districts.find(
+        (d) => d.name === selectedDistrict
+      )?.code;
+      const result = districtCode
+        ? vietnamProvinces.getWards(districtCode)
+        : [];
+      setWards(result);
+    }
+  }, [selectedDistrict, districts]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      ...employeeData,
+      dob: employeeData.dob ? moment(employeeData.dob) : undefined,
+    });
+    setSelectedProvince(employeeData.city || "");
+    setSelectedDistrict(employeeData.district || "");
+  }, [employeeData, form]);
+
+  const handleFinish = (values: any) => {
+    dispatch(
+      employeesActions.updateEmployeeRequest({
+        id: employeeData.id,
+        data: {
+          ...values,
+          dob: values.dob ? values.dob.format("YYYY-MM-DD") : "",
+        },
+      })
+    );
+    setIsEditing(false);
+  };
+
   return (
-    <div className="p-4 space-y-6">
-      {/* Breadcrumb */}
+    <div className="p-4 space-y-6 w-full">
       <Breadcrumb items={breadcrumbItems} />
-      <EmployeeInfo employeeData={employeeData} />
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-6">Thông tin công việc</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-10">
-          <InfoItem
-            icon={<BiIdCard size={20} />}
-            label="Mã nhân viên"
-            value={employeeData.employee_code || ""}
-          />
-          <InfoItem
-            icon={<BiCalendar size={20} />}
-            label="Ngày bắt đầu làm việc"
-            value={moment(employeeData.start_date).format("DD-MM-YYYY")}
-          />
-          <InfoItem
-            icon={<BiBriefcase size={20} />}
-            label="Vị trí"
-            value={employeeData.position || ""}
-          />
-          <InfoItem
-            icon={<BiUser size={20} />}
-            label="Loại tài khoản"
-            value={employeeData.type || ""}
-          />
-          <InfoItem
-            icon={<BiShield size={20} />}
-            label="Vai trò hệ thống"
-            value={employeeData.role || ""}
-          />
-        </div>
+      <ToastContainer />
+
+      <EmployeeActions
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        form={form}
+        employeeData={employeeData}
+        onSave={() => form.submit()}
+      />
+
+      <div className="flex flex-col md:flex-row items-center gap-6">
+        <EmployeeAvatar
+          photo={
+            typeof employeeData.photo === "string"
+              ? employeeData.photo
+              : undefined
+          }
+        />
+        <EmployeeHeader
+          firstName={form.getFieldValue("first_name")}
+          lastName={form.getFieldValue("last_name")}
+          status={form.getFieldValue("status")}
+        />
+      </div>
+
+      <hr className="border-t border-gray-300 my-4" />
+
+      <EmployeeForm
+        form={form}
+        isEditing={isEditing}
+        provinces={provinces}
+        districts={districts}
+        wards={wards}
+        setSelectedProvince={setSelectedProvince}
+        setSelectedDistrict={setSelectedDistrict}
+        status={status}
+        setStatus={setStatus}
+        employeeData={employeeData}
+        handleFinish={handleFinish}
+      />
+
+      <div className="mt-10">
+        <EmployeeJobInfo employee={employeeData} />
       </div>
     </div>
   );
-}
+};
 
-function InfoItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center space-x-3">
-      <div>{icon}</div>
-      <p className="text-base text-gray-700">
-        <span className="font-medium">{label}</span> : {value}
-      </p>
-    </div>
-  );
-}
+export default EmployeeDetails;

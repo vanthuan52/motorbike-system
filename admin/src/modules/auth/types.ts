@@ -49,3 +49,4 @@ export type AuthJwtRefreshTokenPayload = Omit<
 >;
 
 export interface UserAuthInfo extends AuthLoginResponseData {}
+
