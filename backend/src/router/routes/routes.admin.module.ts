@@ -11,6 +11,9 @@ import { SessionAdminController } from '@/modules/session/controllers/session.ad
 import { AuthAdminController } from '@/modules/auth/controllers/auth.admin.controller';
 import { PartTypeModule } from '@/modules/part-type/part-type.module';
 import { PartTypeAdminController } from '@/modules/part-type/controllers/part-type.admin.controller';
+import { HiringAdminController } from '@/modules/hiring/controllers/hiring.admin.controller';
+import { HiringModule } from '@/modules/hiring/hiring.module';
+import { CandidateAdminController } from '@/modules/hiring/controllers/candidate.admin.controller';
 
 @Module({
   controllers: [
@@ -20,6 +23,8 @@ import { PartTypeAdminController } from '@/modules/part-type/controllers/part-ty
     ApiKeyAdminController,
     SessionAdminController,
     PartTypeAdminController,
+    HiringAdminController,
+    CandidateAdminController,
   ],
   providers: [],
   exports: [],
@@ -31,6 +36,7 @@ import { PartTypeAdminController } from '@/modules/part-type/controllers/part-ty
     ApiKeyModule,
     SessionModule,
     PartTypeModule,
+    HiringModule,
   ],
 })
 export class RoutesAdminModule {}

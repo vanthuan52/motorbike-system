@@ -1,0 +1,11 @@
+{
+  "list": "Danh sách ứng viên được lấy thành công.",
+  "get": "Chi tiết ứng viên được truy xuất thành công.",
+  "create": "Tạo ứng viên mới thành công.",
+  "updateStatus": "Trạng thái hồ sơ đã được cập nhật thành {status}.",
+  "error": {
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy ứng viên bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái hồ sơ thất bại.",
+    "createFailed": "Tạo ứng viên mới thất bại."
+  }
+}
