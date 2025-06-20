@@ -1,72 +1,69 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Col, Input, Popconfirm, Row, Tooltip } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
-import { toast } from "react-toastify";
-import { Button, Popconfirm, Tooltip } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { mockDataTableVehicleCompany } from "../mocks/vehicle-company";
-import { VehicleCompanyTypes } from "../types";
-import { GreenSwitch } from "@/components/ui/switch";
-import { PageHeading } from "@/components/page-heading";
-import { SearchInput } from "@/components/ui/search-input";
 import Table from "@/components/ui/table/table";
-import VehicleCompanyModal from "../components/vehicle-company-modal";
+import { PageHeading } from "@/components/page-heading";
 import SkeletonTable from "@/components/ui/SkeletonTable";
+import { RootState } from "@/store";
+import { vehicleCompanyActions } from "../store/vehicleCompany-slice";
+import { VehicleCompanyTypes } from "../types";
+import VehicleCompanyModal from "../components/vehicle-company-modal";
 
-export default function VehicleCompany() {
-  const [dataSource, setDataSource] = useState<VehicleCompanyTypes[]>([]);
-  const [isEdit, setIsEdit] = useState(false);
-  const [assignVisible, setAssignVisible] = useState(false);
-  const [selected, setSelected] = useState<VehicleCompanyTypes | undefined>(
-    undefined
+export default function VehicleCompanyPage() {
+  const dispatch = useDispatch();
+  const { companies, isLoading, total } = useSelector(
+    (state: RootState) => state.vehicleCompany
   );
-  const [loading, setLoading] = useState(true);
+
+  const [payload, setPayload] = useState({
+    name: "",
+    page: 1,
+    limit: 5,
+  });
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editData, setEditData] = useState<VehicleCompanyTypes | null>(null);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDataSource(mockDataTableVehicleCompany);
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    dispatch(vehicleCompanyActions.fetchCompaniesRequest());
+  }, [dispatch]);
+
+  const handleDelete = (id: string) => {
+    dispatch(vehicleCompanyActions.deleteCompanyRequest(id));
+  };
+
   const openCreate = () => {
-    setIsEdit(false);
-    setSelected(undefined);
-    setAssignVisible(true);
+    setEditData(null);
+    setModalVisible(true);
   };
 
   const openEdit = (record: VehicleCompanyTypes) => {
-    setIsEdit(true);
-    setSelected(record);
-    setAssignVisible(true);
+    setEditData(record);
+    setModalVisible(true);
   };
-  const handleAssignSubmit = (values: VehicleCompanyTypes) => {
-    if (isEdit && selected) {
-      setDataSource((prev) =>
-        prev.map((item) => (item.id === selected.id ? values : item))
-      );
-      toast.success("Cập nhật hãng xe thành công");
-    } else {
-      const newId = (() => {
-        const ids = dataSource
-          .map((item) => Number(item.id.replace("vc-", "")))
-          .filter((num) => !isNaN(num));
-        const max = ids.length ? Math.max(...ids) : 0;
-        return `vc-${max + 1}`;
-      })();
-      setDataSource((prev) => [...prev, { ...values, id: newId }]);
-      toast.success("Tạo hãng xe mới thành công");
-    }
-    setAssignVisible(false);
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setEditData(null);
   };
-  const handleDelete = (id: string) => {
-    setDataSource((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Xóa hãng xe thành công");
+
+  const handleResetFilter = () => {
+    setPayload({ name: "", page: 1, limit: 5 });
   };
-  const columns: ColumnsType<(typeof mockDataTableVehicleCompany)[0]> = [
+
+  const columns: ColumnsType<VehicleCompanyTypes> = [
     {
-      title: "STT",
+      title: "Mã",
       dataIndex: "id",
       key: "id",
-      render: (_, __, index) => index + 1,
+      width: 100,
+      align: "center",
     },
     {
       title: "Tên hãng xe",
@@ -82,88 +79,102 @@ export default function VehicleCompany() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status: boolean, record: VehicleCompanyTypes) => (
-        <GreenSwitch
-          checked={status}
-          onChange={() => {
-            setDataSource((prev: VehicleCompanyTypes[]) =>
-              prev.map((item: VehicleCompanyTypes) =>
-                item.id === record.id ? { ...item, status: !item.status } : item
-              )
-            );
-          }}
-        />
+      render: (status) => (
+        <span
+          className={`px-2 py-1 rounded text-white text-xs ${
+            status ? "bg-green-500" : "bg-gray-400"
+          }`}
+        >
+          {status ? "Đang hoạt động" : "Ngừng hoạt động"}
+        </span>
       ),
     },
     {
       title: "Hành động",
       key: "action",
+      width: 120,
+      align: "center",
       render: (_, record) => (
-        <>
-          <Tooltip title="Sửa" className="mr-1">
-            <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
+        <div className="flex items-center justify-center gap-1">
+          <Tooltip title="Chỉnh sửa">
+            <Button
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => openEdit(record)}
+            />
           </Tooltip>
-
           <Popconfirm
-            title="Xác nhận xóa?"
+            title="Bạn có chắc chắn muốn xóa hãng xe này?"
             onConfirm={() => handleDelete(record.id)}
+            okText="Xóa"
+            cancelText="Hủy"
           >
             <Tooltip title="Xóa">
-              <Button icon={<DeleteOutlined />} danger />
+              <Button icon={<DeleteOutlined />} size="small" danger />
             </Tooltip>
           </Popconfirm>
-        </>
+        </div>
       ),
     },
   ];
 
   return (
-    <div className="sm:px-4 pt-8 sm:pt-0">
+    <div className="sm:px-4 my-10 sm:pt-0">
       <PageHeading
         title="Hãng xe"
         onClickAdd={openCreate}
         addButtonLabel="Thêm hãng xe"
       />
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="mb-4">
-          <SearchInput
-            onChange={(text) =>
-              setDataSource(
-                mockDataTableVehicleCompany.filter((item) =>
-                  item.name.toLowerCase().includes(text.toLowerCase())
-                )
-              )
-            }
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col>
+          <Input
+            placeholder="Tìm theo tên hãng xe"
+            value={payload.name}
+            onChange={(e) => setPayload({ ...payload, name: e.target.value })}
+            allowClear
+            style={{ width: 240 }}
           />
-        </div>
+        </Col>
+        <Col>
+          <Button icon={<ReloadOutlined />} onClick={handleResetFilter}>
+            Đặt lại
+          </Button>
+        </Col>
+      </Row>
 
-        {loading ? (
-          <SkeletonTable columns={
-            [
-              { title: "STT", width: 60, height: 20 },
-              { title: "Tên hãng xe" },
-              { title: "Mô tả" },
-              { title: "Trạng thái" },
-              { title: "Hành động" },
-            ]
-          } rows={5} />
-        ) : (
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
-        )}
-
-        <VehicleCompanyModal
-          visible={assignVisible}
-          mode={isEdit ? "edit" : "create"}
-          initialData={selected}
-          onCancel={() => setAssignVisible(false)}
-          onSubmit={handleAssignSubmit}
+      {isLoading ? (
+        <SkeletonTable
+          columns={[
+            { title: "ID", width: 100 },
+            { title: "Tên hãng xe", width: 150 },
+            { title: "Mô tả", width: 150 },
+            { title: "Trạng thái", width: 100 },
+            { title: "Hành động", width: 120 },
+          ]}
+          rows={5}
         />
-      </div>
+      ) : (
+        <Table
+          dataSource={companies}
+          columns={columns}
+          rowKey="id"
+          pagination={{
+            pageSize: payload.limit,
+            current: payload.page,
+            total,
+            onChange: (page, pageSize) => {
+              setPayload({ ...payload, page, limit: pageSize });
+            },
+          }}
+        />
+      )}
+
+      <VehicleCompanyModal
+        visible={modalVisible}
+        mode={editData ? "edit" : "create"}
+        initialData={editData}
+        onCancel={handleCloseModal}
+      />
     </div>
   );
 }

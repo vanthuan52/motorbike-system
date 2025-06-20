@@ -1,0 +1,179 @@
+// import { useEffect, useState } from "react";
+// import { ColumnsType } from "antd/es/table";
+// import { Button, Space, Tag } from "antd";
+// import { EyeOutlined } from "@ant-design/icons";
+// import { mockDataTableManageEmployees } from "../mocks/employees";
+// import Table from "@/components/ui/table/table";
+// import { EmployeeType } from "../types";
+// import SelectField from "@/components/ui/select-field";
+// import { SearchInput } from "@/components/ui/search-input";
+// import SkeletonTable from "@/components/ui/SkeletonTable";
+
+// export default function EmployeesList() {
+//   const [dataSource, setDataSource] = useState(mockDataTableManageEmployees);
+//   const [loading, setLoading] = useState(false);
+//   const [searchText, setSearchText] = useState("");
+//   const [payload, setPayload] = useState({
+//     gender: "",
+//     status: "",
+//   });
+
+//   useEffect(() => {
+//     setLoading(true);
+//     const timeout = setTimeout(() => {
+//       setDataSource(mockDataTableManageEmployees);
+//       setLoading(false);
+//     }, 1000);
+
+//     return () => clearTimeout(timeout);
+//   }, []);
+
+//   useEffect(() => {
+//     let filtered = [...mockDataTableManageEmployees];
+
+//     if (searchText) {
+//       filtered = filtered.filter((item) =>
+//         (item.first_name ?? "").toLowerCase().includes(searchText.toLowerCase())
+//       );
+//     }
+
+//     if (payload.gender !== "Tất cả") {
+//       filtered = filtered.filter(
+//         (item) => item.gender === (payload.gender === "Nam" ? "MALE" : "FEMALE")
+//       );
+//     }
+
+//     if (payload.status !== "Tất cả") {
+//       filtered = filtered.filter(
+//         (item) =>
+//           item.status ===
+//           (payload.status === "Hoạt động" ? "ACTIVE" : "INACTIVE")
+//       );
+//     }
+
+//     setDataSource(filtered);
+//   }, [searchText, payload.gender, payload.status]);
+
+//   const columns: ColumnsType<(typeof mockDataTableManageEmployees)[0]> = [
+//     {
+//       title: "STT",
+//       dataIndex: "id",
+//       key: "id",
+//       render: (_, __, index) => index + 1,
+//     },
+//     {
+//       title: "Họ tên",
+//       dataIndex: "name",
+//       key: "name",
+//       render: (_, record) => `${record.first_name} ${record.last_name}`,
+//     },
+//     {
+//       title: "Số điện thoại",
+//       dataIndex: "phone",
+//       key: "phone",
+//     },
+//     {
+//       title: "Email",
+//       dataIndex: "email",
+//       key: "email",
+//     },
+//     {
+//       title: "Vai trò",
+//       dataIndex: "role",
+//       key: "role",
+//       render: (_: any, record: any) => (
+//         <span className="capitalize">{record.role.toLocaleLowerCase()}</span>
+//       ),
+//     },
+//     {
+//       title: "Trạng thái",
+//       dataIndex: "status",
+//       key: "status",
+//       render: (status: EmployeeType["status"]) => (
+//         <span>
+//           {status === "ACTIVE" && <Tag color="green">Còn hoạt động</Tag>}
+//           {status === "INACTIVE" && (
+//             <Tag color="yellow">Không còn hoạt động</Tag>
+//           )}
+//         </span>
+//       ),
+//     },
+//     {
+//       title: "Địa chỉ",
+//       dataIndex: "address",
+//       key: "address",
+//     },
+//     {
+//       title: "Hành động",
+//       dataIndex: "action",
+//       key: "action",
+//       render: (_, record: any) => (
+//         <Space>
+//           <a href={`/employees/employee-details/${record.id}`}>
+//             <Button icon={<EyeOutlined />} />
+//           </a>
+//         </Space>
+//       ),
+//     },
+//   ];
+//   return (
+//     <div className="bg-white rounded-lg p-3 mb-4 border border-gray-200">
+//       <div className="mb-4 flex flex-col sm:flex-row gap-4 sm:max-h-[40px] w-full">
+//         <SearchInput
+//           onChange={(text) =>
+//             setDataSource(
+//               mockDataTableManageEmployees.filter((item) =>
+//                 item.first_name!.toLowerCase().includes(text.toLowerCase())
+//               )
+//             )
+//           }
+//         />
+//         <div className="flex gap-3 w-full">
+//           <SelectField
+//             value={payload.gender || ""}
+//             onChange={(e: any) =>
+//               setPayload({ ...payload, gender: e.target.value })
+//             }
+//             options={["Nam", "Nữ"]}
+//             values={["MALE", "FEMALE"]}
+//             optionLabel="Giới tính"
+//             rootClass="!w-[200px]"
+//           />
+//           <SelectField
+//             value={payload.status}
+//             onChange={(e: any) =>
+//               setPayload({ ...payload, status: e.target.value })
+//             }
+//             options={["Hoạt động", "Ngưng hoạt động"]}
+//             values={["ACTIVE", "INACTIVE"]}
+//             optionLabel="Trạng thái"
+//             rootClass="!w-[200px]"
+//           />
+//         </div>
+//       </div>
+
+//       {loading ? (
+//         <SkeletonTable
+//           columns={[
+//             { title: "STT", width: 100, height: 50 },
+//             { title: "Họ tên", width: 150, height: 50 },
+//             { title: "Số điện thoại", width: 150, height: 50 },
+//             { title: "Email", width: 150, height: 50 },
+//             { title: "Vai trò", width: 100, height: 50 },
+//             { title: "Trạng thái", width: 130, height: 50 },
+//             { title: "Địa chỉ", width: 200, height: 50 },
+//             { title: "Hành động", width: 100, height: 50 },
+//           ]}
+//           rows={5}
+//         />
+//       ) : (
+//         <Table
+//           dataSource={dataSource}
+//           columns={columns}
+//           rowKey="id"
+//           pagination={{ pageSize: 5 }}
+//         />
+//       )}
+//     </div>
+//   );
+// }
