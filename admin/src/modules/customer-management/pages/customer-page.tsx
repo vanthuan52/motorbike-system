@@ -1,163 +1,114 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { ColumnsType } from "antd/es/table";
-import { Button, Popconfirm, Tag, Tooltip } from "antd";
-import { mockDataTableManageCustomers } from "@/modules/customer-management/mocks/customer-data";
-import { PageHeading } from "@/components/page-heading";
-import { SearchInput } from "@/components/ui/search-input";
+import { useNavigate } from "react-router-dom";
+import { ROUTER_PATH } from "@/constants/router-path";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import Table from "@/components/ui/table/table";
 import SelectField from "@/components/ui/select-field";
-import { Link, useNavigate } from "react-router-dom";
-import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import SkeletonTable from "@/components/ui/SkeletonTable";
-import { toast } from "react-toastify";
+import { PaginationFilter } from "@/interfaces/filter";
+import { RootState } from "@/store";
+import { customersActions } from "../store/customers-slice";
+import { ENUM_USER_GENDER, ENUM_USER_STATUS, User } from "../types";
+import { columns } from "../components/customer-column";
+import { PageHeading } from "@/components/page-heading";
 
-const ROUTER_PATH = {
-  CUSTOMERS: "/customers",
+interface CustomerFilter extends Omit<PaginationFilter, "status"> {
+  gender?: ENUM_USER_GENDER;
+  status: ENUM_USER_STATUS | null;
+}
+const DEFAULT_FILTER: CustomerFilter = {
+  search: "",
+  gender: ENUM_USER_GENDER.MALE,
+  page: 1,
+  perPage: 5,
+  status: ENUM_USER_STATUS.ACTIVE || null,
 };
 
 export default function Customers() {
   const navigate = useNavigate();
-  const [dataSource, setDataSource] = useState(mockDataTableManageCustomers);
-  const [loading, setLoading] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [payload, setPayload] = useState({
-    gender: "Tất cả",
-  });
+  const dispatch = useDispatch();
+  const [payload, setPayload] = useState(DEFAULT_FILTER);
+  const debouncedSearch = useDebounce(payload.search, 500);
+
+  const {
+    list: { data: customers, total, loading: isLoading },
+    updateStatus,
+    remove,
+  } = useSelector((state: RootState) => state.customers);
+  console.log("customers", customers);
 
   useEffect(() => {
-    setLoading(true);
-    const timeout = setTimeout(() => {
-      setDataSource(mockDataTableManageCustomers);
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, []);
-
+    dispatch(
+      customersActions.fetchCustomersRequest({
+        search: debouncedSearch,
+        page: payload.page,
+        perPage: payload.perPage,
+        status: payload.status,
+      })
+    );
+  }, [
+    dispatch,
+    debouncedSearch,
+    payload.page,
+    payload.perPage,
+    payload.status,
+  ]);
   useEffect(() => {
-    let filtered = [...mockDataTableManageCustomers];
-
-    if (searchText) {
-      filtered = filtered.filter(item =>
-        (item.first_name ?? "").toLowerCase().includes(searchText.toLowerCase())
+    if (updateStatus.success || remove.success) {
+      dispatch(
+        customersActions.fetchCustomersRequest({
+          search: debouncedSearch,
+          page: payload.page,
+          perPage: payload.perPage,
+          status: payload.status ?? undefined,
+        })
       );
     }
-
-    if (payload.gender !== "Tất cả") {
-      filtered = filtered.filter(
-        item => item.gender === (payload.gender === "Nam" ? "MALE" : "FEMALE")
-      );
+  }, [updateStatus.success, remove.success]);
+  useEffect(() => {
+    if (updateStatus.error || remove.error) {
+      toast.error(updateStatus.error || remove.error);
     }
+  }, [updateStatus.error, remove.error]);
 
-    setDataSource(filtered);
-  }, [searchText, payload.gender]);
+  const openEdit = useCallback(
+    (record: User) => {
+      navigate(`${ROUTER_PATH.CUSTOMERS}/${record._id}?edit=1`);
+    },
+    [navigate]
+  );
 
-  const openEdit = (record: (typeof mockDataTableManageCustomers)[0]) => {
-    navigate(`/customers/${record.id}?edit=1`);
-  };
-
-  const handleDelete = (id: string) => {
-    setDataSource(prev => prev.filter(item => item.id !== id));
-    toast.success("Xóa khách hàng thành công!");
-  };
-  const columns: ColumnsType<(typeof mockDataTableManageCustomers)[0]> = [
-    {
-      title: "STT",
-      dataIndex: "id",
-      key: "id",
-      render: (_, __, index) => index + 1,
+  const handleDelete = useCallback(
+    (id: string) => {
+      dispatch(customersActions.deleteCustomerRequest(id));
+      toast.success("Xóa khách hàng thành công!");
     },
-    {
-      title: "Họ tên",
-      dataIndex: "name",
-      key: "name",
-      render: (_, record) => `${record.first_name} ${record.last_name}`,
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phone",
-      key: "phone",
-    },
-    {
-      title: "Giới tính",
-      dataIndex: "gender",
-      key: "gender",
-      render: (_, record) => (record.gender === "MALE" ? "Nam" : "Nữ"),
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "status",
-      key: "status",
-      render: (_, record) => (
-        <span>
-          {record.status === "ACTIVE" && <Tag color='green'>Còn hoạt động</Tag>}
-          {record.status === "INACTIVE" && (
-            <Tag color='yellow'>Không còn hoạt động</Tag>
-          )}
-        </span>
-      ),
-    },
-    {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Hành động",
-      dataIndex: "action",
-      key: "action",
-      render: (_, record) => (
-        <div className='flex items-center justify-center gap-1'>
-          <Tooltip title='Xem chi tiết'>
-            <Link to={`${ROUTER_PATH.CUSTOMERS}/${record.id}`}>
-              <Button icon={<EyeOutlined />} size='small' />
-            </Link>
-          </Tooltip>
-          <Tooltip title='Chỉnh sửa'>
-            <Button
-              icon={<EditOutlined />}
-              size='small'
-              onClick={() => openEdit(record)}
-            />
-          </Tooltip>
-          <Popconfirm
-            title='Bạn chắc chắn muốn xóa khách hàng này?'
-            onConfirm={() => handleDelete(record.id)}
-            okText='Xóa'
-            cancelText='Hủy'
-          >
-            <Tooltip title='Xóa'>
-              <Button icon={<DeleteOutlined />} size='small' danger />
-            </Tooltip>
-          </Popconfirm>
-        </div>
-      ),
-    },
-  ];
+    [dispatch]
+  );
 
   return (
     <div className='sm:px-4'>
       <PageHeading title='Danh sách khách hàng' disabledButton />
       <div className='bg-white rounded-lg p-4 border border-gray-200'>
         <div className='mb-4 flex gap-4 max-h-[40px] w-full'>
-          <SearchInput onChange={setSearchText} />
+          {/* <SearchInput onChange={setSearchText} /> */}
           <SelectField
-            value={payload.gender}
-            onChange={e => setPayload({ ...payload, gender: e.target.value })}
+            value={payload.gender ? String(payload.gender) : ""}
+            onChange={e =>
+              setPayload({
+                ...payload,
+                gender: e.target.value as ENUM_USER_GENDER,
+              })
+            }
             options={["Tất cả", "Nam", "Nữ"]}
             optionLabel='Giới tính'
             rootClass='!w-[200px]'
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <SkeletonTable
             columns={[
               { title: "STT", width: 100, height: 50 },
@@ -173,10 +124,17 @@ export default function Customers() {
           />
         ) : (
           <Table
-            dataSource={dataSource}
-            columns={columns}
+            dataSource={customers}
+            columns={columns(openEdit, handleDelete)}
             rowKey='id'
-            pagination={{ pageSize: 5 }}
+            pagination={{
+              current: payload.page,
+              pageSize: payload.perPage,
+              total,
+              onChange: (page, perPage) =>
+                setPayload(prev => ({ ...prev, page, perPage })),
+              showSizeChanger: true,
+            }}
           />
         )}
       </div>
