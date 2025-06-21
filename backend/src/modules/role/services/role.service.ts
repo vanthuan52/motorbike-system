@@ -110,6 +110,16 @@ export class RoleService implements IRoleService {
     );
   }
 
+  async findOneByType(
+    type: string,
+    options?: IDatabaseOptions,
+  ): Promise<RoleDoc | null> {
+    return this.roleRepository.findOne(
+      DatabaseHelperQueryContain('type', type, { fullWord: true }),
+      options,
+    );
+  }
+
   async findOneActiveById(
     _id: string,
     options?: IDatabaseOptions,

@@ -1,11 +1,10 @@
 import {
   Injectable,
-  PipeTransform,
   Type,
-  Scope,
   Inject,
-  ArgumentMetadata,
   mixin,
+  PipeTransform,
+  Scope
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { PaginationService } from '../services/pagination.service';
@@ -22,7 +21,7 @@ export function PaginationSearchPipe(
       private readonly paginationService: PaginationService,
     ) {}
 
-    async transform(value: Record<string, any>, metadata: ArgumentMetadata) {
+    async transform(value: Record<string, any>) {
       if (availableSearch.length === 0 || !value?.search) {
         this.addToRequestInstance(value?.search, availableSearch);
         return value;

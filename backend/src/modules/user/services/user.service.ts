@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
-import { Document, PipelineStage, Types } from 'mongoose';
+import { Document, FilterQuery, PipelineStage, Types } from 'mongoose';
 import { IUserService } from '../interfaces/user.service.interface';
 import { UserRepository } from '../repository/user.repository';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
@@ -80,8 +80,7 @@ export class UserService implements IUserService {
         $unwind: '$role',
       },
       {
-        // @ts-ignore
-        $match: find,
+        $match: find as FilterQuery<any>,
       },
     ];
   }

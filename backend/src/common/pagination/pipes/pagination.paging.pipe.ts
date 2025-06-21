@@ -1,5 +1,4 @@
 import {
-  ArgumentMetadata,
   Inject,
   Injectable,
   mixin,
@@ -7,10 +6,10 @@ import {
   Scope,
   Type,
 } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { PAGINATION_DEFAULT_PER_PAGE } from '../constants/pagination.constant';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { PaginationService } from '../services/pagination.service';
-import { REQUEST } from '@nestjs/core';
 import { ResponsePagingMetadataPaginationRequestDto } from '@/common/response/dtos/response.paging.dto';
 
 export function PaginationPagingPipe(
@@ -23,7 +22,7 @@ export function PaginationPagingPipe(
       private readonly paginationService: PaginationService,
     ) {}
 
-    async transform(value: Record<string, any>, metadata: ArgumentMetadata) {
+    async transform(value: Record<string, any>) {
       const page: number = this.paginationService.page(
         value?.page ? Number.parseInt(value?.page) : 1,
       );

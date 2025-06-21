@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
 import { ENUM_USER_STATUS } from '../enums/user.enum';
 
 interface DocField {
@@ -22,11 +21,11 @@ export const UserDocParamsId: DocField[] = [
 
 export const UserDocQueryRoleType: DocField[] = [
   {
-    name: 'roleType',
+    name: 'role',
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_POLICY_ROLE_TYPE).join(','),
+    example: faker.string.uuid(),
     description: "value with ',' delimiter",
   },
 ];

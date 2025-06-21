@@ -26,6 +26,10 @@ export function PaginationFilterInPipe<T>(
     ) {}
 
     async transform(value: any) {
+      if (!value) {
+        return {};
+      }
+      
       if (options?.raw) {
         this.addToRequestInstance(value);
 

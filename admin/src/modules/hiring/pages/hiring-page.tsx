@@ -7,7 +7,7 @@ import { Button, Col, Input, Row, Select } from "antd";
 import { PageHeading } from "@/components/page-heading";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { useDebounce } from "@/hooks/useDebounce";
-import { PaginationFilter } from "@/interfaces/filter";
+import { PaginationFilter } from "@/interfaces/pagination-filter.interface";
 import { RootState } from "@/store";
 import { hiringActions } from "../store/hiring-slice";
 import { STATUS_HIRING_OPTIONS } from "../constants/status";

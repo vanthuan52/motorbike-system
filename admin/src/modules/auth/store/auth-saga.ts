@@ -2,11 +2,11 @@ import { type PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { authActions } from "./auth-slice";
 import { LoginCredentials } from "../types";
-import { UserProfile } from "@/modules/customer-management/types";
+import { UserProfile } from "@/modules/user/types";
 import authService from "../auth.service";
-import userService from "@/modules/customer-management/user.service";
 import { clearTokens } from "@/utils/jwt.uitls";
 import { notificationActions } from "@/modules/notification/store/notification-slice";
+import userService from "@/modules/user/user.service";
 
 function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
@@ -16,7 +16,7 @@ function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
     yield put(
       notificationActions.notify({
         type: "success",
-        message: "Đăng xuất thành công!",
+        message: "Đăng nhập thành công!",
       })
     );
     yield put(authActions.loginCredentialsSuccess());

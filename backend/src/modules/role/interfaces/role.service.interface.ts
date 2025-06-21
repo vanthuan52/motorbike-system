@@ -51,10 +51,17 @@ export interface IRoleService {
     find: Record<string, any>,
     options?: IDatabaseOptions,
   ): Promise<RoleDoc | null>;
+
   findOneByName(
     name: string,
     options?: IDatabaseOptions,
   ): Promise<RoleDoc | null>;
+
+  findOneByType(
+    type: string,
+    options?: IDatabaseOptions,
+  ): Promise<RoleDoc | null>;
+
   findOneActiveById(
     _id: string,
     options?: IDatabaseOptions,

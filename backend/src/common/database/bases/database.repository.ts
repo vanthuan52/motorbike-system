@@ -868,10 +868,10 @@ export class DatabaseRepositoryBase<
 
     if (options?.paging) {
       newPipelines.push(
+        { $skip: options.paging.offset },
         {
           $limit: options.paging.limit + options.paging.offset,
         },
-        { $skip: options.paging.offset },
       );
     }
 
