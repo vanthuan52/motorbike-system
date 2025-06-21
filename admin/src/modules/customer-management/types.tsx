@@ -32,6 +32,7 @@ export interface User extends BaseEntity {
   district?: string;
   city?: string;
   country?: string;
+  slug?: string;
 }
 
 export interface UserProfile extends User {
