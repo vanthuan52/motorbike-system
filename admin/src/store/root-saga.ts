@@ -6,7 +6,7 @@ import { employeesRootSaga } from "@/modules/employees/store/employees-saga";
 import { vehicleCompanyRootSaga } from "@/modules/vehicle-company/store/vehicleCompany-saga";
 import { notificationSaga } from "@/modules/notification/store/notification-saga";
 import { hiringRootSaga } from "@/modules/hiring/store/hiring-saga";
-import { customersRootSaga } from "@/modules/customer-management/store/customers-saga";
+import { customerSaga } from "@/modules/customer-management/store/customer-saga";
 
 export default function* rootSaga() {
   yield all([
@@ -17,6 +17,6 @@ export default function* rootSaga() {
     employeesRootSaga(),
     vehicleCompanyRootSaga(),
     hiringRootSaga(),
-    customersRootSaga(),
+    customerSaga(),
   ]);
 }

@@ -24,6 +24,7 @@ import {
   UserAdminCreateDoc,
   UserAdminGetDoc,
   UserAdminListDoc,
+  UserAdminListUserTypeUserDoc,
   UserAdminUpdateDoc,
   UserAdminUpdateStatusDoc,
 } from '../docs/user.admin.doc';
@@ -88,14 +89,11 @@ import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.r
   path: '/user',
 })
 export class UserAdminController {
-  private readonly logger = new Logger(UserAdminController.name);
   constructor(
-    private readonly databaseService: DatabaseService,
     private readonly paginationService: PaginationService,
     private readonly roleService: RoleService,
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly messageService: MessageService,
   ) {}
 
   @UserAdminListDoc()
@@ -124,10 +122,67 @@ export class UserAdminController {
     const find: Record<string, any> = {
       ..._search,
       ...status,
-      ...role,
     };
 
+    if (role && role.role && role.role.$in) {
+      find['role._id'] = { $in: role.role.$in };
+    }
+
     const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
+      paging: {
+        limit: _limit,
+        offset: _offset,
+      },
+      order: _order,
+    });
+
+    const total: number = await this.userService.getTotal(find);
+
+    const totalPage: number = this.paginationService.totalPage(total, _limit);
+
+    const mapped = this.userService.mapList(users);
+
+    return {
+      _pagination: { total, totalPage },
+      data: mapped,
+    };
+  }
+
+  @UserAdminListUserTypeUserDoc()
+  @ResponsePaging('user.listCustomer')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/list/user')
+  async listUser(
+    @PaginationQuery({
+      availableSearch: USER_DEFAULT_AVAILABLE_SEARCH,
+    })
+    { _search, _limit, _offset, _order }: PaginationListDto,
+    @PaginationQueryFilterInEnum(
+      'status',
+      USER_DEFAULT_STATUS,
+      ENUM_USER_STATUS,
+    )
+    status: Record<string, any>,
+  ): Promise<IResponsePaging<UserListResponseDto>> {
+    const find: Record<string, any> = {
+      ..._search,
+      ...status,
+    };
+
+    const role = await this.roleService.findOneByType(ENUM_POLICY_ROLE_TYPE.USER);
+
+    if (role) {
+       find['role._id'] = role._id;
+    }
+
+    const users: IUserEntity[] = await this.userService.findAllWithRole(
+      find, {
       paging: {
         limit: _limit,
         offset: _offset,

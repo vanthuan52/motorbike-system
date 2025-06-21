@@ -29,6 +29,7 @@ import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
 import { UserCensorResponseDto } from '../dtos/response/user.censor.response.dto';
 import { UserShortResponseDto } from '../dtos/response/user.short.response.dto';
 import { UserGetResponseDto } from '../dtos/response/user.get.response.dto';
+import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
 
 export interface IUserService {
   findAll(
@@ -47,7 +48,7 @@ export interface IUserService {
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<IUserEntity[]>;
-
+  
   getTotalWithRole(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,

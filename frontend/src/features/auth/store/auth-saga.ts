@@ -50,6 +50,6 @@ function* logoutHandler() {
 export function* authSaga() {
   yield takeLatest(authActions.loginCredentials, loginCredentialsHandler);
   yield takeLatest(authActions.register, registerHandler);
-  yield takeLatest(authActions.getUserProfile.type, getProfileHandler);
+  yield takeLatest(authActions.getUserProfile, getProfileHandler);
   yield takeLatest(authActions.logout, logoutHandler);
 }

@@ -38,6 +38,24 @@ export function UserAdminListDoc(): MethodDecorator {
   );
 }
 
+export function UserAdminListUserTypeUserDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all users with type USER',
+    }),
+    DocRequest({
+      queries: [...UserDocQueryStatus,],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<UserListResponseDto>('user.list', {
+      dto: UserListResponseDto,
+    }),
+  );
+}
+
 export function UserAdminGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({

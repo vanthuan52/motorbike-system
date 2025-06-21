@@ -24,9 +24,7 @@ const MessagesPage = lazy(
 const VehicleCompanyPage = lazy(
   () => import("@/modules/vehicle-company/pages/vehicle-company-page")
 );
-// const VehicleType = lazy(
-//   () => import("@/modules/vehicle-type/pages/vehicle-type-page")
-// );
+
 const CategoryPage = lazy(() => import("@/modules/category/pages/category"));
 const CategoryDetailsPage = lazy(
   () => import("@/modules/category/pages/category-details-page")
@@ -49,16 +47,20 @@ const Maintenance = lazy(
 const CustomerPage = lazy(
   () => import("@/modules/customer-management/pages/customer-page")
 );
-
 const CustomerDetailPage = lazy(
   () => import("@/modules/customer-management/pages/customer-detail-page")
 );
+const CustomerCreationPage = lazy(
+  () => import("@/modules/customer-management/pages/customer-creation")
+);
+
 const InvoicesPage = lazy(
   () => import("@/modules/invoice-management/pages/invoices-page")
 );
 const InvoicesDetailPage = lazy(
   () => import("@/modules/invoice-management/pages/invoices-details-page")
 );
+
 const RolesPage = lazy(
   () => import("@/modules/roles-permissions/pages/roles-page")
 );
@@ -160,7 +162,11 @@ export const router = createBrowserRouter([
         element: <CustomerPage />,
       },
       {
-        path: `${ROUTER_PATH.CUSTOMERS}/:id`,
+        path: ROUTER_PATH.CUSTOMERS_CREATION,
+        element: <CustomerCreationPage />,
+      },
+      {
+        path: ROUTER_PATH.CUSTOMERS_DETAIL,
         element: <CustomerDetailPage />,
       },
       {

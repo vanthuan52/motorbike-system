@@ -8,3 +8,11 @@ export type BaseEntity = {
   updatedBy?: string;
   deletedBy?: string;
 };
+
+export interface PaginationQuery {
+  search?: string;
+  page?: number;
+  perPage?: number;
+  orderBy?: string;
+  orderDirection?: "asc" | "desc";
+}

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Space, Input, Select, Button, message } from "antd";
-import Table from "@/components/ui/table/table";
+import { EditOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
+import Table from "@/components/ui/table/table";
 import { Vehicle } from "@/types/vehicle";
 import { mockDataTableVehicleType } from "@/modules/vehicle-type/mocks/vehicle-type";
-import { EditOutlined } from "@ant-design/icons";
 
 interface Props {
   customerId: string;
@@ -22,11 +22,11 @@ const CustomerVehicles: React.FC<Props> = ({
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editRow, setEditRow] = useState<Partial<Vehicle>>({});
   const [data, setData] = useState(() =>
-    vehicleData.filter(v => v.customer_id === customerId)
+    vehicleData.filter((v) => v.customer_id === customerId)
   );
 
   React.useEffect(() => {
-    setData(vehicleData.filter(v => v.customer_id === customerId));
+    setData(vehicleData.filter((v) => v.customer_id === customerId));
   }, [vehicleData, customerId]);
 
   const isEditing = (record: Vehicle) => record.id === editingKey;
@@ -43,7 +43,7 @@ const CustomerVehicles: React.FC<Props> = ({
 
   const save = (id: string) => {
     const newData = [...data];
-    const idx = newData.findIndex(item => item.id === id);
+    const idx = newData.findIndex((item) => item.id === id);
     if (idx > -1) {
       newData[idx] = { ...newData[idx], ...editRow } as Vehicle;
       setData(newData);
@@ -58,11 +58,11 @@ const CustomerVehicles: React.FC<Props> = ({
     e: React.ChangeEvent<HTMLInputElement>,
     field: keyof Vehicle
   ) => {
-    setEditRow(prev => ({ ...prev, [field]: e.target.value }));
+    setEditRow((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
   const handleSelectChange = (value: string, field: keyof Vehicle) => {
-    setEditRow(prev => ({ ...prev, [field]: value }));
+    setEditRow((prev) => ({ ...prev, [field]: value }));
   };
 
   const columns: ColumnsType<Vehicle> = [
@@ -78,15 +78,15 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Input
             value={editRow.image_file_name ?? ""}
-            onChange={e => handleInputChange(e, "image_file_name")}
-            placeholder='URL ảnh'
+            onChange={(e) => handleInputChange(e, "image_file_name")}
+            placeholder="URL ảnh"
           />
         ) : (
           <Space>
             <img
               src={url}
               alt={record.license_plate}
-              className='w-12 h-8 object-cover rounded'
+              className="w-12 h-8 object-cover rounded"
             />
           </Space>
         ),
@@ -98,7 +98,7 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Input
             value={editRow.license_plate}
-            onChange={e => handleInputChange(e, "license_plate")}
+            onChange={(e) => handleInputChange(e, "license_plate")}
           />
         ) : (
           record.license_plate
@@ -111,7 +111,7 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Input
             value={editRow.vehicle_model ?? ""}
-            onChange={e => handleInputChange(e, "vehicle_model")}
+            onChange={(e) => handleInputChange(e, "vehicle_model")}
           />
         ) : (
           record.vehicle_model
@@ -124,7 +124,7 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Input
             value={editRow.color ?? ""}
-            onChange={e => handleInputChange(e, "color")}
+            onChange={(e) => handleInputChange(e, "color")}
           />
         ) : (
           record.color
@@ -137,7 +137,7 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Input
             value={editRow.engine_number ?? ""}
-            onChange={e => handleInputChange(e, "engine_number")}
+            onChange={(e) => handleInputChange(e, "engine_number")}
           />
         ) : (
           record.engine_number
@@ -150,7 +150,7 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Input
             value={editRow.chassis_number ?? ""}
-            onChange={e => handleInputChange(e, "chassis_number")}
+            onChange={(e) => handleInputChange(e, "chassis_number")}
           />
         ) : (
           record.chassis_number
@@ -163,17 +163,17 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <Select
             value={editRow.vehicle_type_id}
-            onChange={value => handleSelectChange(value, "vehicle_type_id")}
+            onChange={(value) => handleSelectChange(value, "vehicle_type_id")}
             style={{ minWidth: 100 }}
           >
-            {mockDataTableVehicleType.map(type => (
+            {mockDataTableVehicleType.map((type) => (
               <Select.Option key={type.id} value={type.id}>
                 {type.name}
               </Select.Option>
             ))}
           </Select>
         ) : (
-          (mockDataTableVehicleType.find(v => v.id === id)?.name ?? "")
+          (mockDataTableVehicleType.find((v) => v.id === id)?.name ?? "")
         ),
     },
   ];
@@ -186,18 +186,18 @@ const CustomerVehicles: React.FC<Props> = ({
         isEditing(record) ? (
           <span>
             <Button
-              type='link'
+              type="link"
               onClick={() => save(record.id)}
               style={{ marginRight: 8 }}
             >
               Lưu
             </Button>
-            <Button type='link' onClick={cancel}>
+            <Button type="link" onClick={cancel}>
               Hủy
             </Button>
           </span>
         ) : (
-          <Button type='link' onClick={() => edit(record)}>
+          <Button type="link" onClick={() => edit(record)}>
             {<EditOutlined />}
           </Button>
         ),
@@ -205,14 +205,14 @@ const CustomerVehicles: React.FC<Props> = ({
   }
 
   return (
-    <div className='mt-8 space-y-3'>
-      <h2 className='text-2xl font-semibold text-gray-800'>
+    <div className="mt-8 space-y-3">
+      <h2 className="text-2xl font-semibold text-gray-800">
         Thông tin phương tiện
       </h2>
       <Table
         dataSource={data}
         columns={columns}
-        rowKey='id'
+        rowKey="id"
         pagination={{ pageSize: 5 }}
       />
     </div>

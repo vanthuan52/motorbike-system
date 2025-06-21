@@ -1,1 +1,1 @@
-export { default as customersReducer } from "./customers-slice";
+export { default as customerReducer } from "./customer-slice";

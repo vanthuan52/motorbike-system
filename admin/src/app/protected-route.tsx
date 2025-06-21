@@ -1,8 +1,7 @@
 import React from "react";
+import { Navigate } from "react-router-dom";
 import { useAppSelector } from "@/store";
 import { ENUM_POLICY_ROLE_TYPE } from "@/modules/role/types";
-import { APP_CONFIG } from "@/constants/config";
-import { Navigate } from "react-router-dom";
 import { ROUTER_PATH } from "@/constants/router-path";
 
 interface ProtectedRouteProps {
@@ -19,13 +18,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
   ],
 }) => {
-  const { isAuthenticated, loading, user } = useAppSelector(
-    (state) => state.auth
-  );
-
-  // if (APP_CONFIG.NODE_ENV === "development") {
-  //   return <>{children}</>;
-  // }
+  const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
 
   return !loading ? (
     isAuthenticated ? (
