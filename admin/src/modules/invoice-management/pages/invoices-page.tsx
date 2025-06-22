@@ -127,7 +127,7 @@ export default function InvoicesPage() {
 
   return (
     <div className="sm:px-4 pt-8 sm:pt-0">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:gap-0 px-2 sm:px-0 py-2">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 my-4 sm:gap-0 px-2 sm:px-0 py-2">
         <h1 className="text-xl sm:text-[26px] font-semibold text-center sm:text-left w-full sm:w-auto">
           Hoá đơn
         </h1>

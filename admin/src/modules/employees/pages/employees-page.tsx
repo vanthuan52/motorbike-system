@@ -121,8 +121,8 @@ export default function EmployeesPage() {
 
   return (
     <div className="sm:px-4 pt-8 sm:pt-0">
-      <div className="flex flex-col gap-5">
-        <div style={{ marginBottom: 16 }}>
+      <div className="flex flex-col">
+        <div className="lg:my-4 sm:my-2">
           <PageHeading title="Danh sách nhân viên" />
         </div>
         <div className="bg-white rounded-lg shadow-md">

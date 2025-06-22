@@ -120,7 +120,7 @@ export default function VehicleCompanyPage() {
 
   return (
     <div className="sm:px-4 pt-8 sm:pt-0">
-      <div style={{ marginBottom: 16 }}>
+      <div className="lg:my-4 sm:my-2">
         <PageHeading
           title="Hãng xe"
           onClick={openCreate}

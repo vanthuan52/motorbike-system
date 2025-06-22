@@ -98,42 +98,7 @@ export default function hiring() {
       }),
     [openEdit, handleDelete, handleChangeStatus, updateStatus.loading]
   );
-  const filterControls = (
-    <Row gutter={16} style={{ marginBottom: 16 }}>
-      <Col>
-        <Input
-          placeholder="Tìm theo tiêu đề"
-          value={payload.search}
-          onChange={(e) =>
-            setPayload((prev) => ({ ...prev, search: e.target.value, page: 1 }))
-          }
-          allowClear
-          style={{ width: 200, height: 40 }}
-        />
-      </Col>
-      <Col>
-        <Select
-          placeholder="Trạng thái"
-          value={payload.status}
-          onChange={(value) =>
-            setPayload((prev) => ({
-              ...prev,
-              status: value,
-              page: 1,
-            }))
-          }
-          allowClear
-          style={{ width: 120, height: 40 }}
-          options={STATUS_HIRING_OPTIONS}
-        />
-      </Col>
-      <Col>
-        <Button onClick={handleResetFilter} style={{ height: 40 }}>
-          Đặt lại
-        </Button>
-      </Col>
-    </Row>
-  );
+
   const tableContent = isLoading ? (
     <SkeletonTable
       columns={[
@@ -161,8 +126,8 @@ export default function hiring() {
     />
   );
   return (
-    <div className="sm:px-4 pt-8 sm:pt-0">
-      <div style={{ marginBottom: 16 }}>
+    <div className="sm:px-4 px-2 pt-4">
+      <div className="mb-4">
         <PageHeading
           title="Tuyển dụng"
           onClick={openCreate}
@@ -170,8 +135,39 @@ export default function hiring() {
         />
       </div>
 
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="mb-4 px-5 pt-4">{filterControls}</div>
+      <div className="bg-white rounded-lg shadow-md px-3 sm:px-5 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-3 pt-4 mb-4">
+          <Input
+            placeholder="Tìm theo tiêu đề"
+            value={payload.search}
+            onChange={(e) =>
+              setPayload((prev) => ({
+                ...prev,
+                search: e.target.value,
+                page: 1,
+              }))
+            }
+            allowClear
+            className="!h-10 sm:w-52"
+          />
+          <Select
+            placeholder="Trạng thái"
+            value={payload.status}
+            onChange={(value) =>
+              setPayload((prev) => ({
+                ...prev,
+                status: value,
+                page: 1,
+              }))
+            }
+            allowClear
+            className="!h-10 sm:w-36"
+            options={STATUS_HIRING_OPTIONS}
+          />
+          <Button onClick={handleResetFilter} className="!h-10 sm:w-auto">
+            Đặt lại
+          </Button>
+        </div>
 
         {tableContent}
       </div>

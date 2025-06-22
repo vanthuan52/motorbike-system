@@ -1,15 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { ColumnsType } from "antd/es/table";
-import {
-  Button,
-  Col,
-  Input,
-  Popconfirm,
-  Row,
-  Select,
-  Tooltip,
-  message,
-} from "antd";
+import { Button, Input, Popconfirm, Select, Tooltip, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -191,61 +182,53 @@ export default function CategoryPage() {
   );
 
   const filterControls = (
-    <Row gutter={16} style={{ marginBottom: 16 }}>
-      <Col>
-        <Input
-          placeholder="Tìm theo tên"
-          value={payload.search}
-          onChange={(e) =>
-            setPayload((prev) => ({ ...prev, search: e.target.value, page: 1 }))
-          }
-          allowClear
-          style={{ width: 200, height: 40 }}
-        />
-      </Col>
-      <Col>
-        <Select
-          placeholder="Tìm theo hãng xe"
-          value={payload.vehicle_company_id}
-          onChange={(value) =>
-            setPayload((prev) => ({
-              ...prev,
-              vehicle_company_id: value,
-              page: 1,
-            }))
-          }
-          allowClear
-          style={{ width: 180, height: 40 }}
-        >
-          {Object.entries(vehicleCompanyMap).map(([id, name]) => (
-            <Select.Option key={id} value={id}>
-              {name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Col>
-      <Col>
-        <Select
-          placeholder="Trạng thái"
-          value={payload.status}
-          onChange={(value) =>
-            setPayload((prev) => ({
-              ...prev,
-              status: value,
-              page: 1,
-            }))
-          }
-          allowClear
-          style={{ width: 120, height: 40 }}
-          options={STATUS_OPTIONS}
-        />
-      </Col>
-      <Col>
-        <Button onClick={handleResetFilter} style={{ height: 40 }}>
-          Đặt lại
-        </Button>
-      </Col>
-    </Row>
+    <div className="flex flex-col sm:flex-row gap-3 sm:items-end mb-4">
+      <Input
+        placeholder="Tìm theo tên"
+        value={payload.search}
+        onChange={(e) =>
+          setPayload((prev) => ({
+            ...prev,
+            search: e.target.value,
+            page: 1,
+          }))
+        }
+        allowClear
+        className="h-10 sm:w-52"
+      />
+      <Select
+        placeholder="Tìm theo hãng xe"
+        value={payload.vehicle_company_id}
+        onChange={(value) =>
+          setPayload((prev) => ({
+            ...prev,
+            vehicle_company_id: value,
+            page: 1,
+          }))
+        }
+        allowClear
+        className="!h-10 sm:w-44"
+      >
+        {Object.entries(vehicleCompanyMap).map(([id, name]) => (
+          <Select.Option key={id} value={id}>
+            {name}
+          </Select.Option>
+        ))}
+      </Select>
+      <Select
+        placeholder="Trạng thái"
+        value={payload.status}
+        onChange={(value) =>
+          setPayload((prev) => ({ ...prev, status: value, page: 1 }))
+        }
+        allowClear
+        className="!h-10 sm:w-36"
+        options={STATUS_OPTIONS}
+      />
+      <Button onClick={handleResetFilter} className="!h-10">
+        Đặt lại
+      </Button>
+    </div>
   );
 
   const tableContent = isLoading ? (
@@ -278,7 +261,7 @@ export default function CategoryPage() {
 
   return (
     <div className="sm:px-4 pt-8 sm:pt-0">
-      <div style={{ marginBottom: 16 }}>
+      <div className="lg:my-4 sm:my-2">
         <PageHeading
           title="Danh mục phụ tùng"
           onClick={openCreate}
