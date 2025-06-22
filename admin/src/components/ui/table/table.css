@@ -1,4 +1,38 @@
+.custom-table {
+  font-size: 14px;
+  overflow: hidden;
+}
+
 .custom-table .ant-table-thead > tr > th {
-  background-color: white !important;
-  font-family: "Poppins", sans-serif;
+  background: #f8f9fa;
+  color: #777;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 0px !important;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 14px 16px;
+}
+
+.custom-table .ant-table-tbody > tr > td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f8f9fa;
+  white-space: nowrap;
+}
+
+.custom-table .ant-table-tbody > tr:hover > td {
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+.custom-table .ant-btn {
+  padding: 4px 6px;
+  height: auto;
+}
+
+.custom-table .ant-btn .anticon {
+  font-size: 16px;
+}
+
+.custom-table .ant-table-column-sorters {
+  justify-content: center;
 }

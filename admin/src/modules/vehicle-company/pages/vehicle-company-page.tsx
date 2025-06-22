@@ -119,55 +119,68 @@ export default function VehicleCompanyPage() {
   ];
 
   return (
-    <div className="sm:px-4 my-10 sm:pt-0">
-      <PageHeading
-        title="Hãng xe"
-        onClickAdd={openCreate}
-        addButtonLabel="Thêm hãng xe"
-      />
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col>
-          <Input
-            placeholder="Tìm theo tên hãng xe"
-            value={payload.name}
-            onChange={(e) => setPayload({ ...payload, name: e.target.value })}
-            allowClear
-            style={{ width: 240 }}
-          />
-        </Col>
-        <Col>
-          <Button icon={<ReloadOutlined />} onClick={handleResetFilter}>
-            Đặt lại
-          </Button>
-        </Col>
-      </Row>
+    <div className="sm:px-4 pt-8 sm:pt-0">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Hãng xe"
+          onClick={openCreate}
+          addButtonLabel="Thêm hãng xe"
+        />
+      </div>
 
-      {isLoading ? (
-        <SkeletonTable
-          columns={[
-            { title: "ID", width: 100 },
-            { title: "Tên hãng xe", width: 150 },
-            { title: "Mô tả", width: 150 },
-            { title: "Trạng thái", width: 100 },
-            { title: "Hành động", width: 120 },
-          ]}
-          rows={5}
-        />
-      ) : (
-        <Table
-          dataSource={companies}
-          columns={columns}
-          rowKey="id"
-          pagination={{
-            pageSize: payload.limit,
-            current: payload.page,
-            total,
-            onChange: (page, pageSize) => {
-              setPayload({ ...payload, page, limit: pageSize });
-            },
-          }}
-        />
-      )}
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col>
+              <Input
+                placeholder="Tìm theo tên hãng xe"
+                value={payload.name}
+                onChange={(e) =>
+                  setPayload({ ...payload, name: e.target.value })
+                }
+                allowClear
+                style={{ width: 240, height: 40 }}
+              />
+            </Col>
+            <Col>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={handleResetFilter}
+                style={{ height: 40 }}
+              >
+                Đặt lại
+              </Button>
+            </Col>
+          </Row>
+        </div>
+
+        {isLoading ? (
+          <SkeletonTable
+            columns={[
+              { title: "ID", width: 100 },
+              { title: "Tên hãng xe", width: 150 },
+              { title: "Mô tả", width: 150 },
+              { title: "Trạng thái", width: 100 },
+              { title: "Hành động", width: 120 },
+            ]}
+            rows={5}
+          />
+        ) : (
+          <Table
+            dataSource={companies}
+            columns={columns}
+            rowKey="id"
+            pagination={{
+              pageSize: payload.limit,
+              current: payload.page,
+              total,
+              onChange: (page, pageSize) => {
+                setPayload({ ...payload, page, limit: pageSize });
+              },
+            }}
+          />
+        )}
+      </div>
 
       <VehicleCompanyModal
         visible={modalVisible}

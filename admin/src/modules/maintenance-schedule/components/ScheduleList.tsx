@@ -7,7 +7,7 @@ import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import TableReuse from "@/components/ui/table/table";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
-import { PageHeaderReuse } from "@/components/ui/admin/PageHeaderReuse";
+import { PageHeading } from "@/components/page-heading";
 
 import { mockScheduleList, ScheduleType } from "../data/mockSchedule";
 
@@ -112,45 +112,50 @@ export default function ScheduleList() {
   ];
 
   return (
-    <div className="sm:px-4">
+    <div className="sm:px-4 pt-8 sm:pt-0">
       <div style={{ marginBottom: 16 }}>
-        <PageHeaderReuse
+        <PageHeading
           title="Quản lý lịch bảo dưỡng"
-          onClickAdd={openCreate}
+          onClick={openCreate}
           addButtonLabel="Tạo lịch bảo dưỡng"
         />
       </div>
 
-      <SearchInputReuse
-        onChange={(text) =>
-          setDataSource(
-            mockScheduleList.filter((item) =>
-              item.customer.toLowerCase().includes(text.toLowerCase())
-            )
-          )
-        }
-      />
-      {loading ? (
-        <SkeletonTable
-          columns={[
-            { title: "ID", width: 50 },
-            { title: "Khách hàng", width: 100 },
-            { title: "SĐT", width: 100 },
-            { title: "Nhân viên", width: 100 },
-            { title: "Ngày", width: 100 },
-            { title: "Khung giờ", width: 100 },
-            { title: "Trạng thái", width: 100 },
-          ]}
-          rows={5}
-        />
-      ) : (
-        <TableReuse
-          columns={columns}
-          dataSource={dataSource}
-          rowKey="id"
-          pagination={{ pageSize: 5 }}
-        />
-      )}
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">
+          <SearchInputReuse
+            onChange={(text) =>
+              setDataSource(
+                mockScheduleList.filter((item) =>
+                  item.customer.toLowerCase().includes(text.toLowerCase())
+                )
+              )
+            }
+          />
+        </div>
+
+        {loading ? (
+          <SkeletonTable
+            columns={[
+              { title: "ID", width: 50 },
+              { title: "KHÁCH HÀNG", width: 100 },
+              { title: "SĐT", width: 100 },
+              { title: "NHÂN VIÊN", width: 100 },
+              { title: "NGÀY", width: 100 },
+              { title: "KHUNG GIỜ", width: 100 },
+              { title: "TRẠNG THÁI", width: 100 },
+            ]}
+            rows={5}
+          />
+        ) : (
+          <TableReuse
+            columns={columns}
+            dataSource={dataSource}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+          />
+        )}
+      </div>
 
       <ScheduleAssignModal
         visible={assignVisible}

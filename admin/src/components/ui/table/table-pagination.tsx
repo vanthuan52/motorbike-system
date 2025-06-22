@@ -1,5 +1,5 @@
 import { Select } from "antd";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import PaginationButton from "./pagination-button";
 
 interface TablePaginationProps {
   currentPage: number;
@@ -17,59 +17,108 @@ const TablePagination = ({
   onPageSizeChange,
 }: TablePaginationProps) => {
   const totalPages = Math.ceil(total / pageSize);
-  const start = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const end = Math.min(currentPage * pageSize, total);
+
+  const disableLeft = currentPage <= 1;
+  const disableRight = currentPage >= totalPages;
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-2 text-sm w-full">
-      <div className="text-base text-gray-700 flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-        <span>
-          {start} – {end} của {total}
-        </span>
-        <span className="hidden sm:inline">•</span>
-        <span>Kết quả mỗi trang:</span>
-        <Select
-          size="middle"
-          value={pageSize}
-          onChange={onPageSizeChange}
-          options={[5, 10, 20, 50].map((n) => ({
-            value: n,
-            label: n.toString(),
-          }))}
-          className="w-full sm:w-20"
-        />
-      </div>
+    <div className="flex items-center justify-between text-sm font-black w-full px-5 pb-4">
+      <div className="flex flex-1 justify-between items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline text-sm font-medium whitespace-nowrap">
+            Hiển thị
+          </span>
+          <Select
+            size="middle"
+            value={pageSize}
+            onChange={onPageSizeChange}
+            options={[5, 10, 20, 50].map((n) => ({
+              value: n,
+              label: n.toString(),
+            }))}
+            className="w-16"
+          />
+        </div>
 
-      <div className="flex items-center gap-1 w-full sm:w-auto justify-center sm:justify-end flex-wrap">
-        <button
-          className="px-2 py-1 text-lg disabled:text-gray-300 cursor-pointer rounded-md"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          <LeftOutlined />
-        </button>
+        <div className="text-sm font-medium whitespace-nowrap">
+          Trang {currentPage} / {totalPages}
+        </div>
 
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-          <button
-            key={page}
-            className={`px-4 py-2 font-semibold rounded cursor-pointer ${
-              page === currentPage
-                ? "text-black bg-gray-200"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-            onClick={() => onPageChange(page)}
+        <div className="flex items-center gap-1">
+          <PaginationButton
+            onClick={() => onPageChange(1)}
+            disabled={disableLeft}
           >
-            {page}
-          </button>
-        ))}
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              height="18"
+              width="18"
+            >
+              <path d="m11 17-5-5 5-5"></path>
+              <path d="m18 17-5-5 5-5"></path>
+            </svg>
+          </PaginationButton>
 
-        <button
-          className="px-2 py-1 text-lg disabled:text-gray-300 cursor-pointer rounded-md"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages || totalPages === 0}
-        >
-          <RightOutlined />
-        </button>
+          <PaginationButton
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={disableLeft}
+          >
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              height="18"
+              width="18"
+            >
+              <path d="m15 18-6-6 6-6"></path>
+            </svg>
+          </PaginationButton>
+
+          <PaginationButton
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={disableRight}
+          >
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              height="18"
+              width="18"
+            >
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </PaginationButton>
+
+          <PaginationButton
+            onClick={() => onPageChange(totalPages)}
+            disabled={disableRight}
+          >
+            <svg
+              stroke="currentColor"
+              fill="none"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              height="18"
+              width="18"
+            >
+              <path d="m6 17 5-5-5-5"></path>
+              <path d="m13 17 5-5-5-5"></path>
+            </svg>
+          </PaginationButton>
+        </div>
       </div>
     </div>
   );

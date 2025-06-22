@@ -122,11 +122,13 @@ export default function EmployeesPage() {
   ];
 
   return (
-    <div className="w-full h-full mt-[30px] pb-5 px-4">
+    <div className="sm:px-4 pt-8 sm:pt-0">
       <div className="flex flex-col gap-5">
-        <PageHeading title="Danh sách nhân viên" />
-        <div className="bg-white rounded-lg p-4 border border-gray-200">
-          <div className="mb-4 flex flex-col sm:flex-row gap-4 sm:max-h-[40px] w-full">
+        <div style={{ marginBottom: 16 }}>
+          <PageHeading title="Danh sách nhân viên" />
+        </div>
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="mb-4 px-5 pt-4 flex flex-col sm:flex-row gap-4 sm:max-h-[55px] w-full">
             <SearchInput onChange={setSearchText} />
             <div className="flex gap-3 w-full">
               <SelectField
@@ -154,13 +156,13 @@ export default function EmployeesPage() {
             <SkeletonTable
               columns={[
                 { title: "STT", width: 100, height: 50 },
-                { title: "Họ tên", width: 150, height: 50 },
-                { title: "Số điện thoại", width: 150, height: 50 },
-                { title: "Email", width: 150, height: 50 },
-                { title: "Vai trò", width: 100, height: 50 },
-                { title: "Trạng thái", width: 130, height: 50 },
-                { title: "Địa chỉ", width: 200, height: 50 },
-                { title: "Hành động", width: 100, height: 50 },
+                { title: "HỌ TÊN", width: 150, height: 50 },
+                { title: "SỐ ĐIỆN THOẠI", width: 150, height: 50 },
+                { title: "EMAIL", width: 150, height: 50 },
+                { title: "VAI TRÒ", width: 100, height: 50 },
+                { title: "TRẠNG THÁI", width: 130, height: 50 },
+                { title: "ĐỊA CHỈ", width: 200, height: 50 },
+                { title: "HÀNH ĐỘNG", width: 100, height: 50 },
               ]}
               rows={5}
             />

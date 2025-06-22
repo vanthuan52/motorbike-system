@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Eye, Mail } from "lucide-react";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
+import SmartBreadcrumb from "@/components/breadcrum/SmartBreadcrumb";
 
 interface BlogSection {
   title: string;
@@ -33,7 +34,7 @@ interface Blog {
 export default function BlogContent({ blog }: { blog: Blog }) {
   return (
     <div>
-      <ol className="flex items-center whitespace-nowrap">
+      {/* <ol className="flex items-center whitespace-nowrap">
         <li className="inline-flex items-center">
           <CustomLink
             className="flex items-center text-sm text-gray-500 hover:text-green-500 focus:outline-hidden focus:text-green-500"
@@ -84,7 +85,8 @@ export default function BlogContent({ blog }: { blog: Blog }) {
         >
           {blog.title}
         </li>
-      </ol>
+      </ol> */}
+      <SmartBreadcrumb customLabel={blog.title} />
       <div className="flex justify-center items-center w-fit p-4 my-4 h-[55px] bg-[#A7D571] rounded-[30px] text-lg sm:text-xl font-bold">
         {blog.tag}
       </div>

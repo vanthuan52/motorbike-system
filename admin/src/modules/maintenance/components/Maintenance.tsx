@@ -9,7 +9,7 @@ import TableReuse from "@/components/ui/table/table";
 import { MaintenanceManagementTypes } from "@/types/maintenance";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { SearchInputReuse } from "@/components/ui/SearchInputReuse";
-import { PageHeaderReuse } from "@/components/ui/admin/PageHeaderReuse";
+import { PageHeading } from "@/components/page-heading";
 
 import { mockDataTableMaintenance } from "../data/mockMaintenance";
 
@@ -140,14 +140,17 @@ export default function Maintenance() {
     },
   ];
   return (
-    <div className="sm:px-4">
-      <PageHeaderReuse
-        title="Quản lý đơn bảo dưỡng"
-        onClickAdd={openCreate}
-        addButtonLabel="Tạo đơn bảo dưỡng"
-      />
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="mb-4">
+    <div className="sm:px-4 pt-8 sm:pt-0">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Quản lý đơn bảo dưỡng"
+          onClick={openCreate}
+          addButtonLabel="Tạo đơn bảo dưỡng"
+        />
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">
           <SearchInputReuse
             onChange={(text) =>
               setDataSource(
@@ -169,13 +172,13 @@ export default function Maintenance() {
           <SkeletonTable
             columns={[
               { title: "ID", width: 50 },
-              { title: "Khách hàng", width: 100 },
-              { title: "Số điện thoại", width: 100 },
-              { title: "Nhân viên", width: 100 },
-              { title: "Ngày bảo dưỡng", width: 100 },
-              { title: "Tổng chi phí", width: 100 },
-              { title: "Trạng thái", width: 100 },
-              { title: "Hành động", width: 100 },
+              { title: "KHÁCH HÀNG", width: 100 },
+              { title: "SỐ ĐIỆN THOẠI", width: 100 },
+              { title: "NHÂN VIÊN", width: 100 },
+              { title: "NGÀY BẢO DƯỠNG", width: 100 },
+              { title: "TỔNG CHI PHÍ", width: 100 },
+              { title: "TRẠNG THÁI", width: 100 },
+              { title: "HÀNH ĐỘNG", width: 100 },
             ]}
             rows={5}
           />

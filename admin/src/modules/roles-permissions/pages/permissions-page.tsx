@@ -8,157 +8,164 @@ import { toast } from "react-toastify";
 import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export interface PermissionItem {
-    value: string;
-    label: string;
+  value: string;
+  label: string;
 }
 
 export default function PermissionsPage() {
-    const [permissions, setPermissions] = useState<PermissionItem[]>();
+  const [permissions, setPermissions] = useState<PermissionItem[]>();
 
-    const [modalOpen, setModalOpen] = useState(false);
-    const [editingPermission, setEditingPermission] = useState<PermissionItem | null>(null);
-    const [form] = Form.useForm();
-    const [loading, setLoading] = useState(false);
-    useEffect(() => {
-        setLoading(true);
-        setPermissions(mockPermissions);
-        setTimeout(() => {
-            setLoading(false);
-        }, 800);
-    }, []);
-    if (!permissions) return null;
-    const handleCreate = () => {
-        setEditingPermission(null);
-        form.resetFields();
-        setModalOpen(true);
-    };
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingPermission, setEditingPermission] =
+    useState<PermissionItem | null>(null);
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(true);
+    setPermissions(mockPermissions);
+    setTimeout(() => {
+      setLoading(false);
+    }, 800);
+  }, []);
+  if (!permissions) return null;
+  const handleCreate = () => {
+    setEditingPermission(null);
+    form.resetFields();
+    setModalOpen(true);
+  };
 
-    const handleEdit = (permission: PermissionItem) => {
-        setEditingPermission(permission);
-        form.setFieldsValue(permission);
-        setModalOpen(true);
-    };
+  const handleEdit = (permission: PermissionItem) => {
+    setEditingPermission(permission);
+    form.setFieldsValue(permission);
+    setModalOpen(true);
+  };
 
-    const handleDelete = (value: string) => {
-        setPermissions(permissions.filter((p) => p.value !== value));
-        toast.success("Xoá quyền thành công");
-    };
+  const handleDelete = (value: string) => {
+    setPermissions(permissions.filter((p) => p.value !== value));
+    toast.success("Xoá quyền thành công");
+  };
 
-    const handleSubmit = () => {
-        form.validateFields().then((values) => {
-            if (editingPermission) {
-                setPermissions(
-                    permissions.map((p) =>
-                        p.value === editingPermission.value ? { ...p, ...values } : p
-                    )
-                );
-                toast.success("Cập nhật quyền thành công");
-            } else {
-                setPermissions([...permissions, values]);
-                toast.success("Thêm quyền thành công");
-            }
-            setModalOpen(false);
-        });
-    };
+  const handleSubmit = () => {
+    form.validateFields().then((values) => {
+      if (editingPermission) {
+        setPermissions(
+          permissions.map((p) =>
+            p.value === editingPermission.value ? { ...p, ...values } : p
+          )
+        );
+        toast.success("Cập nhật quyền thành công");
+      } else {
+        setPermissions([...permissions, values]);
+        toast.success("Thêm quyền thành công");
+      }
+      setModalOpen(false);
+    });
+  };
 
-    const columns = [
-        {
-            title: "Mã quyền",
-            dataIndex: "value",
-            key: "value",
-        },
-        {
-            title: "Tên quyền",
-            dataIndex: "label",
-            key: "label",
-        },
-        {
-            title: "Hành động",
-            key: "actions",
-            render: (record: PermissionItem) => (
-                <div className="flex gap-2 justify-center">
-                    <Tooltip title="Sửa">
-                        <Button
-                            icon={<EditOutlined />}
-                            size="small"
-                            onClick={e => {
-                                e.stopPropagation();
-                                handleEdit(record);
-                            }}
-                        />
-                    </Tooltip>
-                    <Popconfirm
-                        title="Bạn chắc chắn muốn xoá vai trò này?"
-                        onConfirm={() => handleDelete(record.value)}
-                        okText="Xoá"
-                        cancelText="Huỷ"
-                    >
-                        <Tooltip title="Xoá">
-                            <Button
-                                icon={<DeleteOutlined />}
-                                size="small"
-                                danger
-                                onClick={e => e.stopPropagation()}
-                            />
-                        </Tooltip>
-                    </Popconfirm>
-                </div>
-            ),
-        },
-    ];
-
-    return (
-        <div className="sm:px-4 pt-8 sm:pt-0">
-            <PageHeading
-                title="Quản lý quyền"
-                onClickAdd={handleCreate}
-                addButtonLabel="Thêm quyền"
+  const columns = [
+    {
+      title: "Mã quyền",
+      dataIndex: "value",
+      key: "value",
+    },
+    {
+      title: "Tên quyền",
+      dataIndex: "label",
+      key: "label",
+    },
+    {
+      title: "Hành động",
+      key: "actions",
+      render: (record: PermissionItem) => (
+        <div className="flex gap-2 justify-center">
+          <Tooltip title="Sửa">
+            <Button
+              icon={<EditOutlined />}
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleEdit(record);
+              }}
             />
-            {loading ? (
-                <SkeletonTable columns={
-                    [
-                        { title: "Mã quyền", width: 200, height: 20 },
-                        { title: "Tên quyền", width: 200, height: 20 },
-                        { title: "Hành động", width: 100, height: 20 },
-                    ]
-                } rows={10} />
-            ) : (
-                <Table
-                    columns={columns}
-                    dataSource={permissions}
-                    rowKey="value"
-                    pagination={{ pageSize: 10 }}
-                    className="bg-white rounded shadow"
-                />)}
-            <Modal
-                open={modalOpen}
-                title={editingPermission ? "Sửa quyền" : "Thêm quyền"}
-                onCancel={() => setModalOpen(false)}
-                onOk={handleSubmit}
-                okText={editingPermission ? "Lưu" : "Thêm"}
-                destroyOnHidden
-            >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    initialValues={editingPermission || { value: "", label: "" }}
-                >
-                    <Form.Item
-                        label="Mã quyền"
-                        name="value"
-                        rules={[{ required: true, message: "Vui lòng nhập mã quyền" }]}
-                    >
-                        <Input disabled={!!editingPermission} />
-                    </Form.Item>
-                    <Form.Item
-                        label="Tên quyền"
-                        name="label"
-                        rules={[{ required: true, message: "Vui lòng nhập tên quyền" }]}
-                    >
-                        <Input placeholder="Nhập tên quyền" />
-                    </Form.Item>
-                </Form>
-            </Modal>
+          </Tooltip>
+          <Popconfirm
+            title="Bạn chắc chắn muốn xoá vai trò này?"
+            onConfirm={() => handleDelete(record.value)}
+            okText="Xoá"
+            cancelText="Huỷ"
+          >
+            <Tooltip title="Xoá">
+              <Button
+                icon={<DeleteOutlined />}
+                size="small"
+                danger
+                onClick={(e) => e.stopPropagation()}
+              />
+            </Tooltip>
+          </Popconfirm>
         </div>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <div className="sm:px-4 pt-8 sm:pt-0">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Quản lý quyền"
+          onClick={handleCreate}
+          addButtonLabel="Thêm quyền"
+        />
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md">
+        {loading ? (
+          <SkeletonTable
+            columns={[
+              { title: "MÃ QUYỀN", width: 200, height: 20 },
+              { title: "TÊN QUYỀN", width: 200, height: 20 },
+              { title: "HÀNH ĐỘNG", width: 100, height: 20 },
+            ]}
+            rows={10}
+          />
+        ) : (
+          <Table
+            columns={columns}
+            dataSource={permissions}
+            rowKey="value"
+            pagination={{ pageSize: 5 }}
+          />
+        )}
+      </div>
+      <Modal
+        open={modalOpen}
+        title={editingPermission ? "Sửa quyền" : "Thêm quyền"}
+        onCancel={() => setModalOpen(false)}
+        onOk={handleSubmit}
+        okText={editingPermission ? "Lưu" : "Thêm"}
+        destroyOnHidden
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={editingPermission || { value: "", label: "" }}
+        >
+          <Form.Item
+            label="Mã quyền"
+            name="value"
+            rules={[{ required: true, message: "Vui lòng nhập mã quyền" }]}
+          >
+            <Input disabled={!!editingPermission} />
+          </Form.Item>
+          <Form.Item
+            label="Tên quyền"
+            name="label"
+            rules={[{ required: true, message: "Vui lòng nhập tên quyền" }]}
+          >
+            <Input placeholder="Nhập tên quyền" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
 }

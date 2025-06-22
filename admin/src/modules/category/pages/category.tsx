@@ -200,7 +200,7 @@ export default function CategoryPage() {
             setPayload((prev) => ({ ...prev, search: e.target.value, page: 1 }))
           }
           allowClear
-          style={{ width: 200 }}
+          style={{ width: 200, height: 40 }}
         />
       </Col>
       <Col>
@@ -215,7 +215,7 @@ export default function CategoryPage() {
             }))
           }
           allowClear
-          style={{ width: 180 }}
+          style={{ width: 180, height: 40 }}
         >
           {Object.entries(vehicleCompanyMap).map(([id, name]) => (
             <Select.Option key={id} value={id}>
@@ -236,12 +236,14 @@ export default function CategoryPage() {
             }))
           }
           allowClear
-          style={{ width: 120 }}
+          style={{ width: 120, height: 40 }}
           options={STATUS_OPTIONS}
         />
       </Col>
       <Col>
-        <Button onClick={handleResetFilter}>Đặt lại</Button>
+        <Button onClick={handleResetFilter} style={{ height: 40 }}>
+          Đặt lại
+        </Button>
       </Col>
     </Row>
   );
@@ -250,11 +252,11 @@ export default function CategoryPage() {
     <SkeletonTable
       columns={[
         { title: "ID", width: 150, height: 55 },
-        { title: "Mã hãng xe", width: 215, height: 55 },
-        { title: "Tên danh mục", width: 260, height: 55 },
-        { title: "Mô tả", width: 400, height: 55 },
-        { title: "Trạng thái", width: 195, height: 55 },
-        { title: "Hành động", width: 100, height: 55 },
+        { title: "MÃ HÃNG XE", width: 215, height: 55 },
+        { title: "TÊN DANH MỤC", width: 260, height: 55 },
+        { title: "MÔ TẢ", width: 400, height: 55 },
+        { title: "TRẠNG THÁI", width: 195, height: 55 },
+        { title: "HÀNH ĐỘNG", width: 100, height: 55 },
       ]}
       rows={5}
     />
@@ -275,14 +277,18 @@ export default function CategoryPage() {
   );
 
   return (
-    <div className="sm:px-4">
-      <PageHeading
-        title="Danh mục phụ tùng"
-        onClick={openCreate}
-        addButtonLabel="Thêm danh mục"
-      />
-      {filterControls}
-      {tableContent}
+    <div className="sm:px-4 pt-8 sm:pt-0">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Danh mục phụ tùng"
+          onClick={openCreate}
+          addButtonLabel="Thêm danh mục"
+        />
+      </div>
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">{filterControls}</div>
+        {tableContent}
+      </div>
     </div>
   );
 }
