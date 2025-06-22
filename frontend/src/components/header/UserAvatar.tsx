@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import {
   CalendarOutlined,
@@ -32,40 +33,11 @@ type MenuItem = {
   icon: React.ReactNode;
 };
 
-const MENU_ITEMS: MenuItem[] = [
-  { label: "Hồ sơ cá nhân", href: ROUTER_PATH.ACCOUNT, icon: <UserOutlined /> },
-  {
-    label: "Lịch hẹn bảo dưỡng",
-    href: ROUTER_PATH.SERVICE_APPOINTMENT,
-    icon: <CalendarOutlined />,
-  },
-  {
-    label: "Xe của tôi",
-    href: ROUTER_PATH.VEHICLE_MANAGEMENT,
-    icon: <CarOutlined />,
-  },
-  {
-    label: "Lịch sử bảo dưỡng",
-    href: ROUTER_PATH.SERVICE_HISTORY,
-    icon: <HistoryOutlined />,
-  },
-  {
-    label: "Cài đặt tài khoản",
-    href: ROUTER_PATH.SETTING,
-    icon: <SettingOutlined />,
-  },
-  {
-    label: "Hỗ trợ",
-    href: ROUTER_PATH.SUPPORT,
-    icon: <CustomerServiceOutlined />,
-  },
-];
-
 export default function UserAvatar({ user, className }: UserAvatarProps) {
+  const t = useTranslations("userMenu");
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -92,10 +64,39 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
     dispatch(
       notificationActions.notify({
         type: "success",
-        message: "Đăng xuất thành công!",
+        message: t("logoutSuccess"),
       })
     );
   };
+
+  const MENU_ITEMS: MenuItem[] = [
+    { label: t("profile"), href: ROUTER_PATH.ACCOUNT, icon: <UserOutlined /> },
+    {
+      label: t("appointments"),
+      href: ROUTER_PATH.SERVICE_APPOINTMENT,
+      icon: <CalendarOutlined />,
+    },
+    {
+      label: t("myVehicles"),
+      href: ROUTER_PATH.VEHICLE_MANAGEMENT,
+      icon: <CarOutlined />,
+    },
+    {
+      label: t("history"),
+      href: ROUTER_PATH.SERVICE_HISTORY,
+      icon: <HistoryOutlined />,
+    },
+    {
+      label: t("settings"),
+      href: ROUTER_PATH.SETTING,
+      icon: <SettingOutlined />,
+    },
+    {
+      label: t("support"),
+      href: ROUTER_PATH.SUPPORT,
+      icon: <CustomerServiceOutlined />,
+    },
+  ];
 
   return (
     <div ref={containerRef} className={clsx("relative", className)}>
@@ -132,10 +133,10 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
               ))}
               <div
                 className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-700 text-sm cursor-pointer"
-                onClick={() => logout()}
+                onClick={logout}
               >
                 <LogoutOutlined />
-                <span>Logout</span>
+                <span>{t("logout")}</span>
               </div>
             </>
           ) : (
@@ -145,7 +146,7 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
               onClick={() => setMenuOpen(false)}
             >
               <LogIn size={18} />
-              <span>Login</span>
+              <span>{t("login")}</span>
             </CustomLink>
           )}
         </div>

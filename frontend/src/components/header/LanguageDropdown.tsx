@@ -1,33 +1,58 @@
-import { useRef } from "react";
+"use client";
+
+import { useRouter, usePathname } from "next/navigation";
+import { useTransition, useEffect, useState } from "react";
 
 interface Props {
-  selectedLang: "VN" | "EN";
-  setSelectedLang: (lang: "VN" | "EN") => void;
+  currentLocale: "vi" | "en";
 }
 
-export default function LanguageDropdown({
-  selectedLang,
-  setSelectedLang,
-}: Props) {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+const FLAGS: Record<"vi" | "en", string> = {
+  vi: "/images/flags/vn.png",
+  en: "/images/flags/gb.png",
+};
+export default function LanguageDropdown({ currentLocale }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
+
+  const handleChangeLang = (lang: "vi" | "en") => {
+    if (lang === currentLocale) return;
+
+    const segments = pathname.split("/");
+    const newPath = `/${lang}${
+      segments[1] === "vi" || segments[1] === "en"
+        ? "/" + segments.slice(2).join("/")
+        : pathname
+    }`;
+
+    startTransition(() => {
+      router.replace(newPath);
+    });
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = () => setOpen(false);
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, []);
 
   return (
-    <div className="relative group" ref={dropdownRef}>
+    <div className="relative" onClick={(e) => e.stopPropagation()}>
       <button
-        type="button"
-        className="flex items-center gap-1 px-2 py-1 rounded transition select-none"
-        tabIndex={0}
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex items-center gap-1 px-2 py-1 rounded"
         aria-haspopup="listbox"
-        aria-expanded="false"
-        onClick={(e) => {
-          const menu = e.currentTarget.nextElementSibling;
-          if (menu) {
-            menu.classList.toggle("opacity-0");
-            menu.classList.toggle("pointer-events-none");
-          }
-        }}
+        aria-expanded={open}
       >
-        <span>{selectedLang === "EN" ? "EN" : "VN"}</span>
+        <img
+          src={FLAGS[currentLocale]}
+          alt={currentLocale}
+          className="w-5 h-4 object-cover"
+        />
+        <span>{currentLocale.toUpperCase()}</span>
         <svg
           className="w-3 h-3 ml-1"
           fill="none"
@@ -42,38 +67,29 @@ export default function LanguageDropdown({
           />
         </svg>
       </button>
-      <div className="absolute right-0 mt-1 w-16 bg-white border border-gray-200 rounded shadow-lg opacity-0 pointer-events-none transition-opacity z-20">
-        <button
-          className={`block w-full text-left px-3 py-2 cursor-pointer ${
-            selectedLang === "VN" ? "font-bold text-black" : "text-gray-500"
-          }`}
-          onClick={() => {
-            setSelectedLang("VN");
-            const parent = dropdownRef.current?.querySelector("div");
-            if (parent) {
-              parent.classList.add("opacity-0", "pointer-events-none");
-            }
-          }}
-          tabIndex={0}
-        >
-          VN
-        </button>
-        <button
-          className={`block w-full text-left px-3 py-2 cursor-pointer ${
-            selectedLang === "EN" ? "font-bold text-black" : "text-gray-500"
-          }`}
-          onClick={() => {
-            setSelectedLang("EN");
-            const parent = dropdownRef.current?.querySelector("div");
-            if (parent) {
-              parent.classList.add("opacity-0", "pointer-events-none");
-            }
-          }}
-          tabIndex={0}
-        >
-          EN
-        </button>
-      </div>
+
+      {open && (
+        <div className="absolute right-0 mt-1 w-24 bg-white border border-gray-200 rounded shadow-lg z-20">
+          {(["vi", "en"] as const).map((lang) => (
+            <button
+              key={lang}
+              onClick={() => handleChangeLang(lang)}
+              className={`flex items-center gap-2 w-full text-left px-3 py-2 cursor-pointer ${
+                lang === currentLocale
+                  ? "font-bold text-black"
+                  : "text-gray-500"
+              }`}
+            >
+              <img
+                src={FLAGS[lang]}
+                alt={lang}
+                className="w-5 h-5 rounded-full object-cover"
+              />
+              <span>{lang.toUpperCase()}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

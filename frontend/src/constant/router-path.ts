@@ -1,5 +1,5 @@
 export const ROUTER_PATH = {
-  HOME: "/",
+  HOME: "/trang-chu",
   ABOUT: "/about",
   BLOG: "/blog",
   CONTACT: "/contact",

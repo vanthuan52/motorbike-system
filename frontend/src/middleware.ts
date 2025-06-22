@@ -4,7 +4,7 @@ import { ROUTER_PATH } from "./constant/router-path";
 import { ACCESS_TOKEN_KEY } from "./constant/constant";
 import { isTokenExpired } from "./utils/jwt.utils";
 import { AuthJwtAccessTokenPayload } from "./features/auth/types";
-
+import nextIntlMiddleware from "./i18n/middleware";
 const AUTH_ROUTES = [ROUTER_PATH.ACCOUNT];
 
 const PUBLIC_ROUTES = [
@@ -34,8 +34,18 @@ function isAdminRoute(pathname: string): boolean {
 }
 
 export async function middleware(request: NextRequest) {
+  const intlResponse = nextIntlMiddleware(request);
+  if (intlResponse) return intlResponse;
+
   const accessToken = request.cookies.get(ACCESS_TOKEN_KEY)?.value;
   const { pathname } = request.nextUrl;
+
+  const localeMatch = /^\/(vi|en)$/.exec(pathname);
+  if (localeMatch) {
+    return NextResponse.redirect(
+      new URL(`/${localeMatch[1]}/trang-chu`, request.url)
+    );
+  }
 
   if (isProtectedRoute(pathname)) {
     if (!accessToken) {
@@ -64,6 +74,9 @@ export const config = {
      * - static files
      * - public routes
      */
-    "/((?!_next/static|_next/image|favicon.ico|api|unauthorized).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api|unauthorized|images).*)",
+    "/",
+    "/vi",
+    "/en",
   ],
 };
