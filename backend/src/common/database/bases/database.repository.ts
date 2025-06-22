@@ -870,7 +870,7 @@ export class DatabaseRepositoryBase<
       newPipelines.push(
         { $skip: options.paging.offset },
         {
-          $limit: options.paging.limit + options.paging.offset,
+          $limit: options.paging.limit,
         },
       );
     }

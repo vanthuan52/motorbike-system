@@ -76,15 +76,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
         </div>
       </div>
 
-      <div className="h-5">
-        {error ? (
-          <p id={`${label}-error`} className="text-red-500 text-sm">
-            {error}
-          </p>
-        ) : (
-          <span className="invisible text-sm">Placeholder</span>
-        )}
-      </div>
+      {error && (
+        <p id={`${label}-error`} className="text-red-500 text-sm">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { Button, Space, Tag } from "antd";
