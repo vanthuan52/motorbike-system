@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import TechnicianHeader from "@/components/technician/Header/TechnicianHeader";
 import { SidebarTechnician } from "@/components/technician/Sidebar/TechnicianSidebar";
+import Breadcrumb from "@/components/breadcrum/Breadcrumb";
 
 export const metadata: Metadata = {
   title: "Technician - Motorbike",
@@ -24,6 +25,7 @@ export default function TechnicianLayout({
         <div className="flex-1 ml-[256px] flex flex-col overflow-auto">
           <TechnicianHeader />
           <main className="p-4 overflow-y-auto bg-[#FAFAFA] mt-[56px] h-full">
+            <Breadcrumb />
             {children}
           </main>
         </div>

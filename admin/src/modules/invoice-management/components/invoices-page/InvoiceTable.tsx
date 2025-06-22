@@ -24,35 +24,34 @@ export default function InvoiceTable({
     onChange: (page: number, pageSize?: number) => void;
   };
 }) {
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (
-      newSelectedRowKeys: React.Key[],
-      selectedRows: InvoiceManagement[]
-    ) => {
-      const keys = newSelectedRowKeys.slice(-1);
-      setSelectedRowKeys(keys);
-      if (selectedRows.length > 0) {
-        onSelectRow(selectedRows[selectedRows.length - 1], keys);
-      } else {
-        onSelectRow(null, []);
-      }
-    },
-    getCheckboxProps: (record: InvoiceManagement) => ({
-      disabled:
-        selectedRowKeys.length >= 1 && !selectedRowKeys.includes(record.id),
-    }),
-  };
+  // const rowSelection = {
+  //   selectedRowKeys,
+  //   onChange: (
+  //     newSelectedRowKeys: React.Key[],
+  //     selectedRows: InvoiceManagement[]
+  //   ) => {
+  //     const keys = newSelectedRowKeys.slice(-1);
+  //     setSelectedRowKeys(keys);
+  //     if (selectedRows.length > 0) {
+  //       onSelectRow(selectedRows[selectedRows.length - 1], keys);
+  //     } else {
+  //       onSelectRow(null, []);
+  //     }
+  //   },
+  //   getCheckboxProps: (record: InvoiceManagement) => ({
+  //     disabled:
+  //       selectedRowKeys.length >= 1 && !selectedRowKeys.includes(record.id),
+  //   }),
+  // };
+
   return (
-    <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
+    <div className="bg-white rounded-lg shadow-md">
       <Table
         columns={invoiceColumns}
         dataSource={data}
         rowKey="id"
-        size="middle"
-        scroll={{ x: 1200 }}
         pagination={pagination}
-        rowSelection={rowSelection}
+        // rowSelection={rowSelection}
         onRow={(rec) => ({
           onClick: () => {
             if (selectedRowKeys.includes(rec.id)) {
@@ -68,9 +67,8 @@ export default function InvoiceTable({
             background: selectedRow?.id === rec.id ? "#f0f5ff" : undefined,
           },
         })}
-        bordered
         loading={loading}
-        rootClassName="sm:!h-[650px] overflow-auto"
+        rootClassName="overflow-auto"
       />
     </div>
   );

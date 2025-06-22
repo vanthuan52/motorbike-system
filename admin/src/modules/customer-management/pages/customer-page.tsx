@@ -16,7 +16,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 const USER_DEFAULT_QUERY: UserPaginationQuery = {
   search: "",
   page: 1,
-  perPage: 10,
+  perPage: 5,
   status: ENUM_USER_STATUS.ACTIVE || undefined,
 };
 
@@ -70,10 +70,13 @@ export default function Customers() {
   );
 
   return (
-    <div className="sm:px-4">
-      <PageHeading title="Danh sách khách hàng" onClick={handleCreate} />
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="mb-4 flex gap-4 max-h-[40px] w-full">
+    <div className="sm:px-4 pt-8 sm:pt-0">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading title="Danh sách khách hàng" onClick={handleCreate} />
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4 flex gap-4 max-h-[55px] w-full">
           {/* <SearchInput onChange={setSearchText} /> */}
           <SelectField
             value={payload.gender ? String(payload.gender) : ""}
@@ -93,13 +96,13 @@ export default function Customers() {
           <SkeletonTable
             columns={[
               { title: "STT", width: 100, height: 50 },
-              { title: "Họ tên", width: 100, height: 50 },
-              { title: "Email", width: 100, height: 50 },
-              { title: "Số điện thoại", width: 100, height: 50 },
-              { title: "Giới tính", width: 100, height: 50 },
-              { title: "Trạng thái", width: 100, height: 50 },
-              { title: "Địa chi", width: 100, height: 50 },
-              { title: "Hành động", width: 100, height: 50 },
+              { title: "HỌ TÊN", width: 100, height: 50 },
+              { title: "EMAIL", width: 100, height: 50 },
+              { title: "SỐ ĐIỆN THOẠI", width: 100, height: 50 },
+              { title: "GIỚI TÍNH", width: 100, height: 50 },
+              { title: "TRẠNG THÁI", width: 100, height: 50 },
+              { title: "ĐỊA CHỈ", width: 100, height: 50 },
+              { title: "HÀNH ĐỘNG", width: 100, height: 50 },
             ]}
             rows={5}
           />

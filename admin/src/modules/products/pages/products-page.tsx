@@ -163,76 +163,88 @@ export default function ProductsPage() {
   };
   return (
     <div className="sm:px-4 my-10 sm:pt-0">
-      <PageHeading
-        title="Sản phẩm"
-        onClickAdd={openCreate}
-        addButtonLabel="Thêm sản phẩm"
-      />
-      <Row gutter={16} style={{ marginBottom: 16 }}>
-        <Col>
-          <Input
-            placeholder="Tìm theo tên sản phẩm"
-            value={payload.name}
-            onChange={(e) => setPayload({ ...payload, name: e.target.value })}
-            allowClear
-            style={{ width: 200 }}
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Sản phẩm"
+          onClick={openCreate}
+          addButtonLabel="Thêm sản phẩm"
+        />
+      </div>
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">
+          <Row gutter={16} style={{ marginBottom: 16 }}>
+            <Col>
+              <Input
+                placeholder="Tìm theo tên sản phẩm"
+                value={payload.name}
+                onChange={(e) =>
+                  setPayload({ ...payload, name: e.target.value })
+                }
+                allowClear
+                style={{ width: 200, height: 40 }}
+              />
+            </Col>
+            <Col>
+              <Select
+                placeholder="Chọn danh mục"
+                value={payload.category_id}
+                onChange={(e) => setPayload({ ...payload, category_id: e })}
+                allowClear
+                style={{ width: 180, height: 40 }}
+              >
+                {Object.entries(categoryMap).map(([id, name]) => (
+                  <Select.Option key={id} value={id}>
+                    {name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Col>
+            <Col>
+              <Button
+                onClick={() => handleResetFilter()}
+                style={{ height: 40 }}
+              >
+                Đặt lại
+              </Button>
+            </Col>
+          </Row>
+        </div>
+
+        {isLoading ? (
+          <SkeletonTable
+            columns={[
+              { title: "ID", width: 100, height: 50 },
+              { title: "SKU", width: 100, height: 50 },
+              { title: "TÊN SẢN PHẨM", width: 100, height: 50 },
+              { title: "MÃ HÀNG", width: 100, height: 50 },
+              { title: "GIÁ", width: 100, height: 50 },
+              { title: "TỒN", width: 100, height: 50 },
+              { title: "DANH MỤC", width: 100, height: 50 },
+              { title: "TRẠNG THÁI", width: 100, height: 50 },
+              { title: "HÀNH ĐỘNG", width: 100, height: 50 },
+            ]}
+            rows={5}
           />
-        </Col>
-        <Col>
-          <Select
-            placeholder="Chọn danh mục"
-            value={payload.category_id}
-            onChange={(e) => setPayload({ ...payload, category_id: e })}
-            allowClear
-            style={{ width: 180 }}
-          >
-            {Object.entries(categoryMap).map(([id, name]) => (
-              <Select.Option key={id} value={id}>
-                {name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Col>
-        <Col>
-          <Button type="primary" onClick={() => handleResetFilter()}>
-            Đặt lại
-          </Button>
-        </Col>
-      </Row>
-      {isLoading ? (
-        <SkeletonTable
-          columns={[
-            { title: "ID", width: 100, height: 50 },
-            { title: "SKU", width: 100, height: 50 },
-            { title: "Tên sản phẩm", width: 100, height: 50 },
-            { title: "Mã hàng", width: 100, height: 50 },
-            { title: "Giá", width: 100, height: 50 },
-            { title: "Tồn", width: 100, height: 50 },
-            { title: "Danh mục", width: 100, height: 50 },
-            { title: "Trang thái", width: 100, height: 50 },
-            { title: "Hành động", width: 100, height: 50 },
-          ]}
-          rows={5}
-        />
-      ) : (
-        <Table
-          dataSource={products}
-          columns={columns}
-          rowKey="id"
-          pagination={{
-            pageSize: payload.limit,
-            current: payload.page,
-            total: total,
-            onChange: (page, pageSize) => {
-              setPayload((prev) => ({
-                ...prev,
-                page,
-                limit: pageSize,
-              }));
-            },
-          }}
-        />
-      )}
+        ) : (
+          <Table
+            dataSource={products}
+            columns={columns}
+            rowKey="id"
+            pagination={{
+              pageSize: payload.limit,
+              current: payload.page,
+              total: total,
+              onChange: (page, pageSize) => {
+                setPayload((prev) => ({
+                  ...prev,
+                  page,
+                  limit: pageSize,
+                }));
+              },
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

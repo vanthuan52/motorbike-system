@@ -1,3 +1,4 @@
+// VehicleTypes.tsx
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ColumnsType } from "antd/es/table";
@@ -19,6 +20,7 @@ export default function VehicleTypes() {
   const [assignVisible, setAssignVisible] = useState(false);
   const [selected, setSelected] = useState<VehicleType | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDataSource(mockDataTableVehicleType);
@@ -26,6 +28,7 @@ export default function VehicleTypes() {
     }, 800);
     return () => clearTimeout(timer);
   }, []);
+
   const openCreate = () => {
     setIsEdit(false);
     setSelected(undefined);
@@ -37,6 +40,7 @@ export default function VehicleTypes() {
     setSelected(record);
     setAssignVisible(true);
   };
+
   const handleAssignSubmit = (values: VehicleType) => {
     if (isEdit && selected) {
       setDataSource((prev) =>
@@ -56,11 +60,13 @@ export default function VehicleTypes() {
     }
     setAssignVisible(false);
   };
+
   const handleDelete = (id: string) => {
     setDataSource((prev) => prev.filter((item) => item.id !== id));
     toast.success("Xóa loại xe thành công");
   };
-  const columns: ColumnsType<(typeof mockDataTableVehicleType)[0]> = [
+
+  const columns: ColumnsType<VehicleType> = [
     {
       title: "STT",
       dataIndex: "id",
@@ -68,7 +74,7 @@ export default function VehicleTypes() {
       render: (_, __, index) => index + 1,
     },
     {
-      title: "Mã hãng xe",
+      title: "MÃ HÃNG XE",
       dataIndex: "company_id",
       key: "company_id",
       render: (company_id: string) => {
@@ -79,17 +85,17 @@ export default function VehicleTypes() {
       },
     },
     {
-      title: "Tên loại xe",
+      title: "TÊN LOẠI XE",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Mô tả",
+      title: "MÔ TẢ",
       dataIndex: "description",
       key: "description",
     },
     {
-      title: "Trạng thái",
+      title: "TRẠNG THÁI",
       dataIndex: "status",
       key: "status",
       render: (status: boolean, record: VehicleType) => (
@@ -106,36 +112,42 @@ export default function VehicleTypes() {
       ),
     },
     {
-      title: "Hành động",
+      title: "HÀNH ĐỘNG",
       key: "action",
       render: (_, record) => (
-        <>
-          <Tooltip title="Sửa" className="mr-1">
-            <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
+        <div className="flex gap-1 justify-center">
+          <Tooltip title="Sửa">
+            <Button
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => openEdit(record)}
+            />
           </Tooltip>
-
           <Popconfirm
             title="Xác nhận xóa?"
             onConfirm={() => handleDelete(record.id)}
           >
             <Tooltip title="Xóa">
-              <Button icon={<DeleteOutlined />} danger />
+              <Button icon={<DeleteOutlined />} danger size="small" />
             </Tooltip>
           </Popconfirm>
-        </>
+        </div>
       ),
     },
   ];
 
   return (
     <div className="sm:px-4 pt-8 sm:pt-0">
-      <PageHeading
-        title="Loại xe"
-        onClickAdd={openCreate}
-        addButtonLabel="Thêm loại xe"
-      />
-      <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="mb-4">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Loại xe"
+          onClick={openCreate}
+          addButtonLabel="Thêm loại xe"
+        />
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">
           <SearchInput
             onChange={(text) =>
               setDataSource(
@@ -151,11 +163,11 @@ export default function VehicleTypes() {
           <SkeletonTable
             columns={[
               { title: "STT", width: 100, height: 50 },
-              { title: "Mã hãng xe", width: 100, height: 50 },
-              { title: "Tên loại xe", width: 100, height: 50 },
-              { title: "Mô tả", width: 100, height: 50 },
-              { title: "Trạng thái", width: 100, height: 50 },
-              { title: "Hành động", width: 100, height: 50 },
+              { title: "MÃ HÃNG XE", width: 100, height: 50 },
+              { title: "TÊN LOẠI XE", width: 100, height: 50 },
+              { title: "MÔ TẢ", width: 100, height: 50 },
+              { title: "TRẠNG THÁI", width: 100, height: 50 },
+              { title: "HÀNH ĐỘNG", width: 100, height: 50 },
             ]}
             rows={5}
           />

@@ -108,7 +108,7 @@ export default function hiring() {
             setPayload((prev) => ({ ...prev, search: e.target.value, page: 1 }))
           }
           allowClear
-          style={{ width: 200 }}
+          style={{ width: 200, height: 40 }}
         />
       </Col>
       <Col>
@@ -123,12 +123,14 @@ export default function hiring() {
             }))
           }
           allowClear
-          style={{ width: 120 }}
+          style={{ width: 120, height: 40 }}
           options={STATUS_HIRING_OPTIONS}
         />
       </Col>
       <Col>
-        <Button onClick={handleResetFilter}>Đặt lại</Button>
+        <Button onClick={handleResetFilter} style={{ height: 40 }}>
+          Đặt lại
+        </Button>
       </Col>
     </Row>
   );
@@ -136,10 +138,10 @@ export default function hiring() {
     <SkeletonTable
       columns={[
         { title: "ID", width: 150, height: 55 },
-        { title: "Tiêu đề", width: 215, height: 55 },
-        { title: "Mô tả", width: 400, height: 55 },
-        { title: "Trạng thái", width: 195, height: 55 },
-        { title: "Hành động", width: 100, height: 55 },
+        { title: "TIÊU ĐỀ", width: 215, height: 55 },
+        { title: "MÔ TẢ", width: 400, height: 55 },
+        { title: "TRẠNG THÁI", width: 195, height: 55 },
+        { title: "HÀNH ĐỘNG", width: 100, height: 55 },
       ]}
       rows={5}
     />
@@ -159,14 +161,20 @@ export default function hiring() {
     />
   );
   return (
-    <div className="sm:px-4">
-      <PageHeading
-        title="Tuyển dụng"
-        onClick={openCreate}
-        addButtonLabel="Thêm danh mục"
-      />
-      {filterControls}
-      {tableContent}
+    <div className="sm:px-4 pt-8 sm:pt-0">
+      <div style={{ marginBottom: 16 }}>
+        <PageHeading
+          title="Tuyển dụng"
+          onClick={openCreate}
+          addButtonLabel="Thêm danh mục"
+        />
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="mb-4 px-5 pt-4">{filterControls}</div>
+
+        {tableContent}
+      </div>
     </div>
   );
 }
