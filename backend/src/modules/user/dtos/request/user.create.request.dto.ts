@@ -1,6 +1,6 @@
 import { IsPhoneNumber } from '@/common/request/validations/request.is-phone-number.validation';
 import { faker } from '@faker-js/faker';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsOptional,
@@ -51,3 +51,8 @@ export class UserCreateRequestDto {
   @IsPhoneNumber()
   phone?: string;
 }
+
+export class UserTypeUserCreateRequestDto extends OmitType(
+  UserCreateRequestDto,
+  ['role'] as const,
+) {}

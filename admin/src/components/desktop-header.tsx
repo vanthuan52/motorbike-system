@@ -26,7 +26,7 @@ const DesktopHeader = () => {
   }, []);
 
   return (
-    <div className="w-full border-b border-b-[#ddd]">
+    <div className="w-full border-b border-b-[#ddd] bg-white">
       <div className="py-2 px-4">
         <div className="flex items-center gap-4 justify-between">
           <div className=""></div>

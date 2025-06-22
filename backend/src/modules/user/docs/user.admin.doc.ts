@@ -15,7 +15,10 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
-import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
+import {
+  UserCreateRequestDto,
+  UserTypeUserCreateRequestDto,
+} from '../dtos/request/user.create.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
 import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
@@ -44,7 +47,7 @@ export function UserAdminListUserTypeUserDoc(): MethodDecorator {
       summary: 'get all users with type USER',
     }),
     DocRequest({
-      queries: [...UserDocQueryStatus,],
+      queries: [...UserDocQueryStatus],
     }),
     DocAuth({
       jwtAccessToken: true,
@@ -82,6 +85,23 @@ export function UserAdminCreateDoc(): MethodDecorator {
     DocRequest({
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
       dto: UserCreateRequestDto,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<DatabaseIdResponseDto>('user.create', {
+      httpStatus: HttpStatus.CREATED,
+      dto: DatabaseIdResponseDto,
+    }),
+  );
+}
+
+export function UserTypeUserAdminCreateDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'create a user with type user',
+    }),
+    DocRequest({
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserTypeUserCreateRequestDto,
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse<DatabaseIdResponseDto>('user.create', {

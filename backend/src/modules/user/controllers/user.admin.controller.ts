@@ -27,6 +27,7 @@ import {
   UserAdminListUserTypeUserDoc,
   UserAdminUpdateDoc,
   UserAdminUpdateStatusDoc,
+  UserTypeUserAdminCreateDoc,
 } from '../docs/user.admin.doc';
 import {
   Response,
@@ -68,7 +69,10 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { UserParsePipe } from '../pipes/user.parse.pipe';
 import { UserDoc } from '../entities/user.entity';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
-import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
+import {
+  UserCreateRequestDto,
+  UserTypeUserCreateRequestDto,
+} from '../dtos/request/user.create.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { ENUM_ROLE_STATUS_CODE_ERROR } from '@/modules/role/enums/role.status-code.enum';
 import { ENUM_USER_STATUS_CODE_ERROR } from '../enums/user.status-code.enum';
@@ -175,14 +179,15 @@ export class UserAdminController {
       ...status,
     };
 
-    const role = await this.roleService.findOneByType(ENUM_POLICY_ROLE_TYPE.USER);
+    const role = await this.roleService.findOneByType(
+      ENUM_POLICY_ROLE_TYPE.USER,
+    );
 
     if (role) {
-       find['role._id'] = role._id;
+      find['role._id'] = role._id;
     }
 
-    const users: IUserEntity[] = await this.userService.findAllWithRole(
-      find, {
+    const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
       paging: {
         limit: _limit,
         offset: _offset,
@@ -285,6 +290,71 @@ export class UserAdminController {
       };
     } catch (err: unknown) {
       //await this.databaseService.abortTransaction(session);
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  @UserTypeUserAdminCreateDoc()
+  @Response('user.create')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Post('/create/user')
+  async createUserTypeUser(
+    @AuthJwtPayload('user') createdBy: string,
+    @Body() { email, name }: UserTypeUserCreateRequestDto,
+  ): Promise<IResponse<DatabaseIdResponseDto>> {
+    const promises: Promise<any>[] = [
+      this.roleService.findOneByType(ENUM_POLICY_ROLE_TYPE.USER),
+      this.userService.existByEmail(email),
+    ];
+
+    const [checkRole, emailExist] = await Promise.all(promises);
+
+    if (!checkRole) {
+      throw new NotFoundException({
+        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'role.error.notFound',
+      });
+    } else if (emailExist) {
+      throw new ConflictException({
+        statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_EXIST,
+        message: 'user.error.emailExist',
+      });
+    }
+
+    const passwordString = this.authService.createDefaultPassword();
+    const password: IAuthPassword = this.authService.createPassword(
+      passwordString,
+      {
+        temporary: true,
+      },
+    );
+
+    try {
+      const created = await this.userService.create(
+        {
+          email,
+          name,
+          role: checkRole._id,
+        },
+        password,
+        ENUM_USER_SIGN_UP_FROM.ADMIN,
+        { actionBy: createdBy } as IDatabaseCreateOptions,
+      );
+
+      return {
+        data: { _id: created._id },
+      };
+    } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',

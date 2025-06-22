@@ -7,6 +7,7 @@ import {
   UserListResponse,
   UserDetailResponse,
   User,
+  UserCreationResponse,
 } from "../user/types";
 
 const customerServices = {
@@ -50,14 +51,14 @@ const customerServices = {
       );
     }
   },
-  createCustomer: async (user: User): Promise<UserDetailResponse> => {
+  createCustomer: async (user: User): Promise<UserCreationResponse> => {
     try {
-      const response = await adminApi.post<UserDetailResponse>(
-        API_ENDPOINTS.ADMIN.USER_CREATE,
+      const response = await adminApi.post<UserCreationResponse>(
+        API_ENDPOINTS.ADMIN.USER_TYPE_USER_CREATE,
         user
       );
 
-      if (response.status !== 200 || !response.data.data) {
+      if (response.status !== 201 || !response.data.data) {
         throw new Error(response.data.message || "Get user list failed.");
       }
       return response.data;

@@ -69,6 +69,12 @@ function* createCustomerHandler(action: PayloadAction<{ customer: User }>) {
     yield put(customerActions.createCustomerSuccess());
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
+    yield put(
+      notificationActions.notify({
+        type: "error",
+        message,
+      })
+    );
     yield put(customerActions.createCustomerFailure(message));
   }
 }

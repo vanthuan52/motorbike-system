@@ -37,7 +37,7 @@ const LoginForm = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="my-10  flex gap-4 flex-col"
+          className="my-10 flex gap-4 flex-col"
         >
           <FormItem>
             <CustomInput
@@ -61,11 +61,12 @@ const LoginForm = () => {
             {error && <p className="text-[16px] text-red-500">{error}</p>}
           </span>
           <Button
-            label="Đăng Nhập"
             type="submit"
-            className="w-full h-[45px] cursor-pointer"
+            className="w-full h-[45px] cursor-pointer bg-black !text-white hover:bg-gray-700"
             loading={loading}
-          />
+          >
+            Đăng nhập
+          </Button>
         </form>
       </Form>
     </div>
