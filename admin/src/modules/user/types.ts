@@ -17,6 +17,7 @@ export enum ENUM_USER_STATUS {
 export enum ENUM_USER_GENDER {
   MALE = "male",
   FEMALE = "female",
+  OTHER = "other",
 }
 
 export interface UserPaginationQuery extends PaginationQuery {

@@ -29,7 +29,7 @@ export function UserAdminListDoc(): MethodDecorator {
       summary: 'get all users',
     }),
     DocRequest({
-      queries: [...UserDocQueryStatus, ...UserDocQueryRoleType],
+      queries: [...UserDocQueryStatus],
     }),
     DocAuth({
       jwtAccessToken: true,

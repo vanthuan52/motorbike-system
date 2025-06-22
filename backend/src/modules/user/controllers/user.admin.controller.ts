@@ -13,10 +13,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ClientSession } from 'mongoose';
 import { UserService } from '../services/user.service';
-import { MessageService } from '@/common/message/services/message.service';
-import { DatabaseService } from '@/common/database/services/database.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { AuthService } from '@/modules/auth/services/auth.service';
 import { RoleService } from '@/modules/role/services/role.service';
@@ -43,7 +40,6 @@ import {
   ENUM_POLICY_SUBJECT,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '../decorators/user.decorator';
-import { _ } from '@faker-js/faker/dist/airline-BUL6NtOJ';
 import {
   PaginationQuery,
   PaginationQueryFilterIn,
@@ -93,6 +89,7 @@ import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.r
   path: '/user',
 })
 export class UserAdminController {
+  private readonly logger = new Logger(UserAdminController.name);
   constructor(
     private readonly paginationService: PaginationService,
     private readonly roleService: RoleService,
@@ -126,11 +123,8 @@ export class UserAdminController {
     const find: Record<string, any> = {
       ..._search,
       ...status,
+      ...role,
     };
-
-    if (role && role.role && role.role.$in) {
-      find['role._id'] = { $in: role.role.$in };
-    }
 
     const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
       paging: {
@@ -183,6 +177,12 @@ export class UserAdminController {
       ENUM_POLICY_ROLE_TYPE.USER,
     );
 
+    if (!role) {
+      return {
+        _pagination: { total: 0, totalPage: 1 },
+        data: [],
+      };
+    }
     if (role) {
       find['role._id'] = role._id;
     }
@@ -195,12 +195,11 @@ export class UserAdminController {
       order: _order,
     });
 
-    const total: number = await this.userService.getTotal(find);
+    const total: number = await this.userService.getTotalWithRole(find);
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
     const mapped = this.userService.mapList(users);
-
     return {
       _pagination: { total, totalPage },
       data: mapped,

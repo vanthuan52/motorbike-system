@@ -1,6 +1,7 @@
 import {
   Inject,
   Injectable,
+  Logger,
   mixin,
   PipeTransform,
   Scope,
