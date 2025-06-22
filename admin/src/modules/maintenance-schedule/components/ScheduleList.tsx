@@ -134,27 +134,13 @@ export default function ScheduleList() {
           />
         </div>
 
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "ID", width: 50 },
-              { title: "KHÁCH HÀNG", width: 100 },
-              { title: "SĐT", width: 100 },
-              { title: "NHÂN VIÊN", width: 100 },
-              { title: "NGÀY", width: 100 },
-              { title: "KHUNG GIỜ", width: 100 },
-              { title: "TRẠNG THÁI", width: 100 },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <TableReuse
-            columns={columns}
-            dataSource={dataSource}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
-        )}
+        <TableReuse
+          columns={columns}
+          dataSource={dataSource}
+          loading={loading}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
       </div>
 
       <ScheduleAssignModal

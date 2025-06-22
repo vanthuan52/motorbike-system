@@ -9,7 +9,6 @@ import {
 import { ColumnsType } from "antd/es/table";
 import Table from "@/components/ui/table/table";
 import { PageHeading } from "@/components/page-heading";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 import { RootState } from "@/store";
 import { vehicleCompanyActions } from "../store/vehicleCompany-slice";
 import { VehicleCompanyTypes } from "../types";
@@ -154,32 +153,20 @@ export default function VehicleCompanyPage() {
           </Row>
         </div>
 
-        {isLoading ? (
-          <SkeletonTable
-            columns={[
-              { title: "ID", width: 100 },
-              { title: "Tên hãng xe", width: 150 },
-              { title: "Mô tả", width: 150 },
-              { title: "Trạng thái", width: 100 },
-              { title: "Hành động", width: 120 },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <Table
-            dataSource={companies}
-            columns={columns}
-            rowKey="id"
-            pagination={{
-              pageSize: payload.limit,
-              current: payload.page,
-              total,
-              onChange: (page, pageSize) => {
-                setPayload({ ...payload, page, limit: pageSize });
-              },
-            }}
-          />
-        )}
+        <Table
+          dataSource={companies}
+          columns={columns}
+          loading={isLoading}
+          rowKey="id"
+          pagination={{
+            pageSize: payload.limit,
+            current: payload.page,
+            total,
+            onChange: (page, pageSize) => {
+              setPayload({ ...payload, page, limit: pageSize });
+            },
+          }}
+        />
       </div>
 
       <VehicleCompanyModal

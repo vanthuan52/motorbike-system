@@ -6,7 +6,6 @@ import InvoiceTable from "../components/invoices-page/InvoiceTable";
 import InvoiceDetailPanel from "../components/invoices-page/InvoiceDetailPanel";
 import InvoiceHeader from "../components/invoices-page/InvoiceHeader";
 import InvoiceCreateModal from "../components/invoices-page/InvoiceCreateModal";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 import { CgExport } from "react-icons/cg";
 import { FaPlus } from "react-icons/fa";
 
@@ -67,23 +66,23 @@ export default function InvoicesPage() {
     },
   };
 
-  const pagedData = useMemo(() => {
-    return filteredData.slice(
-      (payload.page - 1) * payload.perPage,
-      payload.page * payload.perPage
-    );
-  }, [filteredData, payload]);
+  // const pagedData = useMemo(() => {
+  //   return filteredData.slice(
+  //     (payload.page - 1) * payload.perPage,
+  //     payload.page * payload.perPage
+  //   );
+  // }, [filteredData, payload]);
 
-  const handleResetFilter = () => {
-    setPayload({
-      search: "",
-      payment: "",
-      payment_method: "",
-      shipping_method: "",
-      page: 1,
-      perPage: 5,
-    });
-  };
+  // const handleResetFilter = () => {
+  //   setPayload({
+  //     search: "",
+  //     payment: "",
+  //     payment_method: "",
+  //     shipping_method: "",
+  //     page: 1,
+  //     perPage: 5,
+  //   });
+  // };
 
   useEffect(() => {
     setLoading(true);
@@ -182,32 +181,15 @@ export default function InvoicesPage() {
             handleExportExcel={handleExportExcel}
           />
         </div>
-
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "", width: 50, height: 50 },
-              { title: "MÃ HÓA ĐƠN", width: 100, height: 20 },
-              { title: "SẢN PHẨM" },
-              { title: "LOẠI PHỤ TÙNG" },
-              { title: "THANH TOÁN" },
-              { title: "ĐỊA CHỈ" },
-              { title: "NGÀY GIAO HÀNG" },
-              { title: "TỔNG TIỀN" },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <InvoiceTable
-            data={filteredData}
-            onSelectRow={(row, keys) => handleSelectRow(row, keys)}
-            selectedRow={selectedRow || undefined}
-            selectedRowKeys={selectedRowKeys}
-            setSelectedRowKeys={setSelectedRowKeys}
-            loading={loadingTable}
-            pagination={pagination}
-          />
-        )}
+        <InvoiceTable
+          data={filteredData}
+          onSelectRow={(row, keys) => handleSelectRow(row, keys)}
+          selectedRow={selectedRow || undefined}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
+          loading={loadingTable || loading}
+          pagination={pagination}
+        />
       </div>
 
       <Drawer

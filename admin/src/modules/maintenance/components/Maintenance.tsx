@@ -14,7 +14,6 @@ import { PageHeading } from "@/components/page-heading";
 import { mockDataTableMaintenance } from "../data/mockMaintenance";
 
 import MaintenanceModal from "./MaintenanceModal";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function Maintenance() {
   const [dataSource, setDataSource] = useState<MaintenanceManagementTypes[]>(
@@ -168,28 +167,13 @@ export default function Maintenance() {
           />
         </div>
 
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "ID", width: 50 },
-              { title: "KHÁCH HÀNG", width: 100 },
-              { title: "SỐ ĐIỆN THOẠI", width: 100 },
-              { title: "NHÂN VIÊN", width: 100 },
-              { title: "NGÀY BẢO DƯỠNG", width: 100 },
-              { title: "TỔNG CHI PHÍ", width: 100 },
-              { title: "TRẠNG THÁI", width: 100 },
-              { title: "HÀNH ĐỘNG", width: 100 },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <TableReuse
-            dataSource={dataSource}
-            columns={columns}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
-        )}
+        <TableReuse
+          dataSource={dataSource}
+          columns={columns}
+          loading={loading}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
 
         <MaintenanceModal
           visible={assignVisible}
