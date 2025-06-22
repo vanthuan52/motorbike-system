@@ -99,21 +99,11 @@ export default function hiring() {
     [openEdit, handleDelete, handleChangeStatus, updateStatus.loading]
   );
 
-  const tableContent = isLoading ? (
-    <SkeletonTable
-      columns={[
-        { title: "ID", width: 150, height: 55 },
-        { title: "TIÊU ĐỀ", width: 215, height: 55 },
-        { title: "MÔ TẢ", width: 400, height: 55 },
-        { title: "TRẠNG THÁI", width: 195, height: 55 },
-        { title: "HÀNH ĐỘNG", width: 100, height: 55 },
-      ]}
-      rows={5}
-    />
-  ) : (
+  const tableContent = (
     <Table
       dataSource={hiring}
       columns={columns}
+      loading={isLoading}
       rowKey="_id"
       pagination={{
         current: payload.page,

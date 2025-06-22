@@ -5,7 +5,6 @@ import { Role } from "../types";
 import { PageHeading } from "@/components/page-heading";
 import RolesTable from "../components/RolesTable";
 import RoleModal from "../components/modal/RoleModal";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>();
@@ -65,23 +64,12 @@ export default function RolesPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow-md">
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "TÊN VAI TRÒ", width: 200, height: 20 },
-              { title: "MÔ TẢ", width: 200, height: 20 },
-              { title: "QUYỀN", width: 300, height: 20 },
-              { title: "HÀNH ĐỘNG", width: 100, height: 20 },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <RolesTable
-            roles={roles}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        )}
+        <RolesTable
+          roles={roles}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          loading={loading}
+        />
       </div>
 
       <RoleModal

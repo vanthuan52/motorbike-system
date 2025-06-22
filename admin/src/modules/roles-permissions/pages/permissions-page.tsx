@@ -5,7 +5,6 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { allPermissions as mockPermissions } from "../mocks/role-permissions";
 import { PageHeading } from "@/components/page-heading";
 import { toast } from "react-toastify";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export interface PermissionItem {
   value: string;
@@ -119,23 +118,13 @@ export default function PermissionsPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow-md">
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "MÃ QUYỀN", width: 200, height: 20 },
-              { title: "TÊN QUYỀN", width: 200, height: 20 },
-              { title: "HÀNH ĐỘNG", width: 100, height: 20 },
-            ]}
-            rows={10}
-          />
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={permissions}
-            rowKey="value"
-            pagination={{ pageSize: 5 }}
-          />
-        )}
+        <Table
+          columns={columns}
+          dataSource={permissions}
+          loading={loading}
+          rowKey="value"
+          pagination={{ pageSize: 5 }}
+        />
       </div>
       <Modal
         open={modalOpen}

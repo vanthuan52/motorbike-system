@@ -7,7 +7,6 @@ import Table from "@/components/ui/table/table";
 import { EmployeeType } from "../types";
 import SelectField from "@/components/ui/select-field";
 import { SearchInput } from "@/components/ui/search-input";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 import { PageHeading } from "@/components/page-heading";
 import { Link } from "react-router-dom";
 
@@ -150,28 +149,13 @@ export default function EmployeesPage() {
             </div>
           </div>
 
-          {loading ? (
-            <SkeletonTable
-              columns={[
-                { title: "STT", width: 100, height: 50 },
-                { title: "HỌ TÊN", width: 150, height: 50 },
-                { title: "SỐ ĐIỆN THOẠI", width: 150, height: 50 },
-                { title: "EMAIL", width: 150, height: 50 },
-                { title: "VAI TRÒ", width: 100, height: 50 },
-                { title: "TRẠNG THÁI", width: 130, height: 50 },
-                { title: "ĐỊA CHỈ", width: 200, height: 50 },
-                { title: "HÀNH ĐỘNG", width: 100, height: 50 },
-              ]}
-              rows={5}
-            />
-          ) : (
-            <Table
-              dataSource={dataSource}
-              columns={columns}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-            />
-          )}
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            loading={loading}
+            rowKey="id"
+            pagination={{ pageSize: 5 }}
+          />
         </div>
       </div>
     </div>

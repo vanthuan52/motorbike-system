@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { PageHeading } from "@/components/page-heading";
 import Table from "@/components/ui/table/table";
 import { GreenSwitch } from "@/components/ui/switch";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 import { Category, PartTypeStatus } from "../types";
 import { RootState } from "@/store";
 import { categoriesActions } from "../store/categories-slice";
@@ -231,23 +230,12 @@ export default function CategoryPage() {
     </div>
   );
 
-  const tableContent = isLoading ? (
-    <SkeletonTable
-      columns={[
-        { title: "ID", width: 150, height: 55 },
-        { title: "MÃ HÃNG XE", width: 215, height: 55 },
-        { title: "TÊN DANH MỤC", width: 260, height: 55 },
-        { title: "MÔ TẢ", width: 400, height: 55 },
-        { title: "TRẠNG THÁI", width: 195, height: 55 },
-        { title: "HÀNH ĐỘNG", width: 100, height: 55 },
-      ]}
-      rows={5}
-    />
-  ) : (
+  const tableContent = (
     <Table
       dataSource={categories}
       columns={columns}
       rowKey="_id"
+      loading={isLoading}
       pagination={{
         current: payload.page,
         pageSize: payload.perPage,

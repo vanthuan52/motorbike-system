@@ -9,7 +9,6 @@ import Table from "@/components/ui/table/table";
 import { mockProducts } from "../mocks/Products";
 import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
 import { PageHeading } from "@/components/page-heading";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { RootState } from "@/store";
 import { productsActions } from "../store/products-slice";
@@ -202,40 +201,24 @@ export default function ProductsPage() {
           </Button>
         </div>
 
-        {isLoading ? (
-          <SkeletonTable
-            columns={[
-              { title: "ID", width: 100, height: 50 },
-              { title: "SKU", width: 100, height: 50 },
-              { title: "TÊN SẢN PHẨM", width: 100, height: 50 },
-              { title: "MÃ HÀNG", width: 100, height: 50 },
-              { title: "GIÁ", width: 100, height: 50 },
-              { title: "TỒN", width: 100, height: 50 },
-              { title: "DANH MỤC", width: 100, height: 50 },
-              { title: "TRẠNG THÁI", width: 100, height: 50 },
-              { title: "HÀNH ĐỘNG", width: 100, height: 50 },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <Table
-            dataSource={products}
-            columns={columns}
-            rowKey="id"
-            pagination={{
-              pageSize: payload.limit,
-              current: payload.page,
-              total: total,
-              onChange: (page, pageSize) => {
-                setPayload((prev) => ({
-                  ...prev,
-                  page,
-                  limit: pageSize,
-                }));
-              },
-            }}
-          />
-        )}
+        <Table
+          dataSource={products}
+          columns={columns}
+          loading={isLoading}
+          rowKey="id"
+          pagination={{
+            pageSize: payload.limit,
+            current: payload.page,
+            total: total,
+            onChange: (page, pageSize) => {
+              setPayload((prev) => ({
+                ...prev,
+                page,
+                limit: pageSize,
+              }));
+            },
+          }}
+        />
       </div>
     </div>
   );

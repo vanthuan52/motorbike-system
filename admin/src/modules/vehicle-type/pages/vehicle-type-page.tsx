@@ -12,7 +12,6 @@ import { SearchInput } from "@/components/ui/search-input";
 import Table from "@/components/ui/table/table";
 import VehicleTypeModal from "../components/vehicle-type-modal";
 import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
-import SkeletonTable from "@/components/ui/SkeletonTable";
 
 export default function VehicleTypes() {
   const [dataSource, setDataSource] = useState<VehicleType[]>([]);
@@ -159,26 +158,13 @@ export default function VehicleTypes() {
           />
         </div>
 
-        {loading ? (
-          <SkeletonTable
-            columns={[
-              { title: "STT", width: 100, height: 50 },
-              { title: "MÃ HÃNG XE", width: 100, height: 50 },
-              { title: "TÊN LOẠI XE", width: 100, height: 50 },
-              { title: "MÔ TẢ", width: 100, height: 50 },
-              { title: "TRẠNG THÁI", width: 100, height: 50 },
-              { title: "HÀNH ĐỘNG", width: 100, height: 50 },
-            ]}
-            rows={5}
-          />
-        ) : (
-          <Table
-            dataSource={dataSource}
-            columns={columns}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
-        )}
+        <Table
+          dataSource={dataSource}
+          columns={columns}
+          loading={loading}
+          rowKey="id"
+          pagination={{ pageSize: 5 }}
+        />
 
         <VehicleTypeModal
           visible={assignVisible}
