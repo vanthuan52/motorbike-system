@@ -1,74 +1,115 @@
 import React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/utils/utils";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  label: string;
-  icon?: React.ReactNode;
-  variant?: "primary" | "secondary" | "danger" | "outline";
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all rounded-md text-sm font-medium",
+  {
+    variants: {
+      variant: {
+        primary:
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+        destructive:
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90",
+        outline:
+          "bg-transparent border hover:bg-accent hover:text-accent-foreground",
+        "outline-primary":
+          "border-primary border bg-transparent text-primary hover:bg-primary/10",
+        "outline-secondary":
+          "border-secondary border bg-transparent text-secondary hover:bg-secondary/10",
+        "outline-destructive":
+          "border-destructive border bg-transparent text-destructive hover:bg-destructive/10",
+        ghost:
+          "bg-transparent text-foreground hover:bg-accent hover:text-accent-foreground",
+        "ghost-primary":
+          "bg-transparent text-primary hover:bg-primary/10 hover:text-primary",
+        "ghost-destructive":
+          "bg-transparent text-destructive hover:bg-destructive/10 hover:text-destructive",
+        link: "text-primary",
+      },
+      size: {
+        sm: "h-8 px-2 text-xs [&_svg]:size-4",
+        md: "h-9 px-3 text-sm [&_svg]:size-5",
+        lg: "h-10 px-4 text-sm [&_svg]:size-6",
+        xl: "h-12 px-5 text-base [&_svg]:size-6",
+      },
+      onlyIcon: {
+        true: "px-0",
+        false: "",
+      },
+    },
+    compoundVariants: [
+      {
+        onlyIcon: true,
+        size: "sm",
+        className: "size-8",
+      },
+      {
+        onlyIcon: true,
+        size: "md",
+        className: "size-9",
+      },
+      {
+        onlyIcon: true,
+        size: "lg",
+        className: "size-11",
+      },
+      {
+        onlyIcon: true,
+        size: "xl",
+        className: "size-12",
+      },
+    ],
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+      onlyIcon: false,
+    },
+  }
+);
+
+interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+  onlyIcon?: boolean;
   loading?: boolean;
 }
 
-/**
- * A Button component that supports different variants and states.
- *
- * @param {string} label - The text to display on the button.
- * @param {React.ReactNode} [icon] - Optional icon to display alongside the label.
- * @param {string} [type="button"] - The type attribute for the button element.
- * @param {"primary" | "secondary" | "danger" | "outline"} [variant="primary"] - The visual style variant of the button.
- * @param {boolean} [loading=false] - Whether to show a loading spinner and disable the button.
- * @param {boolean} [disabled] - Whether the button is disabled.
- * @param {string} [className=""] - Additional class names for custom styling.
- * @param {React.ButtonHTMLAttributes<HTMLButtonElement>} [rest] - Additional attributes for the button element.
- *
- * @returns {JSX.Element} A styled button component with optional icon and loading state.
- */
-
-const Button: React.FC<ButtonProps> = ({
-  label,
-  icon,
-  type = "button",
-  variant = "primary",
+const Button = ({
+  className,
+  variant,
+  size,
+  asChild = false,
+  onlyIcon = false,
   loading = false,
   disabled,
-  className = "",
-  ...rest
-}) => {
-  let variantClasses = "";
-
-  switch (variant) {
-    case "primary":
-      variantClasses =
-        "bg-black text-white font-medium px-5 py-2 rounded-md cursor-pointer";
-      break;
-    case "secondary":
-      variantClasses = "bg-gray-200 text-gray-800 hover:bg-gray-300";
-      break;
-    case "danger":
-      variantClasses = "bg-red-600 text-white hover:bg-red-700";
-      break;
-    case "outline":
-      variantClasses =
-        "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50";
-      break;
-    default:
-      variantClasses =
-        "border border-white text-white px-6 py-3 rounded-full hover:bg-white hover:text-black transition";
-  }
+  children,
+  ...props
+}: ButtonProps) => {
+  const Comp = asChild ? Slot : "button";
 
   return (
-    <button
-      type={type}
+    <Comp
       disabled={disabled || loading}
-      className={`flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-semibold transition duration-200 ${
-        disabled || loading ? "opacity-50 cursor-not-allowed" : ""
-      } ${variantClasses} ${className}`}
-      {...rest}
+      data-state={loading ? "loading" : undefined}
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, onlyIcon }), className)}
+      {...props}
     >
-      {loading && (
-        <span className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin cursor-wait"></span>
+      {loading ? (
+        <>
+          <Loader2 className="animate-spin" />
+          {!onlyIcon && <span>Loading...</span>}
+        </>
+      ) : (
+        children
       )}
-      {!loading && icon}
-      {label}
-    </button>
+    </Comp>
   );
 };
 

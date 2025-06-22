@@ -28,5 +28,6 @@ export const API_ENDPOINTS = {
     USER_LIST_TYPE_USER: "user/list/user",
     USER_DETAIL: (id: string) => `user/get/${id}`,
     USER_CREATE: "user/create",
+    USER_TYPE_USER_CREATE: "user/create/user",
   },
 };

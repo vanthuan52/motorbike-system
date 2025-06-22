@@ -7,6 +7,8 @@ interface CustomerState {
   users: User[];
   user: User | null;
   loading: boolean;
+  isUpserted: boolean;
+  isDeleted: boolean;
   error: string | null;
   pagination: ApiResponsePagination | undefined;
 }
@@ -20,6 +22,8 @@ const initialState: CustomerState = {
   users: [],
   user: null,
   loading: false,
+  isUpserted: false,
+  isDeleted: false,
   error: null,
   pagination: PAGINATION_QUERY_INITIAL_STATE,
 };
@@ -67,14 +71,17 @@ export const customerSlice = createSlice({
     createCustomer(state, action: PayloadAction<{ customer: User }>) {
       state.loading = true;
       state.error = null;
+      state.isUpserted = false;
     },
     createCustomerSuccess(state) {
       state.loading = false;
       state.error = null;
+      state.isUpserted = true;
     },
     createCustomerFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+      state.isUpserted = false;
     },
 
     updateCustomer(
@@ -83,44 +90,55 @@ export const customerSlice = createSlice({
     ) {
       state.loading = true;
       state.error = null;
+      state.isUpserted = false;
     },
     updateCustomerSuccess(state) {
       state.loading = false;
       state.error = null;
+      state.isUpserted = true;
     },
     updateCustomerFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+      state.isUpserted = false;
     },
 
     deleteCustomer(state, action: PayloadAction<{ customerId: string }>) {
       state.loading = true;
       state.error = null;
+      state.isDeleted = false;
     },
     deleteCustomerSuccess(state) {
       state.loading = false;
       state.error = null;
+      state.isDeleted = true;
     },
     deleteCustomerFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+      state.isDeleted = false;
     },
 
     updateCustomerStatus(state, action: PayloadAction<{ customerId: string }>) {
       state.loading = true;
       state.error = null;
+      state.isUpserted = false;
     },
     updateCustomerStatusSuccess(state) {
       state.loading = false;
       state.error = null;
+      state.isUpserted = true;
     },
     updateCustomerStatusFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
+      state.isUpserted = false;
     },
 
     reset(state) {
       state.loading = false;
+      state.isUpserted = false;
+      state.isDeleted = false;
       state.users = [];
       state.user = null;
       state.error = null;
