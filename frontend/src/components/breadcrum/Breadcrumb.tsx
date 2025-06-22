@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BREADCRUMB_LABELS } from "@/config/breadcrumb.config";
 import { HomeOutlined } from "@ant-design/icons";
+import { useLocale } from "next-intl";
 
 function getLabel(segment: string) {
   const lower = segment.toLowerCase();
@@ -15,7 +16,13 @@ function getLabel(segment: string) {
 
 export default function Breadcrumb({ customLabel }: { customLabel?: string }) {
   const pathname = usePathname();
-  const segments = pathname.split("/").filter(Boolean);
+  const locale = useLocale();
+
+  // Tách và bỏ segment locale
+  const segments = pathname
+    .split("/")
+    .filter(Boolean)
+    .filter((seg, idx) => !(idx === 0 && seg === locale));
 
   if (segments.length === 0) return null;
 

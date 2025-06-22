@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useSelector } from "react-redux";
 import { Menu, ShoppingCart, X } from "lucide-react";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
@@ -15,28 +16,25 @@ import { RootState } from "@/store";
 import "./styles.css";
 
 const NAV_ITEMS = [
-  { href: ROUTER_PATH.SERVICES, label: "Dịch vụ" },
-  { href: ROUTER_PATH.ABOUT, label: "Giới thiệu" },
-  { href: ROUTER_PATH.BLOG, label: "Blog" },
-  { href: ROUTER_PATH.CONTACT, label: "Liên hệ" },
-  {
-    href: ROUTER_PATH.CATEGORY,
-    label: "Danh mục",
-  },
+  { href: ROUTER_PATH.SERVICES, key: "services" },
+  { href: ROUTER_PATH.ABOUT, key: "about" },
+  { href: ROUTER_PATH.BLOG, key: "blog" },
+  { href: ROUTER_PATH.CONTACT, key: "contact" },
+  { href: ROUTER_PATH.CATEGORY, key: "category" },
 ];
 
 export default function Header() {
+  const t = useTranslations("nav");
+  const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedLang, setSelectedLang] = useState<"VN" | "EN">("VN");
-  const pathname = usePathname();
 
-  const user = mockUser;
+  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+  useEffect(() => setIsOpen(false), [pathname]);
 
   useEffect(() => {
     if (!showSearch) return;
@@ -45,20 +43,13 @@ export default function Header() {
     };
     window.addEventListener("keydown", handleKeyDown);
     const originalOverflow = document.body.style.overflow;
-    const originalPosition = document.body.style.position;
-    const originalWidth = document.body.style.width;
     document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.width = "100%";
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = originalOverflow;
-      document.body.style.position = originalPosition;
-      document.body.style.width = originalWidth;
     };
   }, [showSearch]);
-  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
     <div>
       <SearchOverlay
@@ -67,46 +58,33 @@ export default function Header() {
         setValue={setSearchValue}
         onClose={() => setShowSearch(false)}
       />
+
       <header className="fixed w-full top-0 left-0 z-50 bg-white shadow-2xs">
-        <TopBar
-          onSearchClick={() => setShowSearch(true)}
-          selectedLang={selectedLang}
-          setSelectedLang={setSelectedLang}
-        />
-        {/* Nav Bar */}
+        <TopBar onSearchClick={() => setShowSearch(true)} />
+
         <div className="container flex items-center justify-between py-2">
           <div className="flex items-center gap-4">
-            {/* Menu button on the left */}
             <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
-
-            {/* Logo */}
-            <CustomLink href="/" className="text-xl font-bold">
+            <CustomLink href={ROUTER_PATH.HOME} className="text-xl font-bold">
               Logo name.
             </CustomLink>
           </div>
 
-          {/* Desktop navigation */}
           <nav className="hidden md:flex gap-6 font-medium">
-            {NAV_ITEMS.map(({ href, label }) => (
+            {NAV_ITEMS.map(({ href, key }) => (
               <NavLink
-                key={label}
+                key={key}
                 href={href}
-                label={label}
+                label={t(key)}
                 isActive={pathname === href}
               />
             ))}
           </nav>
 
-          {/* Right action */}
           <div className="flex gap-4">
-            {/* <CustomLink href={ROUTER_PATH.MAINTAIN_REGISTRATION}>
-              <button className="bg-black text-white font-medium px-5 py-2 rounded-md cursor-pointer">
-                Đặt lịch
-              </button>
-            </CustomLink> */}
-            <CustomLink href={ROUTER_PATH.CART}>
+            <CustomLink href="/gio-hang">
               <button className="p-2 flex items-center justify-center rounded-full border border-gray-300 relative cursor-pointer">
                 <ShoppingCart size={18} />
                 {cartCount > 0 && (
@@ -116,32 +94,28 @@ export default function Header() {
                 )}
               </button>
             </CustomLink>
-
-            <UserAvatar user={user} />
+            <UserAvatar user={mockUser} />
           </div>
         </div>
 
-        {/* Mobile Menu Panel */}
+        {/* Mobile */}
         <div
-          className={`fixed top-0 right-0 h-full w-full bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out ${
+          className={`fixed top-0 right-0 h-full w-full bg-white z-50 transition-transform duration-300 ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
           <div className="flex flex-col h-full p-4 space-y-4 mt-7">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold">Menu</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="cursor-pointer"
-              >
+              <button onClick={() => setIsOpen(false)}>
                 <X size={28} />
               </button>
             </div>
-            {NAV_ITEMS.map(({ href, label }) => (
+            {NAV_ITEMS.map(({ href, key }) => (
               <NavLink
                 key={href}
                 href={href}
-                label={label}
+                label={t(key)}
                 isActive={pathname === href}
                 onClick={() => setIsOpen(false)}
               />

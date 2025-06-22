@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
 import { createJiti } from "jiti";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const jiti = createJiti(fileURLToPath(import.meta.url));
 
@@ -70,4 +71,6 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["pino-pretty"],
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+
+export default withNextIntl(nextConfig);

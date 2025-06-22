@@ -1,0 +1,1078 @@
+{
+  "nav": {
+    "services": "Dịch vụ",
+    "about": "Giới thiệu",
+    "blog": "Blog",
+    "contact": "Liên hệ",
+    "category": "Danh mục"
+  },
+  "userMenu": {
+    "profile": "Hồ sơ cá nhân",
+    "appointments": "Lịch hẹn bảo dưỡng",
+    "myVehicles": "Xe của tôi",
+    "history": "Lịch sử bảo dưỡng",
+    "settings": "Cài đặt tài khoản",
+    "support": "Hỗ trợ",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "logoutSuccess": "Đăng xuất thành công!"
+  },
+  "Header": {
+    "searchPlaceholder": "Tìm kiếm bài viết, dịch vụ...",
+    "closeSearch": "Đóng tìm kiếm"
+  },
+  "footer": {
+    "logo": "Logo name.",
+    "description": "Chúng tôi cung cấp dịch vụ bảo dưỡng xe chất lượng.",
+    "contactUs": "Liên hệ ngay",
+    "company": {
+      "title": "Công ty",
+      "home": "Trang chủ",
+      "about": "Về chúng tôi",
+      "services": "Dịch vụ"
+    },
+    "policy": {
+      "title": "Chính sách",
+      "faq": "Câu hỏi thường gặp",
+      "privacy": "Chính sách bảo mật"
+    },
+    "blog": {
+      "title": "Blogs",
+      "tips": "Mẹo hay",
+      "news": "Tin mới nhất",
+      "events": "Sự kiện"
+    },
+    "getApps": "Tải ứng dụng",
+    "copyright": "Logoname",
+    "rightsReserved": "Tất cả các quyền được bảo lưu."
+  },
+  "metaLoginPage": {
+    "title": "Đăng nhập",
+    "description": "Đăng nhập tài khoản bảo dưỡng xe máy"
+  },
+  "loginPage": {
+    "login": {
+      "title": "Xin chào",
+      "subtitle": "Chào mừng bạn đã quay trở lại",
+      "emailLabel": "Email",
+      "emailPlaceholder": "example@gmail.com",
+      "passwordLabel": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu",
+      "submitButton": "Đăng Nhập",
+      "noAccount": "Bạn chưa có tài khoản?",
+      "register": "Đăng Ký"
+    },
+    "authCard": {
+      "title": "Hệ thống\nbảo dưỡng xe máy",
+      "description": "Công ty của chúng tôi luôn cung cấp những dịch vụ và những ưu đãi hấp dẫn dành cho những khách hàng đã tin tưởng ghé lại công ty chúng tôi.",
+      "highlightNote": "Một trong những kỹ thuật viên xuất sắc nhất của chúng tôi.",
+      "technicianName": "Nguyễn Văn H",
+      "technicianTitle": "Kỹ thuật viên"
+    }
+  },
+  "notFoundPage": {
+    "title": "Không tìm thấy trang",
+    "description": "Rất tiếc, trang bạn đang tìm không tồn tại hoặc đã được di chuyển.",
+    "goBack": "Quay lại",
+    "home": "Về trang chủ"
+  },
+  "metaHomepage": {
+    "title": "Trang chủ",
+    "description": "Chăm sóc toàn diện cho xe máy của bạn. Bảo dưỡng, sửa chữa, thay thế phụ tùng chính hãng. Đặt lịch nhanh chóng và nhận dịch vụ chuyên nghiệp."
+  },
+  "BlogSection": {
+    "title": "Kiến thức bảo dưỡng hữu ích",
+    "posts": [
+      {
+        "title": "5 dấu hiệu xe máy cần bảo dưỡng gấp",
+        "excerpt": "Bạn có biết rằng việc xe bị ì máy, hao xăng, hay khó khởi động là những dấu hiệu xe đang “kêu cứu”?",
+        "slug": "/blog/5-dau-hieu-xe-can-bao-duong",
+        "image": "/images/blog/maintainance-motorbike.jpg"
+      },
+      {
+        "title": "Lịch thay nhớt lý tưởng cho xe tay ga",
+        "excerpt": "Thay nhớt đúng định kỳ giúp động cơ vận hành mượt mà và kéo dài tuổi thọ xe của bạn.",
+        "slug": "/blog/lich-thay-nhot-xe-tay-ga",
+        "image": "/images/blog/oil-change.jpg"
+      },
+      {
+        "title": "Tự kiểm tra lốp xe tại nhà chỉ trong 5 phút",
+        "excerpt": "Hướng dẫn nhanh giúp bạn kiểm tra độ mòn và áp suất lốp mà không cần đến cửa hàng.",
+        "slug": "/blog/kiem-tra-lop-xe-tai-nha",
+        "image": "/images/blog/check-tires.jpg"
+      }
+    ],
+    "readMore": "Xem thêm →"
+  },
+  "BookingSuggest": {
+    "title": "Sẵn sàng chăm sóc chiếc xe của bạn?",
+    "description": "Đặt lịch bảo dưỡng/sửa chữa dễ dàng, nhanh chóng – chúng tôi sẽ liên hệ lại xác nhận ngay!",
+    "button": "Đặt lịch ngay"
+  },
+  "ContactSection": {
+    "title": "Liên hệ với chúng tôi",
+    "addressLabel": "Địa chỉ",
+    "address": "123 Đường Nguyễn Văn Cừ, Quận 5, TP. HCM",
+    "hotlineLabel": "Hotline",
+    "hotline": "0123 456 789",
+    "workTimeLabel": "Giờ làm việc",
+    "workTime": "Thứ 2 - Chủ Nhật: 8:00 - 20:00"
+  },
+  "hero": {
+    "title": "Chăm sóc toàn diện cho chiếc xe của bạn",
+    "description": "Bảo dưỡng – sửa chữa – thay thế phụ tùng chính hãng. Đặt lịch nhanh chóng, phục vụ chuyên nghiệp.",
+    "booking": "Đặt lịch ngay",
+    "services": "Xem dịch vụ"
+  },
+  "servicesHomepage": {
+    "title": "Các Dịch Vụ Chính",
+    "viewAll": "Xem tất cả",
+    "repair": {
+      "title": "Sửa chữa tổng quát",
+      "description": "Chẩn đoán và khắc phục mọi sự cố về động cơ, điện, hệ thống phanh, và truyền động.",
+      "image": "/images/services/repair.png"
+    },
+    "oilChange": {
+      "title": "Thay nhớt & bảo dưỡng",
+      "description": "Thay dầu định kỳ, vệ sinh lọc gió, kiểm tra tổng quát giúp xe hoạt động bền bỉ.",
+      "image": "/images/services/oil-change.png"
+    },
+    "wash": {
+      "title": "Rửa & làm đẹp xe",
+      "description": "Vệ sinh chi tiết, tẩy rửa chuyên sâu, phủ bóng giúp xe sáng như mới.",
+      "image": "/images/services/vehicle-wash.jpg"
+    },
+    "replacement": {
+      "title": "Thay thế phụ tùng",
+      "description": "Thay thế phụ tùng chính hãng, chất lượng cao, bảo hành đầy đủ.",
+      "image": "/images/services/spare-parts-replacement.jpg"
+    }
+  },
+  "processHomepage": {
+    "title": "Quy trình bảo dưỡng & sửa chữa",
+    "step1": {
+      "title": "1. Đặt lịch",
+      "description": "Đặt hẹn qua website hoặc hotline, chọn thời gian phù hợp để tiếp nhận xe."
+    },
+    "step2": {
+      "title": "2. Tiếp nhận & kiểm tra xe",
+      "description": "Kỹ thuật viên tiếp nhận, kiểm tra tổng thể và tư vấn chi tiết."
+    },
+    "step3": {
+      "title": "3. Báo giá – sửa chữa minh bạch",
+      "description": "Báo giá rõ ràng, không phát sinh chi phí không thông báo trước."
+    },
+    "step4": {
+      "title": "4. Hoàn tất – bàn giao – bảo hành",
+      "description": "Giao xe đúng hẹn, kiểm tra lại lần cuối và cam kết bảo hành dịch vụ."
+    }
+  },
+  "introHomepage": {
+    "title": "Về Trung Tâm Bảo Dưỡng {name}",
+    "description": "Với hơn <strong>10 năm kinh nghiệm</strong> trong ngành bảo trì và sửa chữa xe máy, Trung Tâm {name} tự hào là địa chỉ đáng tin cậy cho hàng ngàn khách hàng mỗi năm. Chúng tôi cung cấp các dịch vụ từ bảo dưỡng định kỳ, thay nhớt, sửa chữa động cơ, đến thay thế phụ tùng chính hãng — tất cả đều được thực hiện bởi đội ngũ kỹ thuật viên lành nghề.",
+    "quality": {
+      "title": "Uy tín & Chất lượng",
+      "description": "Cam kết sử dụng phụ tùng chính hãng, kỹ thuật chuẩn xác và bảo hành rõ ràng."
+    },
+    "team": {
+      "title": "Đội ngũ chuyên nghiệp",
+      "description": "Kỹ thuật viên nhiều năm kinh nghiệm, được đào tạo bài bản và tận tâm với khách hàng."
+    },
+    "booking": {
+      "title": "Đặt lịch dễ dàng",
+      "description": "Chỉ vài bước đơn giản để đặt lịch trực tuyến – tiết kiệm thời gian, phục vụ nhanh chóng."
+    }
+  },
+  "comboHomepage": {
+    "title": "Gói dịch vụ ưu đãi / Combo hấp dẫn",
+    "full": {
+      "title": "Gói bảo dưỡng toàn diện",
+      "description": "Kiểm tra toàn bộ xe, thay dầu, vệ sinh lọc gió, tăng xích, siết bu lông.",
+      "price": "Chỉ 299K"
+    },
+    "oil": {
+      "title": "Combo thay nhớt + kiểm tra",
+      "description": "Thay dầu chính hãng và kiểm tra 10 hạng mục cơ bản.",
+      "price": "Chỉ 99K"
+    },
+    "newCustomer": {
+      "title": "Ưu đãi khách hàng mới",
+      "description": "Giảm giá 20% cho lần bảo dưỡng đầu tiên.",
+      "price": "Giảm ngay -20%"
+    }
+  },
+  "testimonialsHomepage": {
+    "title": "Khách hàng nói gì về chúng tôi?",
+    "nguyen": "Nguyễn Văn A",
+    "nguyenContent": "Dịch vụ rất tốt, nhân viên nhiệt tình và chuyên nghiệp. Xe của tôi chạy êm hơn hẳn sau khi bảo dưỡng!",
+    "tran": "Trần Thị B",
+    "tranContent": "Mình rất hài lòng với combo bảo dưỡng toàn diện, giá hợp lý và thời gian nhanh chóng.",
+    "le": "Lê Văn C",
+    "leContent": "Trung tâm làm việc rất minh bạch, báo giá rõ ràng. Mình sẽ quay lại thường xuyên!",
+    "pham": "Phạm Thùy D",
+    "phamContent": "Ưu đãi lần đầu thật hấp dẫn! Mình được giảm giá và tư vấn tận tình."
+  },
+  "whyChooseUsHomepage": {
+    "title": "Vì sao chọn chúng tôi?",
+    "subtitle": "Chúng tôi luôn đặt sự hài lòng và an toàn của khách hàng lên hàng đầu. Dưới đây là những lý do khách hàng luôn tin tưởng chúng tôi:",
+    "qualityTitle": "Chất lượng uy tín",
+    "qualityDesc": "Chúng tôi cam kết mang đến dịch vụ sửa chữa và bảo dưỡng chất lượng cao với linh kiện chính hãng.",
+    "expertTitle": "Đội ngũ tay nghề cao",
+    "expertDesc": "Kỹ thuật viên được đào tạo bài bản, giàu kinh nghiệm, tận tâm với từng phương tiện.",
+    "timelyTitle": "Nhanh chóng & đúng hẹn",
+    "timelyDesc": "Tiếp nhận - xử lý - trả xe đúng lịch hẹn, tiết kiệm thời gian cho khách hàng.",
+    "dedicatedTitle": "Phục vụ tận tâm",
+    "dedicatedDesc": "Tư vấn nhiệt tình, sẵn sàng hỗ trợ mọi lúc để mang lại trải nghiệm hài lòng nhất."
+  },
+  "metaServicepage": {
+    "title": "Dịch vụ",
+    "description": "Khám phá các dịch vụ sửa chữa và bảo dưỡng chuyên nghiệp dành cho xe máy của bạn."
+  },
+  "testimonialsServicepage": {
+    "title": "Chứng Nhận & Đánh Giá",
+    "subTitle": "Khách Hàng Nói Gì Về Chúng Tôi",
+    "aseTitle": "Chứng nhận ASE",
+    "aseDesc": "Chứng nhận từ Viện Dịch vụ Ô tô Quốc tế.",
+    "isoTitle": "ISO 9001:2015",
+    "isoDesc": "Đạt tiêu chuẩn quản lý chất lượng quốc tế.",
+    "nguyen": "Nguyễn Văn A",
+    "nguyenComment": "Dịch vụ tuyệt vời! Tôi luôn tin tưởng trung tâm khi cần bảo dưỡng xe.",
+    "tran": "Trần Thị B",
+    "tranComment": "Thái độ phục vụ chuyên nghiệp và thời gian sửa chữa nhanh chóng."
+  },
+  "reviewServicepage": {
+    "title": "Đánh giá từ khách hàng",
+    "nguyen": "Nguyễn Văn A",
+    "nguyenContent": "Dịch vụ rất tốt, nhân viên nhiệt tình và chuyên nghiệp, xe của tôi chạy mượt mà sau khi bảo dưỡng.",
+    "nguyenDate": "15/04/2025",
+    "tran": "Trần Thị B",
+    "tranContent": "Giá cả hợp lý, tuy nhiên thời gian chờ hơi lâu một chút. Dịch vụ bảo dưỡng khá ổn.",
+    "tranDate": "12/04/2025",
+    "le": "Lê Minh C",
+    "leContent": "Rất hài lòng với dịch vụ thay nhớt và kiểm tra phanh. Mình sẽ quay lại lần sau.",
+    "leDate": "10/04/2025"
+  },
+  "faqServicepage": {
+    "title": "Hỏi đáp thường gặp (FAQ)",
+    "howOften": "Bao lâu nên bảo dưỡng xe máy 1 lần?",
+    "howOftenAnswer": "Việc bảo dưỡng xe máy nên được thực hiện định kỳ mỗi 3.000 - 5.000 km hoặc theo khuyến nghị của nhà sản xuất. Tuy nhiên, bạn cũng nên chú ý các dấu hiệu như tiếng động lạ, giảm hiệu suất phanh hay mòn lốp để bảo dưỡng sớm.",
+    "needBooking": "Có cần đặt lịch trước không?",
+    "needBookingAnswer": "Mặc dù bạn có thể đến trung tâm mà không cần đặt lịch trước, nhưng để tiết kiệm thời gian và đảm bảo có nhân viên phục vụ, chúng tôi khuyến khích bạn đặt lịch trước qua điện thoại hoặc website của trung tâm.",
+    "warranty": "Trung tâm có bảo hành sau sửa chữa không?",
+    "warrantyAnswer": "Chúng tôi cung cấp bảo hành cho các dịch vụ sửa chữa và thay thế phụ tùng, tùy vào loại dịch vụ và phụ tùng được thay thế. Thông tin chi tiết về bảo hành sẽ được thông báo khi bạn sử dụng dịch vụ tại trung tâm.",
+    "seeMore": "Xem thêm"
+  },
+  "priceServicepage": {
+    "title": "Bảng giá dịch vụ",
+    "oilChange": "Thay nhớt máy",
+    "oilPrice": "Từ 99K",
+    "oilNote": "Tùy theo loại nhớt và dung tích xe",
+    "fullMaintenance": "Bảo dưỡng tổng thể",
+    "fullPrice": "Từ 299K",
+    "fullNote": "Bao gồm vệ sinh, siết ốc, kiểm tra toàn bộ hệ thống",
+    "sparkAirFilter": "Thay bugi, lọc gió",
+    "sparkPrice": "Từ 120K",
+    "sparkNote": "Khuyến nghị mỗi 8.000 - 10.000km",
+    "brakeRepair": "Sửa phanh, thay má phanh",
+    "brakePrice": "Từ 150K",
+    "brakeNote": "Tùy loại má phanh và dòng xe",
+    "electricalRepair": "Kiểm tra & sửa điện, đèn, còi",
+    "electricalPrice": "Từ 50K",
+    "electricalNote": "Tùy mức độ hư hỏng & thay thế"
+  },
+  "comboServicepage": {
+    "title": "Gói dịch vụ ưu đãi",
+
+    "combo99Title": "Combo 99K",
+    "combo99Item1": "Thay nhớt",
+    "combo99Item2": "Kiểm tra tổng quát 15 điểm",
+    "combo99Price": "99.000đ",
+    "combo99Note": "Tiết kiệm 50%",
+
+    "fullTitle": "Gói bảo dưỡng toàn diện",
+    "fullItem1": "Thay nhớt",
+    "fullItem2": "Vệ sinh lọc gió",
+    "fullItem3": "Kiểm tra bugi",
+    "fullItem4": "Siết ốc tổng thể",
+    "fullPrice": "299.000đ",
+    "fullNote": "Khuyên dùng định kỳ 3 tháng",
+
+    "newUserTitle": "Ưu đãi khách hàng mới",
+    "newUserItem1": "Giảm 20% cho lần bảo dưỡng đầu tiên",
+    "newUserPrice": "Giảm giá",
+    "newUserNote": "Áp dụng trong tháng này"
+  },
+  "heroServicepage": {
+    "title": "Dịch vụ bảo dưỡng & sửa chữa xe máy chuyên nghiệp",
+    "subtitle": "Đội ngũ kỹ thuật tay nghề cao – Phụ tùng chính hãng – Quy trình minh bạch",
+    "ctaPrice": "Xem bảng giá",
+    "ctaBooking": "Đặt lịch ngay",
+    "imageAlt": "Dịch vụ sửa chữa xe máy"
+  },
+  "listServicepage": {
+    "title": "Dịch vụ nổi bật",
+
+    "oilChangeTitle": "Thay nhớt",
+    "oilChangeDesc": "Giúp động cơ vận hành êm ái, kéo dài tuổi thọ.",
+    "oilChangePrice": "Từ 90.000đ",
+
+    "fullMaintenanceTitle": "Bảo dưỡng tổng thể",
+    "fullMaintenanceDesc": "Kiểm tra toàn bộ xe, phát hiện lỗi sớm, đảm bảo an toàn.",
+    "fullMaintenancePrice": "Từ 299.000đ",
+
+    "sparkAirTitle": "Thay bugi, lọc gió",
+    "sparkAirDesc": "Đảm bảo đánh lửa mạnh, tiết kiệm nhiên liệu.",
+    "sparkAirPrice": "Từ 120.000đ",
+
+    "brakeRepairTitle": "Sửa phanh, thay má phanh",
+    "brakeRepairDesc": "An toàn khi di chuyển, kiểm tra hệ thống phanh.",
+    "brakeRepairPrice": "Từ 150.000đ",
+
+    "electricalTitle": "Sửa điện, đèn, còi",
+    "electricalDesc": "Khắc phục các lỗi điện, thay thế phụ tùng nhanh chóng.",
+    "electricalPrice": "Tùy theo hạng mục"
+  },
+  "processServicepage": {
+    "title": "Quy trình bảo dưỡng chuyên nghiệp",
+
+    "step1Title": "Đặt lịch",
+    "step1Desc": "Khách hàng đặt lịch hẹn nhanh chóng qua website hoặc hotline.",
+
+    "step2Title": "Tiếp nhận & kiểm tra",
+    "step2Desc": "Nhân viên tiếp nhận xe, kiểm tra tình trạng hiện tại.",
+
+    "step3Title": "Tư vấn & báo giá",
+    "step3Desc": "Báo giá minh bạch, giải thích chi tiết các công việc cần làm.",
+
+    "step4Title": "Sửa chữa & bảo dưỡng",
+    "step4Desc": "Kỹ thuật viên tiến hành sửa chữa với thiết bị hiện đại.",
+
+    "step5Title": "Bàn giao & bảo hành",
+    "step5Desc": "Xe được kiểm tra lần cuối, bàn giao sạch sẽ, bảo hành đầy đủ."
+  },
+  "metaAboutpage": {
+    "title": "Giới thiệu về chúng tôi",
+    "description": "Tìm hiểu thêm về trung tâm dịch vụ bảo dưỡng và sửa chữa xe máy của chúng tôi."
+  },
+  "aboutUsSectionAboutpage": {
+    "heading": "Giới Thiệu Trung Tâm",
+    "description": "Với hơn <strong>10 năm kinh nghiệm</strong> trong ngành bảo trì và sửa chữa xe máy, Trung Tâm Bảo Dưỡng XYZ cam kết mang lại dịch vụ chất lượng và sự hài lòng tối đa cho khách hàng. Chúng tôi luôn nỗ lực không ngừng để cải thiện chất lượng dịch vụ và đáp ứng nhu cầu ngày càng cao của quý khách hàng.",
+    "missionTitle": "Sứ Mệnh",
+    "missionDesc": "Sứ mệnh của chúng tôi là cung cấp dịch vụ bảo dưỡng, sửa chữa xe máy với chất lượng cao, bảo đảm an toàn và sự hài lòng tuyệt đối cho khách hàng. Chúng tôi cam kết mang đến những giải pháp tối ưu và nhanh chóng, giúp chiếc xe của bạn luôn hoạt động ổn định.",
+    "visionTitle": "Tầm Nhìn",
+    "visionDesc": "Tầm nhìn của Trung Tâm Bảo Dưỡng XYZ là trở thành địa chỉ tin cậy hàng đầu trong ngành bảo dưỡng và sửa chữa xe máy, không chỉ tại thành phố mà còn trên toàn quốc. Chúng tôi mong muốn nâng cao tiêu chuẩn dịch vụ, luôn sáng tạo và phát triển không ngừng để phục vụ khách hàng một cách tốt nhất."
+  },
+  "awardsSection": {
+    "heading": "Chứng Nhận & Giải Thưởng",
+    "awards": [
+      {
+        "title": "Chứng nhận Dịch vụ Xuất sắc 2022",
+        "description": "Được trao bởi Hiệp hội Kỹ thuật Việt Nam vì những đóng góp nổi bật trong lĩnh vực bảo dưỡng xe."
+      },
+      {
+        "title": "Top 10 Trung tâm sửa chữa uy tín",
+        "description": "Bình chọn bởi cộng đồng người dùng AutoViet năm 2023."
+      },
+      {
+        "title": "Giải thưởng Dịch vụ Khách hàng tốt nhất",
+        "description": "Được vinh danh tại Triển lãm Công nghiệp Xe máy toàn quốc 2022."
+      }
+    ]
+  },
+  "faqSectionAboutpage": {
+    "heading": "Câu Hỏi Thường Gặp",
+    "faqs": [
+      {
+        "question": "Bao lâu nên bảo dưỡng xe máy?",
+        "answer": "Thông thường, bạn nên bảo dưỡng xe máy sau mỗi 1.000 – 1.500 km hoặc định kỳ mỗi 2 – 3 tháng để đảm bảo xe vận hành tốt và an toàn."
+      },
+      {
+        "question": "Trung tâm có bảo hành sau sửa chữa không?",
+        "answer": "Có, tất cả các dịch vụ tại trung tâm đều được bảo hành theo chính sách rõ ràng, tùy thuộc vào từng hạng mục sửa chữa."
+      },
+      {
+        "question": "Tôi có cần đặt lịch trước không?",
+        "answer": "Bạn có thể đến trực tiếp, nhưng đặt lịch trước giúp tiết kiệm thời gian và trung tâm phục vụ bạn nhanh chóng hơn."
+      },
+      {
+        "question": "Trung tâm sử dụng phụ tùng loại nào?",
+        "answer": "Chúng tôi cam kết sử dụng 100% phụ tùng chính hãng hoặc từ các nhà sản xuất được ủy quyền."
+      }
+    ]
+  },
+  "featuredServices": {
+    "heading": "Dịch Vụ Nổi Bật",
+    "whyChooseUs": "Vì Sao Chọn Trung Tâm Chúng Tôi?",
+    "services": [
+      {
+        "title": "Bảo Dưỡng Tổng Quát",
+        "description": "Kiểm tra và bảo trì toàn diện xe để đảm bảo an toàn vận hành."
+      },
+      {
+        "title": "Thay Nhớt Định Kỳ",
+        "description": "Sử dụng dầu nhớt chính hãng giúp động cơ hoạt động êm ái."
+      },
+      {
+        "title": "Sửa Chữa Kỹ Thuật",
+        "description": "Xử lý các vấn đề kỹ thuật từ đơn giản đến phức tạp."
+      }
+    ],
+    "reasons": [
+      "Phục vụ nhanh chóng",
+      "Bảo hành dài hạn",
+      "Phụ tùng chính hãng"
+    ]
+  },
+  "historySection": {
+    "heading": "Lịch Sử Hình Thành",
+    "founding": {
+      "title": "Câu Chuyện Thành Lập",
+      "content": "Trung Tâm Bảo Dưỡng XYZ được thành lập vào năm 2013 bởi một nhóm kỹ sư yêu nghề và đam mê xe máy. Khởi đầu từ một gara nhỏ với chỉ 2 nhân sự, trung tâm đã trải qua nhiều khó khăn, từ thiếu thốn thiết bị đến việc xây dựng lòng tin khách hàng. Nhưng bằng sự tận tâm và khát vọng nâng tầm dịch vụ, chúng tôi từng bước vươn lên, trở thành một trong những trung tâm bảo dưỡng uy tín tại khu vực."
+    },
+    "milestoneTitle": "Chặng Đường Phát Triển",
+    "milestones": [
+      {
+        "year": "2013",
+        "description": "Thành lập trung tâm với quy mô nhỏ tại quận Bình Thạnh."
+      },
+      {
+        "year": "2016",
+        "description": "Mở rộng thêm 2 chi nhánh và đầu tư trang thiết bị hiện đại."
+      },
+      {
+        "year": "2019",
+        "description": "Đội ngũ kỹ thuật viên đạt 30 người, phục vụ hơn 10,000 khách hàng mỗi năm."
+      },
+      {
+        "year": "2024",
+        "description": "Đạt chứng nhận dịch vụ xuất sắc và mở rộng lên 5 chi nhánh toàn thành phố."
+      }
+    ]
+  },
+  "socialCommunity": {
+    "followUs": "Theo Dõi Chúng Tôi",
+    "communityTitle": "Hoạt Động Cộng Đồng",
+    "activities": [
+      {
+        "title": "Chương trình bảo dưỡng miễn phí cho xe cứu thương",
+        "description": "Trung tâm đồng hành cùng y tế tuyến đầu trong mùa dịch COVID-19."
+      },
+      {
+        "title": "Tài trợ học bổng kỹ thuật viên trẻ",
+        "description": "Hỗ trợ đào tạo và cấp học bổng cho sinh viên ngành sửa chữa ô tô - xe máy."
+      }
+    ]
+  },
+  "staffSection": {
+    "heading": "Đội Ngũ Nhân Viên",
+    "description": "Trung tâm XYZ tự hào sở hữu đội ngũ kỹ thuật viên lành nghề, giàu kinh nghiệm và luôn tận tâm với nghề. Từng thành viên đều sở hữu chứng chỉ chuyên môn và trải qua quá trình đào tạo bài bản.",
+    "members": [
+      {
+        "name": "Nguyễn Văn A",
+        "role": "Trưởng kỹ thuật",
+        "experience": "10 năm kinh nghiệm",
+        "quote": "Tôi luôn đặt sự an toàn và hài lòng của khách hàng lên hàng đầu.",
+        "image": "https://randomuser.me/api/portraits/men/37.jpg"
+      },
+      {
+        "name": "Trần Thị B",
+        "role": "Kỹ thuật viên máy móc",
+        "experience": "6 năm kinh nghiệm",
+        "quote": "Làm việc với cái tâm thì xe mới khỏe, khách mới vui.",
+        "image": "https://randomuser.me/api/portraits/women/36.jpg"
+      },
+      {
+        "name": "Lê Văn C",
+        "role": "Chuyên gia động cơ",
+        "experience": "8 năm kinh nghiệm",
+        "quote": "Mỗi chiếc xe là một thử thách – và tôi yêu điều đó!",
+        "image": "https://randomuser.me/api/portraits/men/21.jpg"
+      }
+    ]
+  },
+  "aboutPage": {
+    "technologySection": {
+      "title": "Công Nghệ & Thiết Bị",
+      "technologies": [
+        {
+          "title": "Máy chẩn đoán lỗi điện tử",
+          "description": "Sử dụng công nghệ OBD-II giúp phát hiện lỗi chính xác và nhanh chóng.",
+          "image": "/images/about/obd.jpg"
+        },
+        {
+          "title": "Thiết bị cân chỉnh góc lái 3D",
+          "description": "Đảm bảo độ chính xác tuyệt đối trong cân chỉnh hệ thống lái và treo.",
+          "image": "/images/about/alignment.jpg"
+        },
+        {
+          "title": "Máy thay nhớt tự động",
+          "description": "Giảm thời gian bảo dưỡng, đảm bảo lượng nhớt thay đúng chuẩn.",
+          "image": "/images/about/oil-change-device.jpg"
+        }
+      ],
+      "workflowTitle": "Quy Trình Bảo Dưỡng Chuẩn",
+      "workflowSteps": [
+        "Tiếp nhận và kiểm tra tổng quát tình trạng xe",
+        "Chẩn đoán bằng máy móc hiện đại",
+        "Tư vấn phương án sửa chữa phù hợp",
+        "Tiến hành bảo dưỡng theo quy trình chuẩn",
+        "Kiểm tra lại và bàn giao xe cho khách hàng"
+      ]
+    }
+  },
+  "metaBlogpage": {
+    "title": "Blog",
+    "description": "Tìm hiểu thêm về trung tâm dịch vụ bảo dưỡng và sửa chữa xe máy của chúng tôi."
+  },
+  "blogPage": {
+    "header": {
+      "title": "Blog",
+      "description": "Chia sẻ kiến thức xe máy, kết nối đam mê kỹ thuật"
+    },
+    "filter": {
+      "all": "Tất cả"
+    },
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "blog": "Blog"
+    },
+    "readTime": "{minutes} phút đọc",
+    "views": "lượt xem",
+    "comments": "bình luận",
+    "suggestions": "Gợi ý:",
+    "notFound": {
+      "title": "Không tìm thấy bài viết",
+      "description": "Có thể bài viết đã bị xóa, chưa được xuất bản, hoặc bạn đã nhập sai đường dẫn. Hãy quay lại trang blog để tiếp tục khám phá.",
+      "backButton": "⬅ Về trang Blog"
+    },
+    "commentForm": {
+      "title": "Để lại bình luận",
+      "nameLabel": "Nhập tên của bạn",
+      "namePlaceholder": "Nhập họ tên",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Nhập địa chỉ email",
+      "contentLabel": "Nội dung bình luận",
+      "contentPlaceholder": "Nhập nội dung bình luận",
+      "submit": "Gửi bình luận"
+    },
+    "commentsList": {
+      "title": "Bình luận",
+      "likes": "thích"
+    },
+    "relatedBlogs": {
+      "title": "Bài viết liên quan"
+    },
+    "sharing": {
+      "shareTitle": "Chia sẻ bài viết",
+      "authorBio": "Chuyên gia về xe máy với hơn 10 năm kinh nghiệm phượt off-road trên khắp Việt Nam và Đông Nam Á.\nNgười sáng lập câu lạc bộ \"Phượt Xuyên Việt\" và là tác giả của cuốn sách \"Hành Trình Chinh Phục Đường Núi\"."
+    },
+    "tableOfContents": "Trên trang này"
+  },
+  "metaContactpage": {
+    "title": "Liên hệ",
+    "description": "Liên hệ với chúng tôi"
+  },
+  "contactPage": {
+    "heroTitle": "Liên hệ",
+    "heroDescription": "Chúng tôi luôn sẵn sàng cung cấp hỗ trợ và giải đáp mọi thắc mắc của bạn.",
+    "contactWithUs": "Liên hệ với chúng tôi",
+    "contactDescription": "Chúng tôi rất vui khi nhận được phản hồi từ bạn. Nếu bạn có bất kỳ câu hỏi nào về sản phẩm hoặc dịch vụ của chúng tôi, hãy liên hệ với chúng tôi qua thông tin bên dưới hoặc điền vào biểu mẫu liên hệ.",
+    "headquarters": "Trụ sở chính",
+    "sendEmail": "Gửi Email cho chúng tôi",
+    "callUs": "Gọi cho chúng tôi",
+    "followUs": "Theo dõi chúng tôi trên mạng xã hội",
+    "sendMessage": "Gửi tin nhắn cho chúng tôi",
+    "namePlaceholder": "Họ tên",
+    "phonePlaceholder": "Số điện thoại",
+    "emailPlaceholder": "Email",
+    "subjectPlaceholder": "Tiêu đề",
+    "messagePlaceholder": "Nội dung",
+    "submitButton": "Gửi tin nhắn"
+  },
+  "metaCategorypage": {
+    "title": "Danh mục",
+    "description": "Trang hiển thị danh sách các danh mục phụ tùng xe máy"
+  },
+  "categorypage": {
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "category": "Danh mục phụ tùng"
+    },
+    "pageHeading": {
+      "title": "Bộ sưu tập phụ tùng xe máy chất lượng",
+      "description": "Khám phá các danh mục phụ tùng đa dạng cho mọi dòng xe máy. Đảm bảo chính hãng, chất lượng và giá tốt cho mọi nhu cầu sửa chữa, bảo dưỡng hoặc nâng cấp xe của bạn.",
+      "stats": {
+        "manualBike": "Phụ tùng xe số",
+        "scooter": "Phụ tùng xe tay ga",
+        "clutchBike": "Phụ tùng xe côn",
+        "genuine": "Phụ tùng chính hãng",
+        "custom": "Phụ tùng độ xe"
+      }
+    },
+    "searchBar": {
+      "placeholder": "Tìm kiếm danh mục"
+    },
+    "categoryCard": {
+      "viewDetail": "Xem chi tiết",
+      "viewProduct": "Xem sản phẩm"
+    },
+    "categoryList": {
+      "notFound": "Không tìm thấy danh mục phù hợp."
+    },
+    "categoryDetail": {
+      "notFound": "Không tìm thấy danh mục",
+      "backToList": "Quay lại danh sách",
+      "viewProducts": "Xem sản phẩm"
+    }
+  },
+  "metaFaqpage": {
+    "title": "FAQ",
+    "description": "Câu hỏi thuật chính"
+  },
+  "faqPage": {
+    "title": "Câu hỏi thường gặp",
+    "description": "Giúp bạn nhanh chóng tìm được câu trả lời cho những thắc mắc của mình",
+    "categories": {
+      "all": "Tất cả",
+      "booking": "Đặt lịch",
+      "maintenance": "Bảo dưỡng",
+      "payment": "Thanh toán",
+      "warranty": "Bảo hành",
+      "service": "Dịch vụ",
+      "info": "Thông tin"
+    },
+    "contactCTA": {
+      "title": "Không tìm thấy câu trả lời?",
+      "description": "Liên hệ với chúng tôi để được hỗ trợ trực tiếp từ đội ngũ tư vấn chuyên nghiệp",
+      "contactNow": "Liên hệ ngay",
+      "callHotline": "Gọi hotline"
+    },
+    "noResults": {
+      "title": "Không tìm thấy câu trả lời",
+      "description": "Vui lóng tìm kiếm câu hỏi khác"
+    },
+    "faqs": {
+      "1question": "Làm thế nào để đặt lịch bảo dưỡng xe?",
+      "1answer": "Bạn có thể đặt lịch bảo dưỡng xe thông qua website của chúng tôi bằng cách nhấn vào nút 'Đặt lịch ngay' trên trang chủ, hoặc gọi trực tiếp đến hotline. Chúng tôi sẽ xác nhận lịch hẹn và thông báo thời gian cụ thể cho bạn.",
+      "2question": "Thời gian bảo dưỡng định kỳ mất bao lâu?",
+      "2answer": "Thời gian bảo dưỡng định kỳ thông thường từ 30-60 phút tùy thuộc vào tình trạng xe và các hạng mục cần kiểm tra. Đối với các trường hợp phức tạp hơn, chúng tôi sẽ thông báo thời gian cụ thể sau khi kiểm tra.",
+      "3question": "Có cần đặt cọc khi đặt lịch không?",
+      "3answer": "Không, bạn không cần đặt cọc khi đặt lịch. Chúng tôi chỉ yêu cầu thanh toán sau khi hoàn thành dịch vụ và bạn hài lòng với chất lượng.",
+      "4question": "Phụ tùng thay thế có được bảo hành không?",
+      "4answer": "Có, tất cả phụ tùng chính hãng đều được bảo hành theo chính sách của nhà sản xuất. Thời gian bảo hành từ 3-12 tháng tùy theo loại phụ tùng. Chúng tôi cũng cung cấp bảo hành dịch vụ sửa chữa từ 1-3 tháng.",
+      "5question": "Trung tâm có nhận sửa xe các hãng nào?",
+      "5answer": "Chúng tôi nhận sửa chữa và bảo dưỡng tất cả các hãng xe máy phổ biến như Honda, Yamaha, Suzuki, SYM, Piaggio và các hãng khác. Đội ngũ kỹ thuật viên có kinh nghiệm với đa dạng loại xe.",
+      "6question": "Có dịch vụ cứu hộ xe tại nhà không?",
+      "6answer": "Có, chúng tôi cung cấp dịch vụ cứu hộ xe tại nhà trong bán kính 15km từ trung tâm. Phí dịch vụ được tính theo khoảng cách và thời gian. Vui lòng liên hệ hotline để biết thêm chi tiết.",
+      "7question": "Giờ hoạt động của trung tâm như thế nào?",
+      "7answer": "Trung tâm hoạt động từ 7:00 - 18:00 tất cả các ngày trong tuần, bao gồm cả thứ 7 và chủ nhật. Đối với các trường hợp khẩn cấp, chúng tôi có dịch vụ cứu hộ 24/7.",
+      "8question": "Có thể xem trước báo giá dịch vụ không?",
+      "8answer": "Có, bạn có thể xem bảng giá tham khảo trên website hoặc liên hệ trực tiếp để được tư vấn báo giá chi tiết. Chúng tôi cam kết báo giá minh bạch, không phát sinh chi phí ẩn.",
+      "9question": "Tôi có thể thay nhớt loại nào cho xe số?",
+      "9answer": "Chúng tôi khuyên dùng nhớt 10W-30 hoặc 10W-40 cho xe số. Tùy vào mức độ sử dụng, kỹ thuật viên sẽ tư vấn loại nhớt phù hợp nhất cho động cơ của bạn.",
+      "10question": "Có giảm giá cho khách hàng thân thiết không?",
+      "10answer": "Có, chúng tôi có chương trình thẻ thành viên và giảm giá cho khách hàng thân thiết, bao gồm các ưu đãi dịch vụ định kỳ, thay nhớt miễn phí sau lần thứ 5, và nhiều ưu đãi khác.",
+      "11question": "Tôi có thể huỷ lịch hẹn đã đặt không?",
+      "11answer": "Bạn hoàn toàn có thể huỷ lịch hẹn trước ít nhất 2 giờ so với thời gian đã đặt. Vui lòng gọi hotline hoặc huỷ trực tiếp qua website.",
+      "12question": "Xe tôi bị rung lắc mạnh khi chạy, có nên kiểm tra gấp không?",
+      "12answer": "Có, rung lắc bất thường có thể là dấu hiệu của lốp bị mòn, vành cong hoặc hệ thống phuộc gặp sự cố. Bạn nên đến trung tâm càng sớm càng tốt để kiểm tra an toàn.",
+      "13question": "Có bảo hành cho việc sơn dặm lại xe không?",
+      "13answer": "Có, các dịch vụ sơn dặm hoặc sơn lại toàn bộ xe đều được bảo hành trong 6 tháng đối với bong tróc hoặc phai màu do kỹ thuật.",
+      "14question": "Trung tâm có hỗ trợ thanh toán qua thẻ không?",
+      "14answer": "Có, chúng tôi chấp nhận tất cả các loại thẻ tín dụng, thẻ ghi nợ và ví điện tử phổ biến để giúp bạn thanh toán nhanh chóng và tiện lợi.",
+      "15question": "Tôi có thể yêu cầu kỹ thuật viên cụ thể không?",
+      "15answer": "Bạn có thể yêu cầu kỹ thuật viên nếu người đó có lịch trống vào thời điểm bạn đặt. Vui lòng báo trước để chúng tôi sắp xếp phù hợp.",
+      "16question": "Tôi có thể góp ý dịch vụ bằng cách nào?",
+      "16answer": "Bạn có thể góp ý trực tiếp với nhân viên tại quầy lễ tân, gửi email tới hòm thư góp ý trên website, hoặc điền vào phiếu khảo sát sau khi sử dụng dịch vụ.",
+      "17question": "Trung tâm có hỗ trợ tiếng Anh không?",
+      "17answer": "Có, một số nhân viên của chúng tôi có thể giao tiếp bằng tiếng Anh cơ bản. Nếu bạn cần hỗ trợ ngôn ngữ, vui lòng báo trước khi đặt lịch.",
+      "18question": "Có dịch vụ giữ xe qua đêm không?",
+      "18answer": "Có, trung tâm có khu vực giữ xe an toàn qua đêm nếu quá trình sửa chữa kéo dài. Bạn sẽ được thông báo chi tiết và ký biên bản nhận xe."
+    },
+    "searchPlaceholder": "Tìm kiếm câu hỏi..."
+  },
+  "metaCheckoutpage": {
+    "title": "Thanh toán",
+    "description": "Thanh toán ngay"
+  },
+  "checkoutPage": {
+    "shippingAddressTitle": "Địa chỉ giao hàng",
+    "firstName": "Họ",
+    "lastName": "Tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "city": "Thành phố",
+    "address": "Địa chỉ",
+    "zip": "Mã bưu điện",
+    "description": "Mô tả",
+    "firstNameRequired": "Vui lòng nhập họ",
+    "lastNameRequired": "Vui lòng nhập tên",
+    "emailRequired": "Vui lòng nhập email",
+    "emailInvalid": "Email không hợp lệ",
+    "phoneRequired": "Vui lòng nhập số điện thoại",
+    "cityRequired": "Vui lòng nhập thành phố",
+    "addressRequired": "Vui lòng nhập địa chỉ",
+    "zipRequired": "Vui lòng nhập mã bưu điện",
+    "breadcrumb": {
+      "cart": "Giỏ hàng",
+      "cartShort": "Giỏ",
+      "checkout": "Chi tiết thanh toán",
+      "checkoutShort": "Thanh toán",
+      "complete": "Hoàn tất",
+      "completeShort": "Xong"
+    },
+    "cartSummary": {
+      "title": "Giỏ hàng của bạn",
+      "discountPlaceholder": "Mã giảm giá",
+      "apply": "Áp dụng",
+      "subtotal": "Tạm tính",
+      "shipping": "Phí giao hàng",
+      "tax": "Thuế ước tính",
+      "total": "Tổng cộng",
+      "proceed": "Tiếp tục thanh toán"
+    },
+    "shippingMethod": {
+      "title": "Phương thức vận chuyển",
+      "free": {
+        "title": "Miễn phí ship",
+        "time": "7-20 ngày"
+      },
+      "express": {
+        "title": "Chuyển phát nhanh",
+        "time": "1-3 ngày"
+      }
+    }
+  },
+  "metaPrivacyPolicypage": {
+    "title": "Chính sách bảo mật",
+    "description": "Chính sách bảo mật"
+  },
+  "privacyPolicy": {
+    "title": "Chính sách bảo mật",
+    "sections": {
+      "1": {
+        "title": "1. Giới thiệu",
+        "content": "Motobike cam kết bảo vệ quyền riêng tư và thông tin cá nhân của bạn. Chính sách này giải thích cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ thông tin cá nhân khi bạn sử dụng dịch vụ."
+      },
+      "2": {
+        "title": "2. Thông tin chúng tôi thu thập",
+        "content": [
+          "Thông tin cá nhân: Họ tên, SĐT, email, thông tin xe.",
+          "Dữ liệu kỹ thuật: IP, trình duyệt, thiết bị truy cập.",
+          "Dữ liệu sử dụng: lịch sử truy cập, đặt lịch bảo dưỡng.",
+          "Dữ liệu cookies: theo dõi hành vi sử dụng."
+        ]
+      },
+      "3": {
+        "title": "3. Cách thức thu thập thông tin",
+        "content": [
+          "Qua biểu mẫu đặt lịch, đăng ký nhận tin.",
+          "Qua cookies và công cụ phân tích như Google Analytics.",
+          "Qua tương tác với nhân viên."
+        ]
+      },
+      "4": {
+        "title": "4. Mục đích sử dụng thông tin",
+        "content": [
+          "Cung cấp dịch vụ đúng và kịp thời.",
+          "Cải thiện chất lượng và cá nhân hóa trải nghiệm.",
+          "Gửi thông báo, ưu đãi.",
+          "Phân tích hiệu quả vận hành."
+        ]
+      },
+      "5": {
+        "title": "5. Chia sẻ thông tin với bên thứ ba",
+        "content": [
+          "Đơn vị thanh toán.",
+          "Đối tác vận chuyển hoặc bảo hành.",
+          "Nhà cung cấp phân tích dữ liệu.",
+          "Việc chia sẻ tuân thủ pháp luật và giới hạn trong phạm vi cần thiết."
+        ]
+      },
+      "6": {
+        "title": "6. Quyền của người dùng",
+        "content": [
+          "Truy cập và nhận bản sao dữ liệu.",
+          "Yêu cầu sửa đổi, cập nhật thông tin.",
+          "Yêu cầu xóa hoặc ngừng sử dụng dữ liệu.",
+          "Từ chối email quảng cáo.",
+          "Bạn có thể liên hệ với chúng tôi để thực hiện các quyền này."
+        ]
+      },
+      "7": {
+        "title": "7. Bảo mật dữ liệu",
+        "content": [
+          "Mã hóa dữ liệu khi truyền và lưu trữ.",
+          "Hạn chế quyền truy cập nội bộ.",
+          "Kiểm tra và cập nhật hệ thống thường xuyên."
+        ]
+      },
+      "8": {
+        "title": "8. Cookies và công nghệ theo dõi",
+        "content": [
+          "Cookies giúp ghi nhớ thiết lập truy cập. Chúng tôi dùng để cải thiện trải nghiệm và đo lường hiệu suất website.",
+          "Cải thiện trải nghiệm người dùng.",
+          "Phân tích lưu lượng truy cập.",
+          "Hỗ trợ quảng cáo phù hợp.",
+          "Bạn có thể từ chối cookies nhưng có thể ảnh hưởng đến trải nghiệm."
+        ]
+      },
+      "9": {
+        "title": "9. Chính sách về trẻ em",
+        "content": "Chúng tôi không cố ý thu thập thông tin từ trẻ em dưới 13 tuổi. Nếu phát hiện, chúng tôi sẽ xóa bỏ dữ liệu đó."
+      },
+      "10": {
+        "title": "10. Thay đổi chính sách",
+        "content": "Chính sách có thể được cập nhật. Mọi thay đổi sẽ được thông báo và có hiệu lực ngay khi đăng tải."
+      },
+      "11": {
+        "title": "11. Thông tin liên hệ",
+        "content": [
+          "Email: hotro@baoduongxemayabc.com",
+          "Điện thoại: 0909 123 456",
+          "Địa chỉ: 123 Đường Lý Thường Kiệt, Q10, TP.HCM"
+        ]
+      }
+    }
+  },
+  "metaVehicleMaintenanceRegistrationpage": {
+    "title": "Đăng ký bảo dưỡng xe",
+    "description": "Đăng ký bảo dưỡng xe"
+  },
+  "vehicleMaintenancePage": {
+    "selectOption": "Chọn",
+    "title": "Đăng ký bảo dưỡng xe",
+    "titleForm": "Đặt lịch hẹn với chúng tôi",
+    "basicInfo": "Thông tin cơ bản",
+    "firstName": "Vui lòng nhập họ",
+    "lastName": "Vui lòng nhập tên",
+    "email": "Email",
+    "phone": "Vui lòng nhập số điện thoại",
+
+    "vehicleInfo": "Thông tin phương tiện",
+    "vehicleType": {
+      "title": "Loại xe",
+      "motorcycle": "Xe số",
+      "scooter": "Xe ga",
+      "clutchBike": "Xe tay côn"
+    },
+    "vehicleBrand": "Nhập hãng xe",
+    "serviceType": {
+      "title": "Loại dịch vụ",
+      "maintenance": "Bảo dưỡng",
+      "oilChange": "Thay dầu",
+      "repair": "Sửa chữa"
+    },
+    "vehicleNumber": "Nhập biển số",
+
+    "timeInfo": "Thời gian",
+    "date": "Chọn ngày",
+    "time": "HH:MM",
+    "address": "Nhập địa chỉ",
+    "note": "Thêm ghi chú nếu cần",
+
+    "workingHour": "Giờ hoạt động: 9:00 AM - 6:00 PM",
+    "onTime": "Vui lòng đến đúng giờ cho cuộc hẹn của bạn!",
+    "submit": "Đăng ký",
+    "errors": {
+      "first_name": "Vui lòng nhập họ",
+      "last_name": "Vui lòng nhập tên",
+      "email": "Vui lòng nhập email hợp lệ",
+      "phone_number": "Vui lòng nhập số điện thoại hợp lệ",
+      "vehicle_type": "Vui lòng chọn loại xe",
+      "vehicle_brand": "Vui lòng nhập hãng xe",
+      "service_type": "Vui lòng chọn loại dịch vụ",
+      "vehicle_number": "Vui lòng nhập biển số xe",
+      "date": "Vui lòng chọn ngày",
+      "time": "Vui lòng chọn thời gian",
+      "address": "Vui lòng nhập địa chỉ"
+    },
+    "scheduleList": {
+      "title": "Lịch hẹn bảo dưỡng",
+      "filter": {
+        "startDate": "Từ ngày",
+        "endDate": "Đến ngày",
+        "button": "Tìm kiếm"
+      },
+      "info": {
+        "phone": "Số điện thoại",
+        "email": "Email",
+        "address": "Địa chỉ",
+        "vehicle_type": "Xe",
+        "vehicle_number": "Biển số",
+        "note": "Ghi chú"
+      },
+      "service_type": {
+        "maintenance": "Bảo dưỡng",
+        "oilChange": "Thay dầu",
+        "repair": "Sửa chữa"
+      },
+      "status": {
+        "confirmed": "Đã xác nhận",
+        "pending": "Chờ xác nhận",
+        "cancelled": "Đã hủy"
+      },
+      "confirmDelete": {
+        "title": "Xác nhận xóa lịch hẹn này?",
+        "ok": "Xóa",
+        "cancel": "Hủy"
+      },
+      "actions": {
+        "edit": "Chỉnh sửa lịch hẹn",
+        "delete": "Xóa lịch hẹn"
+      },
+      "empty": "Không có lịch hẹn phù hợp."
+    }
+  },
+  "metaCartpage": {
+    "title": "Giỏ hàng",
+    "description": "Giỏ hàng"
+  },
+  "cartPage": {
+    "steps": {
+      "step1": {
+        "label": "Giỏ hàng",
+        "short": "Giỏ"
+      },
+      "step2": {
+        "label": "Chi tiết thanh toán",
+        "short": "Thanh toán"
+      },
+      "step3": {
+        "label": "Hoàn tất",
+        "short": "Xong"
+      }
+    },
+    "loading": {
+      "cart": "Đang tải giỏ hàng...",
+      "totals": "Đang tính toán..."
+    },
+    "totals": {
+      "heading": "Tổng giỏ hàng",
+      "subtotal": "Tạm tính",
+      "shipping": "Phí vận chuyển",
+      "shippingNote": "Giao hàng tiêu chuẩn",
+      "free": "0 đ",
+      "total": "Tổng cộng",
+      "checkoutBtn": "Tiến hành thanh toán"
+    }
+  },
+  "metaMaintenanceSchedulepage": {
+    "title": "Lịch hẹn bảo dưỡng",
+    "description": "Lịch hẹn bảo dưỡng"
+  },
+  "metaMaintenanceHistorypage": {
+    "title": "Lịch sử dụng bảo dưỡng",
+    "description": "Lịch sử dụng bảo dưỡng"
+  },
+  "metaProductpage": {
+    "title": "Danh sách sản phẩm",
+    "description": "Danh sách sản phẩm"
+  },
+  "maintenanceHistoryPage": {
+    "title": "Lịch sử bảo dưỡng",
+    "filter": {
+      "from": "Từ ngày",
+      "to": "Đến ngày",
+      "status": "Trạng thái",
+      "completed": "Hoàn thành",
+      "incomplete": "Chưa hoàn thành",
+      "search": "Tìm kiếm"
+    },
+    "table": {
+      "vehicleName": "Tên xe",
+      "licensePlate": "Biển số",
+      "date": "Ngày",
+      "timeSlot": "Khung giờ",
+      "status": "Trạng thái",
+      "totalCost": "Tổng chi phí",
+      "actions": "Hành động",
+      "delete": "Xóa",
+      "confirmDelete": "Xác nhận xóa bản ghi này?",
+      "cannotDelete": "Không thể xóa"
+    },
+    "toast": {
+      "deleteSuccess": "Đã xóa lịch sử bảo dưỡng thành công"
+    }
+  },
+  "searchBar": {
+    "placeholder": "Tìm kiếm..."
+  },
+  "productListPage": {
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "productList": "Danh sách phụ tùng"
+    },
+    "searchBar": {
+      "placeholder": "Tìm kiếm sản phẩm..."
+    },
+    "filter": {
+      "title": "Bộ lọc sản phẩm",
+      "open": "Bộ lọc"
+    },
+    "notFound": "Không có sản phẩm phù hợp.",
+    "activeFilters": {
+      "status": {
+        "in_stock": "Còn hàng",
+        "out_of_stock": "Hết hàng",
+        "out_of_business": "Ngừng kinh doanh"
+      },
+      "remove": "Xóa filter",
+      "clearAll": "Xoá tất cả"
+    },
+    "sortBar": {
+      "showing": "trên",
+      "results": "Kết quả",
+      "sortBy": "Sắp xếp theo",
+      "grid": "Chế độ lưới",
+      "list": "Chế độ danh sách",
+      "options": {
+        "relevance": "Liên quan",
+        "priceAsc": "Giá: Thấp đến Cao",
+        "priceDesc": "Giá: Cao đến Thấp"
+      }
+    },
+    "filterSidebar": {
+      "title": "Lọc",
+      "reset": "Đặt lại",
+      "status": {
+        "title": "Trạng thái",
+        "options": {
+          "in_stock": "Còn hàng",
+          "out_of_stock": "Hết hàng",
+          "out_of_business": "Ngừng kinh doanh"
+        }
+      },
+      "category": {
+        "title": "Danh mục phụ tùng"
+      },
+      "price": {
+        "title": "Giá"
+      }
+    },
+    "productCard": {
+      "quickBuy": "Mua nhanh",
+      "addToCart": "Thêm vào giỏ hàng",
+      "addToCartSuccess": "Thêm sản phẩm vào giỏ hàng thành công",
+      "preview": "Xem ảnh lớn"
+    }
+  },
+  "productDetailsPage": {
+    "breadcrumbs": {
+      "home": "Trang chủ",
+      "product": "Sản phẩm"
+    },
+    "productInfo": {
+      "toast": {
+        "success": "Sản phẩm đã thêm vào giỏ hàng"
+      },
+      "unknown": "Không xác định",
+      "stock": "Số lượng",
+      "quantity": "Số lượng",
+      "addToCart": "Thêm vào giỏ hàng",
+      "outOfStock": "Hết hàng",
+      "outOfBusiness": "Ngừng kinh doanh",
+      "formOfDelivery": "Hình thức giao hàng"
+    }
+  }
+}

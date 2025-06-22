@@ -1,4 +1,5 @@
 import { Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   show: boolean;
@@ -13,6 +14,7 @@ export default function SearchOverlay({
   setValue,
   onClose,
 }: Props) {
+  const t = useTranslations("Header");
   if (!show) return null;
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center transition-all duration-300 overflow-hidden">
@@ -39,7 +41,7 @@ export default function SearchOverlay({
             type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            placeholder="Tìm kiếm bài viết, dịch vụ..."
+            placeholder={t("searchPlaceholder")}
             className="w-full py-4 pl-12 pr-4 bg-white text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 rounded-[30px]"
           />
           <Search className="absolute left-4 text-gray-400" size={24} />
@@ -50,7 +52,7 @@ export default function SearchOverlay({
               onClose();
             }}
             tabIndex={-1}
-            aria-label="Đóng tìm kiếm"
+            aria-label={t("closeSearch")}
           >
             <X size={28} />
           </button>
