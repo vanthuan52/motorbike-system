@@ -172,7 +172,7 @@ const MyVehicle = () => {
         </div>
 
         <div className="bg-white rounded-lg p-4 border border-gray-200">
-          <div className="mb-4">
+          <div className="lg:my-4 sm:my-2">
             <SearchInputReuse onChange={(text) => setSearchText(text)} />
           </div>
 

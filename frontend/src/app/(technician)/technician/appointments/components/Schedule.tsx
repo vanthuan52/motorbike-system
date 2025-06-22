@@ -117,7 +117,7 @@ const Schedule: React.FC = () => {
                 key={item.id}
                 className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105"
               >
-                <div className="mb-4">
+                <div className="lg:my-4 sm:my-2">
                   <h3 className="text-xl font-semibold text-gray-900">
                     {item.customerName}
                   </h3>

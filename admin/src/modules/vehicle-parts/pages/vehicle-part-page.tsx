@@ -23,7 +23,7 @@ export default function VehiclePartsPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const columns: ColumnsType<typeof mockDataTableVehiclePart[0]> = [
+  const columns: ColumnsType<(typeof mockDataTableVehiclePart)[0]> = [
     {
       title: "STT",
       key: "index",
@@ -69,14 +69,16 @@ export default function VehiclePartsPage() {
       </PageHeading> */}
 
       <div className="bg-white rounded-lg p-4 border border-gray-200">
-        <div className="mb-4">
-          <SearchInput onChange={(text) => {
-            setDataSource(
-              mockDataTableVehiclePart.filter(item =>
-                item.name.toLowerCase().includes(text.toLowerCase())
-              )
-            );
-          }} />
+        <div className="lg:my-4 sm:my-2">
+          <SearchInput
+            onChange={(text) => {
+              setDataSource(
+                mockDataTableVehiclePart.filter((item) =>
+                  item.name.toLowerCase().includes(text.toLowerCase())
+                )
+              );
+            }}
+          />
         </div>
 
         <Table

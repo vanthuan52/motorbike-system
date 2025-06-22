@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Input, Popconfirm, Row, Select, Tooltip } from "antd";
+import { Button, Input, Popconfirm, Select, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
 import { Product } from "../types";
@@ -162,52 +162,44 @@ export default function ProductsPage() {
     setPayload({ name: "", category_id: null, page: 1, limit: 5 });
   };
   return (
-    <div className="sm:px-4 my-10 sm:pt-0">
-      <div style={{ marginBottom: 16 }}>
+    <div className="sm:px-4 px-2 pt-4">
+      <div className="mb-4">
         <PageHeading
           title="Sản phẩm"
           onClick={openCreate}
           addButtonLabel="Thêm sản phẩm"
         />
       </div>
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="mb-4 px-5 pt-4">
-          <Row gutter={16} style={{ marginBottom: 16 }}>
-            <Col>
-              <Input
-                placeholder="Tìm theo tên sản phẩm"
-                value={payload.name}
-                onChange={(e) =>
-                  setPayload({ ...payload, name: e.target.value })
-                }
-                allowClear
-                style={{ width: 200, height: 40 }}
-              />
-            </Col>
-            <Col>
-              <Select
-                placeholder="Chọn danh mục"
-                value={payload.category_id}
-                onChange={(e) => setPayload({ ...payload, category_id: e })}
-                allowClear
-                style={{ width: 180, height: 40 }}
-              >
-                {Object.entries(categoryMap).map(([id, name]) => (
-                  <Select.Option key={id} value={id}>
-                    {name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Col>
-            <Col>
-              <Button
-                onClick={() => handleResetFilter()}
-                style={{ height: 40 }}
-              >
-                Đặt lại
-              </Button>
-            </Col>
-          </Row>
+
+      <div className="bg-white rounded-lg shadow-md px-3 sm:px-5 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-end gap-3 pt-4 mb-4">
+          <Input
+            placeholder="Tìm theo tên sản phẩm"
+            value={payload.name}
+            onChange={(e) =>
+              setPayload({ ...payload, name: e.target.value, page: 1 })
+            }
+            allowClear
+            className="!h-10 sm:w-52"
+          />
+          <Select
+            placeholder="Chọn danh mục"
+            value={payload.category_id}
+            onChange={(value) =>
+              setPayload({ ...payload, category_id: value, page: 1 })
+            }
+            allowClear
+            className="!h-10 sm:w-44"
+          >
+            {Object.entries(categoryMap).map(([id, name]) => (
+              <Select.Option key={id} value={id}>
+                {name}
+              </Select.Option>
+            ))}
+          </Select>
+          <Button onClick={handleResetFilter} className="!h-10 sm:w-auto">
+            Đặt lại
+          </Button>
         </div>
 
         {isLoading ? (

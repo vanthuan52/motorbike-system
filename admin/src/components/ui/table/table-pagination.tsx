@@ -1,4 +1,5 @@
-import { Select } from "antd";
+import { useEffect, useState } from "react";
+import { Input, Select } from "antd";
 import PaginationButton from "./pagination-button";
 
 interface TablePaginationProps {
@@ -20,6 +21,24 @@ const TablePagination = ({
 
   const disableLeft = currentPage <= 1;
   const disableRight = currentPage >= totalPages;
+
+  const [inputPage, setInputPage] = useState(currentPage.toString());
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputPage(e.target.value.replace(/\D/, ""));
+  };
+
+  const handleInputSubmit = () => {
+    const page = Math.min(Math.max(Number(inputPage), 1), totalPages);
+    if (page !== currentPage) {
+      onPageChange(page);
+    }
+    setInputPage(page.toString());
+  };
+
+  useEffect(() => {
+    setInputPage(currentPage.toString());
+  }, [currentPage]);
 
   return (
     <div className="flex items-center justify-between text-sm font-black w-full px-5 pb-4">
@@ -81,6 +100,15 @@ const TablePagination = ({
               <path d="m15 18-6-6 6-6"></path>
             </svg>
           </PaginationButton>
+
+          <Input
+            value={inputPage}
+            onChange={handleInputChange}
+            onBlur={handleInputSubmit}
+            onPressEnter={handleInputSubmit}
+            className="text-center !w-14 !h-9 font-medium"
+            size="middle"
+          />
 
           <PaginationButton
             onClick={() => onPageChange(currentPage + 1)}
