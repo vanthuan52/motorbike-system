@@ -1,5 +1,5 @@
-import { BREADCRUMB_LABELS } from "@/constants/breadcrumb.config";
 import { Link, useLocation } from "react-router-dom";
+import { BREADCRUMB_LABELS } from "@/constants/breadcrumb.config";
 
 function getLabelFromSegment(segment: string) {
   const lower = segment.toLowerCase();
@@ -14,9 +14,9 @@ export default function Breadcrumb() {
   const segments = location.pathname.split("/").filter(Boolean);
 
   return (
-    <div className="text-sm py-4">
+    <div className="text-sm py-2 px-4">
       <div className="flex flex-wrap items-center gap-1">
-        <Link to="/" className="text-gray-400 hover:underline">
+        <Link to="/" className="text-blue-500 font-semibold hover:underline">
           Trang chủ
         </Link>
         {segments.map((seg, idx) => {
@@ -26,7 +26,10 @@ export default function Breadcrumb() {
           return (
             <span key={idx} className="flex items-center gap-1">
               <span>/</span>
-              <Link to={path} className="text-gray-400 hover:underline">
+              <Link
+                to={path}
+                className="text-blue-500 font-semibold hover:underline"
+              >
                 {label}
               </Link>
             </span>

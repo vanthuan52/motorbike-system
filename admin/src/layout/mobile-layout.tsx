@@ -19,7 +19,7 @@ export default function MobileLayout() {
         onClose={() => setSidebarOpen(false)}
       />
       <main className="flex-1 overflow-y-auto py-5 pb-14 scrollbar-hidden">
-        <div className="mt-14 px-4 space-y-4">
+        <div className="mt-8 space-y-4">
           <Breadcrumb />
           <Outlet />
         </div>

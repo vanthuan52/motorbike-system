@@ -70,10 +70,8 @@ export default function Customers() {
   );
 
   return (
-    <div className="sm:px-4 pt-8 sm:pt-0">
-      <div style={{ marginBottom: 16 }}>
-        <PageHeading title="Danh sách khách hàng" onClick={handleCreate} />
-      </div>
+    <div className="px-4 py-2 md:py-4 sm:pt-0">
+      <PageHeading title="Danh sách khách hàng" onClick={handleCreate} />
 
       <div className="bg-white rounded-lg shadow-md">
         <div className="mb-4 px-5 pt-4 flex gap-4 max-h-[55px] w-full">

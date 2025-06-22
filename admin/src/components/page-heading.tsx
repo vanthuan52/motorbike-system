@@ -14,7 +14,7 @@ export const PageHeading = ({
   disabledButton,
 }: Props) => {
   return (
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 px-2 sm:px-0 py-2 sm:mt-2 mt-12">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 px-2 sm:px-0 md:mb-2 mb-4">
       <h2
         className="text-xl sm:text-[26px] font-semibold text-center sm:text-left"
         style={{ wordBreak: "break-word" }}
