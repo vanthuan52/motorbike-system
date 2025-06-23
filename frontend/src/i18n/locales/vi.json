@@ -1074,5 +1074,80 @@
       "outOfBusiness": "Ngừng kinh doanh",
       "formOfDelivery": "Hình thức giao hàng"
     }
+  },
+  "metaHiringpage": {
+    "title": "Tuyển dụng",
+    "description": "Tuyển dụng"
+  },
+  "hiringPage": {
+    "companyDescription": {
+      "title": "Vị trí đang tuyển",
+      "companyWorkTitle": "Làm việc tại Motorbike System",
+      "companyWorkDesc": "Chúng tôi tìm kiếm những ứng viên tài năng, nhiệt huyết để cùng phát triển dịch vụ xe máy hàng đầu Việt Nam. Môi trường làm việc năng động, đãi ngộ hấp dẫn, cơ hội thăng tiến rõ ràng.",
+      "whoTitle": "Chúng tôi là ai",
+      "whoDesc": "Motorbike System là nền tảng hỗ trợ quản lý và bảo trì xe máy hiệu quả, hiện đại. Chúng tôi tập trung phát triển con người, sáng tạo công nghệ và phục vụ khách hàng."
+    },
+    "companyInfo": {
+      "name": "MOTORBIKE SYSTEM",
+      "industry": "Dịch vụ xe máy",
+      "size": "100 - 500 nhân sự",
+      "workTitle": "Làm việc tại Motorbike System",
+      "workDesc": "Chúng tôi tìm kiếm những ứng viên tài năng, nhiệt huyết để cùng phát triển dịch vụ xe máy hàng đầu Việt Nam. Môi trường làm việc năng động, đãi ngộ hấp dẫn, cơ hội thăng tiến rõ ràng.",
+      "imageAlt": "Motorbike career",
+      "whoTitle": "Chúng tôi là ai",
+      "whoDesc": "Motorbike System là nền tảng hỗ trợ quản lý và bảo trì xe máy hiệu quả, hiện đại. Chúng tôi tập trung phát triển con người, sáng tạo công nghệ và phục vụ khách hàng."
+    },
+    "searchFilter": {
+      "searchLabel": "Tìm kiếm",
+      "searchPlaceholder": "Tìm kiếm công việc",
+      "jobTypeLabel": "Loại công việc",
+      "jobTypePlaceholder": "Chọn hình thức công việc",
+      "jobTypes": {
+        "full_time": "Toàn thời gian",
+        "part_time": "Bán thời gian",
+        "contract": "Hợp đồng",
+        "etc": "Khác"
+      }
+    }
+  },
+  "hiringDetailsPage": {
+    "jobType": "Hình thức",
+    "location": "Địa điểm",
+    "category": "Danh mục",
+    "share": "Chia sẻ",
+    "descriptionTitle": "Mô tả công việc",
+    "requirementsTitle": "Yêu cầu công việc",
+    "salary": "Mức lương",
+    "deadline": "Hạn nộp hồ sơ",
+    "aboutUsTitle": "Về chúng tôi",
+    "aboutUsDesc": "Chúng tôi là một đội ngũ đam mê công nghệ, không ngừng cải tiến trải nghiệm người dùng và xây dựng sản phẩm chất lượng cao. Môi trường làm việc chuyên nghiệp, thân thiện và sáng tạo.",
+    "loading": "Đang tải...",
+    "back": "Quay lại",
+    "application_form": "Đơn ứng tuyển",
+    "applicationForm": {
+      "firstName": "Họ",
+      "lastName": "Tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "message": "Bạn muốn chia sẻ điều gì với chúng tôi?",
+      "messagePlaceholder": "Giới thiệu bản thân, mong muốn, kinh nghiệm...",
+      "resume": "CV (tối đa 4MB, pdf/doc)",
+      "uploadInstruction": "Kéo & thả hoặc",
+      "chooseFile": "chọn tệp",
+      "experience": "Bạn có bao nhiêu năm kinh nghiệm?",
+      "expOptions": {
+        "0_2": "0-2 năm",
+        "3_5": "3-5 năm",
+        "more_5": "Hơn 5 năm"
+      },
+      "submit": "Gửi đơn ứng tuyển",
+      "validation": {
+        "firstName": "Vui lòng nhập họ",
+        "lastName": "Vui lòng nhập tên",
+        "email": "Email không hợp lệ",
+        "phone": "Vui lòng nhập số điện thoại",
+        "experience": "Vui lòng chọn kinh nghiệm"
+      }
+    }
   }
 }

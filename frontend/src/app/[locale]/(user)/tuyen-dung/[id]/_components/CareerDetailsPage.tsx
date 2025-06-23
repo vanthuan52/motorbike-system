@@ -1,22 +1,34 @@
 "use client";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
 import { useParams } from "next/navigation";
 import { MdKeyboardArrowLeft } from "react-icons/md";
+import { useTranslations } from "next-intl";
 
-import { careerJobs } from "../../mocks/career";
 import CareerHeader from "../../_components/CareerHeader";
 import ApplicationForm from "./ApplicationForm";
 import JobDetails from "./JobDetails";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
 import { ROUTER_PATH } from "@/constant/router-path";
+import { hiringActions } from "@/features/hiring/store/hiring-slice";
+import { RootState } from "@/store";
+import CareerDetailSkeletonPage from "./CareerDetailSkeletonPage";
 
 export default function CareerDetailsPage() {
-  const { id } = useParams();
-  const job = careerJobs.find((job) => job.id === id);
+  const t = useTranslations("hiringDetailsPage");
+  const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch();
+  const { hiringDetail, loading } = useSelector(
+    (state: RootState) => state.hiring
+  );
 
-  if (!job)
+  useEffect(() => {
+    dispatch(hiringActions.getHiringDetail({ hiringId: id ?? "" }));
+  }, [dispatch, id]);
+  if (!hiringDetail)
     return <div className="p-8 text-center">Không tìm thấy công việc</div>;
-
+  if (loading) return <CareerDetailSkeletonPage />;
   return (
     <div className="bg-gray-50 min-h-screen">
       <CareerHeader />
@@ -25,12 +37,12 @@ export default function CareerDetailsPage() {
           href={ROUTER_PATH.HIRING}
           className="flex items-center mb-6 text-gray-700 hover:text-gray-900 hover:!underline transition-all duration-200"
         >
-          <MdKeyboardArrowLeft size={20} /> Quay lại
+          <MdKeyboardArrowLeft size={20} /> {t("back")}
         </CustomLink>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <JobDetails job={job} />
+          <JobDetails job={hiringDetail} />
           <div className="lg:col-span-5 border border-gray-200 p-6 rounded-lg">
-            <h2 className="text-xl font-bold mb-4">Đơn ứng tuyển</h2>
+            <h2 className="text-xl font-bold mb-4">{t("application_form")}</h2>
             <ApplicationForm />
           </div>
         </div>

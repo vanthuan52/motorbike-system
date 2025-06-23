@@ -10,10 +10,13 @@ import {
   theme,
 } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
+import { useTranslations } from "next-intl";
 
 const { Dragger } = Upload;
 
 export default function ApplicationForm() {
+  const t = useTranslations("hiringDetailsPage.applicationForm");
+
   return (
     <ConfigProvider
       theme={{
@@ -32,71 +35,68 @@ export default function ApplicationForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             name="firstName"
-            label="Họ"
-            rules={[{ required: true, message: "Vui lòng nhập họ" }]}
+            label={t("firstName")}
+            rules={[{ required: true, message: t("validation.firstName") }]}
           >
-            <Input size="large" placeholder="Nhập họ" />
+            <Input size="large" placeholder={t("firstName")} />
           </Form.Item>
           <Form.Item
             name="lastName"
-            label="Tên"
-            rules={[{ required: true, message: "Vui lòng nhập tên" }]}
+            label={t("lastName")}
+            rules={[{ required: true, message: t("validation.lastName") }]}
           >
-            <Input size="large" placeholder="Nhập tên" />
+            <Input size="large" placeholder={t("lastName")} />
           </Form.Item>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             name="email"
-            label="Email"
+            label={t("email")}
             rules={[
-              { required: true, type: "email", message: "Email không hợp lệ" },
+              { required: true, type: "email", message: t("validation.email") },
             ]}
           >
             <Input size="large" placeholder="Email" />
           </Form.Item>
           <Form.Item
             name="phone"
-            label="Số điện thoại"
-            rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+            label={t("phone")}
+            rules={[{ required: true, message: t("validation.phone") }]}
           >
-            <Input size="large" placeholder="Số điện thoại" />
+            <Input size="large" placeholder={t("phone")} />
           </Form.Item>
         </div>
 
-        <Form.Item
-          name="message"
-          label="Bạn muốn chia sẻ điều gì với chúng tôi?"
-        >
+        <Form.Item name="message" label={t("message")}>
           <Input.TextArea
             rows={4}
-            placeholder="Giới thiệu bản thân, mong muốn, kinh nghiệm..."
+            placeholder={t("messagePlaceholder")}
             size="large"
           />
         </Form.Item>
 
-        <Form.Item name="resume" label="CV (tối đa 4MB, pdf/doc)">
+        <Form.Item name="resume" label={t("resume")}>
           <Dragger maxCount={1} accept=".pdf,.doc,.docx" height={150}>
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
             <p className="text-sm text-gray-600">
-              Kéo & thả hoặc{" "}
-              <span className="text-blue-500 underline">chọn tệp</span>
+              {t("uploadInstruction")}{" "}
+              <span className="text-blue-500 underline">{t("chooseFile")}</span>
             </p>
           </Dragger>
         </Form.Item>
 
         <Form.Item
           name="experience"
-          label="Bạn có bao nhiêu năm kinh nghiệm?"
-          rules={[{ required: true, message: "Vui lòng chọn kinh nghiệm" }]}
+          label={t("experience")}
+          rules={[{ required: true, message: t("validation.experience") }]}
         >
           <Radio.Group size="large" rootClassName="!flex flex-col !space-y-2">
-            <Radio value="0-2">0-2 năm</Radio>
-            <Radio value="3-5">3-5 năm</Radio>
-            <Radio value=">5">Hơn 5 năm</Radio>
+            <Radio value="0-2">{t("expOptions.0_2")}</Radio>
+            <Radio value="3-5">{t("expOptions.3_5")}</Radio>
+            <Radio value=">5">{t("expOptions.more_5")}</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -107,7 +107,7 @@ export default function ApplicationForm() {
             size="large"
             className="bg-black hover:bg-gray-800 px-6"
           >
-            Gửi đơn ứng tuyển
+            {t("submit")}
           </Button>
         </Form.Item>
       </Form>
