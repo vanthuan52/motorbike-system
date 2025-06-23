@@ -40,10 +40,11 @@ export default function HiringDetailsPage() {
     }
   }, [hiringDetail, form]);
   const handleSave = async (values: any) => {
+    if (!params.id) return;
     dispatch(
       hiringActions.updateHiringRequest({
-        id: params._id,
-        data: values,
+        id: params.id,
+        hiring: values,
       })
     );
   };

@@ -1,4 +1,4 @@
-import { hiringData } from "../mocks/career";
+import { AxiosError, AxiosResponse } from "axios";
 import {
   HiringStatusEnum,
   Hiring,
@@ -6,9 +6,9 @@ import {
   HiringResponseData,
 } from "../types";
 import { API_ENDPOINTS } from "@/constants/api-endpoint";
-import { ApiResponse } from "@/types/api.type";
+import { ApiErrorResponse, ApiResponse } from "@/types/api.type";
+import { adminApi } from "@/lib/axios";
 
-const MOCK_DELAY = 500;
 type HiringFilter = {
   search?: string;
   page?: number;
@@ -17,121 +17,127 @@ type HiringFilter = {
   orderBy?: string;
   orderDirection?: "asc" | "desc";
 };
-const mockGetHiringList = async (
-  filter?: HiringFilter
-): Promise<HiringResponse> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        statusCode: 200,
-        message: "Mock: Hiring list fetched successfully.",
-        _metadata: {
-          language: "en",
-          timestamp: Date.now(),
-          timezone: "Asia/Ho_Chi_Minh",
-          path: API_ENDPOINTS.ADMIN.HIRING,
-          version: "1",
-          pagination: {
-            availableSearch: ["name", "status"],
+const hiringService = {
+  getHiringList: async (filter?: HiringFilter): Promise<HiringResponse> => {
+    try {
+      const response: AxiosResponse<HiringResponse> = await adminApi.get(
+        API_ENDPOINTS.ADMIN.HIRING,
+        {
+          params: {
+            search: filter?.search || "",
             page: filter?.page || 1,
             perPage: filter?.perPage || 10,
-            orderBy: filter?.orderBy || "createdAt",
-            orderDirection: filter?.orderDirection || "asc",
-            availableOrderBy: ["createdAt"],
-            availableOrderDirection: ["asc", "desc"],
-            total: hiringData.length,
-            totalPage: Math.ceil(hiringData.length / (filter?.perPage || 10)),
+            status: filter?.status || "",
           },
-        },
-        data: hiringData,
-      });
-    }, MOCK_DELAY);
-  });
-};
-
-const mockGetHiringDetails = async (
-  _id: string
-): Promise<HiringResponseData> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const found = hiringData.find((job) => job._id === _id);
-      if (found) {
-        resolve({
-          ...found,
-        });
-      } else {
-        reject(new Error("Mock: Hiring not found."));
+        }
+      );
+      const responseData: HiringResponse | undefined = response.data;
+      if (response.status !== 200 || !responseData) {
+        throw new Error(response?.data.message || "An unexpected error.");
       }
-    }, MOCK_DELAY);
-  });
-};
+      return responseData;
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
 
-const mockCreateHiring = async (
-  hiring: Hiring
-): Promise<HiringResponseData> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newHiring = { ...hiring, id: `${Date.now()}` };
-      hiringData.push(newHiring);
-      resolve(newHiring);
-    }, MOCK_DELAY);
-  });
-};
-
-const mockUpdateHiring = async (id: string, hiring: Hiring): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const index = hiringData.findIndex((job) => job._id === id);
-      if (index !== -1) {
-        hiringData[index] = { ...hiringData[index], ...hiring };
-        resolve();
-      } else {
-        reject(new Error("Mock: Hiring not found."));
+  getHiringDetails: async (id: string): Promise<HiringResponseData> => {
+    try {
+      const response: AxiosResponse<HiringResponse> = await adminApi.get(
+        API_ENDPOINTS.ADMIN.HIRING_DETAILS(id)
+      );
+      const responseData: HiringResponseData | undefined = response.data.data;
+      if (response.status !== 200 || !responseData) {
+        throw new Error(response?.data.message || "An unexpected error.");
       }
-    }, MOCK_DELAY);
-  });
-};
+      return responseData;
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
 
-const mockDeleteHiring = async (id: string): Promise<void> => {
-  console.log("Mock: Deleting hiring with ID:", id);
-
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const index = hiringData.findIndex((job) => job._id === id);
-      console.log("Mock: Hiring index found:", index);
-
-      if (index !== -1) {
-        hiringData.splice(index, 1);
-        resolve();
-      } else {
-        reject(new Error("Mock: Hiring not found."));
+  createHiring: async (hiring: Hiring): Promise<HiringResponseData> => {
+    try {
+      const response: AxiosResponse<HiringResponse> = await adminApi.post(
+        API_ENDPOINTS.ADMIN.HIRING_CREATE,
+        hiring
+      );
+      const responseData: HiringResponseData | undefined = response.data.data;
+      if (response.status !== 201 || !responseData) {
+        throw new Error(response?.data.message || "An unexpected error.");
       }
-    }, MOCK_DELAY);
-  });
-};
+      return responseData;
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
 
-const mockUpdateHiringStatus = async (
-  id: string,
-  status: HiringStatusEnum
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const index = hiringData.findIndex((job) => job._id === id);
-      if (index !== -1) {
-        hiringData[index].status = status;
-        resolve();
-      } else {
-        reject(new Error("Mock: Hiring not found."));
+  updateHiring: async (id: string, hiring: Hiring): Promise<void> => {
+    console.log(hiring);
+
+    try {
+      const response: AxiosResponse<ApiResponse<void>> = await adminApi.put(
+        API_ENDPOINTS.ADMIN.HIRING_UPDATE(id),
+        hiring
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "An unexpected error.");
       }
-    }, MOCK_DELAY);
-  });
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+
+  deleteHiring: async (id: string): Promise<void> => {
+    try {
+      const response: AxiosResponse<ApiResponse<void>> = await adminApi.delete(
+        API_ENDPOINTS.ADMIN.HIRING_DELETE(id)
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "An unexpected error.");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+
+  updateHiringStatus: async (
+    id: string,
+    status: HiringStatusEnum
+  ): Promise<void> => {
+    try {
+      const response: AxiosResponse<ApiResponse<void>> = await adminApi.patch(
+        API_ENDPOINTS.ADMIN.HIRING_UPDATE_STATUS(id),
+        { status }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "An unexpected error.");
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
 };
 
-export const hiringService = {
-  getHiringList: mockGetHiringList,
-  getHiringDetails: mockGetHiringDetails,
-  createHiring: mockCreateHiring,
-  updateHiring: mockUpdateHiring,
-  deleteHiring: mockDeleteHiring,
-  updateHiringStatus: mockUpdateHiringStatus,
-};
+export default hiringService;
