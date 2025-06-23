@@ -1,11 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { BREADCRUMB_LABELS } from "@/constants/breadcrumb.config";
+import { ROUTER_PATH } from "@/constants/router-path";
 
 function getLabelFromSegment(segment: string) {
   const lower = segment.toLowerCase();
   if (/^\d+$/.test(segment)) return "Chi tiết";
   return BREADCRUMB_LABELS[lower] || lower.replace(/-/g, " ");
 }
+
+const pageBlackList = [ROUTER_PATH.CUSTOMERS, ROUTER_PATH.CUSTOMERS_CREATION];
 
 export default function Breadcrumb({
   theme = "green",
@@ -35,8 +38,12 @@ export default function Breadcrumb({
     },
   }[theme];
 
+  if (pageBlackList.includes(location.pathname)) {
+    return null;
+  }
+
   return (
-    <div className="px-4 pt-3 sm:pt-0">
+    <div className="px-4 py-2">
       <div
         className={`
           text-xs sm:text-sm 

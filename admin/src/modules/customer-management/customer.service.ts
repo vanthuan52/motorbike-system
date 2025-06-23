@@ -8,6 +8,9 @@ import {
   UserDetailResponse,
   User,
   UserCreationResponse,
+  UserUpdateResponse,
+  ENUM_USER_STATUS,
+  UserUpdateStatusResponse,
 } from "../user/types";
 
 const customerServices = {
@@ -40,7 +43,7 @@ const customerServices = {
         API_ENDPOINTS.ADMIN.USER_DETAIL(id)
       );
 
-      if (response.status !== 201) {
+      if (response.status !== 200 || !response.data.data) {
         throw new Error(response.data.message || "Create user failed.");
       }
       return response.data;
@@ -59,7 +62,68 @@ const customerServices = {
       );
 
       if (response.status !== 201 || !response.data.data) {
-        throw new Error(response.data.message || "Get user list failed.");
+        throw new Error(response.data.message || "Create user failed.");
+      }
+      return response.data;
+    } catch (error: any) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+  updateCustomer: async (
+    id: string,
+    user: User
+  ): Promise<UserUpdateResponse> => {
+    try {
+      const response = await adminApi.put<UserUpdateResponse>(
+        API_ENDPOINTS.ADMIN.USER_UPDATE(id),
+        user
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Update user failed.");
+      }
+      return response.data;
+    } catch (error: any) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+  updateCustomerStatus: async (
+    id: string,
+    status: ENUM_USER_STATUS
+  ): Promise<UserUpdateStatusResponse> => {
+    try {
+      const response = await adminApi.patch<UserUpdateStatusResponse>(
+        API_ENDPOINTS.ADMIN.USER_UPDATE_STATUS(id),
+        {
+          status,
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Update user status failed.");
+      }
+      return response.data;
+    } catch (error: any) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+  deleteCustomer: async (id: string): Promise<UserUpdateStatusResponse> => {
+    try {
+      const response = await adminApi.delete<UserUpdateStatusResponse>(
+        API_ENDPOINTS.ADMIN.USER_DELETION(id)
+      );
+
+      if (response.status !== 200) {
+        throw new Error(response.data.message || "Delete user failed.");
       }
       return response.data;
     } catch (error: any) {

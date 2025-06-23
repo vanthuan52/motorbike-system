@@ -9,9 +9,7 @@ export default function DesktopLayout() {
       <DesktopSidebar />
       <div className="w-full overflow-x-auto flex flex-col flex-1">
         <DesktopHeader />
-        <div className="py-2">
-          <Breadcrumb />
-        </div>
+        {/* <Breadcrumb /> */}
         <div className="flex-1 overflow-y-auto h-full sm:h-auto">
           <Outlet />
         </div>

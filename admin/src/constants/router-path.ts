@@ -13,7 +13,7 @@ export const ROUTER_PATH = {
   MAINTENANCE: "/maintenance",
   CUSTOMERS: "/customers",
   CUSTOMERS_CREATION: "/customers/new",
-  CUSTOMERS_DETAIL: `/customers/:id/view`,
+  CUSTOMERS_DETAIL: `/customers/:id`,
   EMPLOYEES: "/employees",
   EMPLOYEES_DETAILS: "/employees/employee-details/:id",
   POSTS: "/posts",
