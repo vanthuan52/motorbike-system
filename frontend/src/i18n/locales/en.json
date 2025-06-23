@@ -1071,5 +1071,80 @@
       "outOfBusiness": "Discontinued",
       "formOfDelivery": "Form of delivery"
     }
+  },
+  "metaHiringpage": {
+    "title": "Hiring",
+    "description": "Hiring"
+  },
+  "hiringPage": {
+    "companyDescription": {
+      "title": "Open Positions",
+      "companyWorkTitle": "Working at Motorbike System",
+      "companyWorkDesc": "We are looking for talented and passionate individuals to join us in developing the leading motorbike service in Vietnam. A dynamic environment, attractive benefits, and clear career advancement opportunities await.",
+      "whoTitle": "Who We Are",
+      "whoDesc": "Motorbike System is a platform for effective and modern motorbike maintenance and management. We focus on developing people, driving innovation, and delivering great customer service."
+    },
+    "companyInfo": {
+      "name": "MOTORBIKE SYSTEM",
+      "industry": "Motorbike Services",
+      "size": "100 - 500 employees",
+      "workTitle": "Working at Motorbike System",
+      "workDesc": "We are looking for talented and passionate individuals to join us in developing the leading motorbike service in Vietnam. A dynamic environment, attractive benefits, and clear career advancement opportunities await.",
+      "imageAlt": "Motorbike career",
+      "whoTitle": "Who We Are",
+      "whoDesc": "Motorbike System is a platform for effective and modern motorbike maintenance and management. We focus on developing people, driving innovation, and delivering great customer service."
+    },
+    "searchFilter": {
+      "searchLabel": "Search",
+      "searchPlaceholder": "Search for jobs",
+      "jobTypeLabel": "Job Type",
+      "jobTypePlaceholder": "Select job type",
+      "jobTypes": {
+        "full_time": "Full-time",
+        "part_time": "Part-time",
+        "contract": "Contract",
+        "etc": "Other"
+      }
+    }
+  },
+  "hiringDetailsPage": {
+    "jobType": "Job Type",
+    "location": "Location",
+    "category": "Category",
+    "share": "Share",
+    "descriptionTitle": "Job Description",
+    "requirementsTitle": "Job Requirements",
+    "salary": "Salary",
+    "deadline": "Application Deadline",
+    "aboutUsTitle": "About Us",
+    "aboutUsDesc": "We are a passionate tech team continuously improving user experience and building high-quality products. Our work environment is professional, friendly, and creative.",
+    "loading": "Loading...",
+    "back": "Back",
+    "application_form": "Application Form",
+    "applicationForm": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "message": "What would you like to share with us?",
+      "messagePlaceholder": "Introduce yourself, expectations, experience...",
+      "resume": "Resume (max 4MB, pdf/doc)",
+      "uploadInstruction": "Drag & drop or",
+      "chooseFile": "choose file",
+      "experience": "How many years of experience do you have?",
+      "expOptions": {
+        "0_2": "0-2 years",
+        "3_5": "3-5 years",
+        "more_5": "More than 5 years"
+      },
+      "submit": "Submit Application",
+      "validation": {
+        "firstName": "Please enter your first name",
+        "lastName": "Please enter your last name",
+        "email": "Invalid email address",
+        "phone": "Please enter your phone number",
+        "experience": "Please select your experience level"
+      }
+    }
   }
 }

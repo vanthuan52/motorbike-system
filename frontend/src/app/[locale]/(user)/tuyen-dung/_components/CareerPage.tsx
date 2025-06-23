@@ -1,27 +1,45 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import CareerHeader from "./CareerHeader";
 import CareerSearchFilter from "./CareerSearchFilter";
 import CareerJobList from "./CareerJobList";
-import { careerJobs } from "../mocks/career";
 import CompanyDescription from "./CompanyDescription";
 import { PaginationFilter } from "@/interfaces/filter";
 import { DEFAULT_PER_PAGE } from "@/constant/application";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { hiringActions } from "@/features/hiring/store/hiring-slice";
 interface CareerJob extends PaginationFilter {
-  job_type: string;
+  jobType: string | null;
 }
 const defaultCareerJob: CareerJob = {
   search: "",
   page: 1,
   perPage: DEFAULT_PER_PAGE,
   status: null,
-  job_type: "",
+  jobType: null,
 };
 export default function CareerPage() {
+  const dispatch = useDispatch();
   const [filter, setFilter] = useState(defaultCareerJob);
+
   const debouncedSearch = useDebounce(filter.search, 500);
+
+  const { hiringList, loading, pagination } = useSelector(
+    (state: RootState) => state.hiring
+  );
+  useEffect(() => {
+    dispatch(
+      hiringActions.getHiringList({
+        search: debouncedSearch,
+        page: filter.page,
+        perPage: filter.perPage,
+        status: filter.status ?? undefined,
+      })
+    );
+  }, [dispatch, debouncedSearch, filter]);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilter({
       ...filter,
@@ -32,7 +50,7 @@ export default function CareerPage() {
   const handleType = (v: string) => {
     setFilter({
       ...filter,
-      job_type: v,
+      jobType: v,
       page: 1,
     });
   };
@@ -46,15 +64,15 @@ export default function CareerPage() {
           <CareerSearchFilter
             search={filter.search}
             handleSearch={handleSearch}
-            type={filter.job_type}
+            type={filter.jobType ?? undefined}
             setType={handleType}
           />
           <CareerJobList
-            jobs={careerJobs}
-            search={filter.search}
-            type={filter.job_type}
+            hiring={hiringList}
             page={filter.page}
             setPage={(p: number) => setFilter({ ...filter, page: p })}
+            loading={loading}
+            pagination={pagination}
           />
         </div>
       </div>

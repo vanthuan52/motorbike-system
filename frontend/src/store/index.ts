@@ -17,6 +17,7 @@ import { cartReducer } from "@/features/cart/store";
 import { categoriesReducer } from "@/features/category/store";
 import storage from "@/utils/ssr-safe-storage";
 import { notificationReducer } from "@/features/notification/store";
+import { hiringReducer } from "@/features/hiring/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   cart: cartReducer,
   notification: notificationReducer,
   categories: categoriesReducer,
+  hiring: hiringReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

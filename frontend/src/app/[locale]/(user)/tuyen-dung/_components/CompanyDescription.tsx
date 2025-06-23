@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 import { FaBuilding, FaUsers } from "react-icons/fa";
 import {
@@ -22,6 +23,7 @@ const fadeInUp = {
 };
 
 export default function CompanyDescription() {
+  const t = useTranslations("hiringPage");
   return (
     <motion.div
       className="lg:col-span-2 space-y-6"
@@ -31,17 +33,19 @@ export default function CompanyDescription() {
       transition={{ staggerChildren: 0.2 }}
     >
       <motion.div variants={fadeInUp}>
-        <div className="text-gray-600 text-xl mb-1">Vị trí đang tuyển</div>
-        <div className="text-3xl font-bold mb-4">{COMPANY_NAME}</div>
+        <div className="text-gray-600 text-xl mb-1">
+          {t("companyDescription.title")}
+        </div>
+        <div className="text-3xl font-bold mb-4">{t("companyInfo.name")}</div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-800">
             <FaBuilding className="text-gray-500" />
-            {COMPANY_INDUSTRY}
+            {t("companyInfo.industry")}
           </div>
           <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-800">
             <FaUsers className="text-gray-500" />
-            {COMPANY_SIZE}
+            {t("companyInfo.size")}
           </div>
           <div className="flex gap-3 text-gray-500 text-xl">
             {COMPANY_SOCIALS.map(({ icon: Icon, href }, idx) => (
@@ -57,8 +61,8 @@ export default function CompanyDescription() {
           </div>
         </div>
 
-        <h2 className="text-xl font-bold mb-2">{COMPANY_WORK_TITLE}</h2>
-        <p className="text-gray-700">{COMPANY_WORK_DESC}</p>
+        <h2 className="text-xl font-bold mb-2">{t("companyInfo.workTitle")}</h2>
+        <p className="text-gray-700">{t("companyInfo.workDesc")}</p>
       </motion.div>
 
       <motion.div variants={fadeInUp}>
@@ -72,8 +76,10 @@ export default function CompanyDescription() {
       </motion.div>
 
       <motion.div variants={fadeInUp}>
-        <h3 className="text-xl font-semibold mb-2">{COMPANY_WHO_TITLE}</h3>
-        <p className="text-gray-700">{COMPANY_WHO_DESC}</p>
+        <h3 className="text-xl font-semibold mb-2">
+          {t("companyInfo.whoTitle")}
+        </h3>
+        <p className="text-gray-700">{t("companyInfo.whoDesc")}</p>
       </motion.div>
     </motion.div>
   );

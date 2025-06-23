@@ -1,9 +1,7 @@
-"use client";
-
+import { useTranslations } from "next-intl";
 import { ConfigProvider, Input, Select } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-
-const { Option } = Select;
+import { ENUM_HIRING_JOB_TYPE } from "@/features/hiring/types";
 
 export default function CareerSearchFilter({
   search,
@@ -13,9 +11,18 @@ export default function CareerSearchFilter({
 }: {
   search: string;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type: string;
+  type?: string;
   setType: (v: string) => void;
 }) {
+  const t = useTranslations("hiringPage.searchFilter");
+
+  const JOB_TYPE_OPTIONS = [
+    { label: t("jobTypes.full_time"), value: ENUM_HIRING_JOB_TYPE.FULL_TIME },
+    { label: t("jobTypes.part_time"), value: ENUM_HIRING_JOB_TYPE.PART_TIME },
+    { label: t("jobTypes.contract"), value: ENUM_HIRING_JOB_TYPE.CONTRACT },
+    { label: t("jobTypes.etc"), value: ENUM_HIRING_JOB_TYPE.ETC },
+  ];
+
   return (
     <ConfigProvider
       theme={{
@@ -43,9 +50,11 @@ export default function CareerSearchFilter({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="flex flex-col">
-          <label className="text-sm text-gray-700 mb-1">Tìm kiếm</label>
+          <label className="text-sm text-gray-700 mb-1">
+            {t("searchLabel")}
+          </label>
           <Input
-            placeholder="Tìm kiếm công việc"
+            placeholder={t("searchPlaceholder")}
             prefix={<SearchOutlined />}
             value={search}
             onChange={handleSearch}
@@ -54,17 +63,21 @@ export default function CareerSearchFilter({
           />
         </div>
         <div className="flex flex-col">
-          <label className="text-sm text-gray-700 mb-1">Loại công việc</label>
+          <label className="text-sm text-gray-700 mb-1">
+            {t("jobTypeLabel")}
+          </label>
           <Select
-            placeholder="Chọn loại công việc"
-            value={type}
-            onChange={(value) => setType(value)}
+            placeholder={t("jobTypePlaceholder")}
             size="large"
+            value={type}
+            onChange={setType}
             allowClear
           >
-            <Option value="">Tất cả</Option>
-            <Option value="Full-time">Toàn thời gian</Option>
-            <Option value="Part-time">Bán thời gian</Option>
+            {JOB_TYPE_OPTIONS.map((option) => (
+              <Select.Option key={option.value} value={option.value}>
+                {option.label}
+              </Select.Option>
+            ))}
           </Select>
         </div>
       </div>
