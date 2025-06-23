@@ -3,12 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Form } from "antd";
 import { useParams } from "react-router-dom";
 import type { UploadFile } from "antd/es/upload/interface";
-import { toast } from "react-toastify";
 import { RootState } from "@/store";
 import { categoriesActions } from "../store/categories-slice";
-import { Category, PartTypeStatus } from "../types";
+import { Category, ENUM_PART_TYPE_STATUS } from "../types";
 import CategoryForm from "../components/CategoryForm";
 import SkeletonCategoryForm from "../components/SkeletonCategoryForm";
+import { notificationActions } from "@/modules/notification/store/notification-slice";
 export default function CategoryDetailsPage() {
   const params = useParams();
   const dispatch = useDispatch();
@@ -25,7 +25,10 @@ export default function CategoryDetailsPage() {
   }, [dispatch]);
   useEffect(() => {
     if (error || updateStatus.error) {
-      toast.error(error || updateStatus.error || "Có lỗi xảy ra khi cập nhật!");
+      notificationActions.notify({
+        type: "error",
+        message: error || updateStatus.error || "Có lỗi xảy ra khi cập nhật!",
+      });
     }
   }, [error]);
 
@@ -43,7 +46,10 @@ export default function CategoryDetailsPage() {
 
   useEffect(() => {
     if (error || updateStatus.error) {
-      toast.error(error || updateStatus.error);
+      notificationActions.notify({
+        type: "error",
+        message: error || updateStatus.error || "Có lỗi xảy ra khi cập nhật!",
+      });
     }
   }, [error, updateStatus.error]);
 
@@ -71,7 +77,9 @@ export default function CategoryDetailsPage() {
     dispatch(
       categoriesActions.updateStatusCategoryRequest({
         id: params.id,
-        status: values.status ? PartTypeStatus.ACTIVE : PartTypeStatus.INACTIVE,
+        status: values.status
+          ? ENUM_PART_TYPE_STATUS.ACTIVE
+          : ENUM_PART_TYPE_STATUS.INACTIVE,
       })
     );
   };

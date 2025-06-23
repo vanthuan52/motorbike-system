@@ -1,30 +1,20 @@
 import { ApiResponse } from "@/types/api.type";
+import { BaseEntity } from "@/types/base.type";
 
-export interface Category {
-  _id: string;
-  createdAt?: string;
-  updatedAt?: string;
+export interface Category extends BaseEntity {
   deleted?: boolean;
-  __v?: number;
   name: string;
   slug: string;
   description?: string;
-  status: PartTypeStatus;
+  status: ENUM_PART_TYPE_STATUS;
   photo?: string;
   vehicle_company_id?: string;
 }
-export enum PartTypeStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+export enum ENUM_PART_TYPE_STATUS {
+  ACTIVE = "active",
+  INACTIVE = "inactive",
 }
-export enum OrderDirection {
-  ASC = 'asc',
-  DESC = 'desc',
-}
-export interface Order {
-  orderBy?: string;
-  orderDirection?: OrderDirection;
-}
+
 export interface PartTypeResponseData {
   _id: string;
   createdAt: string;
@@ -34,7 +24,7 @@ export interface PartTypeResponseData {
   name: string;
   slug: string;
   description?: string;
-  status: PartTypeStatus;
+  status: ENUM_PART_TYPE_STATUS;
   photo?: string;
 }
 

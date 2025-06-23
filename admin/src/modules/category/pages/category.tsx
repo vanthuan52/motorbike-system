@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { PageHeading } from "@/components/page-heading";
 import Table from "@/components/ui/table/table";
 import { GreenSwitch } from "@/components/ui/switch";
-import { Category, PartTypeStatus } from "../types";
+import { Category, ENUM_PART_TYPE_STATUS } from "../types";
 import { RootState } from "@/store";
 import { categoriesActions } from "../store/categories-slice";
 import { ROUTER_PATH } from "@/constants/router-path";
@@ -100,7 +100,9 @@ export default function CategoryPage() {
       dispatch(
         categoriesActions.updateStatusCategoryRequest({
           id: record._id,
-          status: checked ? PartTypeStatus.ACTIVE : PartTypeStatus.INACTIVE,
+          status: checked
+            ? ENUM_PART_TYPE_STATUS.ACTIVE
+            : ENUM_PART_TYPE_STATUS.INACTIVE,
         })
       );
     },
@@ -140,9 +142,9 @@ export default function CategoryPage() {
         title: "Trạng thái",
         dataIndex: "status",
         key: "status",
-        render: (status: PartTypeStatus, record: Category) => (
+        render: (status: ENUM_PART_TYPE_STATUS, record: Category) => (
           <GreenSwitch
-            checked={status === PartTypeStatus.ACTIVE}
+            checked={status === ENUM_PART_TYPE_STATUS.ACTIVE}
             loading={updateStatus.loading}
             onChange={(checked) => handleUpdateStatus(checked, record)}
           />

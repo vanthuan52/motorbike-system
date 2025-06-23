@@ -1,20 +1,21 @@
 import { useState } from "react";
+import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
 
-type PaginationState = {
-  page?: number;
-  perPage?: number;
+type UsePaginationProps = {
+  page: number;
+  perPage: number;
 };
 
 export default function usePagination({
-  page = 1,
-  perPage = 20,
-}: PaginationState) {
-  const [pagination, setPagination] = useState<PaginationState>({
+  page = DEFAULT_PAGINATION_QUERY.page,
+  perPage = DEFAULT_PAGINATION_QUERY.perPage,
+}: UsePaginationProps) {
+  const [pagination, setPagination] = useState<UsePaginationProps>({
     page,
     perPage,
   });
 
-  const handlePaginationChange = (next: PaginationState) => {
+  const handlePaginationChange = (next: UsePaginationProps) => {
     setPagination((prev) => ({ ...prev, ...next }));
   };
 

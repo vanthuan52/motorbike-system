@@ -11,8 +11,8 @@ export interface SelectOptionItem {
 interface SelectOptionProps {
   options: SelectOptionItem[];
   placeholder?: string;
-  value?: string | number | null;
-  onChange: (value: string | number) => void;
+  value?: string | string[] | undefined;
+  onChange: (value: string | string[]) => void;
   className?: string;
   disabled?: boolean;
   allowClear?: boolean;
