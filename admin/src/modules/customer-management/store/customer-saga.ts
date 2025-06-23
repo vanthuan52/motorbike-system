@@ -45,7 +45,6 @@ function* getCustomerDetailHandler(
       customerId
     );
     const user = response.data;
-
     yield put(customerActions.getCustomerDetailSuccess(user!));
   } catch (error: any) {
     const errorMessage = error.message || "Lấy danh sách khách hàng thất bại!";
@@ -79,69 +78,87 @@ function* createCustomerHandler(action: PayloadAction<{ customer: User }>) {
   }
 }
 
-// function* updateCustomerHandler(
-//   action: PayloadAction<{ customerId: string; customer: User }>
-// ) {
-//   try {
-//     const { customer, customerId } = action.payload;
-//     yield call(customerServices.updateCustomer, customerId, customer);
-//     yield put(
-//       notificationActions.notify({
-//         type: "info",
-//         message: "Cập nhật thành công!",
-//       })
-//     );
-//     yield put(customerActions.updateCustomerSuccess());
-//   } catch (error: unknown) {
-//     const message = error instanceof Error ? error.message : String(error);
-//     yield put(customerActions.updateCustomerFailure(message));
-//   }
-// }
+function* updateCustomerHandler(
+  action: PayloadAction<{ customerId: string; customer: User }>
+) {
+  try {
+    const { customer, customerId } = action.payload;
+    yield call(customerServices.updateCustomer, customerId, customer);
+    yield put(
+      notificationActions.notify({
+        type: "info",
+        message: "Cập nhật thành công!",
+      })
+    );
+    yield put(customerActions.updateCustomerSuccess());
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    yield put(
+      notificationActions.notify({
+        type: "error",
+        message,
+      })
+    );
+    yield put(customerActions.updateCustomerFailure(message));
+  }
+}
 
-// function* deleteCustomerHandler(action: PayloadAction<{ id: string }>) {
-//   try {
-//     const { id } = action.payload;
-//     yield call(customerServices.deleteCustomer, id);
-//     yield put(
-//       notificationActions.notify({
-//         type: "info",
-//         message: "Xóa thành công!",
-//       })
-//     );
-//     yield put(customerActions.deleteCustomerSuccess());
-//   } catch (error: unknown) {
-//     const message = error instanceof Error ? error.message : String(error);
-//     yield put(customerActions.deleteCustomerFailure(message));
-//   }
-// }
+function* deleteCustomerHandler(action: PayloadAction<{ customerId: string }>) {
+  try {
+    const { customerId } = action.payload;
+    yield call(customerServices.deleteCustomer, customerId);
+    yield put(
+      notificationActions.notify({
+        type: "info",
+        message: "Xóa thành công!",
+      })
+    );
+    yield put(customerActions.deleteCustomerSuccess());
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    yield put(
+      notificationActions.notify({
+        type: "error",
+        message,
+      })
+    );
+    yield put(customerActions.deleteCustomerFailure(message));
+  }
+}
 
-// function* updateCustomerStatusHandler(
-//   action: PayloadAction<{ id: string; status: ENUM_USER_STATUS }>
-// ) {
-//   try {
-//     const { id, status } = action.payload;
-//     yield call(customerServices.updateCustomerStatus, id, status);
-//     yield put(
-//       notificationActions.notify({
-//         type: "info",
-//         message: "Cập nhật thành công!",
-//       })
-//     );
-//     yield put(customerActions.updateCustomerSuccess());
-//   } catch (error: unknown) {
-//     const message = error instanceof Error ? error.message : String(error);
-//     yield put(customerActions.updateCustomerFailure(message));
-//   }
-// }
+function* updateCustomerStatusHandler(
+  action: PayloadAction<{ customerId: string; status: ENUM_USER_STATUS }>
+) {
+  try {
+    const { customerId, status } = action.payload;
+    yield call(customerServices.updateCustomerStatus, customerId, status);
+    yield put(
+      notificationActions.notify({
+        type: "info",
+        message: "Cập nhật thành công!",
+      })
+    );
+    yield put(customerActions.updateCustomerStatusSuccess());
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    yield put(
+      notificationActions.notify({
+        type: "error",
+        message,
+      })
+    );
+    yield put(customerActions.updateCustomerStatusFailure(message));
+  }
+}
 
 export function* customerSaga() {
   yield takeLatest(customerActions.getCustomers, getCustomersHandler);
   yield takeLatest(customerActions.getCustomerDetail, getCustomerDetailHandler);
   yield takeLatest(customerActions.createCustomer, createCustomerHandler);
-  // yield takeLatest(customerActions.updateCustomer, updateCustomerHandler);
-  // yield takeLatest(customerActions.deleteCustomer, deleteCustomerHandler);
-  // yield takeLatest(
-  //   customerActions.updateCustomerStatus,
-  //   updateCustomerStatusHandler
-  // );
+  yield takeLatest(customerActions.updateCustomer, updateCustomerHandler);
+  yield takeLatest(customerActions.deleteCustomer, deleteCustomerHandler);
+  yield takeLatest(
+    customerActions.updateCustomerStatus,
+    updateCustomerStatusHandler
+  );
 }

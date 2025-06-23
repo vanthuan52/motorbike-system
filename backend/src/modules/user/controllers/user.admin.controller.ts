@@ -3,6 +3,7 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
   Get,
   InternalServerErrorException,
   Logger,
@@ -19,6 +20,7 @@ import { AuthService } from '@/modules/auth/services/auth.service';
 import { RoleService } from '@/modules/role/services/role.service';
 import {
   UserAdminCreateDoc,
+  UserAdminDeleteDoc,
   UserAdminGetDoc,
   UserAdminListDoc,
   UserAdminListUserTypeUserDoc,
@@ -267,9 +269,6 @@ export class UserAdminController {
       },
     );
 
-    // const session: ClientSession =
-    //   await this.databaseService.createTransaction();
-
     try {
       const created = await this.userService.create(
         {
@@ -282,13 +281,10 @@ export class UserAdminController {
         { actionBy: createdBy } as IDatabaseCreateOptions,
       );
 
-      // await this.databaseService.commitTransaction(session);
-
       return {
         data: { _id: created._id },
       };
     } catch (err: unknown) {
-      //await this.databaseService.abortTransaction(session);
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
         message: 'http.serverError.internalServerError',
@@ -371,24 +367,23 @@ export class UserAdminController {
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @ApiKeyProtected()
   @Put('/update/:user')
   async update(
     @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
     user: UserDoc,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() { name, role, phone }: UserUpdateRequestDto,
+    @Body() { name, phone }: UserUpdateRequestDto,
   ): Promise<void> {
-    const checkRole = await this.roleService.findOneActiveById(role);
-    if (!checkRole) {
-      throw new NotFoundException({
-        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'role.error.notFound',
-      });
-    }
+    // const checkRole = await this.roleService.findOneActiveById(role);
+    // if (!checkRole) {
+    //   throw new NotFoundException({
+    //     statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
+    //     message: 'role.error.notFound',
+    //   });
+    // }
 
     try {
-      await this.userService.update(user, { name, role, phone }, {
+      await this.userService.update(user, { name, phone }, {
         actionBy: updatedBy,
       } as IDatabaseSaveOptions);
     } catch (err: unknown) {
@@ -409,7 +404,6 @@ export class UserAdminController {
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @ApiKeyProtected()
   @Patch('/update/:user/status')
   async updateStatus(
     @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
@@ -447,6 +441,34 @@ export class UserAdminController {
           },
         },
       };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  @UserAdminDeleteDoc()
+  @Response('user.deleted')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Delete('/delete/:user')
+  async delete(
+    @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
+    user: UserDoc,
+    @AuthJwtPayload('user') actionBy: string,
+  ): Promise<IResponse<void>> {
+    try {
+      await this.userService.softDelete(user, {} as IDatabaseSaveOptions);
+
+      return {};
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,

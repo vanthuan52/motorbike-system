@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PAGINATION_QUERY_INITIAL_STATE } from "@/store/constant";
-import { User, UserPaginationQuery } from "@/modules/user/types";
+import {
+  ENUM_USER_STATUS,
+  User,
+  UserPaginationQuery,
+} from "@/modules/user/types";
 import { ApiResponsePagination } from "@/types/api.type";
 
 interface CustomerState {
@@ -9,6 +13,7 @@ interface CustomerState {
   loading: boolean;
   isUpserted: boolean;
   isDeleted: boolean;
+  isStatusUpdated: boolean;
   error: string | null;
   pagination: ApiResponsePagination | undefined;
 }
@@ -24,6 +29,7 @@ const initialState: CustomerState = {
   loading: false,
   isUpserted: false,
   isDeleted: false,
+  isStatusUpdated: false,
   error: null,
   pagination: PAGINATION_QUERY_INITIAL_STATE,
 };
@@ -119,26 +125,42 @@ export const customerSlice = createSlice({
       state.isDeleted = false;
     },
 
-    updateCustomerStatus(state, action: PayloadAction<{ customerId: string }>) {
+    updateCustomerStatus(
+      state,
+      action: PayloadAction<{ customerId: string; status: ENUM_USER_STATUS }>
+    ) {
       state.loading = true;
       state.error = null;
-      state.isUpserted = false;
+      state.isStatusUpdated = false;
     },
     updateCustomerStatusSuccess(state) {
       state.loading = false;
       state.error = null;
-      state.isUpserted = true;
+      state.isStatusUpdated = true;
     },
     updateCustomerStatusFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
-      state.isUpserted = false;
+      state.isStatusUpdated = false;
     },
 
-    reset(state) {
+    updateCustomerDetail: (state, action: PayloadAction<User>) => {
+      if (state.user) {
+        state.user = { ...action.payload };
+      }
+    },
+
+    resetCustomerDetail(state) {
+      state.loading = false;
+      state.user = null;
+      state.error = null;
+    },
+
+    resetState(state) {
       state.loading = false;
       state.isUpserted = false;
       state.isDeleted = false;
+      state.isStatusUpdated = false;
       state.users = [];
       state.user = null;
       state.error = null;

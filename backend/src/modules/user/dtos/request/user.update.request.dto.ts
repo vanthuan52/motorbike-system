@@ -3,4 +3,5 @@ import { UserCreateRequestDto } from './user.create.request.dto';
 
 export class UserUpdateRequestDto extends OmitType(UserCreateRequestDto, [
   'email',
+  'role',
 ] as const) {}

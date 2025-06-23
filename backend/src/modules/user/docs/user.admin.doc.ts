@@ -148,3 +148,19 @@ export function UserAdminUpdateStatusDoc(): MethodDecorator {
     DocResponse('user.updateStatus'),
   );
 }
+
+export function UserAdminDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'delete an user',
+    }),
+    DocRequest({
+      params: UserDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('user.deleted'),
+  );
+}

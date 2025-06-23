@@ -1,232 +1,182 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Input, DatePicker, Select, Upload, Card } from "antd";
-import { InboxOutlined } from "@ant-design/icons";
-import Button from "@/components/ui/button";
-import { imageHelper } from "@/utils/image.helper";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Form } from "antd";
+import dayjs from "dayjs";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
-import { notificationActions } from "@/modules/notification/store/notification-slice";
 import { customerActions } from "../store/customer-slice";
-import { ROUTER_PATH } from "@/constants/router-path";
+import Button from "@/components/ui/button";
+import GeneralInfoSection from "./general-info-section";
+import AddressSection from "./address-section";
+import AvatarUploadSection from "./avatar-upload-section";
+import GenderSection from "./gender-section";
+import StatusSection from "./status-section";
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+import { notificationActions } from "@/modules/notification/store/notification-slice";
+import { ENUM_USER_STATUS, User } from "@/modules/user/types";
 
-const { Option } = Select;
+type CustomerFormProps = {
+  mode: ENUM_PAGE_MODE;
+};
 
-const CustomerForm: React.FC = () => {
+const CustomerForm = ({ mode }: CustomerFormProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-  const { loading, isUpserted } = useAppSelector(
-    (state: RootState) => state.customer
-  );
+  const { id } = useParams<{ id: string }>();
 
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<any[]>([]);
 
-  const uploadPhotoProps = {
-    name: "file",
-    multiple: false,
-    maxCount: 1,
-    accept: ".png,.jpg,.jpeg",
-    beforeUpload: (file: File) => {
-      const isImage = file.type.startsWith("image/");
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isImage) {
-        dispatch(
-          notificationActions.notify({
-            type: "error",
-            message: "Chỉ được phép sử dụng hình ảnh",
-          })
-        );
-        return Upload.LIST_IGNORE;
-      }
-      if (!isLt2M) {
-        notificationActions.notify({
-          type: "error",
-          message: "Kích thước ảnh không được vượt quá 2mb.",
-        });
-        return Upload.LIST_IGNORE;
-      }
+  const {
+    loading,
+    user: customer,
+    error,
+  } = useAppSelector((state: RootState) => state.customer);
 
-      setFileList([file]);
-      form.setFieldsValue({ photo: file });
-      return false;
-    },
-    onChange({ fileList }: { fileList: any }) {
-      setFileList(fileList);
-    },
-    fileList,
-    onPreview: imageHelper.onPreviewImage,
-  };
+  const isFormFilledRef = useRef(false);
 
   useEffect(() => {
-    if (isUpserted) {
-      navigate(ROUTER_PATH.CUSTOMERS);
-    }
-  }, [dispatch, isUpserted]);
+    if (
+      customer &&
+      (mode === ENUM_PAGE_MODE.EDIT || mode === ENUM_PAGE_MODE.VIEW) &&
+      !isFormFilledRef.current
+    ) {
+      form.setFieldsValue({
+        ...customer,
+        dob: customer.dob ? dayjs(customer.dob) : undefined,
+      });
 
-  const handleSubmit = (values: any) => {
-    dispatch(customerActions.createCustomer({ customer: values }));
-    console.log("Form submitted:", values);
-  };
+      if (customer.photo) {
+        setFileList([customer.photo]);
+      } else {
+        setFileList([]);
+      }
+      isFormFilledRef.current = true;
+    }
+  }, [customer, form, mode]);
+
+  useEffect(() => {
+    if (mode === ENUM_PAGE_MODE.CREATE) {
+      form.resetFields();
+      setFileList([]);
+      isFormFilledRef.current = false;
+    }
+  }, [mode, id, form]);
+
+  useEffect(() => {
+    if (error) {
+      notificationActions.notify({
+        type: "error",
+        message: "Lỗi",
+      });
+    }
+  }, [error]);
 
   const handleCancel = () => {
     navigate(-1);
   };
 
+  const handleSubmit = (values: User) => {
+    const submitValues = {
+      ...values,
+      dob: values.dob ? dayjs(values.dob).toISOString() : undefined,
+      photo: fileList.length > 0 ? fileList[0] : undefined,
+    };
+    if (mode === ENUM_PAGE_MODE.CREATE) {
+      dispatch(customerActions.createCustomer({ customer: submitValues }));
+    } else if (mode === ENUM_PAGE_MODE.EDIT && id) {
+      dispatch(
+        customerActions.updateCustomer({
+          customerId: id,
+          customer: submitValues,
+        })
+      );
+    }
+  };
+
+  const handleDelete = () => {
+    if (mode === ENUM_PAGE_MODE.EDIT && id) {
+      dispatch(customerActions.deleteCustomer({ customerId: id }));
+    }
+  };
+
+  const handleStatusChange = (newStatus: ENUM_USER_STATUS) => {
+    form.setFieldsValue({ status: newStatus });
+
+    if (mode === ENUM_PAGE_MODE.EDIT && id) {
+      dispatch(
+        customerActions.updateCustomerStatus({
+          customerId: id,
+          status: newStatus,
+        })
+      );
+
+      dispatch(
+        customerActions.updateCustomerDetail({ status: newStatus } as User)
+      );
+    }
+  };
+
   return (
-    <div className="">
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <Card>
-          <div className="flex w-full justify-between gap-4">
-            <Form.Item
-              className="w-full"
-              label="Họ và tên"
-              name="name"
-              rules={[{ required: true, message: "Vui lòng nhập tên" }]}
-            >
-              <Input placeholder="Họ và tên" />
-            </Form.Item>
+    <Form form={form} layout="vertical" onFinish={handleSubmit} className="">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <GeneralInfoSection mode={mode} />
+          <AddressSection mode={mode} />
+        </div>
 
-            <Form.Item
-              className="w-full"
-              label="Ngày sinh"
-              name="dob"
-              rules={[{ required: false }]}
-            >
-              <DatePicker
-                className="w-full"
-                format="DD/MM/YYYY"
-                placeholder="DD/MM/YYYY"
-              />
-            </Form.Item>
-          </div>
-          <div className="flex w-full justify-between gap-4">
-            <Form.Item
-              className="w-full"
-              label="Địa chỉ Email"
-              name="email"
-              rules={[
-                { required: true, message: "Vui lòng nhập Email" },
-                { type: "email", message: "Email không hợp lệ" },
-              ]}
-            >
-              <Input placeholder="Email" />
-            </Form.Item>
-
-            <Form.Item
-              className="w-full"
-              label="Số điện thoại"
-              name="phone"
-              rules={[{ required: false }]}
-            >
-              <Input addonBefore="+84" placeholder="Nhập số điện thoại" />
-            </Form.Item>
-          </div>
-          <div className="flex w-full justify-between gap-4">
-            <Form.Item
-              className="w-full"
-              label="Giới tính"
-              name="gender"
-              rules={[{ required: false }]}
-            >
-              <Select placeholder="Chọn giới tính">
-                <Option value="male">Nam</Option>
-                <Option value="female">Nữ</Option>
-                <Option value="none">Không cung cấp</Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              className="w-full"
-              label="Địa chỉ"
-              name="address"
-              rules={[{ required: false }]}
-            >
-              <Input placeholder="Địa chỉ" />
-            </Form.Item>
-          </div>
-          <div className="flex w-full justify-between gap-4">
-            <Form.Item
-              className="w-full"
-              label="Phường/Xã"
-              name="ward"
-              rules={[{ required: false }]}
-            >
-              <Input placeholder="Phường/Xã" />
-            </Form.Item>
-            <Form.Item
-              className="w-full"
-              label="Quận/Huyện"
-              name="district"
-              rules={[{ required: false }]}
-            >
-              <Input placeholder="Quận/Huyện" />
-            </Form.Item>
-          </div>
-          <div className="flex w-full justify-between gap-4">
-            <Form.Item
-              className="w-full"
-              label="Tỉnh/Thành phố"
-              name="city"
-              rules={[{ required: false }]}
-            >
-              <Input placeholder="Tỉnh/Thành phố" />
-            </Form.Item>
-
-            <Form.Item
-              className="w-full"
-              label="Trạng thái"
-              name="status"
-              rules={[{ required: false }]}
-            >
-              <Select placeholder="Chọn trạng thái">
-                <Option value="active">Hoạt động</Option>
-                <Option value="inactive">Không hoạt động</Option>
-                <Option value="blocked">Chặn</Option>
-              </Select>
-            </Form.Item>
-          </div>
-        </Card>
-        <Card>
-          <div className="md:col-span-2">
-            <h3 className="text-lg font-medium mb-2">Ảnh đại diện</h3>
-            <Form.Item name="photo">
-              <Upload.Dragger listType="picture" {...uploadPhotoProps}>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">Nhấp hoặc kéo thả để thêm ảnh</p>
-                <p className="ant-upload-hint">.jpg, .png, .jpeg</p>
-              </Upload.Dragger>
-            </Form.Item>
-          </div>
-        </Card>
-
-        <div className="md:col-span-2 flex justify-end gap-4">
+        {/* Right */}
+        <div className="flex flex-col gap-6">
+          <AvatarUploadSection
+            mode={mode}
+            fileList={fileList}
+            onUpload={(file) => {
+              setFileList([file]);
+              form.setFieldsValue({ photo: file });
+            }}
+            onRemove={() => {
+              setFileList([]);
+              form.setFieldsValue({ photo: undefined });
+            }}
+          />
+          <GenderSection mode={mode} />
+          <StatusSection mode={mode} onStatusChange={handleStatusChange} />
+        </div>
+      </div>
+      {(mode === ENUM_PAGE_MODE.CREATE || mode === ENUM_PAGE_MODE.EDIT) && (
+        <div className="flex justify-start gap-4 mt-4">
           <Button
-            className="w-20"
-            variant={"outline"}
+            type="submit"
+            variant={"primary"}
+            className="w-35 !text-white bg-black hover:bg-gray-700"
+            loading={loading}
+          >
+            {mode === ENUM_PAGE_MODE.CREATE ? "Tạo mới" : "Lưu thay đổi"}
+          </Button>
+          {mode !== ENUM_PAGE_MODE.CREATE && (
+            <Button
+              className="w-20 !text-white"
+              variant={"destructive"}
+              type="reset"
+              disabled={loading}
+              onClick={handleDelete}
+            >
+              Xóa
+            </Button>
+          )}
+
+          <Button
+            className="w-20 !text-red-600"
+            variant={"outline-destructive"}
             type="reset"
             disabled={loading}
             onClick={handleCancel}
           >
             Hủy
           </Button>
-          <Button
-            type="submit"
-            variant={"primary"}
-            className="w-20 !text-white bg-black hover:bg-gray-700"
-            loading={loading}
-          >
-            Lưu
-          </Button>
         </div>
-      </Form>
-    </div>
+      )}
+    </Form>
   );
 };
 

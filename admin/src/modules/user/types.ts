@@ -60,3 +60,9 @@ export type UserDetailResponse = ApiResponse<User>;
 
 // user create
 export type UserCreationResponse = ApiResponse<User["_id"]>;
+
+// user create
+export type UserUpdateResponse = ApiResponse;
+
+// user update status
+export type UserUpdateStatusResponse = ApiResponse;

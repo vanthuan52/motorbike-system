@@ -102,6 +102,10 @@ const CustomerList = () => {
     });
   }, []);
 
+  const handleCreate = () => {
+    navigate(`${ROUTER_PATH.CUSTOMERS_CREATION}`);
+  };
+
   const handleDeleteCustomer = useCallback(
     (id: string) => {
       dispatch(customerActions.deleteCustomer({ customerId: id }));
@@ -147,6 +151,7 @@ const CustomerList = () => {
     <div className="bg-white rounded-lg shadow-md">
       <TableToolbar
         onSearchChange={handleSearchChange}
+        onAddNewClick={handleCreate}
         searchValue={search ?? ""}
         placeholderSearch="Tìm kiếm theo tên, email..."
       >

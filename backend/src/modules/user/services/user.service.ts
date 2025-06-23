@@ -346,11 +346,10 @@ export class UserService implements IUserService {
 
   async update(
     repository: UserDoc,
-    { name, role, phone }: UserUpdateRequestDto,
+    { name, phone }: UserUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<UserDoc> {
     repository.name = name;
-    repository.role = role;
     repository.phone = phone;
 
     return this.userRepository.save(repository, options);

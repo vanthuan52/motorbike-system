@@ -50,9 +50,6 @@ const CustomerPage = lazy(
 const CustomerDetailPage = lazy(
   () => import("@/modules/customer-management/pages/customer-detail-page")
 );
-const CustomerCreationPage = lazy(
-  () => import("@/modules/customer-management/pages/customer-creation")
-);
 
 const InvoicesPage = lazy(
   () => import("@/modules/invoice-management/pages/invoices-page")
@@ -163,7 +160,7 @@ export const router = createBrowserRouter([
       },
       {
         path: ROUTER_PATH.CUSTOMERS_CREATION,
-        element: <CustomerCreationPage />,
+        element: <CustomerDetailPage />,
       },
       {
         path: ROUTER_PATH.CUSTOMERS_DETAIL,
