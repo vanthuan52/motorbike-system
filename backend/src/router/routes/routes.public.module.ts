@@ -8,15 +8,17 @@ import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { FilePublicController } from '@/common/file/controllers/file.public.controller';
 import { AwsModule } from '@/modules/aws/aws.module';
-import { CandidateUserController } from '@/modules/hiring/controllers/candidate.public.controller';
+import { CandidatePublicController } from '@/modules/hiring/controllers/candidate.public.controller';
 import { HiringModule } from '@/modules/hiring/hiring.module';
+import { HiringPublicController } from '@/modules/hiring/controllers/hiring.public.controller';
 
 @Module({
   controllers: [
     HelloPublicController,
     AuthPublicController,
     FilePublicController,
-    CandidateUserController,
+    CandidatePublicController,
+    HiringPublicController,
   ],
   providers: [],
   exports: [],

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_HIRING_STATUS } from '../enums/hiring.enum';
+import { ENUM_HIRING_STATUS, ENUM_HIRING_TYPE } from '../enums/hiring.enum';
 
 interface DocField {
   name: string;
@@ -27,6 +27,17 @@ export const HiringDocQueryStatus: DocField[] = [
     required: false,
     type: 'string',
     example: Object.values(ENUM_HIRING_STATUS).join(','),
+    description: "value with ',' delimiter",
+  },
+];
+
+export const HiringDocQueryHiringType: DocField[] = [
+  {
+    name: 'jobType',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: Object.values(ENUM_HIRING_TYPE).join(','),
     description: "value with ',' delimiter",
   },
 ];
