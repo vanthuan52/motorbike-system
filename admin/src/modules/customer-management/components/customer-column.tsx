@@ -5,12 +5,16 @@ import { ENUM_USER_STATUS, User } from "@/modules/user/types";
 import CustomerStatusTag from "./customer-status-tag";
 
 interface CustomerColumnProps {
+  currentPage: number;
+  pageSize: number;
   onEdit: (user: User) => void;
   onDelete: (id: string) => void;
   onView: (id: string) => void;
 }
 
 export const getCustomerColumns = ({
+  currentPage,
+  pageSize,
   onEdit,
   onDelete,
   onView,
@@ -19,7 +23,7 @@ export const getCustomerColumns = ({
     title: "STT",
     dataIndex: "id",
     key: "id",
-    render: (_, __, index) => index + 1,
+    render: (_, __, index) => (currentPage - 1) * pageSize + index + 1,
   },
   {
     title: "Họ tên",

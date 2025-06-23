@@ -134,6 +134,8 @@ const CustomerList = () => {
 
   const customerColumns = useMemo(() => {
     return getCustomerColumns({
+      currentPage: pagination.page ?? 1,
+      pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
       onEdit: handleEditCustomer,
       onDelete: handleDeleteCustomer,
       onView: (id) =>
