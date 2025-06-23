@@ -18,10 +18,10 @@ export class HiringGetResponseDto {
   location: string;
 
   @ApiProperty()
-  salary_range: string;
+  salaryRange: string;
 
   @ApiProperty()
-  application_deadline: string;
+  applicationDeadline: string;
 
   @ApiProperty()
   category: string;
@@ -31,7 +31,7 @@ export class HiringGetResponseDto {
     example: ENUM_HIRING_TYPE.FULL_TIME,
     enum: () => ENUM_HIRING_TYPE,
   })
-  job_type: ENUM_HIRING_TYPE;
+  jobType: ENUM_HIRING_TYPE;
 
   @ApiProperty({
     required: true,

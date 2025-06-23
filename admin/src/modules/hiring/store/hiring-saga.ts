@@ -3,7 +3,7 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import { toast } from "react-toastify";
 import { hiringActions } from "./hiring-slice";
 import { Hiring, HiringStatusEnum } from "../types";
-import { hiringService } from "../services/hirings-api";
+import hiringService from "../services/hirings-api";
 
 function* fetchHiringsHandler(
   action: PayloadAction<object>
@@ -47,7 +47,7 @@ function* updateHiringHandler(
   action: PayloadAction<{ hiring: Hiring; id: string }>
 ) {
   try {
-    const { hiring, id } = action.payload;
+    const { id, hiring } = action.payload;
     yield call(hiringService.updateHiring, id, hiring);
     toast.success("Cập nhật bài tuyển dụng thành công");
     yield put(hiringActions.updateHiringSuccess());

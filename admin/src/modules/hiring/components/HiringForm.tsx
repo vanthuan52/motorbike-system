@@ -11,7 +11,7 @@ import {
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import { Hiring, JobTypeEnum } from "../types";
-import { STATUS_HIRING_OPTIONS } from "../constants/status";
+import { JOB_TYPE_OPTIONS, STATUS_HIRING_OPTIONS } from "../constants/status";
 export default function HiringForm({
   initialValues,
   onSubmit,
@@ -29,8 +29,8 @@ export default function HiringForm({
     if (initialValues) {
       const transformedValues = {
         ...initialValues,
-        application_deadline: initialValues.application_deadline
-          ? dayjs(initialValues.application_deadline)
+        applicationDeadline: initialValues.applicationDeadline
+          ? dayjs(initialValues.applicationDeadline)
           : null,
       };
       form.setFieldsValue(transformedValues);
@@ -42,14 +42,14 @@ export default function HiringForm({
     try {
       const values = await form.validateFields();
       if (
-        values.application_deadline &&
-        values.application_deadline.isValid &&
-        values.application_deadline.isValid()
+        values.applicationDeadline &&
+        values.applicationDeadline.isValid &&
+        values.applicationDeadline.isValid()
       ) {
-        values.application_deadline =
-          values.application_deadline.format("YYYY-MM-DD");
+        values.applicationDeadline =
+          values.applicationDeadline.format("YYYY-MM-DD");
       } else {
-        values.application_deadline = null;
+        values.applicationDeadline = null;
       }
       onSubmit(values);
     } catch {
@@ -60,14 +60,14 @@ export default function HiringForm({
     try {
       const values = await form.validateFields();
       if (
-        values.application_deadline &&
-        values.application_deadline.isValid &&
-        values.application_deadline.isValid()
+        values.applicationDeadline &&
+        values.applicationDeadline.isValid &&
+        values.applicationDeadline.isValid()
       ) {
-        values.application_deadline =
-          values.application_deadline.format("YYYY-MM-DD");
+        values.applicationDeadline =
+          values.applicationDeadline.format("YYYY-MM-DD");
       } else {
-        values.application_deadline = null;
+        values.applicationDeadline = null;
       }
       onSubmit({ ...values, status: "draft" });
     } catch {
@@ -92,13 +92,13 @@ export default function HiringForm({
 
           <Form.Item
             label="Hình thức công việc"
-            name="job_type"
+            name="jobType"
             rules={[{ required: true, message: "Vui lòng chọn hình thức" }]}
           >
             <Select placeholder="Chọn hình thức công việc" size="large">
-              {Object.values(JobTypeEnum).map((type) => (
-                <Select.Option key={type} value={type}>
-                  {type}
+              {JOB_TYPE_OPTIONS.map((option) => (
+                <Select.Option key={option.value} value={option.value}>
+                  {option.label}
                 </Select.Option>
               ))}
             </Select>
@@ -106,7 +106,7 @@ export default function HiringForm({
 
           <Form.Item
             label="Mức lương"
-            name="salary_range"
+            name="salaryRange"
             rules={[{ required: true, message: "Vui lòng nhập mức lương" }]}
           >
             <Input
@@ -117,7 +117,7 @@ export default function HiringForm({
 
           <Form.Item
             label="Hạn nộp hồ sơ"
-            name="application_deadline"
+            name="applicationDeadline"
             rules={[{ required: true, message: "Vui lòng chọn hạn nộp" }]}
           >
             <DatePicker
@@ -219,15 +219,17 @@ export default function HiringForm({
             {mode === "edit" ? "Cập nhật" : "Đăng tin"}
           </Button>
 
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            onClick={handleFinishDraft}
-            loading={loading}
-            className="border-gray-400 text-gray-700 hover:border-gray-600 hover:text-black"
-          >
-            Lưu nháp
-          </Button>
+          {mode === "create" && (
+            <Button
+              type="default"
+              icon={<EditOutlined />}
+              onClick={handleFinishDraft}
+              loading={loading}
+              className="border-gray-400 text-gray-700 hover:border-gray-600 hover:text-black"
+            >
+              Lưu nháp
+            </Button>
+          )}
         </div>
       </Form>
     </div>

@@ -1,13 +1,15 @@
 import { ApiResponse } from "@/types/api.type";
 
 export enum JobTypeEnum {
-  FullTime = "Full-time",
-  PartTime = "Part-time",
+  FULL_TIME = "full_time",
+  PART_TIME = "part_time",
+  CONTRACT = "contract",
+  ETC = "etc",
 }
 export enum HiringStatusEnum {
-  Draft = "Draft",
-  Published = "Published",
-  Archived = "Archived",
+  DRAFT = "draft",
+  PUBLISHED = "published",
+  ARCHIVED = "archived",
 }
 export interface Hiring {
   _id: string;
@@ -16,10 +18,10 @@ export interface Hiring {
   deleted: boolean;
   __v: number;
   title: string;
-  job_type: JobTypeEnum;
+  jobType: JobTypeEnum;
   requirements?: string[];
-  salary_range?: string;
-  application_deadline: string;
+  salaryRange?: string;
+  applicationDeadline: string;
   category: string;
   location: string;
   description: string;
@@ -32,10 +34,10 @@ export interface HiringResponseData {
   deleted: boolean;
   __v: number;
   title: string;
-  job_type: JobTypeEnum;
+  jobType: JobTypeEnum;
   requirements?: string[];
-  salary_range?: string;
-  application_deadline?: string;
+  salaryRange?: string;
+  applicationDeadline?: string;
   category: string;
   location: string;
   description: string;

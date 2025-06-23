@@ -15,12 +15,16 @@ import SkeletonTable from "@/components/ui/SkeletonTable";
 import Table from "@/components/ui/table/table";
 import { getHiringColumns } from "../components/hiring-columns";
 
-interface HiringFilter extends PaginationFilter {}
+interface HiringFilter extends PaginationFilter {
+  status?: HiringStatusEnum;
+}
 const DEFAULT_FILTER: HiringFilter = {
   search: "",
   page: 1,
   perPage: 5,
-  status: null,
+  status: undefined,
+  orderBy: "created_at",
+  orderDirection: "desc",
 };
 export default function hiring() {
   const navigate = useNavigate();
@@ -121,7 +125,7 @@ export default function hiring() {
         <PageHeading
           title="Tuyển dụng"
           onClick={openCreate}
-          addButtonLabel="Thêm danh mục"
+          addButtonLabel="Tạo bài tuyển dụng"
         />
       </div>
 
