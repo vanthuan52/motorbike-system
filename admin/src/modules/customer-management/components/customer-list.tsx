@@ -97,7 +97,7 @@ const CustomerList = () => {
   const handleStatusFilterChange = useCallback((value: string | string[]) => {
     handleFiltersChange("status", value === "all" ? undefined : value);
     handlePaginationChange({
-      page: 1,
+      page: DEFAULT_PAGINATION_QUERY.page,
       perPage: DEFAULT_PAGINATION_QUERY.perPage,
     });
   }, []);
@@ -134,14 +134,14 @@ const CustomerList = () => {
 
   const customerColumns = useMemo(() => {
     return getCustomerColumns({
-      currentPage: pagination.page ?? 1,
+      currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
       pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
       onEdit: handleEditCustomer,
       onDelete: handleDeleteCustomer,
       onView: (id) =>
         navigate(`${ROUTER_PATH.CUSTOMERS_DETAIL.replace(":id", id)}`),
     });
-  }, [handleEditCustomer, handleDeleteCustomer]);
+  }, [handleEditCustomer, handleDeleteCustomer, pagination]);
 
   return (
     <div className="bg-white rounded-lg shadow-md">
