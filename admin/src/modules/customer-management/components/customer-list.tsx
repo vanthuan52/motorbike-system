@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/ui/table/table";
@@ -13,73 +13,93 @@ import TableToolbar from "@/components/ui/table/table-toolbar";
 import SelectOption, {
   SelectOptionItem,
 } from "@/components/ui/ant-design/select-option";
-
-const USER_DEFAULT_QUERY: UserPaginationQuery = {
-  search: "",
-  page: 1,
-  perPage: 5,
-  status: ENUM_USER_STATUS.ACTIVE || undefined,
-};
+import { useQueryParams } from "@/hooks/use-query-params";
+import usePagination from "@/hooks/use-pagination";
+import { useFilters } from "@/hooks/use-filters";
+import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
 
 const CustomerList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [filterQuery, setFilterQuery] =
-    useState<UserPaginationQuery>(USER_DEFAULT_QUERY);
-  const debouncedSearchTerm = useDebounce(filterQuery.search, 500);
+
+  const [queryParams, setQueryParams] = useQueryParams();
+  const {
+    page: pageParam,
+    perPage: limitParam,
+    search,
+    ...restParams
+  } = queryParams;
+
+  const { pagination, handlePaginationChange } = usePagination({
+    page: Number(pageParam) || DEFAULT_PAGINATION_QUERY.page,
+    perPage: Number(limitParam) || DEFAULT_PAGINATION_QUERY.perPage,
+  });
+
+  const { filters, mappedFilters, handleFiltersChange } =
+    useFilters(restParams);
+  const debouncedSearchTerm = useDebounce(search ?? "", 500);
 
   const {
     users: customers,
     loading,
-    pagination,
+    pagination: paginationState,
   } = useSelector((state: RootState) => state.customer);
 
   useEffect(() => {
     dispatch(
       customerActions.getCustomers({
-        ...filterQuery,
+        page: pagination.page,
+        perPage: pagination.perPage,
         search: debouncedSearchTerm,
+        ...mappedFilters,
       } as UserPaginationQuery)
     );
-  }, [
-    dispatch,
-    debouncedSearchTerm,
-    filterQuery.page,
-    filterQuery.perPage,
-    filterQuery.status,
-    filterQuery.gender,
-  ]);
+  }, [dispatch, pagination, debouncedSearchTerm, mappedFilters]);
 
-  const handlePageChange = useCallback((page: number, perPage: number) => {
-    setFilterQuery((prev) => ({
-      ...prev,
-      page,
-      perPage,
-    }));
-  }, []);
+  useEffect(() => {
+    setQueryParams({
+      page: pagination.page?.toString(),
+      perPage: pagination.perPage?.toString(),
+      search: search ?? "",
+      ...mappedFilters,
+    });
+  }, [pagination, mappedFilters, search]);
 
-  const handleSearchChange = useCallback((value: string) => {
-    setFilterQuery((prev) => ({
-      ...prev,
-      search: value,
+  const handlePageChange = useCallback(
+    (page: number, perPage: number) => {
+      handlePaginationChange({ page, perPage });
+    },
+    [handlePaginationChange]
+  );
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setQueryParams({
+        ...mappedFilters,
+        page: "1",
+        search: value,
+      });
+    },
+    [mappedFilters]
+  );
+
+  const handleGenderFilterChange = useCallback(
+    (value: string | string[]) => {
+      handleFiltersChange("gender", value === "all" ? undefined : value);
+      handlePaginationChange({
+        page: 1,
+        perPage: DEFAULT_PAGINATION_QUERY.perPage,
+      });
+    },
+    [handleFiltersChange]
+  );
+
+  const handleStatusFilterChange = useCallback((value: string | string[]) => {
+    handleFiltersChange("status", value === "all" ? undefined : value);
+    handlePaginationChange({
       page: 1,
-    }));
-  }, []);
-
-  const handleGenderFilterChange = useCallback((value: string | number) => {
-    setFilterQuery((prev) => ({
-      ...prev,
-      gender: value === "all" ? undefined : (value as ENUM_USER_GENDER),
-      page: 1,
-    }));
-  }, []);
-
-  const handleStatusFilterChange = useCallback((value: string | number) => {
-    setFilterQuery((prev) => ({
-      ...prev,
-      status: value === "all" ? undefined : (value as ENUM_USER_STATUS),
-      page: 1,
-    }));
+      perPage: DEFAULT_PAGINATION_QUERY.perPage,
+    });
   }, []);
 
   const handleDeleteCustomer = useCallback(
@@ -125,13 +145,13 @@ const CustomerList = () => {
     <div className="bg-white rounded-lg shadow-md">
       <TableToolbar
         onSearchChange={handleSearchChange}
-        searchValue={filterQuery.search}
+        searchValue={search ?? ""}
         placeholderSearch="Tìm kiếm theo tên, email..."
       >
         <div className="flex items-center justify-between gap-3">
           <SelectOption
             placeholder="Giới tính"
-            value={filterQuery.gender || "all"}
+            value={filters.gender || "all"}
             onChange={handleGenderFilterChange}
             options={genderOptions}
             className="w-[130px] xs:w-[160px]"
@@ -139,7 +159,7 @@ const CustomerList = () => {
           />
           <SelectOption
             placeholder="Trạng thái"
-            value={filterQuery.status || "all"}
+            value={filters.status || "all"}
             onChange={handleStatusFilterChange}
             options={statusOptions}
             className="w-[130px] xs:w-[160px]"
@@ -154,12 +174,10 @@ const CustomerList = () => {
         rowKey="_id"
         loading={loading}
         pagination={{
-          current: pagination?.page,
-          pageSize: pagination?.perPage,
-          total: pagination?.total,
+          current: pagination.page,
+          pageSize: pagination.perPage,
+          total: paginationState?.total ?? 0,
           onChange: handlePageChange,
-          showSizeChanger: true,
-          pageSizeOptions: ["10", "20", "50", "100"],
         }}
       />
     </div>

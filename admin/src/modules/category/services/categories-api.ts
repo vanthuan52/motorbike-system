@@ -1,17 +1,22 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { adminApi } from "@/lib/axios";
-import { Order, PartTypeResponse, PartTypeResponseData, PartTypeStatus } from "../types";
+import {
+  PartTypeResponse,
+  PartTypeResponseData,
+  ENUM_PART_TYPE_STATUS,
+} from "../types";
 import { Category } from "../types";
 import { API_ENDPOINTS } from "@/constants/api-endpoint";
 import { ApiErrorResponse, ApiResponse } from "@/types/api.type";
+import { PaginationOrder } from "@/types/base.type";
 
 type CategoryFilter = {
   search?: string;
   page?: number;
   perPage?: number;
-  status?: PartTypeStatus;
-  orderBy?: Order["orderBy"];
-  orderDirection?: Order["orderDirection"];
+  status?: ENUM_PART_TYPE_STATUS;
+  orderBy?: PaginationOrder["orderBy"];
+  orderDirection?: PaginationOrder["orderDirection"];
 };
 const categoriesService = {
   getCategoryList: async (
@@ -93,9 +98,7 @@ const categoriesService = {
       );
     }
   },
-  deleteCategory: async (
-    id: string
-  ): Promise<void> =>{
+  deleteCategory: async (id: string): Promise<void> => {
     try {
       const response: AxiosResponse<ApiResponse<void>> = await adminApi.delete(
         API_ENDPOINTS.ADMIN.CATEGORY_DELETE(id)
@@ -113,7 +116,7 @@ const categoriesService = {
   },
   updateCategoryStatus: async (
     id: string,
-    status: PartTypeStatus
+    status: ENUM_PART_TYPE_STATUS
   ): Promise<void> => {
     try {
       const response: AxiosResponse<ApiResponse<void>> = await adminApi.patch(

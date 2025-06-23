@@ -4,7 +4,7 @@ import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 
 interface TableToolbarProps {
   onSearchChange?: (value: string) => void;
-  searchValue?: string;
+  searchValue?: string | string[];
   onAddNewClick?: () => void;
   placeholderSearch?: string;
   children?: React.ReactNode;

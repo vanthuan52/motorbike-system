@@ -2,10 +2,12 @@ import { type PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeLatest } from "redux-saga/effects";
 import { toast } from "react-toastify";
 import { categoriesActions } from "./categories-slice";
-import { Category, PartTypeStatus } from "../types";
+import { Category, ENUM_PART_TYPE_STATUS } from "../types";
 import categoriesService from "../services/categories-api";
 
-function* fetchCategoriesHandler(action: PayloadAction<object>): Generator<any, void, any> {
+function* fetchCategoriesHandler(
+  action: PayloadAction<object>
+): Generator<any, void, any> {
   try {
     const payload = action.payload;
     const data = yield call(categoriesService.getCategoryList, payload);
@@ -16,7 +18,9 @@ function* fetchCategoriesHandler(action: PayloadAction<object>): Generator<any, 
   }
 }
 
-function* fetchCategoryDetailHandler(action: PayloadAction<string>): Generator<any, void, any> {
+function* fetchCategoryDetailHandler(
+  action: PayloadAction<string>
+): Generator<any, void, any> {
   try {
     const id = action.payload;
     const data = yield call(categoriesService.getCategoryDetails, id);
@@ -66,7 +70,7 @@ function* deleteCategoryHandler(action: PayloadAction<{ id: string }>) {
 }
 
 function* updateCategoryStatusHandler(
-  action: PayloadAction<{ id: string; status: PartTypeStatus }>
+  action: PayloadAction<{ id: string; status: ENUM_PART_TYPE_STATUS }>
 ) {
   try {
     const { id, status } = action.payload;

@@ -51,7 +51,7 @@ const TablePagination = ({
             size="middle"
             value={pageSize}
             onChange={onPageSizeChange}
-            options={[5, 10, 20, 50].map((n) => ({
+            options={[5, 10, 20, 50, 100].map((n) => ({
               value: n,
               label: n.toString(),
             }))}

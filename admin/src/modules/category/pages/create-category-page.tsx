@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { UploadFile } from "antd/es/upload/interface";
-import { useNavigate } from "react-router-dom";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { categoriesActions } from "../store/categories-slice";
 import CategoryForm from "../components/CategoryForm";
