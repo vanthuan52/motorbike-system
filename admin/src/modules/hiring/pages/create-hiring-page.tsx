@@ -1,31 +1,28 @@
-import { RootState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+import HiringForm from "../components/HiringForm";
+import { useEffect } from "react";
+import { RootState, useAppDispatch, useAppSelector } from "@/store";
 import { useNavigate } from "react-router-dom";
 import { hiringActions } from "../store/hiring-slice";
-import { useEffect } from "react";
-import { ROUTER_PATH } from "@/constants/router-path";
-import { toast } from "react-toastify";
-import HiringForm from "../components/HiringForm";
 
 export default function CreateHiringPage() {
+  const { isUpserted, isDeleted } = useAppSelector(
+    (state: RootState) => state.hiring
+  );
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const {
-    create: { success, error, loading },
-  } = useSelector((state: RootState) => state.hiring);
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(hiringActions.reset());
-  }, [dispatch]);
-  useEffect(() => {
-    if (success) {
-      navigate(ROUTER_PATH.HIRING);
+    if (isUpserted || isDeleted) {
+      navigate(-1);
+      dispatch(hiringActions.resetState());
     }
-    if (error) {
-      toast.error(error || "Có lỗi xảy ra khi tạo!");
-    }
-  }, [success, error, navigate]);
-  const handleSave = (values: any) => {
-    dispatch(hiringActions.createHiringRequest({ hiring: values }));
-  };
-  return <HiringForm onSubmit={handleSave} mode="create" loading={loading} />;
+  }, [isUpserted, navigate, dispatch]);
+  return (
+    <div className="w-full min-h-full">
+      <div className="p-4">
+        <h2 className="text-2xl font-semibold py-2">Tạo mới tin tuyển dụng</h2>
+        <HiringForm mode={ENUM_PAGE_MODE.CREATE} />
+      </div>
+    </div>
+  );
 }

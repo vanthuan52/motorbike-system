@@ -1,121 +1,153 @@
-import { AsyncState } from "@/modules/category/store/categories-slice";
-import { Hiring } from "../types";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ENUM_HIRING_STATUS, Hiring, HiringPaginationQuery } from "../types";
+import { ApiResponsePagination } from "@/types/api.type";
+import { PAGINATION_QUERY_INITIAL_STATE } from "@/store/constant";
 
-interface HiringState {
-  list: {
-    data: Hiring[];
-    total: number;
-    loading: boolean;
-    error: string | null;
-  };
-  detail: AsyncState<Hiring | null>;
-  create: AsyncState;
-  update: AsyncState;
-  remove: AsyncState;
-  updateStatus: AsyncState;
+export interface HiringState {
+  hiringList: Hiring[];
+  hiringDetail: Hiring | null;
+  loading: boolean;
+  isUpserted: boolean;
+  isDeleted: boolean;
+  isStatusUpdated: boolean;
+  error: string | null;
+  pagination: ApiResponsePagination | undefined;
 }
-const initialAsyncState: AsyncState = {
-  loading: false,
-  success: false,
-  error: null,
-};
+
+interface GetHiringSuccessPayload {
+  hiringList: Hiring[];
+  pagination: ApiResponsePagination | undefined;
+}
+
 const initialState: HiringState = {
-  list: {
-    data: [],
-    total: 0,
-    loading: false,
-    error: null,
-  },
-  detail: {
-    ...initialAsyncState,
-    data: null,
-  },
-  create: { ...initialAsyncState },
-  update: { ...initialAsyncState },
-  remove: { ...initialAsyncState },
-  updateStatus: { ...initialAsyncState },
+  hiringList: [],
+  hiringDetail: null,
+  loading: false,
+  isUpserted: false,
+  isDeleted: false,
+  isStatusUpdated: false,
+  error: null,
+  pagination: PAGINATION_QUERY_INITIAL_STATE,
 };
 
 export const hiringSlice = createSlice({
   name: "hiring",
   initialState,
   reducers: {
-    fetchHiringRequest(state, action) {
-      state.list.loading = true;
-      state.list.error = null;
+    getHiring(state, action: PayloadAction<HiringPaginationQuery>) {
+      state.loading = true;
+      state.error = null;
     },
-    fetchHiringSuccess(state, action) {
-      state.list.loading = false;
-      state.list.data = action.payload.data;
-      state.list.total = action.payload._metadata.pagination.total;
+    getHiringSuccess(state, action: PayloadAction<GetHiringSuccessPayload>) {
+      state.loading = false;
+      state.error = null;
+      state.hiringList = action.payload.hiringList;
+      state.pagination = action.payload.pagination;
     },
-    fetchHiringFailure(state, action) {
-      state.list.loading = false;
-      state.list.error = action.payload;
-    },
-
-    fetchHiringDetailRequest(state, action) {
-      state.detail.loading = true;
-      state.detail.error = null;
-      state.detail.data = null;
-    },
-    fetchHiringDetailSuccess(state, action) {
-      state.detail.loading = false;
-      state.detail.success = true;
-      state.detail.data = action.payload;
-    },
-    fetchHiringDetailFailure(state, action) {
-      state.detail.loading = false;
-      state.detail.error = action.payload;
+    getHiringFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.hiringList = [];
     },
 
-    createHiringRequest(state, action) {
-      state.create = { ...initialAsyncState, loading: true };
+    getHiringDetail(state, action: PayloadAction<{ hiringId: Hiring["_id"] }>) {
+      state.loading = true;
+      state.error = null;
+      state.hiringDetail = null;
+    },
+    getHiringDetailSuccess(state, action: PayloadAction<Hiring>) {
+      state.loading = false;
+      state.error = null;
+      state.hiringDetail = action.payload;
+    },
+    getHiringDetailFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.hiringDetail = null;
+    },
+
+    createHiring(state, action: PayloadAction<{ hiring: Hiring }>) {
+      state.loading = true;
+      state.error = null;
+      state.isUpserted = false;
     },
     createHiringSuccess(state) {
-      state.create = { ...initialAsyncState, success: true };
+      state.loading = false;
+      state.error = null;
+      state.isUpserted = true;
     },
-    createHiringFailure(state, action) {
-      state.create = { ...initialAsyncState, error: action.payload };
+    createHiringFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.isUpserted = false;
     },
 
-    updateHiringRequest(state, action) {
-      state.update = { ...initialAsyncState, loading: true };
+    updateHiring(
+      state,
+      action: PayloadAction<{ hiringId: string; hiring: Hiring }>
+    ) {
+      state.loading = true;
+      state.error = null;
+      state.isUpserted = false;
     },
     updateHiringSuccess(state) {
-      state.update = { ...initialAsyncState, success: true };
+      state.loading = false;
+      state.error = null;
+      state.isUpserted = true;
     },
-    updateHiringFailure(state, action) {
-      state.update = { ...initialAsyncState, error: action.payload };
+    updateHiringFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.isUpserted = false;
     },
 
-    deleteHiringRequest(state, action) {
-      state.remove = { ...initialAsyncState, loading: true };
+    deleteHiring(state, action: PayloadAction<{ hiringId: string }>) {
+      state.loading = true;
+      state.error = null;
+      state.isDeleted = false;
     },
     deleteHiringSuccess(state) {
-      state.remove = { ...initialAsyncState, success: true };
+      state.loading = false;
+      state.error = null;
+      state.isDeleted = true;
     },
-    deleteHiringFailure(state, action) {
-      state.remove = { ...initialAsyncState, error: action.payload };
+    deleteHiringFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.isDeleted = false;
     },
 
-    updateStatusHiringRequest(state, action) {
-      state.updateStatus = { ...initialAsyncState, loading: true };
+    updateHiringStatus(
+      state,
+      action: PayloadAction<{ hiringId: string; status: ENUM_HIRING_STATUS }>
+    ) {
+      state.loading = true;
+      state.error = null;
+      state.isStatusUpdated = false;
     },
-    updateStatusHiringSuccess(state, action) {
-      state.updateStatus = { ...initialAsyncState, success: true };
+    updateHiringStatusSuccess(state) {
+      state.loading = false;
+      state.error = null;
+      state.isStatusUpdated = true;
     },
-    updateStatusHiringFailure(state, action) {
-      state.updateStatus = { ...initialAsyncState, error: action.payload };
+    updateHiringStatusFailure(state, action: PayloadAction<string>) {
+      state.loading = false;
+      state.error = action.payload;
+      state.isStatusUpdated = false;
     },
-    reset(state) {
-      state.list = initialState.list;
-      state.detail = initialState.detail;
-      state.create = initialState.create;
-      state.update = initialState.update;
-      state.remove = initialState.remove;
-      state.updateStatus = initialState.updateStatus;
+    resetHiringDetail(state) {
+      state.loading = false;
+      state.error = null;
+      state.hiringDetail = null;
+    },
+    resetState(state) {
+      state.loading = false;
+      state.isUpserted = false;
+      state.isDeleted = false;
+      state.error = null;
+      state.hiringList = [];
+      state.hiringDetail = null;
+      state.pagination = undefined;
     },
   },
 });
