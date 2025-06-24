@@ -14,7 +14,7 @@ import {
 import rootSaga from "./root-saga";
 import { authReducer } from "@/features/auth/store";
 import { cartReducer } from "@/features/cart/store";
-import { categoriesReducer } from "@/features/category/store";
+import { partTypeReducer } from "@/features/part-type/store";
 import storage from "@/utils/ssr-safe-storage";
 import { notificationReducer } from "@/features/notification/store";
 import { hiringReducer } from "@/features/hiring/store";
@@ -33,7 +33,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
   notification: notificationReducer,
-  categories: categoriesReducer,
+  partType: partTypeReducer,
   hiring: hiringReducer,
 });
 

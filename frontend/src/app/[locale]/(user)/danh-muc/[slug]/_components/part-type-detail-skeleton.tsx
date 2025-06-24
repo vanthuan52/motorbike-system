@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-export function CategoryDetailsSkeleton() {
+
+export function PartTypeDetailsSkeleton() {
   return (
     <div className="container mx-auto px-4 py-8">
       <motion.div

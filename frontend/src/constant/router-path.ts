@@ -4,7 +4,7 @@ export const ROUTER_PATH = {
   BLOG: "/blog",
   CONTACT: "/contact",
   SERVICES: "/dich-vu",
-  CATEGORY: "/danh-muc",
+  PART_TYPE: "/danh-muc",
   PRODUCT: "/san-pham",
   HIRING: "/tuyen-dung",
   MAINTAIN_REGISTRATION: "/dang-ky-bao-duong-xe",

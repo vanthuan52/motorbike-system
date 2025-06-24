@@ -41,9 +41,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
           {product.status === "out_of_business" && "Ngừng kinh doanh"}
         </span>
         <span className="px-4 py-1 border border-gray-300 rounded-full text-base bg-gray-100 text-gray-700 font-medium">
-          {product.category_id
+          {product.partTypeId
             ? mockDataTableVehiclePart.find(
-                (cat) => cat.id === product.category_id
+                (cat) => cat.id === product.partTypeId
               )?.name
             : t("category.unknown")}
         </span>

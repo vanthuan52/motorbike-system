@@ -585,14 +585,14 @@
     "messagePlaceholder": "Message",
     "submitButton": "Send Message"
   },
-  "metaCategorypage": {
+  "metaPartTypePage": {
     "title": "Categories",
     "description": "List of motorcycle categories"
   },
-  "categorypage": {
+  "partTypePage": {
     "breadcrumbs": {
       "home": "Home",
-      "category": "Spare parts catalog"
+      "partType": "Spare parts catalog"
     },
     "pageHeading": {
       "title": "High-Quality Motorcycle Parts Collection",
@@ -608,14 +608,14 @@
     "searchBar": {
       "placeholder": "Search categories"
     },
-    "categoryCard": {
+    "partTypeCard": {
       "viewDetail": "View details",
       "viewProduct": "View products"
     },
-    "categoryList": {
+    "partTypeList": {
       "notFound": "No matching categories found."
     },
-    "categoryDetail": {
+    "partTypeDetail": {
       "notFound": "Category not found",
       "backToList": "Back to list",
       "viewProducts": "View products"

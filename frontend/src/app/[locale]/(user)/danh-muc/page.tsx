@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import CategoryPage from "./_components/CategoryPage";
+import PartTypePage from "./_components/part-type-page";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("metaCategorypage");
+  const t = await getTranslations("metaPartTypePage");
 
   return {
     title: t("title"),
@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Page() {
   return (
     <div className="w-full">
-      <CategoryPage />
+      <PartTypePage />
     </div>
   );
 }

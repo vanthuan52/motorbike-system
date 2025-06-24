@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
-import { Category } from "@/features/category/types";
+import { PartType } from "@/features/part-type/types";
 import { ROUTER_PATH } from "@/constant/router-path";
 import { getValidImageSrc } from "@/utils/getValidImageSrc";
-import { useTranslations } from "next-intl";
 
-export default function CategoryCard({ cat }: { cat: Category }) {
-  const t = useTranslations("categoryCard");
+export default function PartTypeCard({ cat }: { cat: PartType }) {
+  const t = useTranslations("partTypePage.partTypeCard");
 
   return (
     <motion.div
@@ -31,7 +31,7 @@ export default function CategoryCard({ cat }: { cat: Category }) {
         <div className="text-xl font-semibold text-gray-800">{cat.name}</div>
         <div className="flex items-center gap-2 text-sm text-black font-normal">
           <CustomLink
-            href={`${ROUTER_PATH.CATEGORY}/${cat.slug}`}
+            href={`${ROUTER_PATH.PART_TYPE}/${cat.slug}`}
             className="hover:!underline transition"
           >
             {t("viewDetail")}

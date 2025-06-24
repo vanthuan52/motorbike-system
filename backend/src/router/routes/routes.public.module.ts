@@ -11,12 +11,15 @@ import { AwsModule } from '@/modules/aws/aws.module';
 import { CandidatePublicController } from '@/modules/hiring/controllers/candidate.public.controller';
 import { HiringModule } from '@/modules/hiring/hiring.module';
 import { HiringPublicController } from '@/modules/hiring/controllers/hiring.public.controller';
+import { PartTypePublicController } from '@/modules/part-type/controllers/part-type.public.controller';
+import { PartTypeModule } from '@/modules/part-type/part-type.module';
 
 @Module({
   controllers: [
     HelloPublicController,
     AuthPublicController,
     FilePublicController,
+    PartTypePublicController,
     CandidatePublicController,
     HiringPublicController,
   ],
@@ -28,6 +31,7 @@ import { HiringPublicController } from '@/modules/hiring/controllers/hiring.publ
     AwsModule,
     AuthModule,
     SessionModule,
+    PartTypeModule,
     ApiKeyModule,
     HiringModule,
   ],

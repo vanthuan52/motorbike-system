@@ -21,16 +21,16 @@ export async function fetchProducts({
     const [min, max] = price;
     const matchStatus = status.length === 0 || status.includes(p.status);
     const matchPrice = p.price >= min && p.price <= max;
-    const matchCategory =
+    const matchPartType =
       categories.length === 0 ||
       categories
         .map((c) => c.toLowerCase())
-        .includes((p.category_slug || "").toLowerCase());
+        .includes((p.partTypeSlug || "").toLowerCase());
     const matchSearch =
       !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.description?.toLowerCase().includes(search.toLowerCase());
-    return matchStatus && matchPrice && matchCategory && matchSearch;
+    return matchStatus && matchPrice && matchPartType && matchSearch;
   });
 
   if (sort === "price-asc")

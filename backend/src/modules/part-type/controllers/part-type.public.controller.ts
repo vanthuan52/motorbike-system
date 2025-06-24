@@ -2,14 +2,9 @@ import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PartTypeService } from '../services/part-type.services';
 import {
-  PartTypeAdminGetDoc,
-  PartTypeUserListDoc,
-} from '../docs/part-type.user.doc';
-import { PolicyRoleProtected } from '@/modules/policy/decorators/policy.decorator';
-import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
-import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
+  PartTypePublicListDoc,
+  PartTypePublicGetOneDoc,
+} from '../docs/part-type.public.doc';
 import {
   IResponse,
   IResponsePaging,
@@ -28,22 +23,19 @@ import { ENUM_PART_TYPE_STATUS } from '../enums/part-type.enum';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 
-@ApiTags('module.part-type.user')
+@ApiTags('module.public.part-type')
 @Controller({
   version: '1',
   path: '/part-type',
 })
-export class PartTypeUserController {
+export class PartTypePublicController {
   constructor(
     private readonly partTypeService: PartTypeService,
     private readonly paginationService: PaginationService,
   ) {}
 
-  @PartTypeAdminGetDoc()
+  @PartTypePublicGetOneDoc()
   @Response('part-type.get')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
-  @UserProtected([false])
-  @AuthJwtAccessProtected()
   @Get('/get/:slug')
   async get(
     @Param('slug') slug: string,
@@ -57,16 +49,13 @@ export class PartTypeUserController {
     const mapped = this.partTypeService.mapGet(partType);
     return { data: mapped };
   }
-  
-  @PartTypeUserListDoc()
+
+  @PartTypePublicListDoc()
   @ResponsePaging('part-type.list')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
-  @UserProtected([false])
-  @AuthJwtAccessProtected()
   @Get('/list')
   async list(
     @PaginationQuery({
-      availableSearch: ['name', 'status'],
+      availableSearch: ['name'],
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
     @PaginationQueryFilterInEnum(

@@ -20,6 +20,16 @@ export const PartTypeDocParamsId: DocField[] = [
   },
 ];
 
+export const PartTypeDocParamsSlug: DocField[] = [
+  {
+    name: 'slug',
+    allowEmptyValue: false,
+    required: true,
+    type: 'string',
+    example: faker.internet.url(),
+  },
+];
+
 export const PartTypeDocQueryStatus: DocField[] = [
   {
     name: 'status',

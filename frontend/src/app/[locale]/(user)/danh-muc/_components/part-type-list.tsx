@@ -2,8 +2,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import { SkeletonCard } from "./SkeletonCard";
-import CategoryCard from "./CategoryCard";
-import { Category } from "@/features/category/types";
+import PartTypeCard from "./part-type-card";
+import { PartType } from "@/features/part-type/types";
 
 const listVariants = {
   enter: (direction: number) => ({
@@ -22,26 +22,26 @@ const listVariants = {
   }),
 };
 
-export default function CategoryList({
+export default function PartTypeList({
   loading,
-  pagedCategories,
+  partTypes,
   direction,
   search,
   PAGE_SIZE,
 }: {
   loading: boolean;
-  pagedCategories: Category[];
+  partTypes: PartType[];
   direction: number;
   search: string;
   PAGE_SIZE: number;
 }) {
-  const t = useTranslations("categorypage.categoryList");
+  const t = useTranslations("partTypePage.partTypeList");
 
   return (
     <div className={clsx("relative min-h-[500px]")}>
       <AnimatePresence custom={direction} mode="wait">
         <motion.div
-          key={`${search}-${pagedCategories.length}-${pagedCategories[0]?._id ?? ""}`}
+          key={`${search}-${partTypes.length}-${partTypes[0]?._id ?? ""}`}
           custom={direction}
           variants={listVariants}
           initial="enter"
@@ -57,14 +57,12 @@ export default function CategoryList({
             Array.from({ length: PAGE_SIZE }).map((_, i) => (
               <SkeletonCard key={i} />
             ))
-          ) : pagedCategories.length === 0 ? (
+          ) : partTypes.length === 0 ? (
             <div className="col-span-full text-center text-gray-500 py-8">
               {t("notFound")}
             </div>
           ) : (
-            pagedCategories.map((cat) => (
-              <CategoryCard key={cat._id} cat={cat} />
-            ))
+            partTypes.map((cat) => <PartTypeCard key={cat._id} cat={cat} />)
           )}
         </motion.div>
       </AnimatePresence>
