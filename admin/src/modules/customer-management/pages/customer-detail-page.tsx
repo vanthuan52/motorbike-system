@@ -1,70 +1,70 @@
 import { useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PageInfo from "@/components/page-info";
 import CustomerForm from "../components/customer-form";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
 import { customerActions } from "../store/customer-slice";
+import { LocalSpinner } from "@/components/ui/local-spinner";
+import { usePageMode } from "@/hooks/use-page-mode";
 
 const CustomerDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const { loading, isUpserted, isDeleted } = useAppSelector(
-    (state: RootState) => state.customer
-  );
+  const {
+    user: customer,
+    loadingSingle,
+    create,
+    update,
+    deletion,
+    partialUpdate,
+  } = useAppSelector((state: RootState) => state.customer);
 
-  const mode: ENUM_PAGE_MODE = useMemo(() => {
-    if (!id || id === ENUM_PAGE_MODE.CREATE) {
-      return ENUM_PAGE_MODE.CREATE;
-    }
-    if (searchParams.get("view") === "true") {
-      return ENUM_PAGE_MODE.VIEW;
-    }
-    return ENUM_PAGE_MODE.EDIT;
-  }, [id, searchParams]);
+  const mode: ENUM_PAGE_MODE = usePageMode();
+  const isLoading =
+    loadingSingle ||
+    create.loading ||
+    deletion.loading ||
+    update.loading ||
+    partialUpdate.loading;
 
   useEffect(() => {
-    if (id && (mode === ENUM_PAGE_MODE.EDIT || mode === ENUM_PAGE_MODE.VIEW)) {
+    if (id && mode === ENUM_PAGE_MODE.EDIT) {
       dispatch(customerActions.getCustomerDetail({ customerId: id }));
     }
-
-    return () => {
-      dispatch(customerActions.resetCustomerDetail());
-    };
   }, [id, mode, dispatch]);
 
   useEffect(() => {
-    if (isUpserted || isDeleted) {
+    if (create.success || deletion.success) {
       navigate(-1);
       dispatch(customerActions.resetState());
     }
-  }, [isUpserted, navigate, dispatch]);
+  }, [create.success, deletion.success, navigate, dispatch]);
 
   const pageName = useMemo(() => {
     switch (mode) {
       case ENUM_PAGE_MODE.CREATE:
-        return "Tạo mới Khách hàng";
+        return "Tạo mới khách hàng";
       case ENUM_PAGE_MODE.EDIT:
-        return "Chỉnh sửa Khách hàng";
+        return "Chỉnh sửa khách hàng";
       case ENUM_PAGE_MODE.VIEW:
-        return "Chi tiết Khách hàng";
+        return "Chi tiết khách hàng";
       default:
         return "Khách hàng";
     }
   }, [mode]);
 
   return (
-    <div className="w-full min-h-full">
+    <div className="w-full min-h-full relative">
+      {isLoading && <LocalSpinner text="Loading..." />}
       <div className="px-4 pt-3 pb-14 flex flex-col gap-3">
         <PageInfo name={pageName} />
-        {loading &&
-        (mode === ENUM_PAGE_MODE.EDIT || mode === ENUM_PAGE_MODE.VIEW) ? (
-          <div>Đang tải dữ liệu...</div>
+        {!customer && mode === ENUM_PAGE_MODE.EDIT ? (
+          <h2 className="text-center text-lg">Không tìm thấy khách hàng</h2>
         ) : (
-          <CustomerForm mode={mode} />
+          <CustomerForm mode={mode} initialValue={customer} />
         )}
       </div>
     </div>

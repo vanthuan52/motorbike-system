@@ -6,7 +6,9 @@ import {
   ENUM_USER_STATUS,
   User,
   UserCreationResponse,
+  UserDeletionResponse,
   UserDetailResponse,
+  UserUpdateStatusResponse,
 } from "@/modules/user/types";
 import { notificationActions } from "@/modules/notification/store/notification-slice";
 import { UserPaginationQuery, UserListResponse } from "@/modules/user/types";
@@ -83,11 +85,15 @@ function* updateCustomerHandler(
 ) {
   try {
     const { customer, customerId } = action.payload;
-    yield call(customerServices.updateCustomer, customerId, customer);
+    const response: UserUpdateStatusResponse = yield call(
+      customerServices.updateCustomer,
+      customerId,
+      customer
+    );
     yield put(
       notificationActions.notify({
         type: "info",
-        message: "Cập nhật thành công!",
+        message: response.message,
       })
     );
     yield put(customerActions.updateCustomerSuccess());
@@ -106,11 +112,14 @@ function* updateCustomerHandler(
 function* deleteCustomerHandler(action: PayloadAction<{ customerId: string }>) {
   try {
     const { customerId } = action.payload;
-    yield call(customerServices.deleteCustomer, customerId);
+    const response: UserDeletionResponse = yield call(
+      customerServices.deleteCustomer,
+      customerId
+    );
     yield put(
       notificationActions.notify({
         type: "info",
-        message: "Xóa thành công!",
+        message: response.message,
       })
     );
     yield put(customerActions.deleteCustomerSuccess());
@@ -131,11 +140,15 @@ function* updateCustomerStatusHandler(
 ) {
   try {
     const { customerId, status } = action.payload;
-    yield call(customerServices.updateCustomerStatus, customerId, status);
+    const response: UserUpdateStatusResponse = yield call(
+      customerServices.updateCustomerStatus,
+      customerId,
+      status
+    );
     yield put(
       notificationActions.notify({
         type: "info",
-        message: "Cập nhật thành công!",
+        message: response.message,
       })
     );
     yield put(customerActions.updateCustomerStatusSuccess());

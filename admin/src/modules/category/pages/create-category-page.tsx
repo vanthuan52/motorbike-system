@@ -1,13 +1,15 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import type { UploadFile } from "antd/es/upload/interface";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { categoriesActions } from "../store/categories-slice";
 import CategoryForm from "../components/CategoryForm";
 import { Category } from "../types";
 import { RootState } from "@/store";
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+
 export default function CreateCategoryPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,7 +39,7 @@ export default function CreateCategoryPage() {
   return (
     <CategoryForm
       onSubmit={handleSave}
-      mode="create"
+      mode={ENUM_PAGE_MODE.CREATE}
       fileList={fileList}
       setFileList={setFileList}
       loading={loading}

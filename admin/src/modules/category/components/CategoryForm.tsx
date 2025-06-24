@@ -2,16 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import slugify from "slugify";
-import {
-  Form,
-  Input,
-  Select,
-  Button,
-  GetProp,
-  Upload,
-  Image,
-  Divider,
-} from "antd";
+import { Form, Input, Select, Button, Upload, Divider } from "antd";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import {
   SaveOutlined,
@@ -20,32 +11,32 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 
-import { getBase64 } from "@/modules/vehicle-parts/utils/fillUtils";
 import { Category, ENUM_PART_TYPE_STATUS } from "../types";
 import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
 import { GreenSwitch } from "@/components/ui/switch";
-
-type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+import ImagePreviewModal from "@/components/image-preview-modal";
 
 const CategoryForm = ({
   initialValues,
   onSubmit,
   loading = false,
-  mode = "edit",
+  mode = ENUM_PAGE_MODE.EDIT,
   fileList,
   setFileList,
 }: {
   initialValues?: Category | null;
   onSubmit: (values: Category) => void;
   loading?: boolean;
-  mode?: "edit" | "create";
+  mode?: ENUM_PAGE_MODE;
   fileList: UploadFile[];
   setFileList: (fileList: UploadFile[]) => void;
 }) => {
   const [form] = Form.useForm();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
+  const [selectedFileForPreview, setSelectedFileForPreview] =
+    useState<UploadFile | null>(null);
   const navigate = useNavigate();
+  const isEditable = mode === ENUM_PAGE_MODE.EDIT;
 
   useEffect(() => {
     if (initialValues) {
@@ -68,6 +59,7 @@ const CategoryForm = ({
       setFileList([]);
     }
   }, [initialValues, form, setFileList]);
+
   const handleValuesChange = (changed: Record<string, unknown>) => {
     if ("name" in changed) {
       form.setFieldsValue({ slug: slugify(changed.name as string) });
@@ -75,15 +67,16 @@ const CategoryForm = ({
   };
 
   const handlePreview = async (file: UploadFile) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj as FileType);
-    }
-    setPreviewImage(file.url || (file.preview as string));
-    setPreviewOpen(true);
+    setSelectedFileForPreview(file);
+  };
+
+  const handleClosePreview = () => {
+    setSelectedFileForPreview(null);
   };
 
   const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
     setFileList(newFileList);
+
   const handleFinish = async () => {
     try {
       const values = await form.validateFields();
@@ -181,18 +174,10 @@ const CategoryForm = ({
           >
             <Button icon={<UploadOutlined />} />
           </Upload>
-          {previewImage && (
-            <Image
-              alt="preview"
-              wrapperStyle={{ display: "none" }}
-              preview={{
-                visible: previewOpen,
-                onVisibleChange: (visible) => setPreviewOpen(visible),
-                afterOpenChange: (visible) => !visible && setPreviewImage(""),
-              }}
-              src={previewImage}
-            />
-          )}
+          <ImagePreviewModal
+            fileToPreview={selectedFileForPreview}
+            onClose={handleClosePreview}
+          />
         </Form.Item>
         <Divider orientation="left">Thông tin khác</Divider>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
@@ -204,11 +189,11 @@ const CategoryForm = ({
         <div className="flex justify-end gap-2 w-full mt-4">
           <Button
             type="primary"
-            icon={mode === "edit" ? <SaveOutlined /> : <PlusOutlined />}
+            icon={isEditable ? <SaveOutlined /> : <PlusOutlined />}
             onClick={handleFinish}
             loading={loading}
           >
-            {mode === "edit" ? "Lưu" : "Tạo mới"}
+            {isEditable ? "Lưu" : "Tạo mới"}
           </Button>
         </div>
       </Form>

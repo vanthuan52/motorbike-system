@@ -66,3 +66,6 @@ export type UserUpdateResponse = ApiResponse;
 
 // user update status
 export type UserUpdateStatusResponse = ApiResponse;
+
+// user deletion
+export type UserDeletionResponse = ApiResponse;

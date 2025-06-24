@@ -9,6 +9,8 @@ import { Category, ENUM_PART_TYPE_STATUS } from "../types";
 import CategoryForm from "../components/CategoryForm";
 import SkeletonCategoryForm from "../components/SkeletonCategoryForm";
 import { notificationActions } from "@/modules/notification/store/notification-slice";
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+
 export default function CategoryDetailsPage() {
   const params = useParams();
   const dispatch = useDispatch();
@@ -20,9 +22,11 @@ export default function CategoryDetailsPage() {
     update: { error, loading },
     updateStatus,
   } = useSelector((state: RootState) => state.categories);
+
   useEffect(() => {
     dispatch(categoriesActions.reset());
   }, [dispatch]);
+
   useEffect(() => {
     if (error || updateStatus.error) {
       notificationActions.notify({
@@ -88,7 +92,7 @@ export default function CategoryDetailsPage() {
     <CategoryForm
       initialValues={categoryDetail}
       onSubmit={handleSave}
-      mode="edit"
+      mode={ENUM_PAGE_MODE.EDIT}
       fileList={fileList}
       setFileList={setFileList}
       loading={loading}
