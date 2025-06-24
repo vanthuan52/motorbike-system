@@ -24,6 +24,17 @@ export class HiringCreateRequestDto {
   title: string;
 
   @ApiProperty({
+    example: 'tho-sua-xe',
+    description: 'Slug',
+    required: true,
+    maxLength: 100,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  slug: string;
+
+  @ApiProperty({
     example: 'Cần tuyển thợ sửa xe có kinh nghiệm.',
     description: 'Mô tả công việc',
     required: true,

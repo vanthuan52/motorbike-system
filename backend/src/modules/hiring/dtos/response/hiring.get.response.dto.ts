@@ -9,6 +9,9 @@ export class HiringGetResponseDto {
   title: string;
 
   @ApiProperty()
+  slug: string;
+
+  @ApiProperty()
   description: string;
 
   @ApiProperty()

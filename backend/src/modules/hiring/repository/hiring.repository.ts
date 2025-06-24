@@ -15,4 +15,7 @@ export class HiringRepository extends DatabaseRepositoryBase<
   ) {
     super(hiringModel);
   }
+  async findOneBySlug(slug: string): Promise<HiringDoc | null> {
+    return this.hiringModel.findOne({ slug }).exec();
+  }
 }

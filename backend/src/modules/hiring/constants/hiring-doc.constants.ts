@@ -20,6 +20,16 @@ export const HiringDocParamsId: DocField[] = [
   },
 ];
 
+export const HiringDocParamsSlug: DocField[] = [
+  {
+    name: 'slug',
+    allowEmptyValue: false,
+    required: true,
+    type: 'string',
+    example: 'tho-sua-xe-may',
+  },
+];
+
 export const HiringDocQueryStatus: DocField[] = [
   {
     name: 'status',
