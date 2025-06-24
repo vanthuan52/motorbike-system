@@ -8,7 +8,11 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import { applyDecorators } from '@nestjs/common';
 import { CandidateListResponseDto } from '../dtos/response/candidate.list.response.dto';
-import { CandidateDocQueryStatus } from '../constants/candidate-doc.constants';
+import {
+  CandidateDocQueryDate,
+  CandidateDocQueryHiringId,
+  CandidateDocQueryStatus,
+} from '../constants/candidate-doc.constants';
 import { HiringDocParamsId } from '../constants/hiring-doc.constants';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { CandidateGetResponseDto } from '../dtos/response/candidate.get.response.dto';
@@ -19,7 +23,11 @@ export function CandidateAdminListDoc(): MethodDecorator {
       summary: 'get all candidate',
     }),
     DocRequest({
-      queries: [...CandidateDocQueryStatus],
+      queries: [
+        ...CandidateDocQueryStatus,
+        ...CandidateDocQueryHiringId,
+        ...CandidateDocQueryDate,
+      ],
     }),
     DocAuth({
       jwtAccessToken: true,

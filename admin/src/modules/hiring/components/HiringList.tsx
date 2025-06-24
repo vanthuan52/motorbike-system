@@ -114,8 +114,7 @@ export default function HiringList() {
   const columns = useMemo(
     () =>
       getHiringColumns({
-        onView: (id) =>
-          navigate(`${ROUTER_PATH.HIRING_DETAILS.replace(":id", id)}`),
+        onView: (id) => navigate(`${ROUTER_PATH.CANDIDATE}?hiringId=${id}`),
         openEdit,
         handleDeleteHiring,
       }),

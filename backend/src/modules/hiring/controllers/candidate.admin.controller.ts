@@ -69,7 +69,7 @@ export class CandidateAdminController {
   @Get('/list')
   async list(
     @PaginationQuery({
-      availableSearch: ['title', 'status'],
+      availableSearch: ['name', 'status'],
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
     @PaginationQueryFilterInEnum(
@@ -84,12 +84,27 @@ export class CandidateAdminController {
       ENUM_CANDIDATE_STATUS,
     )
     status: Record<string, any>,
+    @Query('hiringId') hiringId: string,
+    @Query('appliedAtFrom') appliedAtFrom: string,
+    @Query('appliedAtTo') appliedAtTo: string,
   ): Promise<IResponsePaging<CandidateListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
     };
-
+    if (hiringId) {
+      find.hiringId = hiringId;
+    }
+    if (appliedAtFrom && appliedAtTo) {
+      find.appliedAt = {
+        $gte: new Date(appliedAtFrom),
+        $lte: new Date(appliedAtTo),
+      };
+    } else if (appliedAtFrom) {
+      find.appliedAt = { $gte: new Date(appliedAtFrom) };
+    } else if (appliedAtTo) {
+      find.appliedAt = { $lte: new Date(appliedAtTo) };
+    }
     const candidate: CandidateDoc[] = await this.candidateService.findAll(
       find,
       {

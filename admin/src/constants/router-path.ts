@@ -27,4 +27,6 @@ export const ROUTER_PATH = {
   HIRING: "/hiring",
   HIRING_DETAILS: "/hiring/:id",
   CREATE_HIRING: "/hiring/new",
+  CANDIDATE: "/candidate",
+  CANDIDATE_DETAILS: "/candidate/:id",
 };
