@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/ui/table/table";
 import { RootState } from "@/store";
 import { customerActions } from "../store/customer-slice";
-import { ENUM_USER_GENDER, ENUM_USER_STATUS, User } from "@/modules/user/types";
-import { getCustomerColumns } from "../components/customer-column";
+import { ENUM_USER_GENDER, ENUM_USER_STATUS } from "@/modules/user/types";
 import { UserPaginationQuery } from "@/modules/user/types";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -17,6 +16,8 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import usePagination from "@/hooks/use-pagination";
 import { useFilters } from "@/hooks/use-filters";
 import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
+import { useCustomerTableColumns } from "../hooks/useCustomerTableColumn";
+import { ConfirmModal } from "@/components/ui/modal/confirm-modal";
 
 const CustomerList = () => {
   const navigate = useNavigate();
@@ -38,11 +39,18 @@ const CustomerList = () => {
   const { filters, mappedFilters, handleFiltersChange } =
     useFilters(restParams);
   const debouncedSearchTerm = useDebounce(search ?? "", 500);
+  const { columns, confirmModalProps } = useCustomerTableColumns({
+    currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
+    pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
+    search: debouncedSearchTerm,
+    mappedFilters: mappedFilters,
+  });
 
   const {
     users: customers,
-    loading,
+    loadingList,
     pagination: paginationState,
+    deletion,
   } = useSelector((state: RootState) => state.customer);
 
   useEffect(() => {
@@ -54,7 +62,13 @@ const CustomerList = () => {
         ...mappedFilters,
       } as UserPaginationQuery)
     );
-  }, [dispatch, pagination, debouncedSearchTerm, mappedFilters]);
+  }, [
+    dispatch,
+    pagination,
+    debouncedSearchTerm,
+    deletion.success,
+    mappedFilters,
+  ]);
 
   useEffect(() => {
     setQueryParams({
@@ -87,7 +101,7 @@ const CustomerList = () => {
     (value: string | string[]) => {
       handleFiltersChange("gender", value === "all" ? undefined : value);
       handlePaginationChange({
-        page: 1,
+        page: DEFAULT_PAGINATION_QUERY.page,
         perPage: DEFAULT_PAGINATION_QUERY.perPage,
       });
     },
@@ -106,22 +120,6 @@ const CustomerList = () => {
     navigate(`${ROUTER_PATH.CUSTOMERS_CREATION}`);
   };
 
-  const handleDeleteCustomer = useCallback(
-    (id: string) => {
-      dispatch(customerActions.deleteCustomer({ customerId: id }));
-    },
-    [dispatch]
-  );
-
-  const handleEditCustomer = useCallback(
-    (user: User) => {
-      navigate(
-        `${ROUTER_PATH.CUSTOMERS_DETAIL.replace(":id", user._id)}?edit=1`
-      );
-    },
-    [navigate]
-  );
-
   const genderOptions: SelectOptionItem[] = [
     { value: "all", label: "Tất cả" },
     { value: ENUM_USER_GENDER.MALE, label: "Nam" },
@@ -135,17 +133,6 @@ const CustomerList = () => {
     { value: ENUM_USER_STATUS.INACTIVE, label: "Không hoạt động" },
     { value: ENUM_USER_STATUS.BLOCKED, label: "Đã chặn" },
   ];
-
-  const customerColumns = useMemo(() => {
-    return getCustomerColumns({
-      currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
-      pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
-      onEdit: handleEditCustomer,
-      onDelete: handleDeleteCustomer,
-      onView: (id) =>
-        navigate(`${ROUTER_PATH.CUSTOMERS_DETAIL.replace(":id", id)}`),
-    });
-  }, [handleEditCustomer, handleDeleteCustomer, pagination]);
 
   return (
     <div className="bg-white rounded-lg shadow-md">
@@ -161,7 +148,7 @@ const CustomerList = () => {
             value={filters.gender || "all"}
             onChange={handleGenderFilterChange}
             options={genderOptions}
-            className="w-[130px] xs:w-[160px]"
+            className="!h-10 w-30 xs:w-40"
             allowClear
           />
           <SelectOption
@@ -169,7 +156,7 @@ const CustomerList = () => {
             value={filters.status || "all"}
             onChange={handleStatusFilterChange}
             options={statusOptions}
-            className="w-[130px] xs:w-[160px]"
+            className="!h-10 w-40 xs:w-50"
             allowClear
           />
         </div>
@@ -177,9 +164,9 @@ const CustomerList = () => {
 
       <Table
         dataSource={customers}
-        columns={customerColumns}
+        columns={columns}
         rowKey="_id"
-        loading={loading}
+        loading={loadingList}
         pagination={{
           current: pagination.page,
           pageSize: pagination.perPage,
@@ -187,6 +174,8 @@ const CustomerList = () => {
           onChange: handlePageChange,
         }}
       />
+
+      <ConfirmModal {...confirmModalProps} />
     </div>
   );
 };

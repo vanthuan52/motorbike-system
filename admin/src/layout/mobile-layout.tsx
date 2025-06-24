@@ -20,7 +20,7 @@ export default function MobileLayout() {
       />
       <main className="flex-1 overflow-y-auto py-5 pb-14 scrollbar-hidden">
         <div className="mt-8 space-y-4">
-          <Breadcrumb />
+          {/* <Breadcrumb /> */}
           <Outlet />
         </div>
       </main>

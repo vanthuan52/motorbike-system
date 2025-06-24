@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, Form, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
@@ -5,7 +6,7 @@ import { notificationActions } from "@/modules/notification/store/notification-s
 import { useAppDispatch } from "@/store";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
 import { User } from "@/modules/user/types";
-import "./index.css";
+import ImagePreviewModal from "@/components/image-preview-modal";
 
 interface AvatarUploadSectionProps {
   mode: ENUM_PAGE_MODE;
@@ -22,6 +23,8 @@ const AvatarUploadSection = ({
   onRemove,
 }: AvatarUploadSectionProps) => {
   const dispatch = useAppDispatch();
+  const [selectedFileForPreview, setSelectedFileForPreview] =
+    useState<UploadFile | null>(null);
 
   const isDisabled = mode === ENUM_PAGE_MODE.VIEW;
 
@@ -50,22 +53,12 @@ const AvatarUploadSection = ({
     return false;
   };
 
-  const handlePreview = (file: UploadFile) => {
-    let imageUrl = file.url;
-    if (!imageUrl && file.originFileObj) {
-      imageUrl = URL.createObjectURL(file.originFileObj as Blob);
-    }
+  const handlePreview = async (file: UploadFile) => {
+    setSelectedFileForPreview(file);
+  };
 
-    if (imageUrl) {
-      window.open(imageUrl, "_blank");
-    } else {
-      dispatch(
-        notificationActions.notify({
-          type: "error",
-          message: "Không tìm thấy ảnh.",
-        })
-      );
-    }
+  const handleClosePreview = () => {
+    setSelectedFileForPreview(null);
   };
 
   const handleChange = ({
@@ -95,32 +88,38 @@ const AvatarUploadSection = ({
   return (
     <Card>
       <Form.Item name="photo" className="">
-        <div
-          className="relative w-full aspect-square flex items-center justify-center cursor-pointer"
-          onClick={() => document.getElementById("avatar-input")?.click()}
-        >
-          <Upload
-            name="photo"
-            listType="picture-card"
-            className="avatar-uploader"
-            showUploadList={true}
-            fileList={fileList}
-            beforeUpload={beforeUpload}
-            onChange={handleChange}
-            maxCount={1}
-            disabled={isDisabled}
-            onRemove={() => {
-              onRemove();
-              return true;
-            }}
-            onPreview={handlePreview}
+        <div className="flex gap-2 flex-col">
+          <div
+            className="relative w-full min-h-[102px] flex items-center justify-center"
+            onClick={() => document.getElementById("avatar-input")?.click()}
           >
-            {fileList.length === 0 && !isDisabled ? uploadButton : null}
-          </Upload>
+            <Upload
+              name="photo"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={true}
+              fileList={fileList}
+              beforeUpload={beforeUpload}
+              onChange={handleChange}
+              onPreview={handlePreview}
+              maxCount={1}
+              disabled={isDisabled}
+              onRemove={() => {
+                onRemove();
+                return true;
+              }}
+            >
+              {fileList.length === 0 && !isDisabled ? uploadButton : null}
+            </Upload>
+            <ImagePreviewModal
+              fileToPreview={selectedFileForPreview}
+              onClose={handleClosePreview}
+            />
+          </div>
+          <p className="text-center text-sm text-gray-500">
+            Click on image to change
+          </p>
         </div>
-        <p className="text-center text-sm text-gray-500 !mt-2">
-          Click on image to change
-        </p>
       </Form.Item>
     </Card>
   );

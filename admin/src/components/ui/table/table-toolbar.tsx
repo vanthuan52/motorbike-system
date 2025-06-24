@@ -26,7 +26,7 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
             prefix={<SearchOutlined className="text-gray-400" />}
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="!w-68"
+            className="h-10 sm:w-52"
           />
         )}
         {children}
@@ -37,7 +37,7 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
           type="primary"
           icon={<PlusOutlined />}
           onClick={onAddNewClick}
-          className="rounded-lg !bg-black !font-semibold flex-stretch"
+          className="!h-10 rounded-lg !bg-black !font-semibold flex-stretch"
         >
           Thêm mới
         </Button>
