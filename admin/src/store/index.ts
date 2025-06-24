@@ -8,8 +8,8 @@ import createSagaMiddleware from "redux-saga";
 import rootSaga from "./root-saga";
 import { authReducer } from "@/modules/auth/store";
 import { productsReducer } from "@/modules/products/store";
-import { categoriesReducer } from "@/modules/category/store";
 import { notificationReducer } from "@/modules/notification/store";
+import { partTypesReducer } from "@/modules/part-types/store";
 import { employeesReducer } from "@/modules/employees/store";
 import { vehicleCompanyReducer } from "@/modules/vehicle-company/store";
 import { hiringReducer } from "@/modules/hiring/store";
@@ -22,7 +22,7 @@ export const store = configureStore({
     auth: authReducer,
     notification: notificationReducer,
     products: productsReducer,
-    categories: categoriesReducer,
+    partTypes: partTypesReducer,
     employees: employeesReducer,
     vehicleCompany: vehicleCompanyReducer,
     hiring: hiringReducer,

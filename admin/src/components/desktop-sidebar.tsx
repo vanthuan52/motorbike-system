@@ -46,7 +46,7 @@ const menuItems = [
   {
     key: "vehicle-parts",
     icon: <TbSettingsCode />,
-    href: ROUTER_PATH.CATEGORY,
+    href: ROUTER_PATH.PART_TYPES,
     label: "Danh mục phụ tùng",
   },
   {

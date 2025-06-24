@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { RxHome } from "react-icons/rx";
@@ -46,7 +44,7 @@ const links = [
   {
     label: "Danh mục phụ tùng",
     icon: <TbSettingsCode size={24} />,
-    href: ROUTER_PATH.CATEGORY,
+    href: ROUTER_PATH.PART_TYPES,
   },
   {
     label: "Nhân viên",

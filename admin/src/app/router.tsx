@@ -25,12 +25,11 @@ const VehicleCompanyPage = lazy(
   () => import("@/modules/vehicle-company/pages/vehicle-company-page")
 );
 
-const CategoryPage = lazy(() => import("@/modules/category/pages/category"));
-const CategoryDetailsPage = lazy(
-  () => import("@/modules/category/pages/category-details-page")
+const PartTypePage = lazy(
+  () => import("@/modules/part-types/pages/part-type-page")
 );
-const CreateCategoryPage = lazy(
-  () => import("@/modules/category/pages/create-category-page")
+const PartTypeDetailsPage = lazy(
+  () => import("@/modules/part-types/pages/part-type-details-page")
 );
 const VehiclePartsPage = lazy(
   () => import("@/modules/vehicle-parts/pages/vehicle-part-page")
@@ -128,19 +127,19 @@ export const router = createBrowserRouter([
       },
       { path: ROUTER_PATH.VEHICLE_TYPE, element: <VehicleTypes /> },
       {
-        path: ROUTER_PATH.CATEGORY,
-        element: <CategoryPage />,
+        path: ROUTER_PATH.PART_TYPES,
+        element: <PartTypePage />,
       },
       {
-        path: ROUTER_PATH.CATEGORY_DETAILS,
-        element: <CategoryDetailsPage />,
+        path: ROUTER_PATH.PART_TYPE_DETAILS,
+        element: <PartTypeDetailsPage />,
       },
       {
-        path: ROUTER_PATH.CREATE_CATEGORY,
-        element: <CreateCategoryPage />,
+        path: ROUTER_PATH.PART_TYPE_CREATION,
+        element: <PartTypeDetailsPage />,
       },
       {
-        path: ROUTER_PATH.CATEGORY,
+        path: ROUTER_PATH.PART_TYPES,
         element: <VehiclePartsPage />,
       },
       {
