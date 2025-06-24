@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 export default function PageHeading() {
-  const t = useTranslations("categorypage.pageHeading");
+  const t = useTranslations("partTypePage.pageHeading");
 
   const stats = [
     { label: t("stats.manualBike"), value: "120+" },

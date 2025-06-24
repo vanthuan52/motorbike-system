@@ -8,10 +8,10 @@ import ReduxProvider from "@/components/ReduxProvider";
 import GlobalLoading from "@/components/ui/global-loading";
 import "@/styles/globals.css";
 import AppInitializer from "./app-initializer";
-// import NotFound from "./not-found";
 import { routing } from "@/i18n/routing";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import { notFound } from "next/navigation";
+
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],

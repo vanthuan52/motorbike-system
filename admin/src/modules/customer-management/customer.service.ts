@@ -44,7 +44,7 @@ const customerServices = {
       );
 
       if (response.status !== 200 || !response.data.data) {
-        throw new Error(response.data.message || "Create user failed.");
+        throw new Error(response.data.message || "Get user failed.");
       }
       return response.data;
     } catch (error: any) {

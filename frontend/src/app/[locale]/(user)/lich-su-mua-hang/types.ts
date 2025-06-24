@@ -1,33 +1,34 @@
 type ShippingMethod =
   | "ghtk"
   | "ghn"
-  | "viettel_post"
+  | "viettelPost"
   | "vnpost"
   | "ahamove"
   | "grabexpress"
   | "nowship"
   | "jtexpress"
   | "ninjavan"
-  | "shop_delivery"
-  | "pickup_at_store";
+  | "shopDelivery"
+  | "pickupAtStore";
+
 export interface InvoiceManagement {
   id: string;
-  customer_id: string;
+  customerId: string;
   recipient_name?: string;
   products: ProductInvoice[];
   note?: string;
   status: "delivered" | "pending" | "cancelled";
-  payment_status: "completed" | "pending" | "failed";
-  payment_method: "cod" | "bank_transfer" | "momo" | "credit_card";
-  shipping_method: ShippingMethod;
-  shipping_fee: number;
+  paymentStatus: "completed" | "pending" | "failed";
+  paymentMethod: "cod" | "bank_transfer" | "momo" | "credit_card";
+  shippingMethod: ShippingMethod;
+  shippingFee: number;
   address: string;
-  pickup_time?: string;
+  pickupTime?: string;
   subtotal: number;
   discount: number;
   total: number;
-  created_at: string;
-  ship_date: string;
+  createdAt: string;
+  shipDate: string;
 }
 
 export interface ProductInvoice extends Product {
@@ -37,13 +38,13 @@ export interface Product {
   id: string;
   sku: string;
   name: string;
-  brand_id: string;
+  brandId: string;
   description: string;
   price: number;
   image?: string[];
   stock: number;
   colors?: string[];
-  category_id: string;
+  partTypeId: string;
   status: "in_stock" | "out_of_stock" | "out_of_business";
   origin: string;
   slug: string;

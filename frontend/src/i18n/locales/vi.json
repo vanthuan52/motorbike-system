@@ -589,14 +589,14 @@
     "messagePlaceholder": "Nội dung",
     "submitButton": "Gửi tin nhắn"
   },
-  "metaCategorypage": {
+  "metaPartTypePage": {
     "title": "Danh mục",
     "description": "Trang hiển thị danh sách các danh mục phụ tùng xe máy"
   },
-  "categorypage": {
+  "partTypePage": {
     "breadcrumbs": {
       "home": "Trang chủ",
-      "category": "Danh mục phụ tùng"
+      "partType": "Danh mục phụ tùng"
     },
     "pageHeading": {
       "title": "Bộ sưu tập phụ tùng xe máy chất lượng",
@@ -612,14 +612,14 @@
     "searchBar": {
       "placeholder": "Tìm kiếm danh mục"
     },
-    "categoryCard": {
+    "partTypeCard": {
       "viewDetail": "Xem chi tiết",
       "viewProduct": "Xem sản phẩm"
     },
-    "categoryList": {
+    "partTypeList": {
       "notFound": "Không tìm thấy danh mục phù hợp."
     },
-    "categoryDetail": {
+    "partTypeDetail": {
       "notFound": "Không tìm thấy danh mục",
       "backToList": "Quay lại danh sách",
       "viewProducts": "Xem sản phẩm"

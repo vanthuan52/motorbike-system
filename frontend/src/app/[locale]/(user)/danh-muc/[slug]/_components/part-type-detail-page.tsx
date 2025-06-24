@@ -8,24 +8,24 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { RootState } from "@/store";
 import { CustomLink } from "@/components/CustomerLink/CustomLink";
-import { categoriesActions } from "@/features/category/store/category-slice";
-import { CategoryDetailsSkeleton } from "./CategoryDetailsSkeleton";
+import { partTypeActions } from "@/features/part-type/store/part-type-slice";
+import { PartTypeDetailsSkeleton } from "./part-type-detail-skeleton";
 import { ROUTER_PATH } from "@/constant/router-path";
 import { getValidImageSrc } from "@/utils/getValidImageSrc";
 
-export default function CategoryDetailsPage() {
-  const t = useTranslations("categorypage.categoryDetail");
+export default function PartTypeDetailsPage() {
+  const t = useTranslations("partTypePage.partTypeDetail");
   const { slug } = useParams<{ slug: string }>();
   const dispatch = useDispatch();
-  const {
-    detail: { data: categoryData, loading },
-  } = useSelector((state: RootState) => state.categories);
+  const { partType, loadingSingle: loading } = useSelector(
+    (state: RootState) => state.partType
+  );
 
   useEffect(() => {
-    dispatch(categoriesActions.fetchCategoryDetailRequest(slug));
+    dispatch(partTypeActions.getPartTypeDetail({ slug }));
   }, [dispatch, slug]);
 
-  if (!categoryData) {
+  if (!partType) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
         <div className="text-2xl font-bold text-red-500 mb-4">
@@ -42,7 +42,7 @@ export default function CategoryDetailsPage() {
   }
 
   if (loading) {
-    return <CategoryDetailsSkeleton />;
+    return <PartTypeDetailsSkeleton />;
   }
 
   return (
@@ -55,8 +55,8 @@ export default function CategoryDetailsPage() {
         <div className="w-full md:w-1/3 flex justify-center md:justify-start">
           <div className="relative w-[220px] h-[220px] sm:w-[260px] sm:h-[260px]">
             <Image
-              src={getValidImageSrc(categoryData.photo)}
-              alt={categoryData.name}
+              src={getValidImageSrc(partType.photo)}
+              alt={partType.name}
               fill
               sizes="(max-width: 768px) 220px, 260px"
               className="object-contain rounded-md"
@@ -67,15 +67,15 @@ export default function CategoryDetailsPage() {
 
         <div className="flex-1">
           <h1 className="text-2xl md:text-3xl font-bold mb-4 text-orange-600">
-            {categoryData.name}
+            {partType.name}
           </h1>
           <p className="text-gray-700 text-base md:text-lg mb-6 whitespace-pre-line leading-relaxed">
-            {categoryData.description}
+            {partType.description}
           </p>
 
           <div className="flex items-center gap-2 text-sm text-black font-normal">
             <CustomLink
-              href={ROUTER_PATH.CATEGORY}
+              href={ROUTER_PATH.PART_TYPE}
               className="hover:!underline transition"
             >
               {t("backToList")}

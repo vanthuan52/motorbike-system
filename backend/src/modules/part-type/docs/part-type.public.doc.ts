@@ -2,29 +2,35 @@ import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
-  DocGuard,
   DocRequest,
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { PartTypeDocQueryStatus } from '../constants/part-type.doc.constant';
+import {
+  PartTypeDocParamsSlug,
+  PartTypeDocQueryStatus,
+} from '../constants/part-type.doc.constant';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
 import { PartTypeGetResponseDto } from '../dtos/response/part-type.get.response.dto';
 
-export function PartTypeUserGetOneDoc(): MethodDecorator {
+export function PartTypePublicGetOneDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get one part type',
+      summary: 'get one part type by slug',
+    }),
+    DocRequest({
+      params: PartTypeDocParamsSlug,
     }),
     DocAuth({
-      jwtAccessToken: true,
+      jwtAccessToken: false,
     }),
-    DocGuard(),
-    DocResponse('part-type.get-one'),
+    DocResponse<PartTypeGetResponseDto>('part-type.get', {
+      dto: PartTypeGetResponseDto,
+    }),
   );
 }
 
-export function PartTypeUserListDoc(): MethodDecorator {
+export function PartTypePublicListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get all part types',
@@ -33,26 +39,10 @@ export function PartTypeUserListDoc(): MethodDecorator {
       queries: [...PartTypeDocQueryStatus],
     }),
     DocAuth({
-      jwtAccessToken: true,
+      jwtAccessToken: false,
     }),
-    DocGuard({ role: true, policy: true }),
     DocResponsePaging<PartTypeListResponseDto>('part-type.list', {
       dto: PartTypeListResponseDto,
-    }),
-  );
-}
-
-export function PartTypeAdminGetDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'get detail an part type',
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard(),
-    DocResponse<PartTypeGetResponseDto>('part-type.get', {
-      dto: PartTypeGetResponseDto,
     }),
   );
 }

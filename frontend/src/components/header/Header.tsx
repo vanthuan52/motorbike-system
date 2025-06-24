@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { href: ROUTER_PATH.ABOUT, key: "about" },
   { href: ROUTER_PATH.BLOG, key: "blog" },
   { href: ROUTER_PATH.CONTACT, key: "contact" },
-  { href: ROUTER_PATH.CATEGORY, key: "category" },
+  { href: ROUTER_PATH.PART_TYPE, key: "category" },
 ];
 
 export default function Header() {

@@ -7,11 +7,14 @@ export type BaseEntity = {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+  __v?: number;
 };
+
 export enum ENUM_ORDER_DIRECTION {
   ASC = "asc",
   DESC = "desc",
 }
+
 export type PaginationOrder = {
   orderBy?: string;
   orderDirection?: ENUM_ORDER_DIRECTION;

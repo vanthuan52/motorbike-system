@@ -1,12 +1,14 @@
 "use client";
+
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { faqData } from "@/data/FaqData";
 import { SearchBar } from "./SearchBar";
 import { CategoryFilter } from "./CategoryFilter";
 import { FAQList } from "./FAQList";
 import { ContactCTA } from "./ContactCTA";
 import Banner from "./Banner";
-import { useTranslations } from "next-intl";
+
 export default function FaqPage() {
   const t = useTranslations("faqPage.categories");
   const [searchTerm, setSearchTerm] = useState("");
