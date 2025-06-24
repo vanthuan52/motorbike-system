@@ -23,6 +23,11 @@ export const API_ENDPOINTS = {
     HIRING_UPDATE: (id: string) => `hiring/update/${id}`,
     HIRING_DELETE: (id: string) => `hiring/delete/${id}`,
     HIRING_UPDATE_STATUS: (id: string) => `hiring/update/${id}/status`,
+    // candidate module
+    CANDIDATE_LIST: "hiring/candidate/list",
+    CANDIDATE_DETAILS: (id: string) => `hiring/candidate/get/${id}`,
+    CANDIDATE_UPDATE_STATUS: (id: string) =>
+      `hiring/candidate/update/${id}/status`,
     // user module
     USER_LIST: "user/list",
     USER_LIST_TYPE_USER: "user/list/user",

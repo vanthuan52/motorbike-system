@@ -29,3 +29,30 @@ export const CandidateDocQueryStatus: DocField[] = [
     description: "value with ',' delimiter",
   },
 ];
+
+export const CandidateDocQueryHiringId: DocField[] = [
+  {
+    name: 'hiringId',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: faker.string.uuid(),
+  },
+];
+
+export const CandidateDocQueryDate: DocField[] = [
+  {
+    name: 'appliedAtFrom',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: faker.date.anytime().toISOString(),
+  },
+  {
+    name: 'appliedAtTo',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: faker.date.anytime().toISOString(),
+  },
+];
