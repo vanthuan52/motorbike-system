@@ -10,12 +10,12 @@ export const API_ENDPOINTS = {
   },
   ADMIN: {
     // part-type module
-    CATEGORIES: "part-type/list",
-    CATEGORY_DETAILS: (id: string) => `part-type/get/${id}`,
-    CATEGORY_CREATE: "part-type/create",
-    CATEGORY_UPDATE: (id: string) => `part-type/update/${id}`,
-    CATEGORY_DELETE: (id: string) => `part-type/delete/${id}`,
-    CATEGORY_UPDATE_STATUS: (id: string) => `part-type/update/${id}/status`,
+    PART_TYPES: "part-type/list",
+    PART_TYPE_DETAILS: (id: string) => `part-type/get/${id}`,
+    PART_TYPE_CREATE: "part-type/create",
+    PART_TYPE_UPDATE: (id: string) => `part-type/update/${id}`,
+    PART_TYPE_DELETE: (id: string) => `part-type/delete/${id}`,
+    PART_TYPE_UPDATE_STATUS: (id: string) => `part-type/update/${id}/status`,
     // hiring module
     HIRING: "hiring/list",
     HIRING_DETAILS: (id: string) => `hiring/get/${id}`,
