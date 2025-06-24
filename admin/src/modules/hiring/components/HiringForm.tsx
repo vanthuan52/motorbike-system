@@ -1,237 +1,181 @@
-import { Form, Input, Select, Button, Divider, DatePicker } from "antd";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import {
-  SaveOutlined,
-  ArrowLeftOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
-import { toast } from "react-toastify";
+import { Form } from "antd";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import dayjs from "dayjs";
-import { Hiring, JobTypeEnum } from "../types";
-import { JOB_TYPE_OPTIONS, STATUS_HIRING_OPTIONS } from "../constants/status";
-export default function HiringForm({
-  initialValues,
-  onSubmit,
-  loading = false,
-  mode = "edit",
-}: {
-  initialValues?: Hiring | null;
-  onSubmit: (values: Hiring) => void;
-  loading?: boolean;
-  mode?: "edit" | "create";
-}) {
-  const [form] = Form.useForm();
+import slugify from "slugify";
+import Button from "@/components/ui/button";
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+import { RootState, useAppDispatch } from "@/store";
+import { notificationActions } from "@/modules/notification/store/notification-slice";
+import { hiringActions } from "../store/hiring-slice";
+import BasicInfoSection from "./basic-info-section";
+import RecruitmentRequirementSection from "./recruitment-requirement-section";
+import OtherInfoSection from "./other-info-section";
+import { ENUM_HIRING_STATUS } from "../types";
+
+type HiringFormProps = {
+  mode: ENUM_PAGE_MODE;
+};
+export default function HiringForm({ mode }: HiringFormProps) {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  const [form] = Form.useForm();
+
+  const { loading, hiringDetail, error } = useSelector(
+    (state: RootState) => state.hiring
+  );
+  const isFormFilledRef = useRef(false);
+
   useEffect(() => {
-    if (initialValues) {
-      const transformedValues = {
-        ...initialValues,
-        applicationDeadline: initialValues.applicationDeadline
-          ? dayjs(initialValues.applicationDeadline)
-          : null,
-      };
-      form.setFieldsValue(transformedValues);
-    } else {
-      form.resetFields();
+    if (
+      hiringDetail &&
+      (mode === ENUM_PAGE_MODE.EDIT || mode === ENUM_PAGE_MODE.VIEW) &&
+      !isFormFilledRef.current
+    ) {
+      form.setFieldsValue({
+        ...hiringDetail,
+        applicationDeadline: hiringDetail.applicationDeadline
+          ? dayjs(hiringDetail.applicationDeadline)
+          : undefined,
+      });
     }
-  }, [initialValues, form]);
-  const handleFinish = async () => {
-    try {
-      const values = await form.validateFields();
-      if (
-        values.applicationDeadline &&
-        values.applicationDeadline.isValid &&
-        values.applicationDeadline.isValid()
-      ) {
-        values.applicationDeadline =
-          values.applicationDeadline.format("YYYY-MM-DD");
-      } else {
-        values.applicationDeadline = null;
-      }
-      onSubmit(values);
-    } catch {
-      toast.error("Vui lòng kiểm tra lại thông tin");
+  }, [hiringDetail, form]);
+  useEffect(() => {
+    if (mode === ENUM_PAGE_MODE.CREATE) {
+      form.resetFields();
+      isFormFilledRef.current = false;
+    }
+  }, [mode, id, form]);
+
+  useEffect(() => {
+    if (error) {
+      notificationActions.notify({
+        type: "error",
+        message: "Lỗi",
+      });
+    }
+  }, [error]);
+
+  const handleCancel = () => {
+    navigate(-1);
+  };
+
+  const handleValuesChange = (changed: Record<string, unknown>) => {
+    if ("title" in changed) {
+      form.setFieldsValue({ slug: slugify(changed.title as string) });
+    }
+  };
+
+  const handleDelete = () => {
+    if (mode === ENUM_PAGE_MODE.EDIT && id) {
+      dispatch(hiringActions.deleteHiring({ hiringId: id }));
+    }
+  };
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    if (
+      values.applicationDeadline &&
+      values.applicationDeadline.isValid &&
+      values.applicationDeadline.isValid()
+    ) {
+      values.applicationDeadline =
+        values.applicationDeadline.format("YYYY-MM-DD");
+    } else {
+      values.applicationDeadline = null;
+    }
+    if (mode === ENUM_PAGE_MODE.CREATE) {
+      dispatch(hiringActions.createHiring({ hiring: values }));
+    } else if (mode === ENUM_PAGE_MODE.EDIT && id) {
+      dispatch(hiringActions.updateHiring({ hiringId: id, hiring: values }));
+    }
+  };
+
+  const handleStatusChange = (newStatus: ENUM_HIRING_STATUS) => {
+    form.setFieldsValue({ status: newStatus });
+
+    if (mode === ENUM_PAGE_MODE.EDIT && id) {
+      dispatch(
+        hiringActions.updateHiringStatus({
+          hiringId: id,
+          status: newStatus,
+        })
+      );
     }
   };
   const handleFinishDraft = async () => {
-    try {
-      const values = await form.validateFields();
-      if (
-        values.applicationDeadline &&
-        values.applicationDeadline.isValid &&
-        values.applicationDeadline.isValid()
-      ) {
-        values.applicationDeadline =
-          values.applicationDeadline.format("YYYY-MM-DD");
-      } else {
-        values.applicationDeadline = null;
-      }
-      onSubmit({ ...values, status: "draft" });
-    } catch {
-      toast.error("Vui lòng kiểm tra lại thông tin");
+    const values = await form.validateFields();
+    if (
+      values.applicationDeadline &&
+      values.applicationDeadline.isValid &&
+      values.applicationDeadline.isValid()
+    ) {
+      values.applicationDeadline =
+        values.applicationDeadline.format("YYYY-MM-DD");
+    } else {
+      values.applicationDeadline = null;
     }
+    dispatch(hiringActions.createHiring({ hiring: values }));
   };
   return (
-    <div className="sm:px-4 mt-10 mb-3 sm:mt-10 sm:mb-3 lg:my-8 mx-4 bg-white rounded-xl shadow p-6">
-      <div className="flex gap-2 items-center mb-2 w-full">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} />
-      </div>
-      <Form form={form} layout="vertical" autoComplete="off">
-        <Divider orientation="left">Thông tin cơ bản</Divider>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-          <Form.Item
-            label="Tiêu đề"
-            name="title"
-            rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
-          >
-            <Input placeholder="Nhập tiêu đề công việc" size="large" />
-          </Form.Item>
+    <Form
+      form={form}
+      layout="vertical"
+      autoComplete="off"
+      onValuesChange={handleValuesChange}
+    >
+      <div className="flex flex-col gap-4">
+        <BasicInfoSection mode={mode} />
 
-          <Form.Item
-            label="Hình thức công việc"
-            name="jobType"
-            rules={[{ required: true, message: "Vui lòng chọn hình thức" }]}
-          >
-            <Select placeholder="Chọn hình thức công việc" size="large">
-              {JOB_TYPE_OPTIONS.map((option) => (
-                <Select.Option key={option.value} value={option.value}>
-                  {option.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+        <RecruitmentRequirementSection mode={mode} />
 
-          <Form.Item
-            label="Mức lương"
-            name="salaryRange"
-            rules={[{ required: true, message: "Vui lòng nhập mức lương" }]}
-          >
-            <Input
-              placeholder="Nhập mức lương (VD: 10-15 triệu)"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Hạn nộp hồ sơ"
-            name="applicationDeadline"
-            rules={[{ required: true, message: "Vui lòng chọn hạn nộp" }]}
-          >
-            <DatePicker
-              style={{ width: "100%" }}
-              placeholder="Chọn hạn nộp"
-              size="large"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Danh mục"
-            name="category"
-            rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
-          >
-            <Input placeholder="Nhập danh mục công việc" size="large" />
-          </Form.Item>
-
-          <Form.Item
-            label="Địa điểm"
-            name="location"
-            rules={[{ required: true, message: "Vui lòng nhập địa điểm" }]}
-          >
-            <Input placeholder="Nhập địa điểm làm việc" size="large" />
-          </Form.Item>
-        </div>
-
-        <Divider orientation="left">Yêu cầu tuyển dụng</Divider>
-        <Form.List name="requirements">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name }) => (
-                <div key={key} className="flex gap-2 mb-2">
-                  <Form.Item
-                    name={name}
-                    className="w-full"
-                    rules={[
-                      { required: true, message: "Vui lòng nhập yêu cầu" },
-                    ]}
-                  >
-                    <Input placeholder="Nhập yêu cầu công việc" size="large" />
-                  </Form.Item>
-                  <Button
-                    danger
-                    onClick={() => remove(name)}
-                    icon={<DeleteOutlined />}
-                  />
-                </div>
-              ))}
-              <Form.Item>
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  block
-                  icon={<PlusOutlined />}
-                >
-                  Thêm yêu cầu
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
-
-        <Divider orientation="left">Thông tin khác</Divider>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-          <Form.Item
-            label="Trạng thái"
-            name="status"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
-          >
-            <Select placeholder="Chọn trạng thái" size="large">
-              {STATUS_HIRING_OPTIONS.map((item) => (
-                <Select.Option key={item.value} value={item.value}>
-                  {item.label}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Mô tả chi tiết"
-            name="description"
-            className="md:col-span-2"
-          >
-            <Input.TextArea
-              rows={4}
-              placeholder="Nhập mô tả công việc"
-              size="large"
-            />
-          </Form.Item>
-        </div>
-
-        <div className="flex justify-end gap-2 w-full mt-4">
-          <Button
-            type="primary"
-            icon={mode === "edit" ? <SaveOutlined /> : <PlusOutlined />}
-            onClick={handleFinish}
-            loading={loading}
-          >
-            {mode === "edit" ? "Cập nhật" : "Đăng tin"}
-          </Button>
-
-          {mode === "create" && (
+        <OtherInfoSection mode={mode} handleStatusChange={handleStatusChange} />
+        {(mode === ENUM_PAGE_MODE.CREATE || mode === ENUM_PAGE_MODE.EDIT) && (
+          <div className="flex justify-end gap-2 w-full mt-4">
             <Button
-              type="default"
-              icon={<EditOutlined />}
-              onClick={handleFinishDraft}
+              type="submit"
+              onClick={handleSubmit}
+              variant={"primary"}
+              className="w-35 !text-white bg-black hover:bg-gray-700"
               loading={loading}
-              className="border-gray-400 text-gray-700 hover:border-gray-600 hover:text-black"
             >
-              Lưu nháp
+              {mode === ENUM_PAGE_MODE.CREATE ? "Tạo mới" : "Lưu thay đổi"}
             </Button>
-          )}
-        </div>
-      </Form>
-    </div>
+            {mode !== ENUM_PAGE_MODE.CREATE && (
+              <Button
+                className="w-20 !text-white"
+                variant={"destructive"}
+                type="reset"
+                disabled={loading}
+                onClick={handleDelete}
+              >
+                Xóa
+              </Button>
+            )}
+            {mode === ENUM_PAGE_MODE.CREATE && (
+              <Button
+                type="submit"
+                onClick={handleFinishDraft}
+                loading={loading}
+                className="!text-white"
+              >
+                Lưu nháp
+              </Button>
+            )}
+            <Button
+              className="w-20 !text-red-600"
+              variant={"outline-destructive"}
+              type="reset"
+              disabled={loading}
+              onClick={handleCancel}
+            >
+              Hủy
+            </Button>
+          </div>
+        )}
+      </div>
+    </Form>
   );
 }

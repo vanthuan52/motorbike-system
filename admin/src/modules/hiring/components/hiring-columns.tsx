@@ -1,20 +1,22 @@
 import { ColumnsType } from "antd/es/table";
-import { Button, Select, Tooltip, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { Hiring, HiringStatusEnum } from "../types";
-import { STATUS_HIRING_OPTIONS } from "../constants/status";
+import { Button, Tooltip, Popconfirm } from "antd";
+import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { Hiring, ENUM_HIRING_STATUS } from "../types";
 
 export function getHiringColumns({
   openEdit,
-  handleDelete,
-  handleChangeStatus,
-  updateStatusLoading,
+  handleDeleteHiring,
+  onView,
 }: {
   openEdit: (record: Hiring) => void;
-  handleDelete: (id: string) => void;
-  handleChangeStatus: (newStatus: HiringStatusEnum, record: Hiring) => void;
-  updateStatusLoading: boolean;
+  handleDeleteHiring: (id: string) => void;
+  onView: (id: string) => void;
 }): ColumnsType<Hiring> {
+  const ENUM_HIRING_STATUS_LABEL: Record<ENUM_HIRING_STATUS, string> = {
+    [ENUM_HIRING_STATUS.DRAFT]: "Bản nháp",
+    [ENUM_HIRING_STATUS.PUBLISHED]: "Đã đăng",
+    [ENUM_HIRING_STATUS.ARCHIVED]: "Lưu trữ",
+  };
   return [
     {
       title: "ID",
@@ -37,36 +39,34 @@ export function getHiringColumns({
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (value: string, record: Hiring) => (
-        <Select
-          placeholder="Chọn trạng thái"
-          value={value}
-          style={{ width: 120 }}
-          onChange={(newStatus) =>
-            handleChangeStatus(newStatus as HiringStatusEnum, record)
-          }
-          options={STATUS_HIRING_OPTIONS}
-          loading={updateStatusLoading}
-        />
+      render: (_: string, record: Hiring) => (
+        <span>{ENUM_HIRING_STATUS_LABEL[record.status]}</span>
       ),
     },
     {
       title: "Hành động",
       key: "action",
       render: (_: any, record: Hiring) => (
-        <>
-          <Tooltip title="Sửa" className="mr-1">
+        <div className="flex items-center justify-center gap-1">
+          <Tooltip title="Xem chi tiết">
+            <Button
+              icon={<EyeOutlined />}
+              size="small"
+              onClick={() => onView(record._id)}
+            />
+          </Tooltip>
+          <Tooltip title="Sửa">
             <Button icon={<EditOutlined />} onClick={() => openEdit(record)} />
           </Tooltip>
           <Popconfirm
             title="Xác nhận xóa?"
-            onConfirm={() => handleDelete(record._id)}
+            onConfirm={() => handleDeleteHiring(record._id)}
           >
             <Tooltip title="Xóa">
               <Button icon={<DeleteOutlined />} danger />
             </Tooltip>
           </Popconfirm>
-        </>
+        </div>
       ),
     },
   ];

@@ -1,41 +1,34 @@
 import { AxiosError, AxiosResponse } from "axios";
-import {
-  HiringStatusEnum,
-  Hiring,
-  HiringResponse,
-  HiringResponseData,
-} from "../types";
 import { API_ENDPOINTS } from "@/constants/api-endpoint";
-import { ApiErrorResponse, ApiResponse } from "@/types/api.type";
+import { ApiErrorResponse } from "@/types/api.type";
 import { adminApi } from "@/lib/axios";
+import {
+  ENUM_HIRING_STATUS,
+  Hiring,
+  HiringCreationResponse,
+  HiringDeleteResponse,
+  HiringDetailResponse,
+  HiringListResponse,
+  HiringPaginationQuery,
+  HiringUpdateResponse,
+  HiringUpdateStatusResponse,
+} from "../types";
 
-type HiringFilter = {
-  search?: string;
-  page?: number;
-  perPage?: number;
-  status?: HiringStatusEnum;
-  orderBy?: string;
-  orderDirection?: "asc" | "desc";
-};
 const hiringService = {
-  getHiringList: async (filter?: HiringFilter): Promise<HiringResponse> => {
+  getHiringList: async (
+    queries?: HiringPaginationQuery
+  ): Promise<HiringListResponse> => {
     try {
-      const response: AxiosResponse<HiringResponse> = await adminApi.get(
+      const response = await adminApi.get<HiringListResponse>(
         API_ENDPOINTS.ADMIN.HIRING,
         {
-          params: {
-            search: filter?.search || "",
-            page: filter?.page || 1,
-            perPage: filter?.perPage || 10,
-            status: filter?.status || "",
-          },
+          params: queries,
         }
       );
-      const responseData: HiringResponse | undefined = response.data;
-      if (response.status !== 200 || !responseData) {
-        throw new Error(response?.data.message || "An unexpected error.");
+      if (response.status !== 200 || !response.data.data) {
+        throw new Error(response.data.message || "Get hiring list failed.");
       }
-      return responseData;
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       throw new Error(
@@ -44,16 +37,16 @@ const hiringService = {
     }
   },
 
-  getHiringDetails: async (id: string): Promise<HiringResponseData> => {
+  getHiringDetails: async (id: string): Promise<HiringDetailResponse> => {
     try {
-      const response: AxiosResponse<HiringResponse> = await adminApi.get(
+      const response: AxiosResponse<HiringDetailResponse> = await adminApi.get(
         API_ENDPOINTS.ADMIN.HIRING_DETAILS(id)
       );
-      const responseData: HiringResponseData | undefined = response.data.data;
-      if (response.status !== 200 || !responseData) {
-        throw new Error(response?.data.message || "An unexpected error.");
+
+      if (response.status !== 200 || !response.data.data) {
+        throw new Error(response.data.message || "Get hiring details failed.");
       }
-      return responseData;
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       throw new Error(
@@ -62,17 +55,15 @@ const hiringService = {
     }
   },
 
-  createHiring: async (hiring: Hiring): Promise<HiringResponseData> => {
+  createHiring: async (hiring: Hiring): Promise<HiringCreationResponse> => {
     try {
-      const response: AxiosResponse<HiringResponse> = await adminApi.post(
-        API_ENDPOINTS.ADMIN.HIRING_CREATE,
-        hiring
-      );
-      const responseData: HiringResponseData | undefined = response.data.data;
-      if (response.status !== 201 || !responseData) {
-        throw new Error(response?.data.message || "An unexpected error.");
+      const response: AxiosResponse<HiringCreationResponse> =
+        await adminApi.post(API_ENDPOINTS.ADMIN.HIRING_CREATE, hiring);
+
+      if (response.status !== 201 || !response.data.data) {
+        throw new Error(response.data.message || "Create hiring failed.");
       }
-      return responseData;
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       throw new Error(
@@ -81,18 +72,20 @@ const hiringService = {
     }
   },
 
-  updateHiring: async (id: string, hiring: Hiring): Promise<void> => {
-    console.log(hiring);
-
+  updateHiring: async (
+    id: string,
+    hiring: Hiring
+  ): Promise<HiringUpdateResponse> => {
     try {
-      const response: AxiosResponse<ApiResponse<void>> = await adminApi.put(
+      const response = await adminApi.put<HiringUpdateResponse>(
         API_ENDPOINTS.ADMIN.HIRING_UPDATE(id),
         hiring
       );
 
       if (response.status !== 200) {
-        throw new Error(response.data.message || "An unexpected error.");
+        throw new Error(response.data.message || "Update hiring failed.");
       }
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       throw new Error(
@@ -101,15 +94,16 @@ const hiringService = {
     }
   },
 
-  deleteHiring: async (id: string): Promise<void> => {
+  deleteHiring: async (id: string): Promise<HiringDeleteResponse> => {
     try {
-      const response: AxiosResponse<ApiResponse<void>> = await adminApi.delete(
+      const response = await adminApi.delete<HiringDeleteResponse>(
         API_ENDPOINTS.ADMIN.HIRING_DELETE(id)
       );
 
       if (response.status !== 200) {
-        throw new Error(response.data.message || "An unexpected error.");
+        throw new Error(response.data.message || "Delete hiring failed.");
       }
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       throw new Error(
@@ -120,17 +114,20 @@ const hiringService = {
 
   updateHiringStatus: async (
     id: string,
-    status: HiringStatusEnum
-  ): Promise<void> => {
+    status: ENUM_HIRING_STATUS
+  ): Promise<HiringUpdateStatusResponse> => {
     try {
-      const response: AxiosResponse<ApiResponse<void>> = await adminApi.patch(
+      const response = await adminApi.patch<HiringUpdateStatusResponse>(
         API_ENDPOINTS.ADMIN.HIRING_UPDATE_STATUS(id),
         { status }
       );
 
       if (response.status !== 200) {
-        throw new Error(response.data.message || "An unexpected error.");
+        throw new Error(
+          response.data.message || "Update hiring status failed."
+        );
       }
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError<ApiErrorResponse>;
       throw new Error(
