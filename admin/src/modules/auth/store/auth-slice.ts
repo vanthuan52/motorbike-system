@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LoginCredentials } from "../types";
-import { UserProfile } from "@/modules/customer-management/types";
+import { User } from "@/modules/user/types";
 
 interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-  user: UserProfile | null;
+  user: User | null;
+  appLoading: boolean;
 }
 
 const initialState: AuthState = {
@@ -14,6 +15,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   user: null,
+  appLoading: true,
 };
 
 export const authSlice = createSlice({
@@ -58,15 +60,17 @@ export const authSlice = createSlice({
       state.error = null;
     },
 
-    getUserProfileSuccess: (state, action: PayloadAction<UserProfile>) => {
+    getUserProfileSuccess: (state, action: PayloadAction<User>) => {
       state.isAuthenticated = true;
       state.user = action.payload;
       state.loading = false;
+      state.appLoading = false;
     },
     getUserProfileFailure: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.loading = false;
+      state.appLoading = false;
     },
 
     logout: (state) => {
@@ -83,6 +87,9 @@ export const authSlice = createSlice({
       state.user = null;
       state.loading = false;
       state.error = null;
+    },
+    setAppLoaded: (state) => {
+      state.appLoading = false;
     },
   },
 });

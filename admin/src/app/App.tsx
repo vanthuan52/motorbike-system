@@ -1,16 +1,16 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
-import { useAppDispatch } from "@/store";
-import { authActions } from "@/modules/auth/store/auth-slice";
+import { useAppSelector } from "@/store";
 import ToastProvider from "@/modules/notification/components/toast-provider";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 function App() {
-  const dispatch = useAppDispatch();
+  const { appLoading } = useAppSelector((state) => state.auth);
 
-  useEffect(() => {
-    dispatch(authActions.getUserProfile());
-  }, []);
+  if (appLoading) {
+    return <LoadingSpinner overlay />;
+  }
 
   return (
     <React.Fragment>

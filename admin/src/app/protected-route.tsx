@@ -18,17 +18,22 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
   ],
 }) => {
-  const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, appLoading } = useAppSelector((state) => state.auth);
 
-  return !loading ? (
-    isAuthenticated ? (
-      <>{children}</>
-    ) : (
-      <>
-        <Navigate to={ROUTER_PATH.LOGIN} />
-      </>
-    )
-  ) : null;
+  if (appLoading) {
+    return null;
+  }
+
+  if (isAuthenticated) {
+    const hasRequiredRole = true;
+    if (hasRequiredRole) {
+      return <>{children}</>;
+    } else {
+      return <Navigate to={ROUTER_PATH.INDEX} replace />;
+    }
+  } else {
+    return <Navigate to={ROUTER_PATH.LOGIN} replace />;
+  }
 };
 
 export default ProtectedRoute;

@@ -48,7 +48,7 @@ export interface IUserService {
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<IUserEntity[]>;
-  
+
   getTotalWithRole(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
@@ -156,7 +156,7 @@ export interface IUserService {
 
   update(
     repository: UserDoc,
-    { name, role }: UserUpdateRequestDto,
+    { name, phone }: UserUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<UserDoc>;
 
