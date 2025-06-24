@@ -7,6 +7,7 @@ import authService from "../auth.service";
 import { clearTokens } from "@/utils/jwt.uitls";
 import { notificationActions } from "@/modules/notification/store/notification-slice";
 import userService from "@/modules/user/user.service";
+import { take } from "lodash";
 
 function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
@@ -52,8 +53,17 @@ function* logoutHandler() {
   }
 }
 
+function* initializeAuthSaga() {
+  yield put(authActions.getUserProfile());
+  yield take([
+    authActions.getUserProfileSuccess.type,
+    authActions.getUserProfileFailure.type,
+  ]);
+}
+
 export function* authSaga() {
   yield takeLatest(authActions.loginCredentials, loginCredentialsHandler);
-  yield takeLatest(authActions.getUserProfile.type, getProfileHandler);
+  yield takeLatest(authActions.getUserProfile, getProfileHandler);
   yield takeLatest(authActions.logout, logoutHandler);
+  yield call(initializeAuthSaga);
 }

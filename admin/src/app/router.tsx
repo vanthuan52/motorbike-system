@@ -80,6 +80,7 @@ const HiringDetailsPage = lazy(
 const CreateHiringPage = lazy(
   () => import("@/modules/hiring/pages/create-hiring-page")
 );
+
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,

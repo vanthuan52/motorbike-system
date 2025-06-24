@@ -1,8 +1,6 @@
 import { ApiResponse } from "@/types/api.type";
 import { ENUM_POLICY_ROLE_TYPE } from "../role/types";
 
-export type RoleType = "USER" | "TECHNICIAN" | "MANAGER" | "ADMIN";
-
 export enum ENUM_AUTH_LOGIN_FROM {
   CREDENTIAL = "CREDENTIAL",
   SOCIAL_GOOGLE = "SOCIAL_GOOGLE",
@@ -15,7 +13,7 @@ export interface LoginCredentials {
 }
 export interface AuthLoginResponseData {
   tokenType: "Bearer";
-  roleType: RoleType;
+  roleType: ENUM_POLICY_ROLE_TYPE;
   expiresIn: number;
   accessToken: string;
   refreshToken: string;
@@ -49,4 +47,3 @@ export type AuthJwtRefreshTokenPayload = Omit<
 >;
 
 export interface UserAuthInfo extends AuthLoginResponseData {}
-
