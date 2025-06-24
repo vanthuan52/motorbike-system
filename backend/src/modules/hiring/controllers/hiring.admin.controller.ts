@@ -57,6 +57,7 @@ import { ENUM_HIRING_STATUS } from '../enums/hiring.enum';
 import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.interface';
+import { ENUM_HIRING_STATUS_CODE_ERROR } from '../enums/hiring.status-code.enum';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -155,9 +156,20 @@ export class HiringAdminController {
     @Body() body: HiringCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
     try {
+      const existingHiringBySlug = await this.hiringService.findOne({
+        slug: body.slug,
+      });
+      if (existingHiringBySlug) {
+        throw new ConflictException({
+          statusCode: ENUM_HIRING_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'hiring.error.slugExisted',
+        });
+      }
       const hiring = await this.hiringService.create(body);
       return { data: hiring };
     } catch (err) {
+      // console.log(err);
+
       if (err instanceof HttpException) throw err;
 
       throw new InternalServerErrorException({
@@ -184,6 +196,22 @@ export class HiringAdminController {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
       throw new NotFoundException('hiring.error.notFoundHiring');
+    }
+
+    if (body.slug && body.slug !== hiring.slug) {
+      const existingBySlug = await this.hiringService.findOne({
+        slug: body.slug,
+      });
+
+      if (
+        existingBySlug &&
+        existingBySlug._id.toString() !== hiring._id.toString()
+      ) {
+        throw new ConflictException({
+          statusCode: ENUM_HIRING_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'hiring.error.slugExisted',
+        });
+      }
     }
     try {
       const hiringUpdated = await this.hiringService.update(hiring, body);

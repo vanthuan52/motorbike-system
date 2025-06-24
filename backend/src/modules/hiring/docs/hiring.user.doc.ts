@@ -10,6 +10,7 @@ import { applyDecorators } from '@nestjs/common';
 import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
 import {
   HiringDocParamsId,
+  HiringDocParamsSlug,
   HiringDocQueryHiringType,
   HiringDocQueryStatus,
 } from '../constants/hiring-doc.constants';
@@ -21,7 +22,7 @@ export function HiringUserGetDoc(): MethodDecorator {
       summary: 'get detail an hiring',
     }),
     DocRequest({
-      params: HiringDocParamsId,
+      params: HiringDocParamsSlug,
     }),
     DocAuth({
       jwtAccessToken: true,

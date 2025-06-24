@@ -10,6 +10,7 @@
     "notFoundHiring": "Rất tiếc, chúng tôi không tìm thấy tin tuyển dụng bạn yêu cầu.",
     "updateStatusFailed": "Cập nhật trạng thái tin tuyển dụng thất bại.",
     "deleteFailed": "Xóa tin tuyển dụng thất bại.",
-    "createFailed": "Tạo tin tuyển dụng mới thất bại."
+    "createFailed": "Tạo tin tuyển dụng mới thất bại.",
+    "slugExisted": "Slug của tin tuyển dụng này đã tồn tại."
   }
 }

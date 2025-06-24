@@ -71,4 +71,6 @@ export interface IHiringService {
   mapList(hiring: HiringDoc[] | HiringEntity[]): HiringListResponseDto[];
 
   mapGet(hiring: HiringDoc | HiringEntity): HiringGetResponseDto;
+
+  findBySlug(slug: string): Promise<HiringDoc | null>;
 }

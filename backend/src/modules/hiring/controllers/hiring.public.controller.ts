@@ -41,9 +41,11 @@ export class HiringPublicController {
   @HiringUserGetDoc()
   @Response('hiring.get')
   @HttpCode(HttpStatus.OK)
-  @Get('/get/:id')
-  async get(@Param('id') id: string): Promise<IResponse<HiringGetResponseDto>> {
-    const hiring = await this.hiringService.findOneById(id);
+  @Get('/get/:slug')
+  async get(
+    @Param('slug') slug: string,
+  ): Promise<IResponse<HiringGetResponseDto>> {
+    const hiring = await this.hiringService.findBySlug(slug);
     if (!hiring) {
       throw new NotFoundException({
         message: 'hiring.error.notFound',

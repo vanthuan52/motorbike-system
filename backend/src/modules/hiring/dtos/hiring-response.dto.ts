@@ -16,6 +16,12 @@ export class HiringResponseDto {
   title: string;
 
   @ApiProperty({
+    example: 'tho-sua-xe-may',
+    description: 'Slug',
+  })
+  slug: string;
+
+  @ApiProperty({
     example:
       'Chúng tôi đang tìm kiếm một thợ sửa xe máy có kinh nghiệm để gia nhập đội ngũ của chúng tôi.',
     description: 'Mô tả công việc',

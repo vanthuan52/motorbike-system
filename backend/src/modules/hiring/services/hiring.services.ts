@@ -41,6 +41,15 @@ export class HiringService implements IHiringService {
     return !!hiring;
   }
 
+  createSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+  }
+
   mapList(hiring: HiringDoc[] | HiringEntity[]): HiringListResponseDto[] {
     return plainToInstance(
       HiringListResponseDto,
@@ -86,6 +95,7 @@ export class HiringService implements IHiringService {
       this.hiringRepository._joinActive!,
     );
   }
+
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
@@ -106,6 +116,7 @@ export class HiringService implements IHiringService {
   ): Promise<HiringDoc> {
     const create: HiringEntity = new HiringEntity();
     create.title = payload.title;
+    create.slug = payload.slug;
     create.description = payload.description;
     create.requirements = payload.requirements;
     create.location = payload.location;
@@ -122,6 +133,7 @@ export class HiringService implements IHiringService {
     options?: IDatabaseSaveOptions,
   ): Promise<HiringDoc> {
     repository.title = payload.title ?? repository.title;
+    repository.slug = payload.slug ?? repository.slug;
     repository.description = payload.description ?? repository.description;
     repository.requirements = payload.requirements ?? repository.requirements;
     repository.location = payload.location ?? repository.location;
@@ -162,5 +174,9 @@ export class HiringService implements IHiringService {
     options?: IDatabaseFindAllOptions,
   ): Promise<HiringDoc[]> {
     return this.hiringRepository.findAll(find, options);
+  }
+
+  async findBySlug(slug: string): Promise<HiringDoc | null> {
+    return this.hiringRepository.findOneBySlug(slug);
   }
 }

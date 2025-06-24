@@ -21,6 +21,13 @@ export class HiringEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
     trim: true,
+    maxlength: 100,
+  })
+  slug: string;
+
+  @DatabaseProp({
+    required: true,
+    trim: true,
     maxlength: 500,
   })
   description?: string;
