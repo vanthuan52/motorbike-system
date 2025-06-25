@@ -48,7 +48,7 @@ export function getHiringColumns({
       key: "action",
       render: (_: any, record: Hiring) => (
         <div className="flex items-center justify-center gap-1">
-          <Tooltip title="Xem chi tiết">
+          <Tooltip title="Xem danh sách ứng viên">
             <Button
               icon={<EyeOutlined />}
               size="small"

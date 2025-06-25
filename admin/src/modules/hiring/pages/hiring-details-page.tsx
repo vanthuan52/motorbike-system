@@ -1,11 +1,8 @@
 import { RootState, useAppDispatch } from "@/store";
-import { Form } from "antd";
 import { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { hiringActions } from "../store/hiring-slice";
-import SkeletonHiringForm from "../components/SkeletonHiringForm";
 import HiringForm from "../components/HiringForm";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
 import PageInfo from "@/components/page-info";
@@ -15,7 +12,6 @@ export default function HiringDetailsPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [form] = Form.useForm();
   const { loading, isUpserted, isDeleted } = useSelector(
     (state: RootState) => state.hiring
   );

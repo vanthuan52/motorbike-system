@@ -89,7 +89,7 @@ export const useCandidateTableColumns = ({
                     `${ROUTER_PATH.CANDIDATE_DETAILS.replace(
                       ":id",
                       record._id
-                    )}?edit=1`
+                    )}`
                   )
                 }
               />

@@ -15,6 +15,8 @@ import SelectOption, {
   SelectOptionItem,
 } from "@/components/ui/ant-design/select-option";
 import Table from "@/components/ui/table/table";
+import { DatePicker } from "antd";
+const { RangePicker } = DatePicker;
 
 export default function CandidateList() {
   const { id } = useParams<{ id: string }>();
@@ -33,14 +35,18 @@ export default function CandidateList() {
     page: Number(pageParam) || DEFAULT_PAGINATION_QUERY.page,
     perPage: Number(limitParam) || DEFAULT_PAGINATION_QUERY.perPage,
   });
+
   const {
     candidates,
     loadingList,
     pagination: paginationState,
   } = useSelector((state: RootState) => state.candidates);
+
   const { filters, mappedFilters, handleFiltersChange } =
     useFilters(restParams);
+
   const debouncedSearchTerm = useDebounce(search ?? "", 500);
+
   useEffect(() => {
     dispatch(
       candidateActions.getCandidates({
@@ -52,11 +58,13 @@ export default function CandidateList() {
       } as CandidatePaginationQuery)
     );
   }, [dispatch, pagination, debouncedSearchTerm, mappedFilters]);
+
   const { columns } = useCandidateTableColumns({
     currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
     pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
-    hiringId: candidates[0]?.hiringId,
+    hiringId: candidates[0]?.hiring,
   });
+
   useEffect(() => {
     setQueryParams({
       page: pagination.page?.toString(),
@@ -90,6 +98,7 @@ export default function CandidateList() {
       perPage: DEFAULT_PAGINATION_QUERY.perPage,
     });
   }, []);
+
   const statusOptions: SelectOptionItem[] = [
     { value: "all", label: "Tất cả" },
     { value: ENUM_CANDIDATE_STATUS.NEW, label: "Mới" },
@@ -117,6 +126,24 @@ export default function CandidateList() {
             options={statusOptions}
             className="!h-10 w-40 xs:w-50"
             allowClear
+          />
+          <RangePicker
+            placeholder={["Từ ngày", "Đến ngày"]}
+            size="large"
+            format="DD/MM/YYYY"
+            onChange={(dates) => {
+              const [start, end] = dates || [];
+              const from = start
+                ? start.startOf("day").toISOString()
+                : undefined;
+              const to = end ? end.endOf("day").toISOString() : undefined;
+              handleFiltersChange("appliedAtFrom", from);
+              handleFiltersChange("appliedAtTo", to);
+              handlePaginationChange({
+                page: DEFAULT_PAGINATION_QUERY.page,
+                perPage: DEFAULT_PAGINATION_QUERY.perPage,
+              });
+            }}
           />
         </div>
       </TableToolbar>

@@ -50,7 +50,7 @@ export class CandidateService implements ICandidateService {
     options?: IDatabaseCreateOptions,
   ): Promise<CandidateDoc> {
     const create: CandidateEntity = new CandidateEntity();
-    create.hiringId = payload.hiringId?.toString();
+    create.hiring = payload.hiring?.toString();
     create.name = payload.name;
     create.email = payload.email;
     create.phone = payload.phone;
@@ -67,7 +67,7 @@ export class CandidateService implements ICandidateService {
     return this.candidateRepository.softDelete(repository, options);
   }
   async deleteMany(
-    find: Record<string, any>,
+    find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean> {
     this.candidateRepository.deleteMany(find, options);

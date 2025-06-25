@@ -13,6 +13,7 @@ import BasicInfoSection from "./basic-info-section";
 import RecruitmentRequirementSection from "./recruitment-requirement-section";
 import OtherInfoSection from "./other-info-section";
 import { ENUM_HIRING_STATUS } from "../types";
+import { ROUTER_PATH } from "@/constants/router-path";
 
 type HiringFormProps = {
   mode: ENUM_PAGE_MODE;
@@ -127,6 +128,13 @@ export default function HiringForm({ mode }: HiringFormProps) {
       onValuesChange={handleValuesChange}
     >
       <div className="flex flex-col gap-4">
+        <Button
+          onClick={() => navigate(`${ROUTER_PATH.CANDIDATE}?hiring=${id}`)}
+          variant={"primary"}
+          className="w-45 !text-white bg-black hover:bg-gray-700"
+        >
+          Danh sách ứng viên
+        </Button>
         <BasicInfoSection mode={mode} />
 
         <RecruitmentRequirementSection mode={mode} />

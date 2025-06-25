@@ -32,9 +32,7 @@ export class CandidatePublicController {
     @Body() body: CandidateUserCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
     try {
-      const hiring = await this.hiringService.findOneById(
-        String(body.hiringId),
-      );
+      const hiring = await this.hiringService.findOneById(String(body.hiring));
       if (!hiring) {
         throw new NotFoundException('hiring.error.notFoundHiring');
       }

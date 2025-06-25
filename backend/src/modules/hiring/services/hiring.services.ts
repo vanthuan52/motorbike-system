@@ -153,7 +153,7 @@ export class HiringService implements IHiringService {
   }
 
   async deleteMany(
-    find: Record<string, any>,
+    find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean> {
     await this.hiringRepository.deleteMany(find, options);

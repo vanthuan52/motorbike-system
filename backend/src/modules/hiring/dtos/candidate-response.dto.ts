@@ -25,7 +25,7 @@ export class CandidateResponseDto {
   status: ENUM_CANDIDATE_STATUS;
 
   @ApiProperty({ type: String })
-  hiringId: string;
+  hiring: string;
 
   @ApiProperty({ example: 'd8c8fca1-...', required: false, type: String })
   createdBy?: string;

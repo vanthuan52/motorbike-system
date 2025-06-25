@@ -17,7 +17,7 @@ export class CandidateEntity extends DatabaseEntityBase {
     ref: 'hiring',
     index: true,
   })
-  hiringId: String;
+  hiring: String;
 
   @DatabaseProp({
     required: true,
