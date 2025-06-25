@@ -57,7 +57,7 @@ export class CandidateUserCreateRequestDto {
     description: 'ID tin tuyển dụng',
   })
   @IsString()
-  hiringId: String;
+  hiring: String;
 
   @ApiProperty({
     example: '3 năm làm kỹ sư bảo trì tại Honda',

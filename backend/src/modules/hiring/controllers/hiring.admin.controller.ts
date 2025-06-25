@@ -173,7 +173,7 @@ export class HiringAdminController {
       if (err instanceof HttpException) throw err;
 
       throw new InternalServerErrorException({
-        message: 'part-type.error.createFailed',
+        message: 'hiring.error.createFailed',
         _error: err,
       });
     }

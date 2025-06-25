@@ -14,6 +14,7 @@ import { PartTypeAdminController } from '@/modules/part-type/controllers/part-ty
 import { HiringAdminController } from '@/modules/hiring/controllers/hiring.admin.controller';
 import { HiringModule } from '@/modules/hiring/hiring.module';
 import { CandidateAdminController } from '@/modules/hiring/controllers/candidate.admin.controller';
+import { CandidateReviewAdminController } from '@/modules/hiring/controllers/candidate-review.admin.controller';
 
 @Module({
   controllers: [
@@ -25,6 +26,7 @@ import { CandidateAdminController } from '@/modules/hiring/controllers/candidate
     PartTypeAdminController,
     HiringAdminController,
     CandidateAdminController,
+    CandidateReviewAdminController,
   ],
   providers: [],
   exports: [],

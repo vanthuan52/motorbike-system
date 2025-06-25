@@ -8,6 +8,9 @@ import {
   CandidateDetailResponse,
   CandidateUpdateStatusResponse,
   ENUM_CANDIDATE_STATUS,
+  CandidateReview,
+  CandidateCreationResponse,
+  CandidateReviewPaginationQuery,
 } from "./types";
 
 const candidateService = {
@@ -82,6 +85,55 @@ const candidateService = {
       throw new Error(
         axiosError.response?.data.message ||
           "Lỗi không xác định khi cập nhật trạng thái."
+      );
+    }
+  },
+
+  getCandidateReview: async (
+    queries?: CandidateReviewPaginationQuery
+  ): Promise<CandidateDetailResponse> => {
+    try {
+      const response = await adminApi.get<CandidateDetailResponse>(
+        API_ENDPOINTS.ADMIN.CANDIDATE_REVIEW_LIST,
+        {
+          params: queries,
+        }
+      );
+
+      if (response.status !== 200 || !response.data.data) {
+        throw new Error(
+          response.data.message || "Lấy bình luận ứng viên thất bại."
+        );
+      }
+
+      return response.data;
+    } catch (error: any) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message ||
+          "Lỗi không xác định khi lấy bình luận ứng viên."
+      );
+    }
+  },
+
+  createCandidateReview: async (
+    candidateReview: CandidateReview
+  ): Promise<CandidateCreationResponse> => {
+    try {
+      const response = await adminApi.post<CandidateCreationResponse>(
+        API_ENDPOINTS.ADMIN.CANDIDATE_REVIEW_CREATE,
+        candidateReview
+      );
+
+      if (response.status !== 201 || !response.data.data) {
+        throw new Error(response.data.message || "Tạo bình luận thất bại.");
+      }
+      return response.data;
+    } catch (error: any) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message ||
+          "Lỗi không xác định khi tạo bình luận."
       );
     }
   },

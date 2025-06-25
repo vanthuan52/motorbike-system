@@ -5,14 +5,23 @@ import { BaseApiState } from "@/types/redux-common.type";
 import {
   Candidate,
   CandidatePaginationQuery,
+  CandidateReview,
+  CandidateReviewPaginationQuery,
   ENUM_CANDIDATE_STATUS,
 } from "../types";
 
 interface CandidateState extends BaseApiState {
   candidates: Candidate[];
   candidate: Candidate | null;
+  candidateReviews: CandidateReview[];
+  loadingCandidateReviews: boolean;
+  createCandidateReview: {
+    loading: boolean;
+    success: boolean;
+  };
   error: string | null;
   pagination: ApiResponsePagination | undefined;
+  paginationCandidateReviews: ApiResponsePagination | undefined;
 }
 
 interface GetCandidatesSuccessPayload {
@@ -20,11 +29,18 @@ interface GetCandidatesSuccessPayload {
   pagination: ApiResponsePagination | undefined;
 }
 
+interface GetCandidateReviewsSuccessPayload {
+  candidateReviews: CandidateReview[];
+  paginationCandidateReviews: ApiResponsePagination | undefined;
+}
+
 const initialState: CandidateState = {
   candidates: [],
   candidate: null,
+  candidateReviews: [],
   loadingList: false,
   loadingSingle: false,
+  loadingCandidateReviews: false,
   partialUpdate: {
     loading: false,
     success: false,
@@ -41,8 +57,13 @@ const initialState: CandidateState = {
     loading: false,
     success: false,
   },
+  createCandidateReview: {
+    loading: false,
+    success: false,
+  },
   error: null,
   pagination: PAGINATION_QUERY_INITIAL_STATE,
+  paginationCandidateReviews: PAGINATION_QUERY_INITIAL_STATE,
 };
 
 export const candidateSlice = createSlice({
@@ -110,20 +131,57 @@ export const candidateSlice = createSlice({
       state.error = action.payload;
     },
 
+    getCandidateReviews(
+      state,
+      action: PayloadAction<CandidateReviewPaginationQuery>
+    ) {
+      state.loadingCandidateReviews = true;
+      state.error = null;
+      state.pagination = undefined;
+    },
+    getCandidateReviewsSuccess(
+      state,
+      action: PayloadAction<GetCandidateReviewsSuccessPayload>
+    ) {
+      state.loadingCandidateReviews = false;
+      state.error = null;
+      state.candidateReviews = action.payload.candidateReviews;
+      state.pagination = action.payload.paginationCandidateReviews;
+    },
+    getCandidateReviewsFailure(state, action: PayloadAction<string>) {
+      state.loadingCandidateReviews = false;
+      state.error = action.payload;
+      state.candidateReviews = [];
+      state.pagination = undefined;
+    },
+    createCandidateReview(
+      state,
+      action: PayloadAction<{ candidateReview: CandidateReview }>
+    ) {
+      state.createCandidateReview.loading = true;
+      state.createCandidateReview.success = false;
+      state.error = null;
+    },
+    createCandidateReviewSuccess(state) {
+      state.createCandidateReview.loading = false;
+      state.createCandidateReview.success = true;
+      state.error = null;
+    },
+    createCandidateReviewFailure(state, action: PayloadAction<string>) {
+      state.createCandidateReview.loading = false;
+      state.createCandidateReview.success = false;
+      state.error = action.payload;
+    },
     resetCandidateDetail(state) {
       state.loadingSingle = false;
       state.candidate = null;
       state.error = null;
     },
-
+    resetCreateCandidateReview(state) {
+      state.createCandidateReview = { loading: false, success: false };
+    },
     resetState(state) {
-      state.loadingList = false;
-      state.loadingSingle = false;
-      state.partialUpdate = { loading: false, success: false };
-      state.candidates = [];
-      state.candidate = null;
-      state.error = null;
-      state.pagination = undefined;
+      Object.assign(state, initialState);
     },
   },
 });

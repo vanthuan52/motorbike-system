@@ -11,12 +11,18 @@ export enum ENUM_CANDIDATE_STATUS {
 
 export interface CandidatePaginationQuery extends PaginationQuery {
   status?: ENUM_CANDIDATE_STATUS;
-  hiringId?: string;
+  hiring?: string;
   search?: string;
+  appliedAtFrom?: string;
+  appliedAtTo?: string;
 }
 
+export interface CandidateReviewPaginationQuery {
+  candidate: string;
+  more?: number;
+}
 export interface Candidate extends BaseEntity {
-  hiringId: string;
+  hiring: string;
   name: string;
   email: string;
   phone: string;
@@ -26,6 +32,14 @@ export interface Candidate extends BaseEntity {
   experience?: string;
   education?: string;
   interactions?: string[];
+}
+
+export interface CandidateReview {
+  user: string;
+  candidate: string;
+  feedback: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type CandidateListResponse = ApiResponse<Candidate[]>;
@@ -39,3 +53,7 @@ export type CandidateUpdateResponse = ApiResponse;
 export type CandidateUpdateStatusResponse = ApiResponse;
 
 export type CandidateDeletionResponse = ApiResponse;
+
+export type CandidateReviewListResponse = ApiResponse<CandidateReview[]>;
+
+export type CandidateReviewCreationResponse = ApiResponse<CandidateReview>;

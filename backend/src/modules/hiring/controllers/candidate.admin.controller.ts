@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Param,
+  Patch,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -84,7 +85,7 @@ export class CandidateAdminController {
       ENUM_CANDIDATE_STATUS,
     )
     status: Record<string, any>,
-    @Query('hiringId') hiringId: string,
+    @Query('hiring') hiring: string,
     @Query('appliedAtFrom') appliedAtFrom: string,
     @Query('appliedAtTo') appliedAtTo: string,
   ): Promise<IResponsePaging<CandidateListResponseDto>> {
@@ -92,8 +93,8 @@ export class CandidateAdminController {
       ..._search,
       ...status,
     };
-    if (hiringId) {
-      find.hiringId = hiringId;
+    if (hiring) {
+      find.hiring = hiring;
     }
     if (appliedAtFrom && appliedAtTo) {
       find.appliedAt = {
@@ -162,7 +163,7 @@ export class CandidateAdminController {
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Get('/update/:id/status')
+  @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
     @Body() { status }: CandidateUpdateStatusRequestDto,

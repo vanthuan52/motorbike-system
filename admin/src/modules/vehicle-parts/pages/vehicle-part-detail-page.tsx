@@ -18,7 +18,7 @@ export const VehiclePartDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (isEdit) {
-      const found = mockDataTableVehiclePart.find(item => item.id === id);
+      const found = mockDataTableVehiclePart.find((item) => item.id === id);
       if (found) {
         form.setFieldsValue(found as any);
       } else {
@@ -55,7 +55,11 @@ export const VehiclePartDetailPage: React.FC = () => {
         onFinish={onFinish}
         initialValues={{ status: true }}
       >
-        <Form.Item name="vehicle_type_id" label="Mã hãng xe" rules={[{ required: true }]}>  
+        <Form.Item
+          name="vehicle_type_id"
+          label="Mã hãng xe"
+          rules={[{ required: true }]}
+        >
           <Select placeholder="Chọn hãng xe">
             {/* map options từ API hoặc mock */}
             <Option value="1">Hãng A</Option>
@@ -63,21 +67,39 @@ export const VehiclePartDetailPage: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item name="name" label="Tên phụ tùng" rules={[{ required: true }]}>  
+        <Form.Item
+          name="name"
+          label="Tên phụ tùng"
+          rules={[{ required: true }]}
+        >
           <Input placeholder="Nhập tên phụ tùng" />
         </Form.Item>
 
-        <Form.Item name="price" label="Giá (VNĐ)" rules={[{ required: true }]}>  
+        <Form.Item name="price" label="Giá (VNĐ)" rules={[{ required: true }]}>
           <Input type="number" placeholder="Nhập giá" />
         </Form.Item>
 
-        <Form.Item name="image" label="Ảnh phụ tùng" valuePropName="fileList" getValueFromEvent={normFile}>
-          <Upload name="image" listType="picture" maxCount={1} beforeUpload={() => false}>
+        <Form.Item
+          name="image"
+          label="Ảnh phụ tùng"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
+        >
+          <Upload
+            name="image"
+            listType="picture"
+            maxCount={1}
+            beforeUpload={() => false}
+          >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
         </Form.Item>
 
-        <Form.Item name="status" label="Trạng thái" rules={[{ required: true }]}>  
+        <Form.Item
+          name="status"
+          label="Trạng thái"
+          rules={[{ required: true }]}
+        >
           <Select>
             <Option value={true}>Hoạt động</Option>
             <Option value={false}>Không hoạt động</Option>
@@ -88,7 +110,9 @@ export const VehiclePartDetailPage: React.FC = () => {
           <Button type="primary" htmlType="submit">
             {isEdit ? "Cập nhật" : "Tạo mới"}
           </Button>
-          <Button className="ml-2" onClick={() => navigate(-1)}>Hủy</Button>
+          <Button className="ml-2" onClick={() => navigate(-1)}>
+            Hủy
+          </Button>
         </Form.Item>
       </Form>
     </div>
