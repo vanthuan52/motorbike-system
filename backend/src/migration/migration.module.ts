@@ -9,7 +9,9 @@ import { CommonModule } from '@/common/common.module';
 import { MigrationPartTypeSeed } from './seeds/migration.part-type.seed';
 import { PartTypeModule } from '@/modules/part-type/part-type.module';
 import { HiringModule } from '@/modules/hiring/hiring.module';
+import { StoreModule } from '@/modules/store/store.module';
 import { MigrationHiringSeed } from './seeds/migration.hiring.seed';
+import { MigrationStoreSeed } from './seeds/migration.store.seed';
 
 // TODO: Change With Commander
 @Module({
@@ -21,12 +23,14 @@ import { MigrationHiringSeed } from './seeds/migration.hiring.seed';
     UserModule,
     PartTypeModule,
     HiringModule,
+    StoreModule,
   ],
   providers: [
     MigrationRoleSeed,
     MigrationUserSeed,
     MigrationPartTypeSeed,
     MigrationHiringSeed,
+    MigrationStoreSeed,
   ],
   exports: [],
 })
