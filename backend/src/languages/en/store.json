@@ -1,0 +1,15 @@
+{
+  "list": "Store list retrieved successfully.",
+  "get": "Store details fetched successfully.",
+  "create": "New store created successfully.",
+  "update": "Store updated successfully.",
+  "delete": "Store deleted successfully.",
+  "updateStatus": "Store status updated to {status}.",
+  "error": {
+    "notFound": "Sorry, we couldn't find the store you requested.",
+    "updateStatusFailed": "Failed to update store status.",
+    "deleteFailed": "Failed to delete store.",
+    "createFailed": "Failed to create new store.",
+    "slugExisted": "This store slug already exists."
+  }
+}

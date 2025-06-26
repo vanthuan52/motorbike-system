@@ -14,7 +14,9 @@ import { PartTypeAdminController } from '@/modules/part-type/controllers/part-ty
 import { HiringAdminController } from '@/modules/hiring/controllers/hiring.admin.controller';
 import { HiringModule } from '@/modules/hiring/hiring.module';
 import { CandidateAdminController } from '@/modules/hiring/controllers/candidate.admin.controller';
+import { StoreAdminController } from '@/modules/store/controllers/store.admin.controller';
 import { CandidateReviewAdminController } from '@/modules/hiring/controllers/candidate-review.admin.controller';
+import { StoreModule } from '@/modules/store/store.module';
 
 @Module({
   controllers: [
@@ -27,6 +29,7 @@ import { CandidateReviewAdminController } from '@/modules/hiring/controllers/can
     HiringAdminController,
     CandidateAdminController,
     CandidateReviewAdminController,
+    StoreAdminController,
   ],
   providers: [],
   exports: [],
@@ -39,6 +42,7 @@ import { CandidateReviewAdminController } from '@/modules/hiring/controllers/can
     SessionModule,
     PartTypeModule,
     HiringModule,
+    StoreModule,
   ],
 })
 export class RoutesAdminModule {}

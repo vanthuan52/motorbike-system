@@ -11,8 +11,10 @@ import { AwsModule } from '@/modules/aws/aws.module';
 import { CandidatePublicController } from '@/modules/hiring/controllers/candidate.public.controller';
 import { HiringModule } from '@/modules/hiring/hiring.module';
 import { HiringPublicController } from '@/modules/hiring/controllers/hiring.public.controller';
+import { StorePublicController } from '@/modules/store/controllers/store.public.controller';
 import { PartTypePublicController } from '@/modules/part-type/controllers/part-type.public.controller';
 import { PartTypeModule } from '@/modules/part-type/part-type.module';
+import { StoreModule } from '@/modules/store/store.module';
 
 @Module({
   controllers: [
@@ -22,6 +24,7 @@ import { PartTypeModule } from '@/modules/part-type/part-type.module';
     PartTypePublicController,
     CandidatePublicController,
     HiringPublicController,
+    StorePublicController,
   ],
   providers: [],
   exports: [],
@@ -34,6 +37,7 @@ import { PartTypeModule } from '@/modules/part-type/part-type.module';
     PartTypeModule,
     ApiKeyModule,
     HiringModule,
+    StoreModule,
   ],
 })
 export class RoutesPublicModule {}

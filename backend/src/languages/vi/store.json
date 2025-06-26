@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách cửa hàng được lấy thành công.",
+  "get": "Cửa hàng được truy xuất thành công.",
+  "create": "Tạo cửa hàng mới thành công.",
+  "update": "Cập nhật cửa hàng thành công.",
+  "delete": "Xóa cửa hàng thành công.",
+  "updateStatus": "Trạng thái cửa hàng đã được cập nhật thành {status}.",
+  "error": {
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy cửa hàng bạn yêu cầu.",
+    "notFoundHiring": "Rất tiếc, chúng tôi không tìm thấy cửa hàng bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái cửa hàng thất bại.",
+    "deleteFailed": "Xóa cửa hàng thất bại.",
+    "createFailed": "Tạo cửa hàng mới thất bại.",
+    "slugExisted": "Slug của cửa hàng này đã tồn tại."
+  }
+}
