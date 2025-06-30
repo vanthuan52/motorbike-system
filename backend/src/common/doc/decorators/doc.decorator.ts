@@ -451,7 +451,7 @@ export function DocResponsePaging<T>(
       name: 'orderBy',
       required: false,
       allowEmptyValue: true,
-      example: 'createdAt',
+      example: '',
       type: 'string',
       description: 'Order by base on _metadata.pagination.availableOrderBy',
     }),

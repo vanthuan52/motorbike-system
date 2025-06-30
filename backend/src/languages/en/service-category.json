@@ -1,0 +1,16 @@
+{
+  "list": "Service categories list retrieved successfully.",
+  "get": "Service category details fetched successfully.",
+  "create": "New service category created successfully.",
+  "update": "Service category updated successfully.",
+  "delete": "Service category deleted successfully.",
+  "updateStatus": "Service category status updated to {status}.",
+  "error": {
+    "nameExist": "This Service category name already exists.",
+    "notFound": "Sorry, we couldn't find the service category you requested.",
+    "updateStatusFailed": "Failed to update service category status.",
+    "deleteFailed": "Failed to delete service category.",
+    "createFailed": "Failed to create new service category.",
+    "slugExisted": "This service category slug already exists."
+  }
+}

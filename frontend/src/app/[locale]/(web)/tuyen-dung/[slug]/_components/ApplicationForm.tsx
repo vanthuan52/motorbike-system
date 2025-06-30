@@ -16,7 +16,9 @@ import { TRANSLATION_FILES } from "@/lib/i18n";
 const { Dragger } = Upload;
 
 export default function ApplicationForm() {
-  const t = useTranslations(TRANSLATION_FILES.HIRING_DETAIL);
+  const t = useTranslations(
+    `${TRANSLATION_FILES.HIRING_DETAIL}.applicationForm`
+  );
 
   return (
     <ConfigProvider
@@ -36,34 +38,34 @@ export default function ApplicationForm() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             name="firstName"
-            label={t("applicationForm.firstName")}
+            label={t("firstName")}
             rules={[{ required: true, message: t("validation.firstName") }]}
           >
-            <Input size="large" placeholder={t("applicationForm.firstName")} />
+            <Input size="large" placeholder={t("firstName")} />
           </Form.Item>
           <Form.Item
             name="lastName"
-            label={t("applicationForm.lastName")}
+            label={t("lastName")}
             rules={[
               {
                 required: true,
-                message: t("applicationForm.validation.lastName"),
+                message: t("validation.lastName"),
               },
             ]}
           >
-            <Input size="large" placeholder={t("applicationForm.lastName")} />
+            <Input size="large" placeholder={t("lastName")} />
           </Form.Item>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Form.Item
             name="email"
-            label={t("applicationForm.email")}
+            label={t("email")}
             rules={[
               {
                 required: true,
                 type: "email",
-                message: t("applicationForm.validation.email"),
+                message: t("validation.email"),
               },
             ]}
           >
@@ -71,36 +73,34 @@ export default function ApplicationForm() {
           </Form.Item>
           <Form.Item
             name="phone"
-            label={t("applicationForm.phone")}
+            label={t("phone")}
             rules={[
               {
                 required: true,
-                message: t("applicationForm.validation.phone"),
+                message: t("validation.phone"),
               },
             ]}
           >
-            <Input size="large" placeholder={t("applicationForm.phone")} />
+            <Input size="large" placeholder={t("phone")} />
           </Form.Item>
         </div>
 
-        <Form.Item name="message" label={t("applicationForm.message")}>
+        <Form.Item name="message" label={t("message")}>
           <Input.TextArea
             rows={4}
-            placeholder={t("applicationForm.messagePlaceholder")}
+            placeholder={t("messagePlaceholder")}
             size="large"
           />
         </Form.Item>
 
-        <Form.Item name="resume" label={t("applicationForm.resume")}>
+        <Form.Item name="resume" label={t("resume")}>
           <Dragger maxCount={1} accept=".pdf,.doc,.docx" height={150}>
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
             <p className="text-sm text-gray-600">
               {t("uploadInstruction")}{" "}
-              <span className="text-blue-500 underline">
-                {t("applicationForm.chooseFile")}
-              </span>
+              <span className="text-blue-500 underline">{t("chooseFile")}</span>
             </p>
           </Dragger>
         </Form.Item>
@@ -111,14 +111,14 @@ export default function ApplicationForm() {
           rules={[
             {
               required: true,
-              message: t("applicationForm.validation.experience"),
+              message: t("validation.experience"),
             },
           ]}
         >
           <Radio.Group size="large" rootClassName="!flex flex-col !space-y-2">
-            <Radio value="0-2">{t("applicationForm.expOptions.0_2")}</Radio>
-            <Radio value="3-5">{t("applicationForm.expOptions.3_5")}</Radio>
-            <Radio value=">5">{t("applicationForm.expOptions.more_5")}</Radio>
+            <Radio value="0-2">{t("expOptions.0_2")}</Radio>
+            <Radio value="3-5">{t("expOptions.3_5")}</Radio>
+            <Radio value=">5">{t("expOptions.more_5")}</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -129,7 +129,7 @@ export default function ApplicationForm() {
             size="large"
             className="bg-black hover:bg-gray-800 px-6"
           >
-            {t("applicationForm.submit")}
+            {t("submit")}
           </Button>
         </Form.Item>
       </Form>

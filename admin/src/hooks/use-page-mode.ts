@@ -15,7 +15,6 @@ import { ENUM_PAGE_MODE } from "@/types/app.type";
 export const usePageMode = (): ENUM_PAGE_MODE => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-
   const mode: ENUM_PAGE_MODE = useMemo(() => {
     if (!id || id === ENUM_PAGE_MODE.CREATE) {
       return ENUM_PAGE_MODE.CREATE;

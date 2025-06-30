@@ -1,4 +1,5 @@
 "use client";
+
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
@@ -15,15 +16,15 @@ import CareerDetailSkeletonPage from "./CareerDetailSkeletonPage";
 
 export default function CareerDetailsPage() {
   const t = useTranslations(TRANSLATION_FILES.HIRING_DETAIL);
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const dispatch = useDispatch();
   const { hiringDetail, loading } = useSelector(
     (state: RootState) => state.hiring
   );
 
   useEffect(() => {
-    dispatch(hiringActions.getHiringDetail({ hiringId: id ?? "" }));
-  }, [dispatch, id]);
+    dispatch(hiringActions.getHiringDetail({ hiringId: slug ?? "" }));
+  }, [dispatch, slug]);
   if (!hiringDetail)
     return <div className="p-8 text-center">Không tìm thấy công việc</div>;
   if (loading) return <CareerDetailSkeletonPage />;

@@ -4,14 +4,15 @@ import { CgMenuRightAlt } from "react-icons/cg";
 import { IoCarSportSharp } from "react-icons/io5";
 import { RxDashboard, RxHome } from "react-icons/rx";
 import { BiCategoryAlt, BiMessageDetail } from "react-icons/bi";
+import { FaBriefcase, FaMotorcycle, FaUserShield } from "react-icons/fa";
 import { TbSettingsCode } from "react-icons/tb";
 import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { FiEdit2, FiUsers } from "react-icons/fi";
+import { FiEdit2, FiType, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
-import { FaBriefcase, FaMotorcycle, FaUserShield } from "react-icons/fa";
+
 const menuItems = [
   {
     key: "Home",
@@ -48,6 +49,12 @@ const menuItems = [
     icon: <TbSettingsCode />,
     href: ROUTER_PATH.PART_TYPES,
     label: "Danh mục phụ tùng",
+  },
+  {
+    key: "service-categories",
+    icon: <FiType />,
+    href: ROUTER_PATH.SERVICE_CATEGORIES,
+    label: "Danh mục dịch vụ",
   },
   {
     key: "maintenance-schedule",

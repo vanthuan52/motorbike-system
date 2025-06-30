@@ -11,7 +11,7 @@ export default function CareerJobCard({ job }: { job: Hiring }) {
         "bg-white rounded-lg border border-gray-200 shadow-sm p-4 mb-3 flex flex-col gap-2 hover:shadow-md transition"
       )}
     >
-      <Link href={`${ROUTER_PATH.HIRING}/${job._id}`}>
+      <Link href={`${ROUTER_PATH.HIRING}/${job.slug}`}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <div className="font-semibold text-lg">{job.title}</div>

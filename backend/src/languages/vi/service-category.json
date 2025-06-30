@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách danh mục dịch vụ được lấy thành công.",
+  "get": "Chi tiết danh mục dịch vụ được lấy thành công.",
+  "create": "Tạo mới danh mục dịch vụ thành công.",
+  "update": "Cập nhật danh mục dịch vụ thành công.",
+  "delete": "Xóa danh mục dịch vụ thành công.",
+  "updateStatus": "Trạng thái của danh mục dịch vụ đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên danh mục dịch vụ này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy danh mục dịch vụ bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái danh mục dịch vụ thất bại.",
+    "deleteFailed": "Xóa danh mục dịch vụ thất bại.",
+    "createFailed": "Tạo mới danh mục dịch vụ thất bại.",
+    "slugExisted": "Slug của danh mục dịch vụ này đã tồn tại."
+  }
+}

@@ -17,6 +17,8 @@ import { CandidateAdminController } from '@/modules/hiring/controllers/candidate
 import { StoreAdminController } from '@/modules/store/controllers/store.admin.controller';
 import { CandidateReviewAdminController } from '@/modules/hiring/controllers/candidate-review.admin.controller';
 import { StoreModule } from '@/modules/store/store.module';
+import { ServiceCategoryAdminController } from '@/modules/service-category/controllers/service-category.admin.controller';
+import { ServiceCategoryModule } from '@/modules/service-category/service-category.module';
 
 @Module({
   controllers: [
@@ -30,6 +32,7 @@ import { StoreModule } from '@/modules/store/store.module';
     CandidateAdminController,
     CandidateReviewAdminController,
     StoreAdminController,
+    ServiceCategoryAdminController,
   ],
   providers: [],
   exports: [],
@@ -43,6 +46,7 @@ import { StoreModule } from '@/modules/store/store.module';
     PartTypeModule,
     HiringModule,
     StoreModule,
+    ServiceCategoryModule,
   ],
 })
 export class RoutesAdminModule {}

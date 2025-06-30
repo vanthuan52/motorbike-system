@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { Dot } from "lucide-react";
 import { FaCalendarDays, FaLocationDot } from "react-icons/fa6";
 import { CiShare2 } from "react-icons/ci";
-import { ENUM_HIRING_JOB_TYPE, Hiring } from "@/features/hiring/types";
+import { Hiring } from "@/features/hiring/types";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export default function JobDetails({ job }: { job: Hiring }) {

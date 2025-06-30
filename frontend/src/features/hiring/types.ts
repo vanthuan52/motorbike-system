@@ -2,8 +2,8 @@ import { ApiResponse } from "@/types/api.type";
 import { BaseEntity, PaginationQuery } from "@/types/base.type";
 
 export interface Hiring extends BaseEntity {
-  _id: string;
   title: string;
+  slug: string;
   description: string;
   status: string;
   jobType: string;
