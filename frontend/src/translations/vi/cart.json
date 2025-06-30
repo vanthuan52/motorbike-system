@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "title": "Giỏ Hàng",
+    "description": "Giỏ Hàng"
+  },
+
+  "steps": {
+    "step1": {
+      "label": "Giỏ Hàng",
+      "short": "Giỏ"
+    },
+    "step2": {
+      "label": "Thông Tin Thanh Toán",
+      "short": "Thanh Toán"
+    },
+    "step3": {
+      "label": "Hoàn Tất",
+      "short": "Xong"
+    }
+  },
+  "loading": {
+    "cart": "Đang tải giỏ hàng...",
+    "totals": "Đang tính toán..."
+  },
+  "totals": {
+    "heading": "Tổng Giỏ Hàng",
+    "subtotal": "Tạm tính",
+    "shipping": "Phí vận chuyển",
+    "shippingNote": "Giao hàng tiêu chuẩn",
+    "free": "Miễn phí",
+    "total": "Tổng cộng",
+    "checkoutBtn": "Tiến hành Thanh Toán"
+  }
+}

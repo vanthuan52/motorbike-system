@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "title": "Câu Hỏi Thường Gặp",
+    "description": "Các câu hỏi thường gặp"
+  },
+  "title": "Câu Hỏi Thường Gặp",
+  "description": "Nhanh chóng tìm câu trả lời cho thắc mắc của bạn",
+  "categories": {
+    "all": "Tất cả",
+    "booking": "Đặt lịch",
+    "maintenance": "Bảo dưỡng",
+    "payment": "Thanh toán",
+    "warranty": "Bảo hành",
+    "service": "Dịch vụ",
+    "info": "Thông tin"
+  },
+  "contactCTA": {
+    "title": "Không tìm thấy câu trả lời?",
+    "description": "Liên hệ với chúng tôi để được đội ngũ tư vấn chuyên nghiệp hỗ trợ trực tiếp.",
+    "contactNow": "Liên hệ ngay",
+    "callHotline": "Gọi Hotline"
+  },
+  "noResults": {
+    "title": "Không tìm thấy câu hỏi phù hợp",
+    "description": "Vui lòng thử từ khóa khác."
+  },
+  "faqs": {
+    "1question": "Làm sao để đặt lịch bảo dưỡng?",
+    "1answer": "Bạn có thể đặt lịch trên website của chúng tôi qua nút 'Đặt lịch ngay' tại trang chủ hoặc gọi vào hotline. Chúng tôi sẽ xác nhận và thông báo thời gian hẹn.",
+    "2question": "Bảo dưỡng định kỳ mất bao lâu?",
+    "2answer": "Thông thường mất khoảng 30–60 phút tùy vào tình trạng xe và hạng mục cần kiểm tra. Những trường hợp phức tạp hơn sẽ được tư vấn thêm.",
+    "3question": "Tôi có cần đặt cọc khi đặt lịch không?",
+    "3answer": "Không cần đặt cọc. Bạn thanh toán sau khi hoàn tất dịch vụ và hài lòng.",
+    "4question": "Phụ tùng thay thế có được bảo hành không?",
+    "4answer": "Có, tất cả phụ tùng chính hãng đều có bảo hành của nhà sản xuất (3–12 tháng). Dịch vụ sửa chữa cũng được bảo hành (1–3 tháng).",
+    "5question": "Trung tâm phục vụ các hãng xe nào?",
+    "5answer": "Chúng tôi phục vụ hầu hết các hãng lớn như Honda, Yamaha, Suzuki, SYM, Piaggio và nhiều hãng khác.",
+    "6question": "Trung tâm có hỗ trợ cứu hộ tại nhà không?",
+    "6answer": "Có, trong phạm vi 15km tính từ trung tâm. Phí cứu hộ phụ thuộc vào khoảng cách và thời gian. Vui lòng liên hệ hotline để biết thêm chi tiết.",
+    "7question": "Giờ mở cửa của trung tâm là khi nào?",
+    "7answer": "Chúng tôi mở cửa từ 7:00 – 18:00 mỗi ngày, bao gồm cả cuối tuần. Hỗ trợ khẩn cấp 24/7.",
+    "8question": "Tôi có thể nhận báo giá trước không?",
+    "8answer": "Có, bạn có thể tham khảo bảng giá trên website hoặc liên hệ trực tiếp. Chúng tôi cam kết minh bạch về giá.",
+    "9question": "Loại nhớt nào phù hợp cho xe côn tay?",
+    "9answer": "Chúng tôi khuyến nghị nhớt 10W-30 hoặc 10W-40. Kỹ thuật viên sẽ tư vấn loại phù hợp nhất.",
+    "10question": "Trung tâm có ưu đãi cho khách hàng thân thiết không?",
+    "10answer": "Có. Chương trình hội viên của chúng tôi cung cấp ưu đãi định kỳ, miễn phí thay nhớt sau 5 lần, và nhiều quyền lợi khác.",
+    "11question": "Tôi có thể hủy lịch hẹn đã đặt không?",
+    "11answer": "Có thể, chỉ cần hủy ít nhất 2 tiếng trước giờ hẹn. Hủy qua website hoặc hotline.",
+    "12question": "Xe tôi rung lắc mạnh – có nên kiểm tra ngay không?",
+    "12answer": "Có. Rung bất thường có thể do lốp mòn, vành méo hoặc hệ thống treo gặp vấn đề. Hãy đến kiểm tra sớm nhất có thể.",
+    "13question": "Sơn dặm có được bảo hành không?",
+    "13answer": "Có, chúng tôi bảo hành 6 tháng đối với bong tróc hoặc bạc màu do lỗi kỹ thuật.",
+    "14question": "Trung tâm có chấp nhận thanh toán bằng thẻ không?",
+    "14answer": "Có, chúng tôi chấp nhận tất cả thẻ tín dụng/ghi nợ và ví điện tử phổ biến.",
+    "15question": "Tôi có thể yêu cầu kỹ thuật viên cụ thể không?",
+    "15answer": "Được, nếu kỹ thuật viên đó có mặt vào thời gian bạn đặt. Vui lòng thông báo trước cho chúng tôi.",
+    "16question": "Làm sao để gửi phản hồi về dịch vụ?",
+    "16answer": "Bạn có thể phản hồi tại quầy lễ tân, qua email, hoặc biểu mẫu khảo sát sau khi sử dụng dịch vụ.",
+    "17question": "Trung tâm có hỗ trợ tiếng Anh không?",
+    "17answer": "Có, một số nhân viên có thể giao tiếp tiếng Anh cơ bản. Vui lòng báo trước khi đặt lịch.",
+    "18question": "Tôi có thể gửi xe qua đêm không?",
+    "18answer": "Có, chúng tôi có chỗ đậu xe an toàn qua đêm cho những ca sửa chữa dài. Trung tâm sẽ thông báo và cung cấp biên nhận."
+  },
+  "searchPlaceholder": "Tìm kiếm câu hỏi..."
+}

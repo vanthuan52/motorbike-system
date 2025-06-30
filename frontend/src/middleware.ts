@@ -1,71 +1,7 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { jwtDecode } from "jwt-decode";
-import { ROUTER_PATH } from "./constant/router-path";
-import { ACCESS_TOKEN_KEY } from "./constant/constant";
-import { isTokenExpired } from "./utils/jwt.utils";
-import { AuthJwtAccessTokenPayload } from "./features/auth/types";
-import nextIntlMiddleware from "./i18n/middleware";
-const AUTH_ROUTES = [ROUTER_PATH.ACCOUNT];
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./lib/i18n";
 
-const PUBLIC_ROUTES = [
-  ROUTER_PATH.HOME,
-  ROUTER_PATH.ABOUT,
-  ROUTER_PATH.BLOG,
-  ROUTER_PATH.SERVICES,
-  ROUTER_PATH.PART_TYPE,
-  ROUTER_PATH.CONTACT,
-  ROUTER_PATH.POLICY,
-  ROUTER_PATH.MAINTAIN_REGISTRATION,
-  ROUTER_PATH.CART,
-  ROUTER_PATH.CHECKOUT,
-  ROUTER_PATH.LOGIN,
-  ROUTER_PATH.REGISTER,
-  ROUTER_PATH.UNAUTHORIZIED,
-];
-
-const ADMIN_ONLY_ROUTES = ["/admin"];
-
-function isProtectedRoute(pathname: string): boolean {
-  return AUTH_ROUTES.some((route) => pathname.startsWith(route));
-}
-
-function isAdminRoute(pathname: string): boolean {
-  return ADMIN_ONLY_ROUTES.some((route) => pathname.startsWith(route));
-}
-
-export async function middleware(request: NextRequest) {
-  const intlResponse = nextIntlMiddleware(request);
-  if (intlResponse) return intlResponse;
-
-  const accessToken = request.cookies.get(ACCESS_TOKEN_KEY)?.value;
-  const { pathname } = request.nextUrl;
-
-  const localeMatch = /^\/(vi|en)$/.exec(pathname);
-  if (localeMatch) {
-    return NextResponse.redirect(
-      new URL(`/${localeMatch[1]}/trang-chu`, request.url)
-    );
-  }
-
-  if (isProtectedRoute(pathname)) {
-    if (!accessToken) {
-      console.log("Token not found");
-      const url = request.nextUrl.clone();
-      url.pathname = ROUTER_PATH.LOGIN;
-      return NextResponse.redirect(url);
-    }
-
-    const decoded: AuthJwtAccessTokenPayload = jwtDecode(accessToken);
-    if (isTokenExpired(decoded.exp)) {
-      console.log("Token is expired");
-      const url = request.nextUrl.clone();
-      url.pathname = ROUTER_PATH.LOGIN;
-      return NextResponse.redirect(url);
-    }
-  }
-
-  return NextResponse.next();
-}
+export default createMiddleware(routing);
 
 export const config = {
   matcher: [

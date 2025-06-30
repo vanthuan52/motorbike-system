@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "Tuyển Dụng",
+    "description": "Tuyển Dụng"
+  },
+  "companyDescription": {
+    "title": "Vị Trí Đang Tuyển",
+    "companyWorkTitle": "Làm Việc Tại Motorbike System",
+    "companyWorkDesc": "Chúng tôi đang tìm kiếm những cá nhân tài năng và đam mê để cùng phát triển dịch vụ xe máy hàng đầu tại Việt Nam. Môi trường năng động, phúc lợi hấp dẫn và cơ hội thăng tiến rõ ràng đang chờ đón bạn.",
+    "whoTitle": "Chúng Tôi Là Ai",
+    "whoDesc": "Motorbike System là nền tảng quản lý và bảo dưỡng xe máy hiện đại, hiệu quả. Chúng tôi tập trung phát triển con người, thúc đẩy đổi mới và mang đến dịch vụ khách hàng tuyệt vời."
+  },
+  "companyInfo": {
+    "name": "MOTORBIKE SYSTEM",
+    "industry": "Dịch Vụ Xe Máy",
+    "size": "100 - 500 nhân sự",
+    "workTitle": "Làm Việc Tại Motorbike System",
+    "workDesc": "Chúng tôi đang tìm kiếm những cá nhân tài năng và đam mê để cùng phát triển dịch vụ xe máy hàng đầu tại Việt Nam. Môi trường năng động, phúc lợi hấp dẫn và cơ hội thăng tiến rõ ràng đang chờ đón bạn.",
+    "imageAlt": "Cơ hội nghề nghiệp tại Motorbike",
+    "whoTitle": "Chúng Tôi Là Ai",
+    "whoDesc": "Motorbike System là nền tảng quản lý và bảo dưỡng xe máy hiện đại, hiệu quả. Chúng tôi tập trung phát triển con người, thúc đẩy đổi mới và mang đến dịch vụ khách hàng tuyệt vời."
+  },
+  "searchFilter": {
+    "searchLabel": "Tìm Kiếm",
+    "searchPlaceholder": "Tìm kiếm công việc",
+    "jobTypeLabel": "Hình Thức Làm Việc",
+    "jobTypePlaceholder": "Chọn hình thức làm việc",
+    "jobTypes": {
+      "full_time": "Toàn thời gian",
+      "part_time": "Bán thời gian",
+      "contract": "Hợp đồng",
+      "etc": "Khác"
+    }
+  }
+}

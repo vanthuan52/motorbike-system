@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "title": "Home",
+    "description": "Comprehensive care for your motorbike. Maintenance, repair, genuine parts replacement. Book quickly and get professional service."
+  },
+  "blogSection": {
+    "title": "Useful motorbike maintenance tips",
+    "posts": [
+      {
+        "title": "5 signs your motorbike needs urgent maintenance",
+        "excerpt": "Did you know that a sluggish engine, poor fuel economy, or hard starting could mean your bike is 'crying for help'?",
+        "slug": "/blog/5-signs-your-bike-needs-maintenance",
+        "image": "/images/blog/maintainance-motorbike.jpg"
+      },
+      {
+        "title": "Ideal oil change schedule for scooters",
+        "excerpt": "Changing oil on schedule helps your engine run smoothly and extends your bike’s lifespan.",
+        "slug": "/blog/ideal-oil-change-for-scooter",
+        "image": "/images/blog/oil-change.jpg"
+      },
+      {
+        "title": "Check your tires at home in 5 minutes",
+        "excerpt": "Quick guide to check tire wear and pressure without going to a shop.",
+        "slug": "/blog/check-tires-at-home",
+        "image": "/images/blog/check-tires.jpg"
+      }
+    ],
+    "readMore": "Read more →"
+  },
+  "bookingSuggest": {
+    "title": "Ready to take care of your bike?",
+    "description": "Book maintenance/repair easily and quickly – we will contact you shortly to confirm!",
+    "button": "Book now"
+  },
+  "contactSection": {
+    "title": "Contact Us",
+    "addressLabel": "Address",
+    "address": "123 Nguyen Van Cu Street, District 5, HCMC",
+    "hotlineLabel": "Hotline",
+    "hotline": "0123 456 789",
+    "workTimeLabel": "Working Hours",
+    "workTime": "Monday - Sunday: 8:00 AM - 8:00 PM"
+  },
+  "heroSection": {
+    "title": "Comprehensive care for your motorbike",
+    "description": "Maintenance – repair – genuine parts replacement. Book quickly and get professional service.",
+    "booking": "Book now",
+    "services": "View services"
+  },
+  "serviceSection": {
+    "title": "Main Services",
+    "viewAll": "View all",
+    "repair": {
+      "title": "General Repair",
+      "description": "Diagnose and fix engine, electrical, brake, and transmission issues.",
+      "image": "/images/services/repair.png"
+    },
+    "oilChange": {
+      "title": "Oil Change & Maintenance",
+      "description": "Regular oil change, air filter cleaning, and overall inspection for lasting performance.",
+      "image": "/images/services/oil-change.png"
+    },
+    "wash": {
+      "title": "Motorbike Wash & Detail",
+      "description": "Deep cleaning and polishing to keep your vehicle shiny and new.",
+      "image": "/images/services/vehicle-wash.jpg"
+    },
+    "replacement": {
+      "title": "Spare Parts Replacement",
+      "description": "High-quality, genuine part replacement with full warranty.",
+      "image": "/images/services/spare-parts-replacement.jpg"
+    }
+  },
+  "processStepSection": {
+    "title": "Maintenance & Repair Process",
+    "step1": {
+      "title": "1. Booking",
+      "description": "Schedule via website or hotline, choose a suitable time for vehicle drop-off."
+    },
+    "step2": {
+      "title": "2. Inspection & Diagnosis",
+      "description": "Technicians receive the vehicle, perform inspection, and provide consultation."
+    },
+    "step3": {
+      "title": "3. Transparent Pricing & Repair",
+      "description": "Clear quotations, no unexpected fees without prior notice."
+    },
+    "step4": {
+      "title": "4. Handover & Warranty",
+      "description": "Deliver on time, perform final check, and provide service warranty."
+    }
+  },
+  "quickIntroSection": {
+    "title": "About {name} Maintenance Center",
+    "description": "With over <strong>10 years of experience</strong> in motorcycle maintenance and repair, {name} is proud to be a trusted destination for thousands of customers every year. We provide services from routine maintenance, oil changes, engine repair, to genuine spare parts replacement — all performed by skilled technicians.",
+    "quality": {
+      "title": "Trusted & High Quality",
+      "description": "Committed to using genuine parts, precise techniques, and clear warranties."
+    },
+    "team": {
+      "title": "Professional Team",
+      "description": "Experienced technicians, thoroughly trained and dedicated to customer service."
+    },
+    "booking": {
+      "title": "Easy Booking",
+      "description": "Just a few simple steps to book online — saving time, serving quickly."
+    }
+  },
+  "serviceComboSection": {
+    "title": "Special Offers / Service Combos",
+    "full": {
+      "title": "Comprehensive Maintenance Package",
+      "description": "Full vehicle check, oil change, air filter cleaning, chain adjustment, and bolt tightening.",
+      "price": "Only 299K"
+    },
+    "oil": {
+      "title": "Oil Change + Inspection Combo",
+      "description": "Genuine oil change and check of 10 essential components.",
+      "price": "Only 99K"
+    },
+    "newCustomer": {
+      "title": "New Customer Offer",
+      "description": "Get 20% off your first maintenance service.",
+      "price": "-20% Discount"
+    }
+  },
+  "testimonialsSection": {
+    "title": "What our customers say about us?",
+    "nguyen": "Nguyen Van A",
+    "nguyenContent": "Excellent service, enthusiastic and professional staff. My bike runs much smoother after maintenance!",
+    "tran": "Tran Thi B",
+    "tranContent": "I’m very satisfied with the comprehensive maintenance combo—reasonable price and fast service.",
+    "le": "Le Van C",
+    "leContent": "The center works transparently with clear pricing. I’ll definitely return regularly!",
+    "pham": "Pham Thuy D",
+    "phamContent": "Great first-time offer! I received a discount and helpful consultation."
+  },
+  "whyChooseUsSection": {
+    "title": "Why choose us?",
+    "subtitle": "We always prioritize customer satisfaction and safety. Here’s why our customers trust us:",
+    "qualityTitle": "Trusted Quality",
+    "qualityDesc": "We commit to providing high-quality repair and maintenance with genuine parts.",
+    "expertTitle": "Skilled Technicians",
+    "expertDesc": "Our technicians are well-trained, experienced, and dedicated to every vehicle.",
+    "timelyTitle": "Timely & On Schedule",
+    "timelyDesc": "Receive - process - return your vehicle on time, saving your time.",
+    "dedicatedTitle": "Dedicated Support",
+    "dedicatedDesc": "Friendly consultation, always ready to assist for the best customer experience."
+  }
+}

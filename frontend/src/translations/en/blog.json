@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Blog",
+    "description": "Latest news and updates from our blog"
+  },
+  "header": {
+    "title": "Blog",
+    "description": "Sharing motorcycle knowledge, connecting technical passion"
+  },
+  "filter": {
+    "all": "All"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "blog": "Blog"
+  },
+  "readTime": "{minutes} min read",
+  "views": "views",
+  "comments": "comments",
+  "suggestions": "Suggestions:",
+  "notFound": {
+    "title": "Blog post not found",
+    "description": "The post may have been deleted, unpublished, or the URL was incorrect. Go back to the blog page to continue exploring.",
+    "backButton": "⬅ Back to Blog"
+  },
+  "commentForm": {
+    "title": "Leave a Comment",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "contentLabel": "Comment Content",
+    "contentPlaceholder": "Enter your comment",
+    "submit": "Submit Comment"
+  },
+  "commentsList": {
+    "title": "Comments",
+    "likes": "likes"
+  },
+  "relatedBlogs": {
+    "title": "Related Posts"
+  },
+  "sharing": {
+    "shareTitle": "Share this article",
+    "authorBio": "Motorbike expert with over 10 years of off-road touring experience across Vietnam and Southeast Asia.\nFounder of the \"Vietnam Riders\" club and author of the book \"Conquering the Mountain Roads\"."
+  },
+  "tableOfContents": "On this page"
+}

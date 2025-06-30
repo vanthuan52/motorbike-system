@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "services": "Dịch Vụ",
+    "about": "Giới Thiệu",
+    "blog": "Blog",
+    "contact": "Liên Hệ",
+    "category": "Danh Mục",
+    "careRegistration": "Đặt lịch",
+    "partType": "Danh mục phụ tùng",
+    "product": "Phụ tùng",
+    "policy": "Chính sách bảo mật",
+    "faqs": "Câu hỏi thường gặp",
+    "hiring": "Tuyển dụng"
+  },
+  "userMenu": {
+    "profile": "Hồ Sơ",
+    "appointments": "Lịch Hẹn",
+    "myVehicles": "Xe Của Tôi",
+    "history": "Lịch Sử Dịch Vụ",
+    "settings": "Cài Đặt Tài Khoản",
+    "support": "Hỗ Trợ",
+    "login": "Đăng Nhập",
+    "logout": "Đăng Xuất",
+    "logoutSuccess": "Đăng xuất thành công!"
+  },
+  "header": {
+    "searchPlaceholder": "Tìm kiếm bài viết, dịch vụ...",
+    "closeSearch": "Đóng tìm kiếm"
+  },
+  "footer": {
+    "logo": "Tên logo.",
+    "description": "Chúng tôi cung cấp dịch vụ bảo dưỡng xe chất lượng cao.",
+    "contactUs": "Liên hệ với chúng tôi",
+    "company": {
+      "title": "Công Ty",
+      "home": "Trang Chủ",
+      "about": "Về Chúng Tôi",
+      "services": "Dịch Vụ"
+    },
+    "policy": {
+      "title": "Chính Sách",
+      "faq": "Câu Hỏi Thường Gặp",
+      "privacy": "Chính Sách Bảo Mật"
+    },
+    "blog": {
+      "title": "Blog",
+      "tips": "Mẹo Hữu Ích",
+      "news": "Tin Mới Nhất",
+      "events": "Sự Kiện"
+    },
+    "getApps": "Tải ứng dụng",
+    "copyright": "Tên Logo",
+    "rightsReserved": "Đã đăng ký bản quyền."
+  },
+  "notFoundPage": {
+    "title": "Không Tìm Thấy Trang",
+    "description": "Rất tiếc, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.",
+    "goBack": "Quay lại",
+    "home": "Về trang chủ"
+  }
+}

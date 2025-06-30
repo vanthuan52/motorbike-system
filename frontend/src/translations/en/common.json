@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "services": "Services",
+    "about": "About",
+    "blog": "Blog",
+    "contact": "Contact",
+    "category": "Categories",
+    "careRegistration": "Care Schedule",
+    "partType": "Part Types",
+    "product": "Parts",
+    "policy": "Provacy Policy",
+    "faqs": "FAQs",
+    "hiring": "Hiring"
+  },
+  "userMenu": {
+    "profile": "Profile",
+    "appointments": "Appointments",
+    "myVehicles": "My Vehicles",
+    "history": "Service History",
+    "settings": "Account Settings",
+    "support": "Support",
+    "login": "Login",
+    "logout": "Logout",
+    "logoutSuccess": "Successfully logged out!"
+  },
+  "header": {
+    "searchPlaceholder": "Search articles, services...",
+    "closeSearch": "Close search"
+  },
+  "footer": {
+    "logo": "Logo name.",
+    "description": "We provide high-quality vehicle maintenance services.",
+    "contactUs": "Contact us",
+    "company": {
+      "title": "Company",
+      "home": "Home",
+      "about": "About Us",
+      "services": "Services"
+    },
+    "policy": {
+      "title": "Policy",
+      "faq": "FAQs",
+      "privacy": "Privacy Policy"
+    },
+    "blog": {
+      "title": "Blogs",
+      "tips": "Tips",
+      "news": "Latest News",
+      "events": "Events"
+    },
+    "getApps": "Get apps",
+    "copyright": "Logoname",
+    "rightsReserved": "All rights reserved."
+  },
+  "notFoundPage": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you're looking for doesn't exist or has been moved.",
+    "goBack": "Go back",
+    "home": "Take me home"
+  }
+}

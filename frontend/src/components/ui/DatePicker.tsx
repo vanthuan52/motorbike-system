@@ -48,7 +48,6 @@ const Datepicker: React.FC<DatepickerProps> = ({
   label,
   error,
 }) => {
-  const t = useTranslations("vehicleMaintenancePage");
   const locale = useLocale();
   const dateFnsLocale = locale === "vi" ? vi : enUS;
   return (
@@ -64,7 +63,7 @@ const Datepicker: React.FC<DatepickerProps> = ({
         selected={value}
         onChange={onChange}
         locale="vi"
-        placeholderText={placeholder || t("form.date.placeholder")}
+        placeholderText={placeholder || "Pick a day..."}
         calendarClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
         wrapperClassName="w-full"
         popperClassName="z-50"
@@ -103,7 +102,7 @@ const Datepicker: React.FC<DatepickerProps> = ({
         customInput={
           <CustomInput
             error={error}
-            placeholder={placeholder || t("form.date.placeholder")}
+            placeholder={placeholder || "Pick a day..."}
           />
         }
       />

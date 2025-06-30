@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "title": "Login",
+    "description": "Login to your account"
+  },
+  "login": {
+    "title": "Welcome",
+    "subtitle": "Welcome back",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@gmail.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "submitButton": "Login",
+    "noAccount": "Don't have an account?",
+    "register": "Register"
+  },
+  "authCard": {
+    "title": "Motorbike Maintenance\nSystem",
+    "description": "Our company always provides services and attractive offers for customers who have trusted and visited our company.",
+    "highlightNote": "One of our best technicians.",
+    "technicianName": "Nguyen Van H",
+    "technicianTitle": "Technician"
+  }
+}

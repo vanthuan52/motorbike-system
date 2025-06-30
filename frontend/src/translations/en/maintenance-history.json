@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "title": "Maintenance History",
+    "description": "Maintenance History"
+  },
+  "title": "Maintenance History",
+  "filter": {
+    "from": "From date",
+    "to": "To date",
+    "status": "Status",
+    "completed": "Completed",
+    "incomplete": "Incomplete",
+    "search": "Search"
+  },
+  "table": {
+    "vehicleName": "Vehicle Name",
+    "licensePlate": "License Plate",
+    "date": "Date",
+    "timeSlot": "Time Slot",
+    "status": "Status",
+    "totalCost": "Total Cost",
+    "actions": "Actions",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure to delete this record?",
+    "cannotDelete": "Cannot delete"
+  },
+  "toast": {
+    "deleteSuccess": "Maintenance history deleted successfully"
+  }
+}

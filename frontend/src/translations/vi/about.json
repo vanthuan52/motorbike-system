@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "title": "Về Chúng Tôi",
+    "description": "Tìm hiểu thêm về trung tâm bảo trì và sửa chữa xe máy của chúng tôi."
+  },
+  "aboutHeroSection": {
+    "heading": "Về Trung Tâm Dịch Vụ",
+    "description": "Với hơn <strong>10 năm kinh nghiệm</strong> trong ngành bảo trì và sửa chữa xe máy, Trung Tâm Dịch Vụ XYZ cam kết mang đến dịch vụ chất lượng cao và sự hài lòng tối đa cho khách hàng. Chúng tôi không ngừng nỗ lực cải thiện chất lượng dịch vụ và đáp ứng nhu cầu ngày càng cao của khách hàng.",
+    "missionTitle": "Sứ Mệnh Của Chúng Tôi",
+    "missionDesc": "Sứ mệnh của chúng tôi là cung cấp dịch vụ bảo trì và sửa chữa xe máy chất lượng cao, đảm bảo an toàn và sự hài lòng tuyệt đối cho khách hàng. Chúng tôi cam kết mang lại giải pháp tối ưu và kịp thời để xe của bạn vận hành trơn tru.",
+    "visionTitle": "Tầm Nhìn Của Chúng Tôi",
+    "visionDesc": "Trung Tâm Dịch Vụ XYZ hướng đến việc trở thành tên tuổi uy tín hàng đầu trong ngành bảo trì và sửa chữa xe máy, không chỉ tại địa phương mà còn trên toàn quốc. Chúng tôi mong muốn nâng cao tiêu chuẩn dịch vụ, không ngừng đổi mới và phát triển để phục vụ khách hàng một cách tốt nhất."
+  },
+  "awardsSection": {
+    "heading": "Chứng Nhận & Giải Thưởng",
+    "awards": [
+      {
+        "title": "Chứng Nhận Dịch Vụ Xuất Sắc 2022",
+        "description": "Được trao bởi Hiệp hội Kỹ thuật Việt Nam vì những đóng góp nổi bật trong lĩnh vực bảo dưỡng xe."
+      },
+      {
+        "title": "Top 10 Trung Tâm Sửa Chữa Uy Tín",
+        "description": "Được cộng đồng AutoViet bình chọn vào năm 2023."
+      },
+      {
+        "title": "Giải Thưởng Dịch Vụ Khách Hàng Tốt Nhất",
+        "description": "Được vinh danh tại Triển lãm Ngành Công Nghiệp Xe Máy Quốc Gia 2022."
+      }
+    ]
+  },
+  "faqSection": {
+    "heading": "Câu Hỏi Thường Gặp",
+    "faqs": [
+      {
+        "question": "Tôi nên bảo dưỡng xe máy bao lâu một lần?",
+        "answer": "Bạn nên bảo dưỡng xe sau mỗi 1.000 – 1.500 km hoặc mỗi 2 – 3 tháng để đảm bảo xe vận hành an toàn và tối ưu."
+      },
+      {
+        "question": "Trung tâm có bảo hành sau sửa chữa không?",
+        "answer": "Có, tất cả dịch vụ tại trung tâm đều có chính sách bảo hành rõ ràng tùy theo loại hình sửa chữa."
+      },
+      {
+        "question": "Tôi có cần đặt lịch trước không?",
+        "answer": "Bạn có thể đến trực tiếp, nhưng đặt lịch trước sẽ giúp tiết kiệm thời gian và được phục vụ nhanh chóng hơn."
+      },
+      {
+        "question": "Trung tâm sử dụng loại phụ tùng nào?",
+        "answer": "Chúng tôi cam kết sử dụng 100% phụ tùng chính hãng hoặc từ các nhà sản xuất được ủy quyền."
+      }
+    ]
+  },
+  "featuredServices": {
+    "heading": "Dịch Vụ Nổi Bật",
+    "whyChooseUs": "Vì Sao Chọn Chúng Tôi?",
+    "services": [
+      {
+        "title": "Bảo Trì Toàn Diện",
+        "description": "Kiểm tra và bảo trì toàn diện giúp xe vận hành an toàn."
+      },
+      {
+        "title": "Thay Nhớt Định Kỳ",
+        "description": "Sử dụng dầu nhớt chính hãng giúp động cơ vận hành êm ái."
+      },
+      {
+        "title": "Sửa Chữa Kỹ Thuật",
+        "description": "Xử lý các lỗi kỹ thuật từ đơn giản đến phức tạp."
+      }
+    ],
+    "reasons": [
+      "Dịch vụ nhanh chóng",
+      "Bảo hành lâu dài",
+      "Phụ tùng chính hãng"
+    ]
+  },
+  "historySection": {
+    "heading": "Lịch Sử Phát Triển",
+    "founding": {
+      "title": "Câu Chuyện Thành Lập",
+      "content": "Trung Tâm Bảo Trì XYZ được thành lập vào năm 2013 bởi một nhóm kỹ sư xe máy đầy đam mê. Bắt đầu từ một gara nhỏ chỉ có 2 nhân viên, trung tâm đã trải qua nhiều khó khăn từ việc thiếu thiết bị đến việc xây dựng lòng tin với khách hàng. Nhờ sự tận tâm và mong muốn nâng tầm dịch vụ, chúng tôi đã từng bước phát triển và trở thành một trong những trung tâm bảo trì đáng tin cậy nhất trong khu vực."
+    },
+    "milestoneTitle": "Các Cột Mốc Phát Triển",
+    "milestones": [
+      {
+        "year": "2013",
+        "description": "Thành lập trung tâm với quy mô nhỏ tại Quận Bình Thạnh."
+      },
+      {
+        "year": "2016",
+        "description": "Mở rộng thêm 2 chi nhánh và đầu tư vào thiết bị hiện đại."
+      },
+      {
+        "year": "2019",
+        "description": "Đội ngũ tăng lên 30 kỹ thuật viên, phục vụ hơn 10.000 khách hàng mỗi năm."
+      },
+      {
+        "year": "2024",
+        "description": "Nhận chứng nhận dịch vụ xuất sắc và mở rộng lên 5 chi nhánh trong toàn thành phố."
+      }
+    ]
+  },
+  "socialCommunity": {
+    "followUs": "Theo Dõi Chúng Tôi",
+    "communityTitle": "Hoạt Động Cộng Đồng",
+    "activities": [
+      {
+        "title": "Chương trình bảo trì miễn phí cho xe cấp cứu",
+        "description": "Trung tâm đã hỗ trợ tuyến đầu y tế trong thời kỳ đại dịch COVID-19."
+      },
+      {
+        "title": "Học bổng cho kỹ thuật viên trẻ",
+        "description": "Cung cấp đào tạo và học bổng cho sinh viên ngành sửa chữa ô tô - xe máy."
+      }
+    ]
+  },
+  "staffSection": {
+    "heading": "Đội Ngũ Nhân Viên",
+    "description": "Trung tâm XYZ tự hào sở hữu đội ngũ kỹ thuật viên tay nghề cao, giàu kinh nghiệm và tận tâm. Mỗi thành viên đều có chứng chỉ chuyên môn và được đào tạo bài bản.",
+    "members": [
+      {
+        "name": "Nguyễn Văn A",
+        "role": "Trưởng Kỹ Thuật",
+        "experience": "10 năm kinh nghiệm",
+        "quote": "Tôi luôn đặt sự an toàn và hài lòng của khách hàng lên hàng đầu.",
+        "image": "https://randomuser.me/api/portraits/men/37.jpg"
+      },
+      {
+        "name": "Trần Thị B",
+        "role": "Kỹ Thuật Viên Máy",
+        "experience": "6 năm kinh nghiệm",
+        "quote": "Làm việc bằng cả trái tim thì xe chạy tốt hơn, khách hàng cũng vui hơn.",
+        "image": "https://randomuser.me/api/portraits/women/36.jpg"
+      },
+      {
+        "name": "Lê Văn C",
+        "role": "Chuyên Gia Động Cơ",
+        "experience": "8 năm kinh nghiệm",
+        "quote": "Mỗi chiếc xe là một thử thách – và tôi yêu điều đó!",
+        "image": "https://randomuser.me/api/portraits/men/21.jpg"
+      }
+    ]
+  },
+  "technologySection": {
+    "title": "Công Nghệ & Thiết Bị",
+    "technologies": [
+      {
+        "title": "Máy Quét Chẩn Đoán Điện Tử",
+        "description": "Sử dụng công nghệ OBD-II giúp phát hiện lỗi nhanh chóng và chính xác.",
+        "image": "/images/about/obd.jpg"
+      },
+      {
+        "title": "Hệ Thống Cân Chỉnh Bánh Xe 3D",
+        "description": "Đảm bảo độ chính xác tuyệt đối trong căn chỉnh tay lái và hệ thống treo.",
+        "image": "/images/about/alignment.jpg"
+      },
+      {
+        "title": "Máy Thay Nhớt Tự Động",
+        "description": "Giảm thời gian bảo dưỡng và đảm bảo thay nhớt chính xác.",
+        "image": "/images/about/oil-change-device.jpg"
+      }
+    ],
+    "workflowTitle": "Quy Trình Bảo Trì Tiêu Chuẩn",
+    "workflowSteps": [
+      "Tiếp nhận và kiểm tra xe",
+      "Chẩn đoán bằng thiết bị hiện đại",
+      "Tư vấn phương án sửa chữa",
+      "Tiến hành bảo trì theo quy trình chuẩn",
+      "Kiểm tra lại và bàn giao cho khách hàng"
+    ]
+  }
+}

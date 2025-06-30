@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "title": "Liên Hệ",
+    "description": "Liên hệ với chúng tôi"
+  },
+  "heroTitle": "Liên Hệ Với Chúng Tôi",
+  "heroDescription": "Chúng tôi luôn sẵn sàng hỗ trợ và giải đáp mọi thắc mắc của bạn.",
+  "contactWithUs": "Liên hệ với chúng tôi",
+  "contactDescription": "Chúng tôi rất vui khi được lắng nghe bạn. Nếu bạn có bất kỳ câu hỏi nào về sản phẩm hoặc dịch vụ, hãy liên hệ qua thông tin bên dưới hoặc điền vào biểu mẫu liên hệ.",
+  "headquarters": "Trụ Sở Chính",
+  "sendEmail": "Gửi Email Cho Chúng Tôi",
+  "callUs": "Gọi Cho Chúng Tôi",
+  "followUs": "Theo dõi chúng tôi trên mạng xã hội",
+  "sendMessage": "Gửi tin nhắn cho chúng tôi",
+  "namePlaceholder": "Họ và Tên",
+  "phonePlaceholder": "Số Điện Thoại",
+  "emailPlaceholder": "Email",
+  "subjectPlaceholder": "Tiêu Đề",
+  "messagePlaceholder": "Nội Dung",
+  "submitButton": "Gửi Tin Nhắn"
+}

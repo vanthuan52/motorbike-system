@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Thanh Toán",
+    "description": "Tiến hành thanh toán ngay"
+  },
+  "shippingAddressTitle": "Địa Chỉ Giao Hàng",
+  "firstName": "Tên",
+  "lastName": "Họ",
+  "email": "Email",
+  "phone": "Số Điện Thoại",
+  "city": "Thành Phố",
+  "address": "Địa Chỉ",
+  "zip": "Mã Bưu Điện",
+  "description": "Ghi Chú",
+  "firstNameRequired": "Vui lòng nhập tên của bạn",
+  "lastNameRequired": "Vui lòng nhập họ của bạn",
+  "emailRequired": "Vui lòng nhập email",
+  "emailInvalid": "Email không hợp lệ",
+  "phoneRequired": "Vui lòng nhập số điện thoại",
+  "cityRequired": "Vui lòng nhập thành phố",
+  "addressRequired": "Vui lòng nhập địa chỉ",
+  "zipRequired": "Vui lòng nhập mã bưu điện",
+  "breadcrumb": {
+    "cart": "Giỏ Hàng",
+    "cartShort": "Giỏ",
+    "checkout": "Chi Tiết Thanh Toán",
+    "checkoutShort": "Thanh Toán",
+    "complete": "Hoàn Tất",
+    "completeShort": "Xong"
+  },
+  "cartSummary": {
+    "title": "Giỏ hàng của bạn",
+    "discountPlaceholder": "Mã giảm giá",
+    "apply": "Áp dụng",
+    "subtotal": "Tạm tính",
+    "shipping": "Phí vận chuyển",
+    "tax": "Thuế ước tính",
+    "total": "Tổng cộng",
+    "proceed": "Tiến hành thanh toán"
+  },
+  "shippingMethod": {
+    "title": "Phương Thức Giao Hàng",
+    "free": {
+      "title": "Giao Hàng Miễn Phí",
+      "time": "7-20 ngày"
+    },
+    "express": {
+      "title": "Giao Hàng Nhanh",
+      "time": "1-3 ngày"
+    }
+  }
+}

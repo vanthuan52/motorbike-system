@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "title": "Cart",
+    "description": "Cart"
+  },
+
+  "steps": {
+    "step1": {
+      "label": "Cart",
+      "short": "Cart"
+    },
+    "step2": {
+      "label": "Checkout details",
+      "short": "Checkout"
+    },
+    "step3": {
+      "label": "Complete",
+      "short": "Done"
+    }
+  },
+  "loading": {
+    "cart": "Loading cart...",
+    "totals": "Calculating..."
+  },
+  "totals": {
+    "heading": "Cart Totals",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping Fee",
+    "shippingNote": "Standard delivery",
+    "free": "Free",
+    "total": "Total",
+    "checkoutBtn": "Proceed to Checkout"
+  }
+}

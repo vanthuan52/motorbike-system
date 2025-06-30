@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "title": "Maintenance Schedule",
+    "description": "Maintenance Schedule"
+  },
+
+  "title": "Maintenance Schedule",
+  "filter": {
+    "startDate": "From date",
+    "endDate": "To date",
+    "button": "Search"
+  },
+  "info": {
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "vehicle_type": "Vehicle Type",
+    "vehicle_number": "Vehicle Number",
+    "note": "Note"
+  },
+  "service_type": {
+    "maintenance": "Maintenance",
+    "oil_change": "Oil Change",
+    "repair": "Repair"
+  },
+  "status": {
+    "confirmed": "Confirmed",
+    "pending": "Pending",
+    "cancelled": "Cancelled"
+  },
+  "confirmDelete": {
+    "title": "Confirm deletion of this appointment?",
+    "ok": "Delete",
+    "cancel": "Cancel"
+  },
+  "actions": {
+    "edit": "Edit appointment",
+    "delete": "Delete appointment"
+  },
+  "empty": "No matching appointments."
+}

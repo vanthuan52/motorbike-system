@@ -1,0 +1,16 @@
+import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import VehicleMaintenanceRegistration from "./_components/VehicleMaintenanceRegistration";
+import { TRANSLATION_FILES } from "@/lib/i18n";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations(TRANSLATION_FILES.CARE_REGISTRSATION);
+
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  };
+}
+export default function Page() {
+  return <VehicleMaintenanceRegistration />;
+}

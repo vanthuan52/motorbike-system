@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import React from "react";
 
 interface SelectFieldProps {
@@ -27,7 +26,6 @@ const SelectField: React.FC<SelectFieldProps> = ({
   values,
   rootClass,
 }) => {
-  const t = useTranslations("vehicleMaintenancePage");
   const selectClasses = `w-full py-2 pr-10 ${
     icon ? "pl-10" : "pl-4"
   } rounded-lg text-sm border bg-white appearance-none focus:outline-none transition duration-200 ease-in-out ${
@@ -60,7 +58,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
           aria-describedby={error ? `${label}-error` : undefined}
         >
           <option disabled value="">
-            {t("selectOption")} {optionLabel}
+            {optionLabel}
           </option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
