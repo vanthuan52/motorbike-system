@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "Hiring",
+    "description": "Hiring"
+  },
+  "jobType": "Job Type",
+  "location": "Location",
+  "category": "Category",
+  "share": "Share",
+  "descriptionTitle": "Job Description",
+  "requirementsTitle": "Job Requirements",
+  "salary": "Salary",
+  "deadline": "Application Deadline",
+  "aboutUsTitle": "About Us",
+  "aboutUsDesc": "We are a passionate tech team continuously improving user experience and building high-quality products. Our work environment is professional, friendly, and creative.",
+  "loading": "Loading...",
+  "back": "Back",
+  "application_form": "Application Form",
+  "applicationForm": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone Number",
+    "message": "What would you like to share with us?",
+    "messagePlaceholder": "Introduce yourself, expectations, experience...",
+    "resume": "Resume (max 4MB, pdf/doc)",
+    "uploadInstruction": "Drag & drop or",
+    "chooseFile": "choose file",
+    "experience": "How many years of experience do you have?",
+    "expOptions": {
+      "0_2": "0-2 years",
+      "3_5": "3-5 years",
+      "more_5": "More than 5 years"
+    },
+    "submit": "Submit Application",
+    "validation": {
+      "firstName": "Please enter your first name",
+      "lastName": "Please enter your last name",
+      "email": "Invalid email address",
+      "phone": "Please enter your phone number",
+      "experience": "Please select your experience level"
+    }
+  }
+}

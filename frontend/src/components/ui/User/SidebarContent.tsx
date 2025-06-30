@@ -13,7 +13,7 @@ import {
   IdcardOutlined,
 } from "@ant-design/icons";
 import clsx from "clsx";
-import { CustomLink } from "@/components/CustomerLink/CustomLink";
+import { Link } from "@/lib/i18n";
 import Image from "next/image";
 import { UserType } from "@/types/User";
 import { ROUTER_PATH } from "@/constant/router-path";
@@ -140,7 +140,7 @@ export default function SidebarContent({
                         pathname.startsWith(child.href + "/");
                       const ChildIcon = child.icon;
                       return (
-                        <CustomLink
+                        <Link
                           key={child.label}
                           href={child.href}
                           className={clsx(
@@ -161,7 +161,7 @@ export default function SidebarContent({
                             />
                           )}
                           <span>{child.label}</span>
-                        </CustomLink>
+                        </Link>
                       );
                     })}
                   </div>
@@ -171,7 +171,7 @@ export default function SidebarContent({
           }
 
           return (
-            <CustomLink
+            <Link
               key={label}
               href={href!}
               className={clsx(
@@ -188,7 +188,7 @@ export default function SidebarContent({
                 className={clsx(isActive ? "text-violet-600" : "text-gray-500")}
               />
               <span>{label}</span>
-            </CustomLink>
+            </Link>
           );
         })}
       </nav>

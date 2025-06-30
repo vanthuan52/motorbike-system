@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "title": "Trang Chủ",
+    "description": "Chăm sóc toàn diện cho xe máy của bạn. Bảo dưỡng, sửa chữa, thay thế linh kiện chính hãng. Đặt lịch nhanh chóng và nhận dịch vụ chuyên nghiệp."
+  },
+  "blogSection": {
+    "title": "Mẹo bảo dưỡng xe máy hữu ích",
+    "posts": [
+      {
+        "title": "5 dấu hiệu xe máy cần bảo dưỡng gấp",
+        "excerpt": "Bạn có biết động cơ yếu, hao xăng hoặc khó khởi động có thể là dấu hiệu xe đang 'kêu cứu'?",
+        "slug": "/blog/5-signs-your-bike-needs-maintenance",
+        "image": "/images/blog/maintainance-motorbike.jpg"
+      },
+      {
+        "title": "Lịch thay nhớt lý tưởng cho xe tay ga",
+        "excerpt": "Thay nhớt đúng hạn giúp động cơ vận hành êm ái và kéo dài tuổi thọ xe.",
+        "slug": "/blog/ideal-oil-change-for-scooter",
+        "image": "/images/blog/oil-change.jpg"
+      },
+      {
+        "title": "Tự kiểm tra lốp xe tại nhà trong 5 phút",
+        "excerpt": "Hướng dẫn nhanh cách kiểm tra độ mòn và áp suất lốp mà không cần ra tiệm.",
+        "slug": "/blog/check-tires-at-home",
+        "image": "/images/blog/check-tires.jpg"
+      }
+    ],
+    "readMore": "Xem thêm →"
+  },
+  "bookingSuggest": {
+    "title": "Sẵn sàng chăm sóc cho xe của bạn?",
+    "description": "Đặt lịch bảo dưỡng/sửa chữa dễ dàng – chúng tôi sẽ liên hệ lại để xác nhận!",
+    "button": "Đặt lịch ngay"
+  },
+  "contactSection": {
+    "title": "Liên hệ với chúng tôi",
+    "addressLabel": "Địa chỉ",
+    "address": "123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM",
+    "hotlineLabel": "Hotline",
+    "hotline": "0123 456 789",
+    "workTimeLabel": "Giờ làm việc",
+    "workTime": "Thứ 2 - Chủ Nhật: 8:00 - 20:00"
+  },
+  "heroSection": {
+    "title": "Chăm sóc toàn diện cho xe máy của bạn",
+    "description": "Bảo dưỡng – sửa chữa – thay thế linh kiện chính hãng. Đặt lịch nhanh chóng và nhận dịch vụ chuyên nghiệp.",
+    "booking": "Đặt lịch ngay",
+    "services": "Xem dịch vụ"
+  },
+  "serviceSection": {
+    "title": "Dịch Vụ Chính",
+    "viewAll": "Xem tất cả",
+    "repair": {
+      "title": "Sửa Chữa Tổng Quát",
+      "description": "Chẩn đoán và khắc phục các sự cố về động cơ, điện, phanh, và truyền động.",
+      "image": "/images/services/repair.png"
+    },
+    "oilChange": {
+      "title": "Thay Nhớt & Bảo Dưỡng",
+      "description": "Thay nhớt định kỳ, vệ sinh lọc gió và kiểm tra tổng thể giúp xe bền bỉ.",
+      "image": "/images/services/oil-change.png"
+    },
+    "wash": {
+      "title": "Rửa & Làm Sạch Xe",
+      "description": "Vệ sinh sâu và đánh bóng giúp xe luôn sáng bóng như mới.",
+      "image": "/images/services/vehicle-wash.jpg"
+    },
+    "replacement": {
+      "title": "Thay Thế Phụ Tùng",
+      "description": "Thay thế phụ tùng chính hãng, chất lượng cao, bảo hành đầy đủ.",
+      "image": "/images/services/spare-parts-replacement.jpg"
+    }
+  },
+  "processStepSection": {
+    "title": "Quy Trình Bảo Dưỡng & Sửa Chữa",
+    "step1": {
+      "title": "1. Đặt Lịch",
+      "description": "Đặt lịch qua website hoặc hotline, chọn thời gian phù hợp để mang xe đến."
+    },
+    "step2": {
+      "title": "2. Kiểm Tra & Chẩn Đoán",
+      "description": "Kỹ thuật viên nhận xe, kiểm tra tình trạng và tư vấn dịch vụ."
+    },
+    "step3": {
+      "title": "3. Báo Giá Minh Bạch & Sửa Chữa",
+      "description": "Báo giá rõ ràng, không phát sinh phí ngoài ý muốn."
+    },
+    "step4": {
+      "title": "4. Bàn Giao & Bảo Hành",
+      "description": "Bàn giao đúng hẹn, kiểm tra lần cuối và cung cấp bảo hành dịch vụ."
+    }
+  },
+  "quickIntroSection": {
+    "title": "Về Trung Tâm Bảo Dưỡng {name}",
+    "description": "Với hơn <strong>10 năm kinh nghiệm</strong> trong lĩnh vực bảo dưỡng và sửa chữa xe máy, {name} tự hào là điểm đến tin cậy của hàng ngàn khách hàng mỗi năm. Chúng tôi cung cấp các dịch vụ từ bảo dưỡng định kỳ, thay nhớt, sửa chữa động cơ đến thay thế phụ tùng chính hãng — tất cả được thực hiện bởi đội ngũ kỹ thuật viên tay nghề cao.",
+    "quality": {
+      "title": "Chất Lượng Đáng Tin Cậy",
+      "description": "Cam kết sử dụng phụ tùng chính hãng, kỹ thuật chính xác và bảo hành rõ ràng."
+    },
+    "team": {
+      "title": "Đội Ngũ Chuyên Nghiệp",
+      "description": "Kỹ thuật viên giàu kinh nghiệm, đào tạo bài bản và tận tâm với khách hàng."
+    },
+    "booking": {
+      "title": "Đặt Lịch Dễ Dàng",
+      "description": "Chỉ vài bước đơn giản để đặt lịch online — tiết kiệm thời gian, phục vụ nhanh chóng."
+    }
+  },
+  "serviceComboSection": {
+    "title": "Ưu Đãi / Gói Dịch Vụ",
+    "full": {
+      "title": "Gói Bảo Dưỡng Toàn Diện",
+      "description": "Kiểm tra toàn bộ xe, thay nhớt, vệ sinh lọc gió, chỉnh sên và siết ốc.",
+      "price": "Chỉ 299K"
+    },
+    "oil": {
+      "title": "Combo Thay Nhớt + Kiểm Tra",
+      "description": "Thay nhớt chính hãng và kiểm tra 10 hạng mục quan trọng.",
+      "price": "Chỉ 99K"
+    },
+    "newCustomer": {
+      "title": "Ưu Đãi Khách Mới",
+      "description": "Giảm 20% cho lần bảo dưỡng đầu tiên.",
+      "price": "Giảm 20%"
+    }
+  },
+  "testimonialsSection": {
+    "title": "Khách hàng nói gì về chúng tôi?",
+    "nguyen": "Nguyễn Văn A",
+    "nguyenContent": "Dịch vụ tuyệt vời, nhân viên nhiệt tình và chuyên nghiệp. Xe tôi chạy êm hơn hẳn sau bảo dưỡng!",
+    "tran": "Trần Thị B",
+    "tranContent": "Rất hài lòng với combo bảo dưỡng toàn diện – giá hợp lý và phục vụ nhanh chóng.",
+    "le": "Lê Văn C",
+    "leContent": "Trung tâm làm việc minh bạch, báo giá rõ ràng. Tôi sẽ quay lại thường xuyên!",
+    "pham": "Phạm Thùy D",
+    "phamContent": "Ưu đãi lần đầu rất tuyệt! Tôi được giảm giá và tư vấn tận tình."
+  },
+  "whyChooseUsSection": {
+    "title": "Tại sao chọn chúng tôi?",
+    "subtitle": "Chúng tôi luôn đặt sự hài lòng và an toàn của khách hàng lên hàng đầu. Dưới đây là lý do bạn nên tin tưởng chúng tôi:",
+    "qualityTitle": "Chất Lượng Đảm Bảo",
+    "qualityDesc": "Cam kết bảo dưỡng, sửa chữa chất lượng cao với phụ tùng chính hãng.",
+    "expertTitle": "Kỹ Thuật Viên Lành Nghề",
+    "expertDesc": "Đội ngũ được đào tạo bài bản, giàu kinh nghiệm và tận tâm với từng chiếc xe.",
+    "timelyTitle": "Đúng Giờ & Nhanh Chóng",
+    "timelyDesc": "Tiếp nhận – xử lý – trả xe đúng hẹn, tiết kiệm thời gian cho bạn.",
+    "dedicatedTitle": "Hỗ Trợ Tận Tình",
+    "dedicatedDesc": "Tư vấn thân thiện, luôn sẵn sàng hỗ trợ để mang lại trải nghiệm tốt nhất."
+  }
+}

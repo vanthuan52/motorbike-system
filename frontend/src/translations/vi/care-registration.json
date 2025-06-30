@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Đăng Ký Bảo Dưỡng Xe",
+    "description": "Đăng Ký Bảo Dưỡng Xe"
+  },
+  "selectOption": "Chọn",
+  "title": "Đăng Ký Bảo Dưỡng Xe",
+  "titleForm": "Đặt lịch hẹn với chúng tôi",
+  "basicInfo": "Thông Tin Cơ Bản",
+  "firstName": "Vui lòng nhập tên",
+  "lastName": "Vui lòng nhập họ",
+  "email": "Email",
+  "phone": "Vui lòng nhập số điện thoại",
+
+  "vehicleInfo": "Thông Tin Xe",
+  "vehicleType": {
+    "title": "Loại Xe",
+    "motorcycle": "Xe số",
+    "scooter": "Xe tay ga",
+    "clutchBike": "Xe côn"
+  },
+  "vehicleBrand": "Nhập hãng xe",
+  "serviceType": {
+    "title": "Loại Dịch Vụ",
+    "maintenance": "Bảo Dưỡng",
+    "oilChange": "Thay Nhớt",
+    "repair": "Sửa Chữa"
+  },
+  "vehicleNumber": "Nhập biển số xe",
+
+  "timeInfo": "Thời Gian",
+  "date": "Chọn ngày",
+  "time": "HH:MM",
+  "address": "Nhập địa chỉ",
+  "note": "Ghi chú nếu cần",
+
+  "workingHour": "Thời gian làm việc: 9:00 - 18:00",
+  "onTime": "Vui lòng đến đúng giờ theo lịch hẹn!",
+  "submit": "Gửi Đăng Ký",
+  "errors": {
+    "first_name": "Vui lòng nhập tên",
+    "last_name": "Vui lòng nhập họ",
+    "email": "Vui lòng nhập email hợp lệ",
+    "phone_number": "Vui lòng nhập số điện thoại hợp lệ",
+    "vehicle_type": "Vui lòng chọn loại xe",
+    "vehicle_brand": "Vui lòng nhập hãng xe",
+    "service_type": "Vui lòng chọn loại dịch vụ",
+    "vehicle_number": "Vui lòng nhập biển số xe",
+    "date": "Vui lòng chọn ngày hợp lệ",
+    "time": "Vui lòng chọn thời gian hợp lệ",
+    "address": "Vui lòng nhập địa chỉ"
+  },
+  "scheduleList": {
+    "title": "Lịch Bảo Dưỡng",
+    "filter": {
+      "startDate": "Từ ngày",
+      "endDate": "Đến ngày",
+      "button": "Tìm kiếm"
+    },
+    "info": {
+      "phone": "Số điện thoại",
+      "email": "Email",
+      "address": "Địa chỉ",
+      "vehicle_type": "Loại Xe",
+      "vehicle_number": "Biển Số Xe",
+      "note": "Ghi chú"
+    },
+    "service_type": {
+      "maintenance": "Bảo Dưỡng",
+      "oil_change": "Thay Nhớt",
+      "repair": "Sửa Chữa"
+    },
+    "status": {
+      "confirmed": "Đã xác nhận",
+      "pending": "Chờ xác nhận",
+      "cancelled": "Đã hủy"
+    },
+    "confirmDelete": {
+      "title": "Xác nhận xóa lịch hẹn này?",
+      "ok": "Xóa",
+      "cancel": "Hủy"
+    },
+    "actions": {
+      "edit": "Chỉnh sửa lịch hẹn",
+      "delete": "Xóa lịch hẹn"
+    },
+    "empty": "Không có lịch hẹn phù hợp."
+  }
+}

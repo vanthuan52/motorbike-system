@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "title": "Lịch Hẹn Bảo Dưỡng",
+    "description": "Lịch Hẹn Bảo Dưỡng"
+  },
+
+  "title": "Lịch Hẹn Bảo Dưỡng",
+  "filter": {
+    "startDate": "Từ ngày",
+    "endDate": "Đến ngày",
+    "button": "Tìm kiếm"
+  },
+  "info": {
+    "phone": "Số điện thoại",
+    "email": "Email",
+    "address": "Địa chỉ",
+    "vehicle_type": "Loại xe",
+    "vehicle_number": "Biển số xe",
+    "note": "Ghi chú"
+  },
+  "service_type": {
+    "maintenance": "Bảo dưỡng",
+    "oil_change": "Thay nhớt",
+    "repair": "Sửa chữa"
+  },
+  "status": {
+    "confirmed": "Đã xác nhận",
+    "pending": "Chờ xác nhận",
+    "cancelled": "Đã hủy"
+  },
+  "confirmDelete": {
+    "title": "Bạn có chắc chắn muốn xóa lịch hẹn này không?",
+    "ok": "Xóa",
+    "cancel": "Hủy"
+  },
+  "actions": {
+    "edit": "Chỉnh sửa lịch hẹn",
+    "delete": "Xóa lịch hẹn"
+  },
+  "empty": "Không có lịch hẹn phù hợp."
+}

@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "title": "Hiring",
+    "description": "Hiring"
+  },
+  "companyDescription": {
+    "title": "Open Positions",
+    "companyWorkTitle": "Working at Motorbike System",
+    "companyWorkDesc": "We are looking for talented and passionate individuals to join us in developing the leading motorbike service in Vietnam. A dynamic environment, attractive benefits, and clear career advancement opportunities await.",
+    "whoTitle": "Who We Are",
+    "whoDesc": "Motorbike System is a platform for effective and modern motorbike maintenance and management. We focus on developing people, driving innovation, and delivering great customer service."
+  },
+  "companyInfo": {
+    "name": "MOTORBIKE SYSTEM",
+    "industry": "Motorbike Services",
+    "size": "100 - 500 employees",
+    "workTitle": "Working at Motorbike System",
+    "workDesc": "We are looking for talented and passionate individuals to join us in developing the leading motorbike service in Vietnam. A dynamic environment, attractive benefits, and clear career advancement opportunities await.",
+    "imageAlt": "Motorbike career",
+    "whoTitle": "Who We Are",
+    "whoDesc": "Motorbike System is a platform for effective and modern motorbike maintenance and management. We focus on developing people, driving innovation, and delivering great customer service."
+  },
+  "searchFilter": {
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search for jobs",
+    "jobTypeLabel": "Job Type",
+    "jobTypePlaceholder": "Select job type",
+    "jobTypes": {
+      "full_time": "Full-time",
+      "part_time": "Part-time",
+      "contract": "Contract",
+      "etc": "Other"
+    }
+  }
+}

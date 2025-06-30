@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Blog",
+    "description": "Tin tức và cập nhật mới nhất từ blog của chúng tôi"
+  },
+  "header": {
+    "title": "Blog",
+    "description": "Chia sẻ kiến thức về xe máy, kết nối đam mê kỹ thuật"
+  },
+  "filter": {
+    "all": "Tất cả"
+  },
+  "breadcrumbs": {
+    "home": "Trang chủ",
+    "blog": "Blog"
+  },
+  "readTime": "{minutes} phút đọc",
+  "views": "lượt xem",
+  "comments": "bình luận",
+  "suggestions": "Gợi ý:",
+  "notFound": {
+    "title": "Không tìm thấy bài viết",
+    "description": "Bài viết có thể đã bị xóa, chưa được xuất bản hoặc URL không chính xác. Quay lại trang blog để tiếp tục khám phá.",
+    "backButton": "⬅ Quay lại Blog"
+  },
+  "commentForm": {
+    "title": "Để Lại Bình Luận",
+    "nameLabel": "Tên của bạn",
+    "namePlaceholder": "Nhập tên của bạn",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Nhập địa chỉ email của bạn",
+    "contentLabel": "Nội dung bình luận",
+    "contentPlaceholder": "Nhập nội dung bình luận",
+    "submit": "Gửi Bình Luận"
+  },
+  "commentsList": {
+    "title": "Bình Luận",
+    "likes": "lượt thích"
+  },
+  "relatedBlogs": {
+    "title": "Bài Viết Liên Quan"
+  },
+  "sharing": {
+    "shareTitle": "Chia sẻ bài viết này",
+    "authorBio": "Chuyên gia xe máy với hơn 10 năm kinh nghiệm tour xuyên Việt và Đông Nam Á.\nNgười sáng lập câu lạc bộ \"Vietnam Riders\" và tác giả cuốn sách \"Chinh phục những cung đường đèo\"."
+  },
+  "tableOfContents": "Mục lục"
+}

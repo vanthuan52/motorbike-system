@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "title": "Sản Phẩm",
+    "description": "Sản Phẩm"
+  },
+  "breadcrumbs": {
+    "home": "Trang Chủ",
+    "productList": "Danh Sách Sản Phẩm"
+  },
+  "searchBar": {
+    "placeholder": "Tìm kiếm sản phẩm..."
+  },
+  "filter": {
+    "title": "Bộ Lọc Sản Phẩm",
+    "open": "Bộ Lọc"
+  },
+  "notFound": "Không tìm thấy sản phẩm phù hợp.",
+  "activeFilters": {
+    "status": {
+      "in_stock": "Còn hàng",
+      "out_of_stock": "Hết hàng",
+      "out_of_business": "Ngừng kinh doanh"
+    },
+    "remove": "Xóa bộ lọc",
+    "clearAll": "Xóa tất cả"
+  },
+  "sortBar": {
+    "showing": "trên tổng số",
+    "results": "Kết quả",
+    "sortBy": "Sắp xếp theo",
+    "grid": "Chế độ lưới",
+    "list": "Chế độ danh sách",
+    "options": {
+      "relevance": "Liên quan nhất",
+      "priceAsc": "Giá: Thấp đến Cao",
+      "priceDesc": "Giá: Cao đến Thấp"
+    }
+  },
+  "filterSidebar": {
+    "title": "Bộ Lọc",
+    "reset": "Đặt lại",
+    "status": {
+      "title": "Tình Trạng",
+      "options": {
+        "in_stock": "Còn hàng",
+        "out_of_stock": "Hết hàng",
+        "out_of_business": "Ngừng kinh doanh"
+      }
+    },
+    "category": {
+      "title": "Danh Mục"
+    },
+    "price": {
+      "title": "Giá"
+    }
+  },
+  "productCard": {
+    "quickBuy": "Mua Nhanh",
+    "addToCart": "Thêm vào Giỏ",
+    "addToCartSuccess": "Thêm sản phẩm vào giỏ hàng thành công",
+    "preview": "Xem trước hình ảnh"
+  }
+}

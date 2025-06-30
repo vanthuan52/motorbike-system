@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "Danh Mục",
+    "description": "Danh sách các danh mục phụ tùng xe máy"
+  },
+  "breadcrumbs": {
+    "home": "Trang chủ",
+    "partType": "Danh mục phụ tùng"
+  },
+  "pageHeading": {
+    "title": "Bộ Sưu Tập Phụ Tùng Xe Máy Chất Lượng Cao",
+    "description": "Khám phá nhiều loại phụ tùng cho mọi dòng xe máy. Cam kết chính hãng, chất lượng cao và giá cả hợp lý cho nhu cầu sửa chữa, bảo dưỡng hoặc nâng cấp của bạn.",
+    "stats": {
+      "manualBike": "Phụ tùng xe số",
+      "scooter": "Phụ tùng xe tay ga",
+      "clutchBike": "Phụ tùng xe côn tay",
+      "genuine": "Phụ tùng chính hãng",
+      "custom": "Phụ tùng nâng cấp tùy chỉnh"
+    }
+  },
+  "searchBar": {
+    "placeholder": "Tìm kiếm danh mục"
+  },
+  "partTypeCard": {
+    "viewDetail": "Xem chi tiết",
+    "viewProduct": "Xem sản phẩm"
+  },
+  "partTypeList": {
+    "notFound": "Không tìm thấy danh mục phù hợp."
+  },
+  "partTypeDetail": {
+    "notFound": "Không tìm thấy danh mục",
+    "backToList": "Quay lại danh sách",
+    "viewProducts": "Xem sản phẩm"
+  }
+}

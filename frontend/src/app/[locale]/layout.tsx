@@ -1,16 +1,14 @@
 import { Montserrat } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import ToastProvider from "@/features/notification/components/toast-provider";
-import { HandleProgressOnComplete } from "@/lib/nprogress/HandleOnProgressComplete";
 import ReduxProvider from "@/components/ReduxProvider";
-import GlobalLoading from "@/components/ui/global-loading";
-import "@/styles/globals.css";
+import AppProvider from "./provider";
 import AppInitializer from "./app-initializer";
-import { routing } from "@/i18n/routing";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
-import { notFound } from "next/navigation";
+import "@/styles/globals.css";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -24,21 +22,21 @@ export default async function LocaleLayout(props: {
 }) {
   const { children, params } = props;
   const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+
+  // Enable static rendering
+  setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
-      <body className={`${montserrat.variable} antialiased`} lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <body className={`${montserrat.variable} antialiased`}>
         <ReactQueryProvider>
           <AntdRegistry>
             <ReduxProvider>
               <AppInitializer />
-              <GlobalLoading />
-              <NextIntlClientProvider>{children}</NextIntlClientProvider>
+              <NextIntlClientProvider locale={locale}>
+                <AppProvider>{children}</AppProvider>
+              </NextIntlClientProvider>
               <ToastProvider />
-              <HandleProgressOnComplete />
             </ReduxProvider>
           </AntdRegistry>
         </ReactQueryProvider>

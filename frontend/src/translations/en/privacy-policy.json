@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "title": "Privacy Policy",
+    "description": "Privacy Policy"
+  },
+  "title": "Privacy Policy",
+  "sections": {
+    "1": {
+      "title": "1. Introduction",
+      "content": "Motobike is committed to protecting your privacy and personal information. This policy explains how we collect, use, store, and protect your data when using our services."
+    },
+    "2": {
+      "title": "2. Information We Collect",
+      "content": [
+        "Personal info: Name, phone number, email, vehicle details.",
+        "Technical data: IP, browser, access device.",
+        "Usage data: access history, service booking.",
+        "Cookies data: usage tracking."
+      ]
+    },
+    "3": {
+      "title": "3. How We Collect Information",
+      "content": [
+        "Via booking forms, newsletter sign-up.",
+        "Via cookies and analytics tools like Google Analytics.",
+        "Through interaction with staff."
+      ]
+    },
+    "4": {
+      "title": "4. Purpose of Data Use",
+      "content": [
+        "Provide timely and accurate service.",
+        "Improve service quality and personalize experience.",
+        "Send notifications and promotions.",
+        "Analyze performance efficiency."
+      ]
+    },
+    "5": {
+      "title": "5. Sharing Information with Third Parties",
+      "content": [
+        "Payment providers.",
+        "Shipping or warranty partners.",
+        "Data analytics vendors.",
+        "All sharing complies with law and is limited to necessary scope."
+      ]
+    },
+    "6": {
+      "title": "6. User Rights",
+      "content": [
+        "Access your personal data.",
+        "Request correction or deletion.",
+        "Object to processing.",
+        "Request data portability."
+      ]
+    },
+    "7": {
+      "title": "7. Data Security",
+      "content": "We use strong security measures to protect your data from unauthorized access, alteration, or disclosure. This includes encryption, firewalls, and regular security audits."
+    },
+    "8": {
+      "title": "8. Changes to This Policy",
+      "content": "We may update this policy periodically. Any changes will be posted on this page with an updated effective date. We encourage you to review this policy regularly."
+    },
+    "9": {
+      "title": "9. Contact Us",
+      "content": "If you have any questions about this policy or your data, please contact us at support@motobike.com or through our contact form."
+    }
+  }
+}

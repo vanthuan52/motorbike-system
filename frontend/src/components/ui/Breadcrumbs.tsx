@@ -1,4 +1,4 @@
-import { CustomLink } from "../CustomerLink/CustomLink";
+import { Link } from "@/lib/i18n";
 import { motion } from "framer-motion";
 
 export interface BreadcrumbItem {
@@ -39,9 +39,9 @@ export default function Breadcrumbs({
             transition={{ delay: idx * 0.08, duration: 0.4 }}
           >
             {item.href ? (
-              <CustomLink href={item.href} className={linkClassName}>
+              <Link href={item.href} className={linkClassName}>
                 {item.label}
-              </CustomLink>
+              </Link>
             ) : (
               <span className={activeClassName}>{item.label}</span>
             )}

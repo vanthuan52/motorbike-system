@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "title": "Contact",
+    "description": "Get in touch with us"
+  },
+  "heroTitle": "Contact Us",
+  "heroDescription": "We are always ready to support and answer all your questions.",
+  "contactWithUs": "Contact us",
+  "contactDescription": "We are happy to hear from you. If you have any questions about our products or services, contact us via the information below or fill out the contact form.",
+  "headquarters": "Headquarters",
+  "sendEmail": "Send us an Email",
+  "callUs": "Call us",
+  "followUs": "Follow us on social media",
+  "sendMessage": "Send us a message",
+  "namePlaceholder": "Full Name",
+  "phonePlaceholder": "Phone Number",
+  "emailPlaceholder": "Email",
+  "subjectPlaceholder": "Subject",
+  "messagePlaceholder": "Message",
+  "submitButton": "Send Message"
+}

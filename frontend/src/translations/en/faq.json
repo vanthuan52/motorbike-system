@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "title": "FAQ",
+    "description": "Frequently Asked Questions"
+  },
+  "title": "Frequently Asked Questions",
+  "description": "Quickly find answers to your questions",
+  "categories": {
+    "all": "All",
+    "booking": "Booking",
+    "maintenance": "Maintenance",
+    "payment": "Payment",
+    "warranty": "Warranty",
+    "service": "Service",
+    "info": "Information"
+  },
+  "contactCTA": {
+    "title": "Can't find the answer?",
+    "description": "Contact us to get direct support from our professional consulting team.",
+    "contactNow": "Contact Now",
+    "callHotline": "Call Hotline"
+  },
+  "noResults": {
+    "title": "Không tìm thấy câu hỏi phù hợp",
+    "description": "Vui lòng thử từ khóa khác."
+  },
+  "faqs": {
+    "1question": "How do I schedule a maintenance appointment?",
+    "1answer": "You can schedule maintenance on our website via the 'Book Now' button on the homepage or call our hotline. We’ll confirm and notify you of the appointment time.",
+    "2question": "How long does periodic maintenance take?",
+    "2answer": "It typically takes 30–60 minutes depending on your vehicle’s condition and required checks. More complex cases will be advised accordingly.",
+    "3question": "Do I need to pay a deposit to book an appointment?",
+    "3answer": "No deposit is required. Payment is made after service completion and satisfaction.",
+    "4question": "Are replacement parts covered by warranty?",
+    "4answer": "Yes, all genuine parts come with manufacturer warranty (3–12 months). Repair services are also covered (1–3 months).",
+    "5question": "Which brands do you service?",
+    "5answer": "We service all major brands like Honda, Yamaha, Suzuki, SYM, Piaggio, and more.",
+    "6question": "Do you offer home rescue services?",
+    "6answer": "Yes, within 15km of the center. Fees depend on distance and time. Contact our hotline for details.",
+    "7question": "What are your opening hours?",
+    "7answer": "We are open 7:00 AM – 6:00 PM daily, including weekends. Emergency support available 24/7.",
+    "8question": "Can I get a service quote in advance?",
+    "8answer": "Yes, check our price list on the website or contact us directly. We ensure transparent pricing.",
+    "9question": "Which engine oil is recommended for manual bikes?",
+    "9answer": "We recommend 10W-30 or 10W-40 oil. Our technicians will advise the best option.",
+    "10question": "Do you have loyalty discounts?",
+    "10answer": "Yes. Our membership program offers recurring service discounts, free oil change after 5 times, and more.",
+    "11question": "Can I cancel a booked appointment?",
+    "11answer": "Yes, at least 2 hours before the scheduled time. Cancel via website or hotline.",
+    "12question": "My bike vibrates strongly—should I check it now?",
+    "12answer": "Yes, unusual vibrations may indicate tire wear, bent rims, or suspension issues. Please visit us ASAP.",
+    "13question": "Is touch-up paintwork under warranty?",
+    "13answer": "Yes, 6-month warranty for peeling or fading due to technical errors.",
+    "14question": "Do you accept card payments?",
+    "14answer": "Yes, we accept all credit/debit cards and popular e-wallets.",
+    "15question": "Can I request a specific technician?",
+    "15answer": "Yes, if available at your scheduled time. Please inform us in advance.",
+    "16question": "How can I give service feedback?",
+    "16answer": "You can provide feedback at the reception, via email, or survey form after service.",
+    "17question": "Do you offer English support?",
+    "17answer": "Yes, some staff can communicate in basic English. Let us know when booking.",
+    "18question": "Do you offer overnight vehicle storage?",
+    "18answer": "Yes, secure overnight parking is available for long repairs. We’ll notify you and issue a handover receipt."
+  },
+  "searchPlaceholder": "Search questions..."
+}

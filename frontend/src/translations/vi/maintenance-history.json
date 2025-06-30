@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "title": "Lịch Sử Bảo Dưỡng",
+    "description": "Lịch Sử Bảo Dưỡng"
+  },
+  "title": "Lịch Sử Bảo Dưỡng",
+  "filter": {
+    "from": "Từ ngày",
+    "to": "Đến ngày",
+    "status": "Trạng thái",
+    "completed": "Đã hoàn thành",
+    "incomplete": "Chưa hoàn thành",
+    "search": "Tìm kiếm"
+  },
+  "table": {
+    "vehicleName": "Tên Xe",
+    "licensePlate": "Biển Số Xe",
+    "date": "Ngày",
+    "timeSlot": "Khung Giờ",
+    "status": "Trạng Thái",
+    "totalCost": "Tổng Chi Phí",
+    "actions": "Thao Tác",
+    "delete": "Xóa",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa bản ghi này?",
+    "cannotDelete": "Không thể xóa"
+  },
+  "toast": {
+    "deleteSuccess": "Xóa lịch sử bảo dưỡng thành công"
+  }
+}

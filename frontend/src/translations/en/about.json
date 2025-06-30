@@ -1,0 +1,166 @@
+{
+  "meta": {
+    "title": "About Us",
+    "description": "Learn more about our motorcycle maintenance and repair service center."
+  },
+  "aboutHeroSection": {
+    "heading": "About the Service Center",
+    "description": "With over <strong>10 years of experience</strong> in the motorcycle maintenance and repair industry, XYZ Service Center is committed to providing high-quality services and maximum customer satisfaction. We continuously strive to improve service quality and meet the increasing demands of our customers.",
+    "missionTitle": "Our Mission",
+    "missionDesc": "Our mission is to provide high-quality motorcycle maintenance and repair services, ensuring safety and absolute satisfaction for customers. We are committed to offering optimal and prompt solutions to keep your vehicle running smoothly.",
+    "visionTitle": "Our Vision",
+    "visionDesc": "XYZ Service Center aims to become a trusted leading name in the motorcycle maintenance and repair industry, not only locally but nationwide. We aspire to raise service standards, constantly innovate and develop to serve our customers in the best possible way."
+  },
+  "awardsSection": {
+    "heading": "Certifications & Awards",
+    "awards": [
+      {
+        "title": "Excellent Service Certificate 2022",
+        "description": "Awarded by the Vietnam Engineering Association for outstanding contributions in vehicle maintenance."
+      },
+      {
+        "title": "Top 10 Trusted Repair Centers",
+        "description": "Voted by AutoViet community in 2023."
+      },
+      {
+        "title": "Best Customer Service Award",
+        "description": "Honored at the National Motorcycle Industry Exhibition 2022."
+      }
+    ]
+  },
+  "faqSection": {
+    "heading": "Frequently Asked Questions",
+    "faqs": [
+      {
+        "question": "How often should I maintain my motorcycle?",
+        "answer": "You should typically maintain your motorcycle every 1,000 – 1,500 km or every 2 – 3 months to ensure safe and optimal performance."
+      },
+      {
+        "question": "Does the center offer a warranty after repair?",
+        "answer": "Yes, all services at the center come with a clear warranty policy depending on the repair type."
+      },
+      {
+        "question": "Do I need to book an appointment in advance?",
+        "answer": "You can visit directly, but scheduling an appointment helps save time and ensures quicker service."
+      },
+      {
+        "question": "What kind of spare parts do you use?",
+        "answer": "We guarantee to use 100% genuine parts or parts from authorized manufacturers."
+      }
+    ]
+  },
+  "featuredServices": {
+    "heading": "Featured Services",
+    "whyChooseUs": "Why Choose Our Center?",
+    "services": [
+      {
+        "title": "Comprehensive Maintenance",
+        "description": "Thorough vehicle inspection and maintenance for safe operation."
+      },
+      {
+        "title": "Scheduled Oil Change",
+        "description": "Use of genuine oil for smooth engine performance."
+      },
+      {
+        "title": "Technical Repairs",
+        "description": "Handling all technical issues from simple to complex."
+      }
+    ],
+    "reasons": ["Fast service", "Long-term warranty", "Genuine spare parts"]
+  },
+  "historySection": {
+    "heading": "Our History",
+    "founding": {
+      "title": "The Founding Story",
+      "content": "XYZ Maintenance Center was founded in 2013 by a group of passionate motorcycle engineers. Starting from a small garage with only 2 staff members, the center went through many challenges, from lack of equipment to building customer trust. Through dedication and the desire to elevate service standards, we gradually rose to become one of the most trusted maintenance centers in the region."
+    },
+    "milestoneTitle": "Development Milestones",
+    "milestones": [
+      {
+        "year": "2013",
+        "description": "Established the center at small scale in Binh Thanh District."
+      },
+      {
+        "year": "2016",
+        "description": "Expanded with 2 branches and invested in modern equipment."
+      },
+      {
+        "year": "2019",
+        "description": "Team grew to 30 technicians, serving over 10,000 customers annually."
+      },
+      {
+        "year": "2024",
+        "description": "Received excellent service certification and expanded to 5 citywide branches."
+      }
+    ]
+  },
+  "socialCommunity": {
+    "followUs": "Follow Us",
+    "communityTitle": "Community Activities",
+    "activities": [
+      {
+        "title": "Free maintenance program for ambulances",
+        "description": "Our center supported frontline healthcare during the COVID-19 pandemic."
+      },
+      {
+        "title": "Scholarship for young technicians",
+        "description": "Providing training and scholarships for students in automotive and motorcycle repair."
+      }
+    ]
+  },
+  "staffSection": {
+    "heading": "Our Staff",
+    "description": "XYZ Center is proud to have a team of skilled, experienced, and dedicated technicians. Each member holds professional certifications and undergoes thorough training.",
+    "members": [
+      {
+        "name": "Nguyen Van A",
+        "role": "Head Technician",
+        "experience": "10 years of experience",
+        "quote": "I always prioritize customer safety and satisfaction.",
+        "image": "https://randomuser.me/api/portraits/men/37.jpg"
+      },
+      {
+        "name": "Tran Thi B",
+        "role": "Machine Technician",
+        "experience": "6 years of experience",
+        "quote": "Working with heart makes the vehicle run better and customers happier.",
+        "image": "https://randomuser.me/api/portraits/women/36.jpg"
+      },
+      {
+        "name": "Le Van C",
+        "role": "Engine Specialist",
+        "experience": "8 years of experience",
+        "quote": "Every vehicle is a challenge – and I love it!",
+        "image": "https://randomuser.me/api/portraits/men/21.jpg"
+      }
+    ]
+  },
+  "technologySection": {
+    "title": "Technology & Equipment",
+    "technologies": [
+      {
+        "title": "Electronic Diagnostic Scanner",
+        "description": "Uses OBD-II technology for accurate and fast error detection.",
+        "image": "/images/about/obd.jpg"
+      },
+      {
+        "title": "3D Wheel Alignment System",
+        "description": "Ensures absolute accuracy in steering and suspension alignment.",
+        "image": "/images/about/alignment.jpg"
+      },
+      {
+        "title": "Automatic Oil Changer",
+        "description": "Reduces service time and ensures precise oil replacement.",
+        "image": "/images/about/oil-change-device.jpg"
+      }
+    ],
+    "workflowTitle": "Standard Maintenance Workflow",
+    "workflowSteps": [
+      "Receive and inspect the vehicle",
+      "Diagnose with advanced equipment",
+      "Consult repair options",
+      "Perform maintenance as standard procedure",
+      "Recheck and hand over to customer"
+    ]
+  }
+}

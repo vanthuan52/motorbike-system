@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "title": "Vehicle Maintenance Registration",
+    "description": "Vehicle Maintenance Registration"
+  },
+  "selectOption": "Select",
+  "title": "Vehicle Maintenance Registration",
+  "titleForm": "Schedule an appointment with us",
+  "basicInfo": "Basic Information",
+  "firstName": "Please enter your first name",
+  "lastName": "Please enter your last name",
+  "email": "Email",
+  "phone": "Please enter your phone number",
+
+  "vehicleInfo": "Vehicle Information",
+  "vehicleType": {
+    "title": "Vehicle Type",
+    "motorcycle": "Motorcycle",
+    "scooter": "Scooter",
+    "clutchBike": "Clutch bike"
+  },
+  "vehicleBrand": "Enter brand",
+  "serviceType": {
+    "title": "Service Type",
+    "maintenance": "Maintenance",
+    "oilChange": "Oil Change",
+    "repair": "Repair"
+  },
+  "vehicleNumber": "Enter license plate",
+
+  "timeInfo": "Time",
+  "date": "Pick a date",
+  "time": "HH:MM",
+  "address": "Enter address",
+  "note": "Add note if needed",
+
+  "workingHour": "Working hours: 9:00 AM - 6:00 PM",
+  "onTime": "Please arrive on time for your appointment!",
+  "submit": "Submit",
+  "errors": {
+    "first_name": "Please enter your first name",
+    "last_name": "Please enter your last name",
+    "email": "Please enter a valid email",
+    "phone_number": "Please enter a valid phone number",
+    "vehicle_type": "Please select vehicle type",
+    "vehicle_brand": "Please enter vehicle brand",
+    "service_type": "Please select service type",
+    "vehicle_number": "Please enter vehicle number",
+    "date": "Please select a valid date",
+    "time": "Please select a valid time",
+    "address": "Please enter your address"
+  },
+  "scheduleList": {
+    "title": "Maintenance Schedule",
+    "filter": {
+      "startDate": "From date",
+      "endDate": "To date",
+      "button": "Search"
+    },
+    "info": {
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "vehicle_type": "Vehicle Type",
+      "vehicle_number": "Vehicle Number",
+      "note": "Note"
+    },
+    "service_type": {
+      "maintenance": "Maintenance",
+      "oil_change": "Oil Change",
+      "repair": "Repair"
+    },
+    "status": {
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+    "confirmDelete": {
+      "title": "Confirm deletion of this appointment?",
+      "ok": "Delete",
+      "cancel": "Cancel"
+    },
+    "actions": {
+      "edit": "Edit appointment",
+      "delete": "Delete appointment"
+    },
+    "empty": "No matching appointments."
+  }
+}

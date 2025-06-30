@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "title": "Product",
+    "description": "Product"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "productList": "Product List"
+  },
+  "searchBar": {
+    "placeholder": "Search products..."
+  },
+  "filter": {
+    "title": "Product Filters",
+    "open": "Filters"
+  },
+  "notFound": "No matching products found.",
+  "activeFilters": {
+    "status": {
+      "in_stock": "In stock",
+      "out_of_stock": "Out of stock",
+      "out_of_business": "Discontinued"
+    },
+    "remove": "Remove filter",
+    "clearAll": "Clear all"
+  },
+  "sortBar": {
+    "showing": "of",
+    "results": "Results",
+    "sortBy": "Sort by",
+    "grid": "Grid view",
+    "list": "List view",
+    "options": {
+      "relevance": "Relevance",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low"
+    }
+  },
+  "filterSidebar": {
+    "title": "Filter",
+    "reset": "Reset",
+    "status": {
+      "title": "Status",
+      "options": {
+        "in_stock": "In stock",
+        "out_of_stock": "Out of stock",
+        "out_of_business": "Discontinued"
+      }
+    },
+    "category": {
+      "title": "Categories"
+    },
+    "price": {
+      "title": "Price"
+    }
+  },
+  "productCard": {
+    "quickBuy": "Quick Buy",
+    "addToCart": "Add to Cart",
+    "addToCartSuccess": "Product added to cart successfully",
+    "preview": "Preview image"
+  }
+}

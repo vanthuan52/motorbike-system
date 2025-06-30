@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "title": "Checkout",
+    "description": "Checkout now"
+  },
+  "shippingAddressTitle": "Shipping Address",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "email": "Email",
+  "phone": "Phone Number",
+  "city": "City",
+  "address": "Address",
+  "zip": "Zip Code",
+  "description": "Description",
+  "firstNameRequired": "Please enter your first name",
+  "lastNameRequired": "Please enter your last name",
+  "emailRequired": "Please enter your email",
+  "emailInvalid": "Invalid email",
+  "phoneRequired": "Please enter your phone number",
+  "cityRequired": "Please enter your city",
+  "addressRequired": "Please enter your address",
+  "zipRequired": "Please enter your zip code",
+  "breadcrumb": {
+    "cart": "Shopping Cart",
+    "cartShort": "Cart",
+    "checkout": "Checkout Details",
+    "checkoutShort": "Checkout",
+    "complete": "Completed",
+    "completeShort": "Done"
+  },
+  "cartSummary": {
+    "title": "Your cart",
+    "discountPlaceholder": "Discount code",
+    "apply": "Apply",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping fee",
+    "tax": "Estimated tax",
+    "total": "Total",
+    "proceed": "Proceed to checkout"
+  },
+  "shippingMethod": {
+    "title": "Shipping Method",
+    "free": {
+      "title": "Free Shipping",
+      "time": "7-20 days"
+    },
+    "express": {
+      "title": "Express Delivery",
+      "time": "1-3 days"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "title": "Product Detail",
+    "description": "Description"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "product": "Product"
+  },
+  "productInfo": {
+    "toast": {
+      "success": "Product added to cart successfully"
+    },
+    "color": "Color",
+    "unknown": "Unknown",
+    "stock": "Stock",
+    "quantity": "Quantity",
+    "addToCart": "Add to Cart",
+    "outOfStock": "Out of stock",
+    "outOfBusiness": "Discontinued",
+    "formOfDelivery": "Form of delivery"
+  }
+}

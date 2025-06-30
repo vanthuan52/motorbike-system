@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "Tuyển Dụng",
+    "description": "Tuyển Dụng"
+  },
+  "jobType": "Hình Thức Làm Việc",
+  "location": "Địa Điểm",
+  "category": "Danh Mục",
+  "share": "Chia Sẻ",
+  "descriptionTitle": "Mô Tả Công Việc",
+  "requirementsTitle": "Yêu Cầu Công Việc",
+  "salary": "Mức Lương",
+  "deadline": "Hạn Nộp Hồ Sơ",
+  "aboutUsTitle": "Về Chúng Tôi",
+  "aboutUsDesc": "Chúng tôi là một đội ngũ công nghệ đam mê, không ngừng cải thiện trải nghiệm người dùng và xây dựng sản phẩm chất lượng cao. Môi trường làm việc chuyên nghiệp, thân thiện và sáng tạo.",
+  "loading": "Đang tải...",
+  "back": "Quay lại",
+  "application_form": "Biểu Mẫu Ứng Tuyển",
+  "applicationForm": {
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "email": "Email",
+    "phone": "Số Điện Thoại",
+    "message": "Bạn muốn chia sẻ điều gì với chúng tôi?",
+    "messagePlaceholder": "Giới thiệu bản thân, mong đợi, kinh nghiệm...",
+    "resume": "Hồ sơ (tối đa 4MB, pdf/doc)",
+    "uploadInstruction": "Kéo & thả hoặc",
+    "chooseFile": "chọn tệp",
+    "experience": "Bạn có bao nhiêu năm kinh nghiệm?",
+    "expOptions": {
+      "0_2": "0–2 năm",
+      "3_5": "3–5 năm",
+      "more_5": "Trên 5 năm"
+    },
+    "submit": "Gửi Hồ Sơ",
+    "validation": {
+      "firstName": "Vui lòng nhập tên của bạn",
+      "lastName": "Vui lòng nhập họ của bạn",
+      "email": "Địa chỉ email không hợp lệ",
+      "phone": "Vui lòng nhập số điện thoại",
+      "experience": "Vui lòng chọn số năm kinh nghiệm"
+    }
+  }
+}

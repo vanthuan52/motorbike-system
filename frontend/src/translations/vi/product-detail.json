@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "title": "Chi Tiết Sản Phẩm",
+    "description": "Mô tả"
+  },
+  "breadcrumbs": {
+    "home": "Trang Chủ",
+    "product": "Sản Phẩm"
+  },
+  "productInfo": {
+    "toast": {
+      "success": "Thêm sản phẩm vào giỏ hàng thành công"
+    },
+    "color": "Màu sắc",
+    "unknown": "Không xác định",
+    "stock": "Tồn kho",
+    "quantity": "Số lượng",
+    "addToCart": "Thêm vào giỏ hàng",
+    "outOfStock": "Hết hàng",
+    "outOfBusiness": "Ngừng kinh doanh",
+    "formOfDelivery": "Hình thức giao hàng"
+  }
+}

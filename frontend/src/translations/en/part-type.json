@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "Categories",
+    "description": "List of motorcycle categories"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "partType": "Spare parts catalog"
+  },
+  "pageHeading": {
+    "title": "High-Quality Motorcycle Parts Collection",
+    "description": "Explore a wide range of parts for all types of motorcycles. Guaranteed authentic, high-quality, and well-priced for your repair, maintenance, or upgrade needs.",
+    "stats": {
+      "manualBike": "Manual motorcycle parts",
+      "scooter": "Scooter parts",
+      "clutchBike": "Clutch bike parts",
+      "genuine": "Genuine parts",
+      "custom": "Custom upgrade parts"
+    }
+  },
+  "searchBar": {
+    "placeholder": "Search categories"
+  },
+  "partTypeCard": {
+    "viewDetail": "View details",
+    "viewProduct": "View products"
+  },
+  "partTypeList": {
+    "notFound": "No matching categories found."
+  },
+  "partTypeDetail": {
+    "notFound": "Category not found",
+    "backToList": "Back to list",
+    "viewProducts": "View products"
+  }
+}
