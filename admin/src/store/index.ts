@@ -15,6 +15,7 @@ import { vehicleCompanyReducer } from "@/modules/vehicle-company/store";
 import { hiringReducer } from "@/modules/hiring/store";
 import { customerReducer } from "@/modules/customer-management/store";
 import { candidateReducer } from "@/modules/candidates/store";
+import { serviceCategoryReducer } from "@/modules/service-category/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -29,6 +30,7 @@ export const store = configureStore({
     hiring: hiringReducer,
     customer: customerReducer,
     candidates: candidateReducer,
+    serviceCategory: serviceCategoryReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(sagaMiddleware),

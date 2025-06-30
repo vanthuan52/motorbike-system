@@ -39,5 +39,13 @@ export const API_ENDPOINTS = {
     USER_UPDATE_STATUS: (id: string) => `user/update/${id}/status`,
     USER_DELETION: (id: string) => `user/delete/${id}`,
     USER_TYPE_USER_CREATE: "user/create/user",
+    // service category module
+    SERVICE_CATEGORY_LIST: "service-category/list",
+    SERVICE_CATEGORY_DETAIL: (id: string) => `service-category/get/${id}`,
+    SERVICE_CATEGORY_CREATE: "service-category/create",
+    SERVICE_CATEGORY_UPDATE: (id: string) => `service-category/update/${id}`,
+    SERVICE_CATEGORY_UPDATE_STATUS: (id: string) =>
+      `service-category/update/${id}/status`,
+    SERVICE_CATEGORY_DELETION: (id: string) => `service-category/delete/${id}`,
   },
 };

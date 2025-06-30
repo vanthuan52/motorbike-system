@@ -6,7 +6,7 @@ export const API_ENDPOINTS = {
     PART_TYPES: "part-type/list",
     PART_TYPE_DETAIL: (slug: string) => `part-type/get/${slug}`,
     HIRING: "hiring/list",
-    HIRING_DETAILS: (id: string) => `hiring/get/${id}`,
+    HIRING_DETAILS: (slug: string) => `hiring/get/${slug}`,
   },
   SHARED: {
     USER_PROFILE: "user/profile",

@@ -1,13 +1,10 @@
-import { PaginationOrder } from "@/types/base.type";
+import { AxiosError, AxiosResponse } from "axios";
 import {
-  ENUM_HIRING_STATUS,
   HiringDetailResponse,
   HiringPaginationQuery,
   HiringResponse,
-  HiringResponseData,
 } from "./types";
-import { AxiosError, AxiosResponse } from "axios";
-import { userApi } from "@/lib/axios";
+import { publicApi } from "@/lib/axios";
 import { API_ENDPOINTS } from "@/constant/api-endpoint";
 import { ApiErrorResponse } from "@/types/api.type";
 
@@ -16,7 +13,7 @@ const hiringService = {
     queries: HiringPaginationQuery
   ): Promise<HiringResponse> => {
     try {
-      const response: AxiosResponse<HiringResponse> = await userApi.get(
+      const response: AxiosResponse<HiringResponse> = await publicApi.get(
         API_ENDPOINTS.PUBLIC.HIRING,
         {
           params: queries,
@@ -35,10 +32,10 @@ const hiringService = {
     }
   },
 
-  getHiringDetails: async (id: string): Promise<HiringDetailResponse> => {
+  getHiringDetails: async (slug: string): Promise<HiringDetailResponse> => {
     try {
-      const response: AxiosResponse<HiringResponse> = await userApi.get(
-        API_ENDPOINTS.PUBLIC.HIRING_DETAILS(id)
+      const response: AxiosResponse<HiringResponse> = await publicApi.get(
+        API_ENDPOINTS.PUBLIC.HIRING_DETAILS(slug)
       );
       const responseData: HiringDetailResponse | undefined = response.data;
 
