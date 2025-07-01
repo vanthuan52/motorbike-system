@@ -122,7 +122,7 @@ export function UserAdminUpdateDoc(): MethodDecorator {
       dto: UserUpdateRequestDto,
     }),
     DocAuth({
-      xApiKey: true,
+      xApiKey: false,
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),

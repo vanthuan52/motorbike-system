@@ -424,10 +424,12 @@ export class UserService implements IUserService {
     return plainToInstance(UserCensorResponseDto, plainObject);
   }
 
-  mapList(users: IUserDoc[] | IUserEntity[]): UserListResponseDto[] {
+  mapList(
+    users: IUserDoc[] | IUserEntity[] | UserDoc[],
+  ): UserListResponseDto[] {
     return plainToInstance(
       UserListResponseDto,
-      users.map((u: IUserDoc | IUserEntity) =>
+      users.map((u: IUserDoc | IUserEntity | UserDoc) =>
         u instanceof Document ? u.toObject() : u,
       ),
     );

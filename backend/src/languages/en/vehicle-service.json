@@ -1,0 +1,16 @@
+{
+  "list": "Vehicle services list retrieved successfully.",
+  "get": "Vehicle service details fetched successfully.",
+  "create": "New Vehicle service created successfully.",
+  "update": "Vehicle service updated successfully.",
+  "delete": "Vehicle service deleted successfully.",
+  "updateStatus": "Vehicle service status updated to {status}.",
+  "error": {
+    "nameExist": "This Vehicle service name already exists.",
+    "notFound": "Sorry, we couldn't find the Vehicle service you requested.",
+    "updateStatusFailed": "Failed to update Vehicle service status.",
+    "deleteFailed": "Failed to delete Vehicle service.",
+    "createFailed": "Failed to create new Vehicle service.",
+    "slugExisted": "This Vehicle service slug already exists."
+  }
+}

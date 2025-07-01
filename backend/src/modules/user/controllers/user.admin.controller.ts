@@ -44,6 +44,7 @@ import {
 import { UserProtected } from '../decorators/user.decorator';
 import {
   PaginationQuery,
+  PaginationQueryFilterEqual,
   PaginationQueryFilterIn,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
@@ -120,7 +121,7 @@ export class UserAdminController {
       ENUM_USER_STATUS,
     )
     status: Record<string, any>,
-    @PaginationQueryFilterIn('role') role: Record<string, any>,
+    @PaginationQueryFilterEqual('role') role: Record<string, any>,
   ): Promise<IResponsePaging<UserListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
@@ -128,7 +129,7 @@ export class UserAdminController {
       ...role,
     };
 
-    const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
+    const users: UserDoc[] = await this.userService.findAll(find, {
       paging: {
         limit: _limit,
         offset: _offset,

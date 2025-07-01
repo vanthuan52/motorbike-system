@@ -57,7 +57,11 @@ import {
   ENUM_POLICY_ROLE_TYPE,
   ENUM_POLICY_SUBJECT,
 } from '@/modules/policy/enums/policy.enum';
-import { ServiceCategoryDoc } from '../entities/service-category.entity';
+import {
+  SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
+  SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
+  SERVICE_CATEGORY_DEFAULT_STATUS,
+} from '../constants/service-category.list.constant';
 
 @ApiTags('modules.admin.service-category')
 @Controller({
@@ -82,16 +86,13 @@ export class ServiceCategoryAdminController {
   @Get('/list')
   async list(
     @PaginationQuery({
-      availableSearch: ['name', 'status'],
-      availableOrderBy: ['order', 'createdAt', 'updatedAt'],
+      availableSearch: SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
     @PaginationQueryFilterInEnum(
       'status',
-      [
-        ENUM_SERVICE_CATEGORY_STATUS.ACTIVE,
-        ENUM_SERVICE_CATEGORY_STATUS.INACTIVE,
-      ],
+      SERVICE_CATEGORY_DEFAULT_STATUS,
       ENUM_SERVICE_CATEGORY_STATUS,
     )
     status: Record<string, any>,

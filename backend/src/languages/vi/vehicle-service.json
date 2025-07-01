@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách dịch vụ xe máy được lấy thành công.",
+  "get": "Chi tiết dịch vụ xe máy được lấy thành công.",
+  "create": "Tạo mới dịch vụ xe máy thành công.",
+  "update": "Cập nhật dịch vụ xe máy thành công.",
+  "delete": "Xóa dịch vụ xe máy thành công.",
+  "updateStatus": "Trạng thái của dịch vụ xe máy đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên dịch vụ xe máy này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy dịch vụ xe máy bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái dịch vụ xe máy thất bại.",
+    "deleteFailed": "Xóa dịch vụ xe máy thất bại.",
+    "createFailed": "Tạo mới dịch vụ xe máy thất bại.",
+    "slugExisted": "Slug của dịch vụ xe máy này đã tồn tại."
+  }
+}
