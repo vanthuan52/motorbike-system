@@ -47,5 +47,14 @@ export const API_ENDPOINTS = {
     SERVICE_CATEGORY_UPDATE_STATUS: (id: string) =>
       `service-category/update/${id}/status`,
     SERVICE_CATEGORY_DELETION: (id: string) => `service-category/delete/${id}`,
+
+    // vehicle service module
+    VEHICLE_SERVICE_LIST: "vehicle-service/list",
+    VEHICLE_SERVICE_DETAIL: (id: string) => `vehicle-service/get/${id}`,
+    VEHICLE_SERVICE_CREATE: "vehicle-service/create",
+    VEHICLE_SERVICE_UPDATE: (id: string) => `vehicle-service/update/${id}`,
+    VEHICLE_SERVICE_UPDATE_STATUS: (id: string) =>
+      `vehicle-service/update/${id}/status`,
+    VEHICLE_SERVICE_DELETION: (id: string) => `vehicle-service/delete/${id}`,
   },
 };

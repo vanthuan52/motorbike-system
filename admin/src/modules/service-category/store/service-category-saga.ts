@@ -1,5 +1,5 @@
 import { type PayloadAction } from "@reduxjs/toolkit";
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, take, takeLatest } from "redux-saga/effects";
 import { notificationActions } from "@/modules/notification/store/notification-slice";
 import { serviceCategoryActions } from "./service-category-slice";
 import {
@@ -14,6 +14,7 @@ import {
   ServiceCategoryUpdateStatusResponse,
 } from "../types";
 import serviceCategoryService from "../services/service-category.service";
+import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
 
 function* getServiceCategoryListHandler(
   action: PayloadAction<ServiceCategoryPaginationQuery>
@@ -147,7 +148,12 @@ function* updateServiceCategoryStatusHandler(
       status
     );
 
-    yield put(serviceCategoryActions.updateServiceCategoryStatusSuccess());
+    yield put(
+      serviceCategoryActions.updateServiceCategoryStatusSuccess({
+        serviceCategoryId,
+        status,
+      })
+    );
     yield put(
       notificationActions.notify({
         type: "info",
@@ -167,7 +173,18 @@ function* updateServiceCategoryStatusHandler(
     );
   }
 }
-export function* ServiceCategorySaga() {
+
+function* initializeServiceCategorySaga() {
+  yield put(
+    serviceCategoryActions.getServiceCategories({ ...DEFAULT_PAGINATION_QUERY })
+  );
+  yield take([
+    serviceCategoryActions.getServiceCategoriesSuccess.type,
+    serviceCategoryActions.getServiceCategoriesFailure.type,
+  ]);
+}
+
+export function* serviceCategorySaga() {
   yield takeLatest(
     serviceCategoryActions.getServiceCategories,
     getServiceCategoryListHandler
@@ -192,4 +209,5 @@ export function* ServiceCategorySaga() {
     serviceCategoryActions.updateServiceCategoryStatus,
     updateServiceCategoryStatusHandler
   );
+  // yield call(initializeServiceCategorySaga);
 }

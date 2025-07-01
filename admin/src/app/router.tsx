@@ -96,6 +96,14 @@ const ServiceCategoryDetailPage = lazy(
   () => import("@/modules/service-category/pages/service-category-detail-page")
 );
 
+const VehicleServicePage = lazy(
+  () => import("@/modules/vehicle-service/pages/vehicle-service-page")
+);
+
+const VehicleServiceDetailPage = lazy(
+  () => import("@/modules/vehicle-service/pages/vehicle-service-detail-page")
+);
+
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -241,6 +249,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.SERVICE_CATEGORY_DETAILS,
         element: <ServiceCategoryDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_SERVICES,
+        element: <VehicleServicePage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_SERVICE_CREATION,
+        element: <VehicleServiceDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_SERVICE_DETAIL,
+        element: <VehicleServiceDetailPage />,
       },
     ],
   },

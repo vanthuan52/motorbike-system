@@ -12,10 +12,11 @@ interface SelectOptionProps {
   options: SelectOptionItem[];
   placeholder?: string;
   value?: string | string[] | undefined;
-  onChange: (value: string | string[]) => void;
+  onChange?: (value: string | string[] | undefined) => void;
   className?: string;
   disabled?: boolean;
   allowClear?: boolean;
+  loading?: boolean;
 }
 
 const SelectOption: React.FC<SelectOptionProps> = ({
@@ -26,17 +27,23 @@ const SelectOption: React.FC<SelectOptionProps> = ({
   className,
   disabled = false,
   allowClear = false,
+  loading = false,
 }) => {
-  const selectedValue = value === undefined || value === "" ? null : value;
+  const selectedValue = value === "all" ? undefined : value;
 
   return (
     <Select
       placeholder={placeholder}
       value={selectedValue}
-      onChange={onChange}
+      onChange={(newValue) => {
+        if (onChange) {
+          onChange(newValue === undefined ? undefined : newValue);
+        }
+      }}
       className={`rounded-lg ${className ?? ""}`}
       disabled={disabled}
       allowClear={allowClear}
+      loading={loading}
     >
       {options.map((option) => (
         <Option key={String(option.value)} value={option.value}>

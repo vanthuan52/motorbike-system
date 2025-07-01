@@ -1,25 +1,28 @@
-import { useCallback, useEffect } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/ui/table/table";
 import { RootState } from "@/store";
-import { customerActions } from "../store/customer-slice";
-import { ENUM_USER_GENDER, ENUM_USER_STATUS } from "@/modules/user/types";
-import { UserPaginationQuery } from "@/modules/user/types";
+import { vehicleServiceActions } from "../store/vehicle-service-slice";
 import { ROUTER_PATH } from "@/constants/router-path";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useDebounce } from "../../../hooks/useDebounce";
+import { useQueryParams } from "@/hooks/use-query-params";
+import usePagination from "@/hooks/use-pagination";
+import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
+import { useFilters } from "@/hooks/use-filters";
 import TableToolbar from "@/components/ui/table/table-toolbar";
 import SelectOption, {
   SelectOptionItem,
 } from "@/components/ui/ant-design/select-option";
-import { useQueryParams } from "@/hooks/use-query-params";
-import usePagination from "@/hooks/use-pagination";
-import { useFilters } from "@/hooks/use-filters";
-import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
-import { useCustomerTableColumns } from "../hooks/useCustomerTableColumn";
 import { ConfirmModal } from "@/components/ui/modal/confirm-modal";
+import {
+  VehicleServicePaginationQuery,
+  ENUM_VEHICLE_SERVICE_STATUS,
+} from "../types";
+import { useVehicleServiceTableColumns } from "../hooks/use-vehicle-service-table-columns";
+import { serviceCategoryActions } from "@/modules/service-category/store/service-category-slice";
 
-const CustomerList = () => {
+export default function VehicleServiceList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -27,6 +30,7 @@ const CustomerList = () => {
   const {
     page: pageParam,
     perPage: limitParam,
+    serviceCategory,
     search,
     ...restParams
   } = queryParams;
@@ -40,7 +44,8 @@ const CustomerList = () => {
     useFilters(restParams);
 
   const debouncedSearchTerm = useDebounce(search ?? "", 500);
-  const { columns, confirmModalProps } = useCustomerTableColumns({
+
+  const { columns, confirmModalProps } = useVehicleServiceTableColumns({
     currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
     pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
     search: debouncedSearchTerm,
@@ -48,22 +53,37 @@ const CustomerList = () => {
   });
 
   const {
-    users: customers,
+    list: vehicleServices,
     loadingList,
     pagination: paginationState,
     deletion,
-  } = useSelector((state: RootState) => state.customer);
+  } = useSelector((state: RootState) => state.vehicleService);
+
+  const { list: serviceCategories, loadingList: loadingCategories } =
+    useSelector((state: RootState) => state.serviceCategory);
+
+  useEffect(() => {
+    if (!serviceCategories || serviceCategories.length === 0) {
+      dispatch(
+        serviceCategoryActions.getServiceCategories({
+          page: 1,
+          perPage: 1000,
+        })
+      );
+    }
+  }, [dispatch, serviceCategories]);
 
   useEffect(() => {
     dispatch(
-      customerActions.getCustomers({
+      vehicleServiceActions.getVehicleServices({
         page: pagination.page,
         perPage: pagination.perPage,
         search: debouncedSearchTerm,
         ...mappedFilters,
-      } as UserPaginationQuery)
+      } as VehicleServicePaginationQuery)
     );
   }, [
+    dispatch,
     dispatch,
     pagination,
     debouncedSearchTerm,
@@ -98,15 +118,15 @@ const CustomerList = () => {
     [mappedFilters]
   );
 
-  const handleGenderFilterChange = useCallback(
+  const handleServiceCategoryChange = useCallback(
     (value: string | string[] | undefined) => {
-      handleFiltersChange("gender", value);
+      handleFiltersChange("serviceCategory", value);
       handlePaginationChange({
         page: DEFAULT_PAGINATION_QUERY.page,
         perPage: DEFAULT_PAGINATION_QUERY.perPage,
       });
     },
-    [handleFiltersChange]
+    [handleFiltersChange, handlePaginationChange]
   );
 
   const handleStatusFilterChange = useCallback(
@@ -121,19 +141,22 @@ const CustomerList = () => {
   );
 
   const handleCreate = () => {
-    navigate(`${ROUTER_PATH.CUSTOMERS_CREATION}`);
+    navigate(`${ROUTER_PATH.VEHICLE_SERVICE_CREATION}`);
   };
 
-  const genderOptions: SelectOptionItem[] = [
-    { value: ENUM_USER_GENDER.MALE, label: "Nam" },
-    { value: ENUM_USER_GENDER.FEMALE, label: "Nữ" },
-    { value: ENUM_USER_GENDER.OTHER, label: "Khác" },
-  ];
+  const serviceCategoryOptions: SelectOptionItem[] = useMemo(() => {
+    const options: SelectOptionItem[] = [];
+    if (serviceCategories) {
+      serviceCategories.forEach((category) => {
+        options.push({ value: category._id, label: category.name });
+      });
+    }
+    return options;
+  }, [serviceCategories]);
 
   const statusOptions: SelectOptionItem[] = [
-    { value: ENUM_USER_STATUS.ACTIVE, label: "Hoạt động" },
-    { value: ENUM_USER_STATUS.INACTIVE, label: "Không hoạt động" },
-    { value: ENUM_USER_STATUS.BLOCKED, label: "Đã chặn" },
+    { value: ENUM_VEHICLE_SERVICE_STATUS.ACTIVE, label: "Hoạt động" },
+    { value: ENUM_VEHICLE_SERVICE_STATUS.INACTIVE, label: "Không hoạt động" },
   ];
 
   return (
@@ -142,15 +165,16 @@ const CustomerList = () => {
         onSearchChange={handleSearchChange}
         onAddNewClick={handleCreate}
         searchValue={search ?? ""}
-        placeholderSearch="Tìm kiếm theo tên, email..."
+        placeholderSearch="Tìm kiếm theo tên"
       >
         <div className="flex items-center justify-between gap-3">
           <SelectOption
-            placeholder="Giới tính"
-            value={filters.gender || "all"}
-            onChange={handleGenderFilterChange}
-            options={genderOptions}
-            className="!h-10 w-30 xs:w-40"
+            placeholder="Danh mục"
+            value={filters.serviceCategory || "all"}
+            onChange={handleServiceCategoryChange}
+            options={serviceCategoryOptions}
+            className="!h-10 w-40 xs:w-50"
+            loading={loadingCategories}
             allowClear
           />
           <SelectOption
@@ -165,7 +189,7 @@ const CustomerList = () => {
       </TableToolbar>
 
       <Table
-        dataSource={customers}
+        dataSource={vehicleServices}
         columns={columns}
         rowKey="_id"
         loading={loadingList}
@@ -180,6 +204,4 @@ const CustomerList = () => {
       <ConfirmModal {...confirmModalProps} />
     </div>
   );
-};
-
-export default CustomerList;
+}
