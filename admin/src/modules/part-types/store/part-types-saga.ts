@@ -80,11 +80,15 @@ function* updatePartTypeHandler(
 ) {
   try {
     const { partTypeId, partType } = action.payload;
-    yield call(partTypesService.updatePartType, partTypeId, partType);
+    const response: PartTypeUpdateStatusResponse = yield call(
+      partTypesService.updatePartType,
+      partTypeId,
+      partType
+    );
     yield put(
       notificationActions.notify({
         type: "info",
-        message: "Cập nhật thành công!",
+        message: response.message,
       })
     );
     yield put(partTypeActions.updatePartTypeSuccess());
@@ -135,12 +139,9 @@ function* updatePartTypeStatusHandler(
         message: response.message,
       })
     );
-    yield put(partTypeActions.updatePartTypeStatusSuccess());
-    yield put(partTypeActions.getPartTypeDetail({ partTypeId }));
-    const currentQuery: PaginationQuery = yield select(
-      (state: RootState) => state.partTypes.pagination
+    yield put(
+      partTypeActions.updatePartTypeStatusSuccess({ partTypeId, status })
     );
-    yield put(partTypeActions.getPartType(currentQuery));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     yield put(

@@ -99,19 +99,21 @@ export default function PartTypeList() {
     [mappedFilters]
   );
 
-  const handleStatusFilterChange = useCallback((value: string | string[]) => {
-    handleFiltersChange("status", value === "all" ? undefined : value);
-    handlePaginationChange({
-      page: DEFAULT_PAGINATION_QUERY.page,
-      perPage: DEFAULT_PAGINATION_QUERY.perPage,
-    });
-  }, []);
+  const handleStatusFilterChange = useCallback(
+    (value: string | string[] | undefined) => {
+      handleFiltersChange("status", value);
+      handlePaginationChange({
+        page: DEFAULT_PAGINATION_QUERY.page,
+        perPage: DEFAULT_PAGINATION_QUERY.perPage,
+      });
+    },
+    []
+  );
 
   const handleCreate = () => {
     navigate(`${ROUTER_PATH.PART_TYPE_CREATION}`);
   };
   const statusOptions: SelectOptionItem[] = [
-    { value: "all", label: "Tất cả" },
     { value: ENUM_PART_TYPE_STATUS.ACTIVE, label: "Hoạt động" },
     { value: ENUM_PART_TYPE_STATUS.INACTIVE, label: "Không hoạt động" },
   ];

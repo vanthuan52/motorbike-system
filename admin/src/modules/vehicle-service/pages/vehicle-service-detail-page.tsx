@@ -2,25 +2,25 @@ import { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
-import { serviceCategoryActions } from "../store/service-category-slice";
+import { vehicleServiceActions } from "../store/vehicle-service-slice";
 import { usePageMode } from "@/hooks/use-page-mode";
 import { LocalSpinner } from "@/components/ui/local-spinner";
 import PageInfo from "@/components/page-info";
-import ServiceCategoryForm from "../components/service-category-form";
+import VehicleServiceForm from "../components/vehicle-service-form";
 
-export default function ServiceCategoryDetailPage() {
+export default function VehicleServiceDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const {
-    detail: serviceCategory,
+    detail: vehicleService,
     loadingSingle,
     create,
     update,
     deletion,
     partialUpdate,
-  } = useAppSelector((state: RootState) => state.serviceCategory);
+  } = useAppSelector((state: RootState) => state.vehicleService);
 
   const mode: ENUM_PAGE_MODE = usePageMode();
   const isLoading =
@@ -33,8 +33,8 @@ export default function ServiceCategoryDetailPage() {
   useEffect(() => {
     if (id && mode === ENUM_PAGE_MODE.EDIT) {
       dispatch(
-        serviceCategoryActions.getServiceCategoryDetail({
-          serviceCategoryId: id,
+        vehicleServiceActions.getVehicleServiceDetail({
+          vehicleServiceId: id,
         })
       );
     }
@@ -43,20 +43,20 @@ export default function ServiceCategoryDetailPage() {
   useEffect(() => {
     if (create.success || deletion.success) {
       navigate(-1);
-      dispatch(serviceCategoryActions.resetState());
+      dispatch(vehicleServiceActions.resetState());
     }
   }, [create.success, deletion.success, navigate, dispatch]);
 
   const pageName = useMemo(() => {
     switch (mode) {
       case ENUM_PAGE_MODE.CREATE:
-        return "Tạo mới danh mục dịch vụ";
+        return "Tạo mới dịch vụ xe máy";
       case ENUM_PAGE_MODE.EDIT:
-        return "Chỉnh sửa danh mục dịch vụ";
+        return "Chỉnh sửa dịch vụ xe máy";
       case ENUM_PAGE_MODE.VIEW:
-        return "Chi tiết danh mục dịch vụ";
+        return "Chi tiết dịch vụ xe máy";
       default:
-        return "Danh mục dịch vụ";
+        return "Dịch vụ xe máy";
     }
   }, [mode]);
 
@@ -65,12 +65,12 @@ export default function ServiceCategoryDetailPage() {
       {isLoading && <LocalSpinner text="Loading..." />}
       <div className="px-4 pt-3 pb-14 flex flex-col gap-3">
         <PageInfo name={pageName} />
-        {!serviceCategory && mode === ENUM_PAGE_MODE.EDIT ? (
+        {!vehicleService && mode === ENUM_PAGE_MODE.EDIT ? (
           <h2 className="text-center text-lg">
             Không tìm thấy danh mục dịch vụ
           </h2>
         ) : (
-          <ServiceCategoryForm mode={mode} initialValues={serviceCategory} />
+          <VehicleServiceForm mode={mode} initialValues={vehicleService} />
         )}
       </div>
     </div>

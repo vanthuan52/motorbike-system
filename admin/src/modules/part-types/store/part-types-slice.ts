@@ -143,10 +143,24 @@ export const partTypeSlice = createSlice({
       state.partialUpdate.success = false;
       state.error = null;
     },
-    updatePartTypeStatusSuccess(state) {
+    updatePartTypeStatusSuccess(
+      state,
+      action: PayloadAction<{
+        partTypeId: string;
+        status: ENUM_PART_TYPE_STATUS;
+      }>
+    ) {
       state.partialUpdate.loading = false;
       state.partialUpdate.success = true;
       state.error = null;
+
+      const { partTypeId, status } = action.payload;
+      const index = state.partTypes.findIndex(
+        (partType) => partType._id === partTypeId
+      );
+      if (index !== -1) {
+        state.partTypes[index].status = status;
+      }
     },
     updatePartTypeStatusFailure(state, action: PayloadAction<string>) {
       state.partialUpdate.loading = false;

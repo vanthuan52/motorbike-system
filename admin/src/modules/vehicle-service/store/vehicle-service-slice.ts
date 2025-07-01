@@ -1,27 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PAGINATION_QUERY_INITIAL_STATE } from "@/store/constant";
-
 import { ApiResponsePagination } from "@/types/api.type";
 import { BaseApiState } from "@/types/redux-common.type";
 import {
-  ENUM_SERVICE_CATEGORY_STATUS,
-  ServiceCategory,
-  ServiceCategoryPaginationQuery,
+  ENUM_VEHICLE_SERVICE_STATUS,
+  VehicleService,
+  VehicleServicePaginationQuery,
 } from "../types";
 
-interface ServiceCategoryState extends BaseApiState {
-  list: ServiceCategory[];
-  detail: ServiceCategory | null;
+interface VehicleServiceState extends BaseApiState {
+  list: VehicleService[];
+  detail: VehicleService | null;
   error: string | null;
   pagination: ApiResponsePagination | undefined;
 }
 
-interface GetServiceCategorySuccessPayload {
-  list: ServiceCategory[];
+interface GetVehicleServiceSuccessPayload {
+  list: VehicleService[];
   pagination: ApiResponsePagination | undefined;
 }
 
-const initialState: ServiceCategoryState = {
+const initialState: VehicleServiceState = {
   list: [],
   detail: null,
   loadingList: false,
@@ -46,147 +45,147 @@ const initialState: ServiceCategoryState = {
   pagination: PAGINATION_QUERY_INITIAL_STATE,
 };
 
-export const serviceCategorySlice = createSlice({
-  name: "serviceCategory",
+export const vehicleServiceSlice = createSlice({
+  name: "vehicleService",
   initialState,
   reducers: {
-    getServiceCategories(
+    getVehicleServices(
       state,
-      action: PayloadAction<ServiceCategoryPaginationQuery>
+      action: PayloadAction<VehicleServicePaginationQuery>
     ) {
       state.loadingList = true;
       state.error = null;
       state.pagination = undefined;
     },
-    getServiceCategoriesSuccess(
+    getVehicleServicesSuccess(
       state,
-      action: PayloadAction<GetServiceCategorySuccessPayload>
+      action: PayloadAction<GetVehicleServiceSuccessPayload>
     ) {
       state.loadingList = false;
       state.list = action.payload.list;
       state.pagination = action.payload.pagination;
     },
-    getServiceCategoriesFailure(state, action: PayloadAction<string>) {
+    getVehicleServicesFailure(state, action: PayloadAction<string>) {
       state.loadingList = false;
       state.error = action.payload;
       state.list = [];
       state.pagination = undefined;
     },
 
-    getServiceCategoryDetail(
+    getVehicleServiceDetail(
       state,
-      action: PayloadAction<{ serviceCategoryId: ServiceCategory["_id"] }>
+      action: PayloadAction<{ vehicleServiceId: VehicleService["_id"] }>
     ) {
       state.loadingSingle = true;
       state.error = null;
     },
-    getServiceCategoryDetailSuccess(
+    getVehicleServiceDetailSuccess(
       state,
-      action: PayloadAction<ServiceCategory>
+      action: PayloadAction<VehicleService>
     ) {
       state.loadingSingle = false;
       state.detail = action.payload;
     },
-    getServiceCategoryDetailFailure(state, action: PayloadAction<string>) {
+    getVehicleServiceDetailFailure(state, action: PayloadAction<string>) {
       state.loadingSingle = false;
       state.error = action.payload;
       state.detail = null;
     },
 
-    createServiceCategory(
+    createVehicleService(
       state,
-      action: PayloadAction<{ serviceCategory: ServiceCategory }>
+      action: PayloadAction<{ vehicleService: VehicleService }>
     ) {
       state.create.loading = true;
       state.create.success = false;
       state.error = null;
     },
-    createServiceCategorySuccess(state) {
+    createVehicleServiceSuccess(state) {
       state.create.loading = false;
       state.create.success = true;
     },
-    createServiceCategoryFailure(state, action: PayloadAction<string>) {
+    createVehicleServiceFailure(state, action: PayloadAction<string>) {
       state.create.loading = false;
       state.create.success = false;
       state.error = action.payload;
     },
 
-    updateServiceCategory(
+    updateVehicleService(
       state,
       action: PayloadAction<{
-        serviceCategoryId: string;
-        serviceCategory: ServiceCategory;
+        vehicleServiceId: string;
+        vehicleService: VehicleService;
       }>
     ) {
       state.update.loading = true;
       state.update.success = false;
       state.error = null;
     },
-    updateServiceCategorySuccess(state) {
+    updateVehicleServiceSuccess(state) {
       state.update.loading = false;
       state.update.success = true;
     },
-    updateServiceCategoryFailure(state, action: PayloadAction<string>) {
+    updateVehicleServiceFailure(state, action: PayloadAction<string>) {
       state.update.loading = false;
       state.update.success = false;
       state.error = action.payload;
     },
 
-    deleteServiceCategory(
+    deleteVehicleService(
       state,
-      action: PayloadAction<{ serviceCategoryId: string }>
+      action: PayloadAction<{ vehicleServiceId: string }>
     ) {
       state.deletion.loading = true;
       state.deletion.success = false;
       state.error = null;
     },
-    deleteServiceCategorySuccess(state) {
+    deleteVehicleServiceSuccess(state) {
       state.deletion.loading = false;
       state.deletion.success = true;
     },
-    deleteServiceCategoryFailure(state, action: PayloadAction<string>) {
+    deleteVehicleServiceFailure(state, action: PayloadAction<string>) {
       state.deletion.loading = false;
       state.deletion.success = false;
       state.error = null;
     },
 
-    updateServiceCategoryStatus(
+    updateVehicleServiceStatus(
       state,
       action: PayloadAction<{
-        serviceCategoryId: string;
-        status: ENUM_SERVICE_CATEGORY_STATUS;
+        vehicleServiceId: string;
+        status: ENUM_VEHICLE_SERVICE_STATUS;
       }>
     ) {
       state.partialUpdate.loading = true;
       state.partialUpdate.success = false;
       state.error = null;
     },
-    updateServiceCategoryStatusSuccess(
+    updateVehicleServiceStatusSuccess(
       state,
       action: PayloadAction<{
-        serviceCategoryId: string;
-        status: ENUM_SERVICE_CATEGORY_STATUS;
+        vehicleServiceId: string;
+        status: ENUM_VEHICLE_SERVICE_STATUS;
       }>
     ) {
       state.partialUpdate.loading = false;
       state.partialUpdate.success = true;
       state.error = null;
 
-      const { serviceCategoryId, status } = action.payload;
+      const { vehicleServiceId, status } = action.payload;
       const index = state.list.findIndex(
-        (serviceCategory) => serviceCategory._id === serviceCategoryId
+        (vehicleService) => vehicleService._id === vehicleServiceId
       );
       if (index !== -1) {
         state.list[index].status = status;
       }
     },
-    updateServiceCategoryStatusFailure(state, action: PayloadAction<string>) {
+    updateVehicleServiceStatusFailure(state, action: PayloadAction<string>) {
       state.partialUpdate.loading = false;
       state.partialUpdate.success = false;
       state.error = action.payload;
     },
 
-    resetServiceCategoryDetail(state) {
+    resetVehicleServiceDetail(state) {
       state.loadingSingle = false;
       state.detail = null;
       state.error = null;
@@ -207,5 +206,5 @@ export const serviceCategorySlice = createSlice({
   },
 });
 
-export const serviceCategoryActions = serviceCategorySlice.actions;
-export default serviceCategorySlice.reducer;
+export const vehicleServiceActions = vehicleServiceSlice.actions;
+export default vehicleServiceSlice.reducer;

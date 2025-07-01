@@ -1,5 +1,6 @@
 import { useState } from "react";
 import clsx from "clsx";
+import { LayoutList, ScrollText } from "lucide-react";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { IoCarSportSharp } from "react-icons/io5";
 import { RxDashboard, RxHome } from "react-icons/rx";
@@ -9,7 +10,7 @@ import { TbSettingsCode } from "react-icons/tb";
 import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { FiEdit2, FiType, FiUsers } from "react-icons/fi";
+import { FiEdit2, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
 
@@ -52,9 +53,15 @@ const menuItems = [
   },
   {
     key: "service-categories",
-    icon: <FiType />,
+    icon: <LayoutList />,
     href: ROUTER_PATH.SERVICE_CATEGORIES,
     label: "Danh mục dịch vụ",
+  },
+  {
+    key: "vehicle-services",
+    icon: <ScrollText />,
+    href: ROUTER_PATH.VEHICLE_SERVICES,
+    label: "Dịch vụ xe máy",
   },
   {
     key: "maintenance-schedule",
