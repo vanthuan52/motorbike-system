@@ -8,6 +8,8 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import {
   ServiceCategoryDocParamsSlug,
+  ServiceCategoryDocQueryOrderBy,
+  ServiceCategoryDocQueryOrderDirection,
   ServiceCategoryDocQueryStatus,
 } from '../constants/service-category.doc.constant';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
@@ -21,9 +23,6 @@ export function ServiceCategoryPublicGetOneDoc(): MethodDecorator {
     DocRequest({
       params: ServiceCategoryDocParamsSlug,
     }),
-    DocAuth({
-      jwtAccessToken: false,
-    }),
     DocResponse<ServiceCategoryGetResponseDto>('service-category.get', {
       dto: ServiceCategoryGetResponseDto,
     }),
@@ -36,10 +35,11 @@ export function ServiceCategoryPublicListDoc(): MethodDecorator {
       summary: 'get all service categories',
     }),
     DocRequest({
-      queries: [...ServiceCategoryDocQueryStatus],
-    }),
-    DocAuth({
-      jwtAccessToken: false,
+      queries: [
+        ...ServiceCategoryDocQueryStatus,
+        ...ServiceCategoryDocQueryOrderBy,
+        ...ServiceCategoryDocQueryOrderDirection,
+      ],
     }),
     DocResponsePaging<ServiceCategoryListResponseDto>('service-category.list', {
       dto: ServiceCategoryListResponseDto,

@@ -8,6 +8,7 @@ import messageConfig from './message.config';
 import userConfig from './user.config';
 import middlewareConfig from './middleware.config';
 import awsConfig from '@/modules/aws/config/aws.config';
+import vehicleServiceConfig from './vehicle-service.config';
 
 export default [
   appConfig,
@@ -20,4 +21,5 @@ export default [
   messageConfig,
   userConfig,
   middlewareConfig,
+  vehicleServiceConfig,
 ];

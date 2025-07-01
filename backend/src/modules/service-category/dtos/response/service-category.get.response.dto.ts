@@ -1,20 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ENUM_SERVICE_CATEGORY_STATUS } from '../../enums/service-category.enum';
+import { DatabaseDto } from '@/common/database/dtos/database.dto';
 
-export class ServiceCategoryGetResponseDto {
-  @ApiProperty()
-  id: string;
-
-  @ApiProperty()
+export class ServiceCategoryGetResponseDto extends DatabaseDto {
+  @ApiProperty({ example: 'Rửa full xe' })
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'rua-full-xe' })
   slug: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ example: 'Rửa xe toàn bộ', required: false })
   description?: string;
 
-  @ApiProperty({ required: false, default: '0' })
+  @ApiProperty({
+    required: false,
+    example: '0',
+    description: 'Thứ tự hiển thị danh mục dịch vụ',
+  })
   order?: string;
 
   @ApiProperty({
@@ -23,10 +25,4 @@ export class ServiceCategoryGetResponseDto {
     enum: () => ENUM_SERVICE_CATEGORY_STATUS,
   })
   status: ENUM_SERVICE_CATEGORY_STATUS;
-
-  @ApiProperty()
-  createdAt: string;
-
-  @ApiProperty()
-  updatedAt: string;
 }

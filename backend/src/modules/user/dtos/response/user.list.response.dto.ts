@@ -6,9 +6,9 @@ import {
 } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import { UserGetResponseDto } from './user.get.response.dto';
-import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { UserUpdateMobileNumberRequestDto } from '../request/user.update-mobile-number.request.dto';
 import { ENUM_USER_GENDER } from '../../enums/user.enum';
+import { UserProfileResponseDto } from './user.profile.response.dto';
 
 export class UserListResponseDto extends OmitType(UserGetResponseDto, [
   'phone',
@@ -17,11 +17,11 @@ export class UserListResponseDto extends OmitType(UserGetResponseDto, [
 ] as const) {
   @ApiProperty({
     required: true,
-    type: RoleListResponseDto,
-    oneOf: [{ $ref: getSchemaPath(RoleListResponseDto) }],
+    type: UserProfileResponseDto,
+    oneOf: [{ $ref: getSchemaPath(UserProfileResponseDto) }],
   })
-  @Type(() => RoleListResponseDto)
-  role: RoleListResponseDto;
+  @Type(() => UserProfileResponseDto)
+  role: UserProfileResponseDto;
 
   @ApiHideProperty()
   @Exclude()

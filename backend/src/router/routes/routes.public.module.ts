@@ -17,6 +17,8 @@ import { PartTypeModule } from '@/modules/part-type/part-type.module';
 import { StoreModule } from '@/modules/store/store.module';
 import { ServiceCategoryPublicController } from '@/modules/service-category/controllers/service-category.public.controller';
 import { ServiceCategoryModule } from '@/modules/service-category/service-category.module';
+import { VehicleServicePublicController } from '@/modules/vehicle-service/controllers/vehicle-service.public.controller';
+import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.module';
 
 @Module({
   controllers: [
@@ -28,6 +30,7 @@ import { ServiceCategoryModule } from '@/modules/service-category/service-catego
     HiringPublicController,
     StorePublicController,
     ServiceCategoryPublicController,
+    VehicleServicePublicController,
   ],
   providers: [],
   exports: [],
@@ -42,6 +45,7 @@ import { ServiceCategoryModule } from '@/modules/service-category/service-catego
     HiringModule,
     StoreModule,
     ServiceCategoryModule,
+    VehicleServiceModule,
   ],
 })
 export class RoutesPublicModule {}

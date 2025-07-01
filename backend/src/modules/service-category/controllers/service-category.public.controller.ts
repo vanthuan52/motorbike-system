@@ -22,6 +22,11 @@ import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto'
 import { ENUM_SERVICE_CATEGORY_STATUS } from '../enums/service-category.enum';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
+import {
+  SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
+  SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
+  SERVICE_CATEGORY_DEFAULT_STATUS,
+} from '../constants/service-category.list.constant';
 
 @ApiTags('module.public.service-category')
 @Controller({
@@ -55,15 +60,13 @@ export class ServiceCategoryPublicController {
   @Get('/list')
   async list(
     @PaginationQuery({
-      availableSearch: ['name'],
+      availableSearch: SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
     @PaginationQueryFilterInEnum(
       'status',
-      [
-        ENUM_SERVICE_CATEGORY_STATUS.ACTIVE,
-        ENUM_SERVICE_CATEGORY_STATUS.INACTIVE,
-      ],
+      SERVICE_CATEGORY_DEFAULT_STATUS,
       ENUM_SERVICE_CATEGORY_STATUS,
     )
     status: Record<string, any>,
