@@ -1,5 +1,5 @@
 import { GreenSwitch } from "@/components/ui/switch";
-import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
+import { mockDataTableVehicleCompany } from "@/modules/vehicle-brand/mocks/vehicle-company";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
 import { Card, Form, Input, Select } from "antd";
 import { ENUM_PART_TYPE_STATUS } from "../types";

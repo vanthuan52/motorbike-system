@@ -1,0 +1,16 @@
+{
+  "list": "Vehicle brand list retrieved successfully.",
+  "get": "Vehicle brand details fetched successfully.",
+  "create": "New Vehicle brand created successfully.",
+  "update": "Vehicle brand updated successfully.",
+  "delete": "Vehicle brand deleted successfully.",
+  "updateStatus": "Vehicle brand status updated to {status}.",
+  "error": {
+    "nameExist": "This vehicle brand name already exists.",
+    "notFound": "Sorry, we couldn't find the vehicle brand you requested.",
+    "updateStatusFailed": "Failed to update vehicle brand status.",
+    "deleteFailed": "Failed to delete vehicle brand.",
+    "createFailed": "Failed to create new vehicle brand.",
+    "slugExisted": "This vehicle brand slug already exists."
+  }
+}

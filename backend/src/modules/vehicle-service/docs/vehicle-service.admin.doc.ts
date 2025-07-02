@@ -21,7 +21,7 @@ import { VehicleServiceCreateRequestDto } from '../dtos/request/vehicle-service.
 import { VehicleServiceUpdateRequestDto } from '../dtos/request/vehicle-service.update.request.dto';
 import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-service.update-status.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
-import { VehicleServiceFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
+import { VehicleServiceGetFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
 
 export function VehicleServiceAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -148,8 +148,8 @@ export function VehicleServiceAdminGetDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<VehicleServiceFullResponseDto>('vehicle-service.get', {
-      dto: VehicleServiceFullResponseDto,
+    DocResponse<VehicleServiceGetFullResponseDto>('vehicle-service.get', {
+      dto: VehicleServiceGetFullResponseDto,
     }),
   );
 }

@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách dòng xe được lấy thành công.",
+  "get": "Chi tiết dòng xe được lấy thành công.",
+  "create": "Tạo mới dòng xe thành công.",
+  "update": "Cập nhật dòng xe thành công.",
+  "delete": "Xóa dòng xe thành công.",
+  "updateStatus": "Trạng thái của dòng xe đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên dòng xe này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy dòng xe bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái dòng xe thất bại.",
+    "deleteFailed": "Xóa dòng xe thất bại.",
+    "createFailed": "Tạo mới dòng xe thất bại.",
+    "slugExisted": "Slug của dòng xe này đã tồn tại."
+  }
+}

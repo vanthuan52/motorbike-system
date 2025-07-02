@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Modal, Form, Input, Select, message } from "antd";
 import { VehicleType } from "../types";
-import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
+import { mockDataTableVehicleCompany } from "@/modules/vehicle-brand/mocks/vehicle-company";
 
 interface FormValues {
   company_id: string | null;

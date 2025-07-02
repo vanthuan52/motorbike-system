@@ -16,7 +16,10 @@ export const usePageMode = (): ENUM_PAGE_MODE => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const mode: ENUM_PAGE_MODE = useMemo(() => {
-    if (!id || id === ENUM_PAGE_MODE.CREATE) {
+    if (!id) {
+      return ENUM_PAGE_MODE.UNKNOWN;
+    }
+    if (id === ENUM_PAGE_MODE.CREATE) {
       return ENUM_PAGE_MODE.CREATE;
     }
     if (searchParams.get("view") === "true") {

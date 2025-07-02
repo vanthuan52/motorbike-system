@@ -12,6 +12,7 @@ import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-par
 import VehicleTypes from "@/modules/vehicle-type/pages/vehicle-type-page";
 
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
+
 const EmployeesPage = lazy(
   () => import("@/modules/employees/pages/employees-page")
 );
@@ -22,7 +23,7 @@ const MessagesPage = lazy(
   () => import("@/modules/messages/pages/messages-page")
 );
 const VehicleCompanyPage = lazy(
-  () => import("@/modules/vehicle-company/pages/vehicle-company-page")
+  () => import("@/modules/vehicle-brand/pages/vehicle-brand-page")
 );
 
 const PartTypePage = lazy(
@@ -102,6 +103,22 @@ const VehicleServicePage = lazy(
 
 const VehicleServiceDetailPage = lazy(
   () => import("@/modules/vehicle-service/pages/vehicle-service-detail-page")
+);
+
+const VehicleBrandPage = lazy(
+  () => import("@/modules/vehicle-brand/pages/vehicle-brand-page")
+);
+
+const VehicleBrandDetailPage = lazy(
+  () => import("@/modules/vehicle-brand/pages/vehicle-brand-detail-page")
+);
+
+const VehicleModelPage = lazy(
+  () => import("@/modules/vehicle-model/pages/vehicle-model-page")
+);
+
+const VehicleModelDetailPage = lazy(
+  () => import("@/modules/vehicle-model/pages/vehicle-model-detail-page")
 );
 
 export const router = createBrowserRouter([
@@ -261,6 +278,30 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.VEHICLE_SERVICE_DETAIL,
         element: <VehicleServiceDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_BRANDS,
+        element: <VehicleBrandPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_BRAND_CREATION,
+        element: <VehicleBrandDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_BRAND_DETAIL,
+        element: <VehicleBrandDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_MODELS,
+        element: <VehicleModelPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_MODEL_CREATION,
+        element: <VehicleModelDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_MODEL_DETAIL,
+        element: <VehicleModelDetailPage />,
       },
     ],
   },

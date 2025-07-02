@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { FilterOptions } from "@/hooks/use-filters";
 
-import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
+import { mockDataTableVehicleCompany } from "@/modules/vehicle-brand/mocks/vehicle-company";
 import { GreenSwitch } from "@/components/ui/switch";
 import { ROUTER_PATH } from "@/constants/router-path";
 import {

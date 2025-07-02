@@ -34,23 +34,18 @@ const menuItems = [
     label: "Tin nhắn",
   },
   {
-    key: "company",
+    key: "vehicle-brand",
     icon: <IoCarSportSharp />,
-    href: ROUTER_PATH.VEHICLE_COMPANY,
+    href: ROUTER_PATH.VEHICLE_BRANDS,
     label: "Hãng xe",
   },
   {
-    key: "vehicle-type",
+    key: "vehicle-model",
     icon: <BiCategoryAlt />,
-    href: ROUTER_PATH.VEHICLE_TYPE,
-    label: "Loại xe",
+    href: ROUTER_PATH.VEHICLE_MODELS,
+    label: "Dòng xe",
   },
-  {
-    key: "vehicle-parts",
-    icon: <TbSettingsCode />,
-    href: ROUTER_PATH.PART_TYPES,
-    label: "Danh mục phụ tùng",
-  },
+
   {
     key: "service-categories",
     icon: <LayoutList />,
@@ -62,6 +57,18 @@ const menuItems = [
     icon: <ScrollText />,
     href: ROUTER_PATH.VEHICLE_SERVICES,
     label: "Dịch vụ xe máy",
+  },
+  {
+    key: "part-types",
+    icon: <TbSettingsCode />,
+    href: ROUTER_PATH.PART_TYPES,
+    label: "Danh mục phụ tùng",
+  },
+  {
+    key: "vehicle-parts",
+    icon: <TbSettingsCode />,
+    href: ROUTER_PATH.VEHICLE_PARTS,
+    label: "Phụ tùng",
   },
   {
     key: "maintenance-schedule",
