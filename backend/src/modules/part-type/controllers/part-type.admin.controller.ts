@@ -44,7 +44,7 @@ import {
   PartTypeAdminCreateDoc,
   PartTypeAdminDeleteDoc,
   PartTypeAdminListDoc,
-  PartTypeAdminParamsIdDoc,
+  PartTypeAdminGetDoc,
   PartTypeAdminUpdateDoc,
   PartTypeAdminUpdateStatusDoc,
 } from '../docs/part-type.admin.doc';
@@ -62,7 +62,11 @@ import {
   ENUM_POLICY_ROLE_TYPE,
   ENUM_POLICY_SUBJECT,
 } from '@/modules/policy/enums/policy.enum';
-import { PartTypeDoc } from '../entities/part-type.entity';
+import {
+  PART_TYPE_DEFAULT_AVAILABLE_ORDER_BY,
+  PART_TYPE_DEFAULT_AVAILABLE_SEARCH,
+  PART_TYPE_DEFAULT_STATUS,
+} from '../constants/part-type.list.constant';
 
 @ApiTags('modules.admin.part-type')
 @Controller({
@@ -87,12 +91,13 @@ export class PartTypeAdminController {
   @Get('/list')
   async list(
     @PaginationQuery({
-      availableSearch: ['name', 'status'],
+      availableSearch: PART_TYPE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: PART_TYPE_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
     @PaginationQueryFilterInEnum(
       'status',
-      [ENUM_PART_TYPE_STATUS.ACTIVE, ENUM_PART_TYPE_STATUS.INACTIVE],
+      PART_TYPE_DEFAULT_STATUS,
       ENUM_PART_TYPE_STATUS,
     )
     status: Record<string, any>,
@@ -125,7 +130,7 @@ export class PartTypeAdminController {
     };
   }
 
-  @PartTypeAdminParamsIdDoc()
+  @PartTypeAdminGetDoc()
   @Response('part-type.get')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
@@ -171,7 +176,7 @@ export class PartTypeAdminController {
       }
 
       const created = await this.partTypeService.create(body);
-      return { data: created };
+      return { data: { _id: created._id } };
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

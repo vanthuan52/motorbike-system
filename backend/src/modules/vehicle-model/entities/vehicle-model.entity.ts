@@ -95,7 +95,6 @@ export class VehicleModelEntity extends DatabaseEntityBase {
     required: true,
     ref: () => VehicleBrandEntity.name,
     index: true,
-    trim: true,
   })
   vehicleBrand: string;
 

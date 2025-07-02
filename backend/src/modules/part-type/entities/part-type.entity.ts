@@ -23,7 +23,7 @@ export class PartTypeEntity extends DatabaseEntityBase {
     unique: true,
     lowercase: true,
     trim: true,
-    maxlength: 100,
+    maxlength: 150,
   })
   slug: string;
 
@@ -34,6 +34,13 @@ export class PartTypeEntity extends DatabaseEntityBase {
     trim: true,
   })
   description?: string;
+
+  @DatabaseProp({
+    required: false,
+    maxlength: 20,
+    trim: true,
+  })
+  order?: string;
 
   @DatabaseProp({
     required: true,

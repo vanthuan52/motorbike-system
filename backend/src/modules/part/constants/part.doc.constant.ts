@@ -37,7 +37,7 @@ export const PartDocQueryStatus: DocField[] = [
     required: false,
     type: 'string',
     example: Object.values(ENUM_PART_STATUS).join(','),
-    description: "value with ',' delimiter",
+    description: 'one value',
   },
 ];
 
@@ -63,9 +63,20 @@ export const PartDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const PartDocQueryType: DocField[] = [
+export const PartDocQueryPartType: DocField[] = [
   {
-    name: 'type',
+    name: 'partType',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '',
+    description: faker.string.uuid(),
+  },
+];
+
+export const PartDocQueryVehicleBrand: DocField[] = [
+  {
+    name: 'vehicleBrand',
     allowEmptyValue: true,
     required: false,
     type: 'string',

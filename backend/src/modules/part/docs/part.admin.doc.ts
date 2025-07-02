@@ -9,8 +9,9 @@ import {
   PartDocParamsId,
   PartDocQueryOrderBy,
   PartDocQueryOrderDirection,
+  PartDocQueryPartType,
   PartDocQueryStatus,
-  PartDocQueryType,
+  PartDocQueryVehicleBrand,
 } from '../constants/part.doc.constant';
 import {
   Doc,
@@ -30,7 +31,8 @@ export function PartAdminListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [
-        ...PartDocQueryType,
+        ...PartDocQueryVehicleBrand,
+        ...PartDocQueryPartType,
         ...PartDocQueryStatus,
         ...PartDocQueryOrderBy,
         ...PartDocQueryOrderDirection,
@@ -121,6 +123,24 @@ export function PartAdminUpdateStatusDoc(): MethodDecorator {
 export function PartAdminParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
+      summary: 'get a part by id',
+    }),
+    DocRequest({
+      params: PartDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<PartGetResponseDto>('part.getById', {
+      dto: PartGetResponseDto,
+    }),
+  );
+}
+
+export function PartAdminGetDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
       summary: 'get detail a part',
     }),
     DocRequest({
@@ -130,7 +150,7 @@ export function PartAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<PartGetFullResponseDto>('part.getById', {
+    DocResponse<PartGetFullResponseDto>('part.get', {
       dto: PartGetFullResponseDto,
     }),
   );

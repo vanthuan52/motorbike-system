@@ -1,9 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, OmitType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { PartTypeGetResponseDto } from './part-type.get.response.dto';
 
-export class PartTypeShortResponseDto {
-  @ApiProperty()
-  id: string;
+export class PartTypeShortResponseDto extends OmitType(PartTypeGetResponseDto, [
+  'createdAt',
+  'updatedAt',
+]) {
+  @ApiHideProperty()
+  @Exclude()
+  createdAt: Date;
 
-  @ApiProperty()
-  name: string;
+  @ApiHideProperty()
+  @Exclude()
+  updatedAt: Date;
 }

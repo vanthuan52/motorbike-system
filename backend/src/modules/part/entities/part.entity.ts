@@ -8,6 +8,7 @@ import { IDatabaseDocument } from '@/common/database/interfaces/database.interfa
 import { ENUM_PART_STATUS } from '../enums/part.enum';
 import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
 import { PartTypeEntity } from '@/modules/part-type/entities/part-type.entity';
+import { VehicleBrandEntity } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
 
 export const PartTableName = 'parts';
 
@@ -16,7 +17,7 @@ export class PartEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
     trim: true,
-    maxlength: 100,
+    maxlength: 150,
   })
   name: string;
 
@@ -25,40 +26,14 @@ export class PartEntity extends DatabaseEntityBase {
     unique: true,
     lowercase: true,
     trim: true,
-    maxlength: 100,
+    maxlength: 200,
   })
   slug: string;
 
   @DatabaseProp({
-    required: true,
-    unique: true,
-    trim: true,
-    uppercase: true,
-    maxlength: 50,
-  })
-  code: string;
-
-  @DatabaseProp({
-    type: String,
-    ref: 'branches',
-    required: true,
-    index: true,
-  })
-  branch: string;
-
-  @DatabaseProp({
-    type: String,
-    ref: () => PartTypeEntity.name,
-    required: true,
-    index: true,
-  })
-  type: string;
-
-  @DatabaseProp({
     required: false,
-    maxlength: 255,
+    maxlength: 500,
     default: null,
-    trim: true,
   })
   description?: string;
 
@@ -70,6 +45,26 @@ export class PartEntity extends DatabaseEntityBase {
     enum: ENUM_PART_STATUS,
   })
   status: ENUM_PART_STATUS;
+
+  @DatabaseProp({
+    required: false,
+    default: '0',
+  })
+  order?: string;
+
+  @DatabaseProp({
+    required: true,
+    ref: () => PartTypeEntity.name,
+    index: true,
+  })
+  partType: string;
+
+  @DatabaseProp({
+    required: true,
+    ref: () => VehicleBrandEntity.name,
+    index: true,
+  })
+  vehicleBrand: string;
 
   @DatabaseProp({
     required: false,

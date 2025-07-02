@@ -18,6 +18,7 @@ import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
 import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
 import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
+
 export function PartTypeAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
@@ -108,7 +109,7 @@ export function PartTypeAdminUpdateStatusDoc(): MethodDecorator {
   );
 }
 
-export function PartTypeAdminParamsIdDoc(): MethodDecorator {
+export function PartTypeAdminGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get part type by id',

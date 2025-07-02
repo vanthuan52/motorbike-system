@@ -102,7 +102,7 @@ export class VehicleBrandAdminController {
       ...status,
     };
 
-    const VehicleBrands = await this.VehicleBrandService.findAll(find, {
+    const vehicleBrands = await this.VehicleBrandService.findAll(find, {
       paging: {
         limit: _limit,
         offset: _offset,
@@ -114,7 +114,7 @@ export class VehicleBrandAdminController {
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
-    const mapped = this.VehicleBrandService.mapList(VehicleBrands);
+    const mapped = this.VehicleBrandService.mapList(vehicleBrands);
 
     return {
       _pagination: {
@@ -138,13 +138,13 @@ export class VehicleBrandAdminController {
   async get(
     @Param('id') id: string,
   ): Promise<IResponse<VehicleBrandGetResponseDto>> {
-    const VehicleBrand = await this.VehicleBrandService.findOneById(id);
-    if (!VehicleBrand) {
+    const vehicleBrand = await this.VehicleBrandService.findOneById(id);
+    if (!vehicleBrand) {
       throw new NotFoundException({
         message: 'vehicle-brand.error.notFound',
       });
     }
-    const mapped = this.VehicleBrandService.mapGet(VehicleBrand);
+    const mapped = this.VehicleBrandService.mapGet(vehicleBrand);
     return { data: mapped };
   }
 
@@ -198,23 +198,23 @@ export class VehicleBrandAdminController {
     @Param('id') id: string,
     @Body() body: VehicleBrandUpdateRequestDto,
   ): Promise<void> {
-    const VehicleBrand = await this.VehicleBrandService.findOneById(id);
+    const vehicleBrand = await this.VehicleBrandService.findOneById(id);
 
-    if (!VehicleBrand) {
+    if (!vehicleBrand) {
       throw new NotFoundException({
         statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'vehicle-brand.error.notFound',
       });
     }
 
-    if (body.slug && body.slug !== VehicleBrand.slug) {
+    if (body.slug && body.slug !== vehicleBrand.slug) {
       const existingBySlug = await this.VehicleBrandService.findOne({
         slug: body.slug,
       });
 
       if (
         existingBySlug &&
-        existingBySlug._id.toString() !== VehicleBrand._id.toString()
+        existingBySlug._id.toString() !== vehicleBrand._id.toString()
       ) {
         throw new ConflictException({
           statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.SLUG_EXISTED,
@@ -223,7 +223,7 @@ export class VehicleBrandAdminController {
       }
     }
     try {
-      await this.VehicleBrandService.update(VehicleBrand, body);
+      await this.VehicleBrandService.update(vehicleBrand, body);
     } catch (err) {
       throw new InternalServerErrorException({
         message: 'vehicle-brand.error.updateFailed',

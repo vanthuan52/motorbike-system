@@ -1,4 +1,10 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PartService } from '../services/part.services';
 import {
@@ -28,6 +34,7 @@ import {
 import { ENUM_PART_STATUS } from '../enums/part.enum';
 import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto';
 import { PartDoc } from '../entities/part.entity';
+import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 
 @ApiTags('module.public.part')
 @Controller({
@@ -54,8 +61,10 @@ export class PartPublicController {
       });
     }
 
+    const partFull = await this.partService.join(part);
+
     const mapped: PartGetFullResponseDto =
-      this.partService.mapGetPopulate(part);
+      this.partService.mapGetPopulate(partFull);
     return { data: mapped };
   }
 
@@ -74,21 +83,37 @@ export class PartPublicController {
       ENUM_PART_STATUS,
     )
     status: Record<string, any>,
+    @Query('partType', OptionalParseUUIDPipe)
+    partTypeId: string,
+    @Query('vehicleBrand', OptionalParseUUIDPipe)
+    vehicleBrandId: string,
   ): Promise<IResponsePaging<PartListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
     };
 
-    const parts = await this.partService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
+    if (partTypeId) {
+      find['partType'] = partTypeId;
+    }
 
-    const total: number = await this.partService.getTotal(find);
+    if (vehicleBrandId) {
+      find['vehicleBrand'] = vehicleBrandId;
+    }
+
+    const parts = await this.partService.findAllWithVehicleBrandAndPartType(
+      find,
+      {
+        paging: {
+          limit: _limit,
+          offset: _offset,
+        },
+        order: _order,
+      },
+    );
+
+    const total: number =
+      await this.partService.getTotalWithVehicleBrandAndPartType(find);
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 

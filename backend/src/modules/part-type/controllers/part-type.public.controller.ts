@@ -22,6 +22,11 @@ import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto'
 import { ENUM_PART_TYPE_STATUS } from '../enums/part-type.enum';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
+import {
+  VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
+  VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
+  VEHICLE_BRAND_DEFAULT_STATUS,
+} from '@/modules/vehicle-brand/constants/vehicle-brand.list.constant';
 
 @ApiTags('module.public.part-type')
 @Controller({
@@ -55,12 +60,13 @@ export class PartTypePublicController {
   @Get('/list')
   async list(
     @PaginationQuery({
-      availableSearch: ['name'],
+      availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
     @PaginationQueryFilterInEnum(
       'status',
-      [ENUM_PART_TYPE_STATUS.ACTIVE, ENUM_PART_TYPE_STATUS.INACTIVE],
+      VEHICLE_BRAND_DEFAULT_STATUS,
       ENUM_PART_TYPE_STATUS,
     )
     status: Record<string, any>,

@@ -42,6 +42,17 @@ export class PartTypeCreateRequestDto {
   @MaxLength(500)
   description?: string;
 
+  @ApiProperty({
+    example: '0',
+    description: 'Chữ số thể hiện thứ tự hiển thị',
+    required: false,
+    maxLength: 20,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  order?: string;
+
   @IsOptional()
   @IsIn(Object.values(ENUM_PART_TYPE_STATUS))
   @ApiProperty({
