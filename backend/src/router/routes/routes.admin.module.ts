@@ -21,6 +21,10 @@ import { ServiceCategoryAdminController } from '@/modules/service-category/contr
 import { ServiceCategoryModule } from '@/modules/service-category/service-category.module';
 import { VehicleServiceAdminController } from '@/modules/vehicle-service/controllers/vehicle-service.admin.controller';
 import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.module';
+import { VehicleBrandAdminController } from '@/modules/vehicle-brand/controllers/vehicle-brand.admin.controller';
+import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module';
+import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
+import { VehicleModelAdminController } from '@/modules/vehicle-model/controllers/vehicle-model.admin.controller';
 
 @Module({
   controllers: [
@@ -36,6 +40,8 @@ import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.
     StoreAdminController,
     ServiceCategoryAdminController,
     VehicleServiceAdminController,
+    VehicleBrandAdminController,
+    VehicleModelAdminController,
   ],
   providers: [],
   exports: [],
@@ -51,6 +57,8 @@ import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.
     StoreModule,
     ServiceCategoryModule,
     VehicleServiceModule,
+    VehicleBrandModule,
+    VehicleModelModule,
   ],
 })
 export class RoutesAdminModule {}

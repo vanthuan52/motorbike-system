@@ -13,7 +13,7 @@ import {
   VehicleServiceDocQueryStatus,
 } from '../constants/vehicle-service.doc.constant';
 import { VehicleServiceListResponseDto } from '../dtos/response/vehicle-service.list.response.dto';
-import { VehicleServiceFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
+import { VehicleServiceGetFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
 
 export function VehicleServicePublicGetOneDoc(): MethodDecorator {
   return applyDecorators(
@@ -23,8 +23,8 @@ export function VehicleServicePublicGetOneDoc(): MethodDecorator {
     DocRequest({
       params: VehicleServiceDocParamsSlug,
     }),
-    DocResponse<VehicleServiceFullResponseDto>('vehicle-service.get', {
-      dto: VehicleServiceFullResponseDto,
+    DocResponse<VehicleServiceGetFullResponseDto>('vehicle-service.get', {
+      dto: VehicleServiceGetFullResponseDto,
     }),
   );
 }

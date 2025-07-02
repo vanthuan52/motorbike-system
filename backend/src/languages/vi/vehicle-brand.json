@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách hãng xe được lấy thành công.",
+  "get": "Chi tiết hãng xe được lấy thành công.",
+  "create": "Tạo mới hãng xe thành công.",
+  "update": "Cập nhật hãng xe thành công.",
+  "delete": "Xóa hãng xe thành công.",
+  "updateStatus": "Trạng thái của hãng xe đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên hãng xe này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy hãng xe bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái hãng xe thất bại.",
+    "deleteFailed": "Xóa hãng xe thất bại.",
+    "createFailed": "Tạo mới hãng xe thất bại.",
+    "slugExisted": "Slug của hãng xe này đã tồn tại."
+  }
+}

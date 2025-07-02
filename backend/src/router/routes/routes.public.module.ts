@@ -19,6 +19,10 @@ import { ServiceCategoryPublicController } from '@/modules/service-category/cont
 import { ServiceCategoryModule } from '@/modules/service-category/service-category.module';
 import { VehicleServicePublicController } from '@/modules/vehicle-service/controllers/vehicle-service.public.controller';
 import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.module';
+import { VehicleBrandPublicController } from '@/modules/vehicle-brand/controllers/vehicle-brand.public.controller';
+import { VehicleModelPublicController } from '@/modules/vehicle-model/controllers/vehicle-model.public.controller';
+import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module';
+import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
 
 @Module({
   controllers: [
@@ -31,6 +35,8 @@ import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.
     StorePublicController,
     ServiceCategoryPublicController,
     VehicleServicePublicController,
+    VehicleBrandPublicController,
+    VehicleModelPublicController,
   ],
   providers: [],
   exports: [],
@@ -46,6 +52,8 @@ import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.
     StoreModule,
     ServiceCategoryModule,
     VehicleServiceModule,
+    VehicleBrandModule,
+    VehicleModelModule,
   ],
 })
 export class RoutesPublicModule {}

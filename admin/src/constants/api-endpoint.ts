@@ -56,5 +56,23 @@ export const API_ENDPOINTS = {
     VEHICLE_SERVICE_UPDATE_STATUS: (id: string) =>
       `vehicle-service/update/${id}/status`,
     VEHICLE_SERVICE_DELETION: (id: string) => `vehicle-service/delete/${id}`,
+
+    // vehicle brand module
+    VEHICLE_BRAND_LIST: "vehicle-brand/list",
+    VEHICLE_BRAND_DETAIL: (id: string) => `vehicle-brand/get/${id}`,
+    VEHICLE_BRAND_CREATE: "vehicle-brand/create",
+    VEHICLE_BRAND_UPDATE: (id: string) => `vehicle-brand/update/${id}`,
+    VEHICLE_BRAND_UPDATE_STATUS: (id: string) =>
+      `vehicle-brand/update/${id}/status`,
+    VEHICLE_BRAND_DELETION: (id: string) => `vehicle-brand/delete/${id}`,
+
+    // vehicle model module
+    VEHICLE_MODEL_LIST: "vehicle-model/list",
+    VEHICLE_MODEL_DETAIL: (id: string) => `vehicle-model/get/${id}`,
+    VEHICLE_MODEL_CREATE: "vehicle-model/create",
+    VEHICLE_MODEL_UPDATE: (id: string) => `vehicle-model/update/${id}`,
+    VEHICLE_MODEL_UPDATE_STATUS: (id: string) =>
+      `vehicle-model/update/${id}/status`,
+    VEHICLE_MODEL_DELETION: (id: string) => `vehicle-model/delete/${id}`,
   },
 };

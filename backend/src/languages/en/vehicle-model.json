@@ -1,0 +1,16 @@
+{
+  "list": "Vehicle models list retrieved successfully.",
+  "get": "Vehicle model details fetched successfully.",
+  "create": "New Vehicle model created successfully.",
+  "update": "Vehicle model updated successfully.",
+  "delete": "Vehicle model deleted successfully.",
+  "updateStatus": "Vehicle model status updated to {status}.",
+  "error": {
+    "nameExist": "This vehicle model name already exists.",
+    "notFound": "Sorry, we couldn't find the vehicle model you requested.",
+    "updateStatusFailed": "Failed to update vehicle model status.",
+    "deleteFailed": "Failed to delete vehicle model.",
+    "createFailed": "Failed to create new vehicle model.",
+    "slugExisted": "This vehicle model slug already exists."
+  }
+}

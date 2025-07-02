@@ -11,7 +11,7 @@ import { PageHeading } from "@/components/page-heading";
 import { SearchInput } from "@/components/ui/search-input";
 import Table from "@/components/ui/table/table";
 import VehicleTypeModal from "../components/vehicle-type-modal";
-import { mockDataTableVehicleCompany } from "@/modules/vehicle-company/mocks/vehicle-company";
+import { mockDataTableVehicleCompany } from "@/modules/vehicle-brand/mocks/vehicle-company";
 
 export default function VehicleTypes() {
   const [dataSource, setDataSource] = useState<VehicleType[]>([]);

@@ -15,6 +15,8 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "part-types": "Danh mục phụ tùng",
   "service-categories": "Danh mục dịch vụ",
   "vehicle-services": "Dịch vụ xe máy",
+  "vehicle-brands": "Hãng xe",
+  "vehicle-models": "Dòng xe",
   roles: "Vai trò",
   permissions: "Phân quyền",
   products: "Sản phẩm",
