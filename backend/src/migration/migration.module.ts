@@ -12,7 +12,6 @@ import { HiringModule } from '@/modules/hiring/hiring.module';
 import { StoreModule } from '@/modules/store/store.module';
 import { MigrationHiringSeed } from './seeds/migration.hiring.seed';
 import { PartModule } from '@/modules/part/part.module';
-import { MigrationPartSeed } from './seeds/migration-part.seed';
 import { MigrationStoreSeed } from './seeds/migration.store.seed';
 
 // TODO: Change With Commander
@@ -26,7 +25,6 @@ import { MigrationStoreSeed } from './seeds/migration.store.seed';
     PartTypeModule,
     HiringModule,
     StoreModule,
-    PartModule,
   ],
   providers: [
     MigrationRoleSeed,
@@ -34,7 +32,6 @@ import { MigrationStoreSeed } from './seeds/migration.store.seed';
     MigrationPartTypeSeed,
     MigrationHiringSeed,
     MigrationStoreSeed,
-    MigrationPartSeed,
   ],
   exports: [],
 })

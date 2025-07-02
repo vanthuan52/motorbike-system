@@ -2,9 +2,11 @@ import { plainToInstance } from 'class-transformer';
 import { Injectable } from '@nestjs/common';
 
 import {
+  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
+  IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
@@ -25,7 +27,8 @@ import { PartUploadPhotoRequestDto } from '../dtos/request/part.upload-photo.req
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import { ConfigService } from '@nestjs/config';
 import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { Types } from 'mongoose';
+import { FilterQuery, PipelineStage, Types } from 'mongoose';
+import { VehicleBrandTableName } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
 
 @Injectable()
 export class PartService implements IPartService {
@@ -49,39 +52,6 @@ export class PartService implements IPartService {
     const part = await this.partRepository.findOne({ slug }, options);
     return !!part;
   }
-  createSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-  }
-  mapList(part: PartDoc[] | IPartEntity[]): PartListResponseDto[] {
-    return plainToInstance(
-      PartListResponseDto,
-      part.map((p: PartDoc | IPartEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-  mapGet(part: PartDoc | IPartEntity): PartGetResponseDto {
-    return plainToInstance(
-      PartGetResponseDto,
-      typeof (part as any).toObject === 'function'
-        ? (part as any).toObject()
-        : part,
-    );
-  }
-
-  mapGetPopulate(part: PartDoc | IPartEntity): PartGetFullResponseDto {
-    return plainToInstance(
-      PartGetFullResponseDto,
-      typeof (part as any).toObject === 'function'
-        ? (part as any).toObject()
-        : part,
-    );
-  }
 
   async findAll(
     find?: Record<string, any>,
@@ -95,6 +65,26 @@ export class PartService implements IPartService {
     options?: IDatabaseFindAllOptions,
   ): Promise<PartDoc[]> {
     return this.partRepository.findAll<PartDoc>(find, options);
+  }
+
+  async findAllWithVehicleBrandAndPartType(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllAggregateOptions,
+  ): Promise<IPartEntity[]> {
+    return this.partRepository.findAll<IPartEntity>(find, {
+      ...options,
+      join: true,
+    });
+  }
+
+  async getTotalWithVehicleBrandAndPartType(
+    find?: Record<string, any>,
+    options?: IDatabaseAggregateOptions,
+  ): Promise<number> {
+    return this.partRepository.getTotal(find, {
+      ...options,
+      join: true,
+    });
   }
 
   async findOneById(
@@ -132,30 +122,45 @@ export class PartService implements IPartService {
   }
 
   async create(
-    { name, slug, code, branch, type, description }: PartCreateRequestDto,
+    {
+      name,
+      slug,
+      vehicleBrand,
+      partType,
+      order,
+      description,
+      status,
+    }: PartCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<PartDoc> {
     const create: PartEntity = new PartEntity();
     create.name = name;
     create.slug = slug.toLowerCase();
-    create.code = code;
-    create.branch = branch;
-    create.type = type;
+    create.vehicleBrand = vehicleBrand;
+    create.partType = partType;
+    create.order = order;
     create.description = description;
-    create.status = ENUM_PART_STATUS.ACTIVE;
+    create.status = status ? status : ENUM_PART_STATUS.ACTIVE;
     return this.partRepository.create<PartEntity>(create, options);
   }
 
   async update(
     repository: PartDoc,
-    { name, slug, code, branch, type, description }: PartUpdateRequestDto,
+    {
+      name,
+      slug,
+      vehicleBrand,
+      partType,
+      order,
+      description,
+    }: PartUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<PartDoc> {
     repository.name = name ?? repository.name;
     repository.slug = slug ?? repository.slug;
-    repository.code = code ?? repository.code;
-    repository.branch = branch ?? repository.branch;
-    repository.type = type ?? repository.type;
+    repository.order = order ?? repository.order;
+    repository.vehicleBrand = vehicleBrand ?? repository.vehicleBrand;
+    repository.partType = partType ?? repository.partType;
     repository.description = description;
     return this.partRepository.save(repository, options);
   }
@@ -188,13 +193,10 @@ export class PartService implements IPartService {
   }
 
   createRandomFilenamePhoto(
-    vehicleService: string,
+    part: string,
     { mime }: PartUploadPhotoRequestDto,
   ): string {
-    let path: string = this.uploadPath.replace(
-      '{vehicleService}',
-      vehicleService,
-    );
+    let path: string = this.uploadPath.replace('{part}', part);
     const randomPath = this.helperStringService.random(10);
     const extension = mime.split('/')[1];
 
@@ -218,11 +220,37 @@ export class PartService implements IPartService {
     return this.partRepository.save(repository, options);
   }
 
-  async findByCode(code: string): Promise<PartDoc | null> {
-    return this.partRepository.findOne({ code });
+  createSlug(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
   }
-  async existByCode(code: string): Promise<boolean> {
-    const part = await this.partRepository.findOne({ code });
-    return !!part;
+  mapList(part: PartDoc[] | IPartEntity[]): PartListResponseDto[] {
+    return plainToInstance(
+      PartListResponseDto,
+      part.map((p: PartDoc | IPartEntity) =>
+        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
+      ),
+    );
+  }
+  mapGet(part: PartDoc | IPartEntity): PartGetResponseDto {
+    return plainToInstance(
+      PartGetResponseDto,
+      typeof (part as any).toObject === 'function'
+        ? (part as any).toObject()
+        : part,
+    );
+  }
+
+  mapGetPopulate(part: PartDoc | IPartEntity): PartGetFullResponseDto {
+    return plainToInstance(
+      PartGetFullResponseDto,
+      typeof (part as any).toObject === 'function'
+        ? (part as any).toObject()
+        : part,
+    );
   }
 }

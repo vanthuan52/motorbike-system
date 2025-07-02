@@ -35,7 +35,7 @@ import {
 })
 export class VehicleBrandPublicController {
   constructor(
-    private readonly VehicleBrandService: VehicleBrandService,
+    private readonly vehicleBrandService: VehicleBrandService,
     private readonly paginationService: PaginationService,
   ) {}
 
@@ -45,13 +45,13 @@ export class VehicleBrandPublicController {
   async get(
     @Param('slug') slug: string,
   ): Promise<IResponse<VehicleBrandGetResponseDto>> {
-    const VehicleBrand = await this.VehicleBrandService.findBySlug(slug);
-    if (!VehicleBrand) {
+    const vehicleBrand = await this.vehicleBrandService.findBySlug(slug);
+    if (!vehicleBrand) {
       throw new NotFoundException({
         message: 'vehicle-brand.error.notFound',
       });
     }
-    const mapped = this.VehicleBrandService.mapGet(VehicleBrand);
+    const mapped = this.vehicleBrandService.mapGet(vehicleBrand);
     return { data: mapped };
   }
 
@@ -76,7 +76,7 @@ export class VehicleBrandPublicController {
       ...status,
     };
 
-    const VehicleBrands = await this.VehicleBrandService.findAll(find, {
+    const vehicleBrands = await this.vehicleBrandService.findAll(find, {
       paging: {
         limit: _limit,
         offset: _offset,
@@ -84,11 +84,11 @@ export class VehicleBrandPublicController {
       order: _order,
     });
 
-    const total: number = await this.VehicleBrandService.getTotal(find);
+    const total: number = await this.vehicleBrandService.getTotal(find);
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
-    const mapped = this.VehicleBrandService.mapList(VehicleBrands);
+    const mapped = this.vehicleBrandService.mapList(vehicleBrands);
     return {
       _pagination: {
         total,

@@ -15,30 +15,22 @@ export class PartGetResponseDto extends DatabaseDto {
 
   @ApiProperty({
     required: true,
-    maxLength: 150,
+    maxLength: 200,
     minLength: 1,
   })
   slug: string;
 
   @ApiProperty({
     required: true,
-    maxLength: 100,
-    minLength: 1,
-    example: 'LG020016',
+    example: faker.string.uuid(),
   })
-  code: string;
+  vehicleBrand: string;
 
   @ApiProperty({
     required: true,
     example: faker.string.uuid(),
   })
-  branch: string;
-
-  @ApiProperty({
-    required: true,
-    example: faker.string.uuid(),
-  })
-  type: string;
+  partType: string;
 
   @ApiProperty({ required: false })
   description?: string;

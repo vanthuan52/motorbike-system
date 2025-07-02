@@ -1,136 +1,41 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 
-import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
-import { PartGetResponseDto } from '../dtos/response/part.get.response.dto';
-import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
-import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
-import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
-import {
-  PartDocParamsId,
-  PartDocQueryOrderBy,
-  PartDocQueryOrderDirection,
-  PartDocQueryStatus,
-  PartDocQueryType,
-} from '../constants/part.doc.constant';
 import {
   Doc,
   DocAuth,
-  DocGuard,
   DocRequest,
   DocResponse,
-  DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { AwsS3PresignResponseDto } from '@/modules/aws/dtos/response/aws.s3-presign.response.dto';
+import { AwsS3PresignRequestDto } from '@/modules/aws/dtos/request/aws.s3-presign.request.dto';
 
-export function PartSharedListDoc(): MethodDecorator {
+export function PartSharedUploadPhotoDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all part',
-    }),
-    DocRequest({
-      queries: [
-        ...PartDocQueryType,
-        ...PartDocQueryStatus,
-        ...PartDocQueryOrderBy,
-        ...PartDocQueryOrderDirection,
-      ],
+      summary: 'get presign url for photo of a part',
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
-    DocResponsePaging<PartListResponseDto>('part.list', {
-      dto: PartListResponseDto,
+    DocResponse<AwsS3PresignResponseDto>('vehicle-model.uploadPhoto', {
+      dto: AwsS3PresignResponseDto,
     }),
   );
 }
 
-export function PartSharedCreateDoc(): MethodDecorator {
+export function PartSharedUpdatePhotoDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'create a new part',
+      summary: 'update photo of a part',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
     }),
     DocRequest({
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: PartCreateRequestDto,
+      dto: AwsS3PresignRequestDto,
     }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<PartGetResponseDto>('part.create', {
-      dto: PartGetResponseDto,
-      statusCode: HttpStatus.CREATED,
-    }),
-  );
-}
-
-export function PartSharedUpdateDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'update a part',
-    }),
-    DocRequest({
-      params: PartDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: PartUpdateRequestDto,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('part.update'),
-  );
-}
-
-export function PartSharedDeleteDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'delete a part',
-    }),
-    DocRequest({
-      params: PartDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('part.delete'),
-  );
-}
-
-export function PartSharedUpdateStatusDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'update status of part',
-    }),
-    DocRequest({
-      params: PartDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: PartUpdateStatusRequestDto,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('part.updateStatus'),
-  );
-}
-
-export function PartSharedParamsIdDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'get part by id',
-    }),
-    DocRequest({
-      params: PartDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<PartGetResponseDto>('part.getById', {
-      dto: PartGetResponseDto,
-    }),
+    DocResponse('vehicle-model.updatePhoto'),
   );
 }

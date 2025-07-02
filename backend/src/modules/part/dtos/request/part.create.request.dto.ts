@@ -1,68 +1,65 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { faker } from '@faker-js/faker';
 import {
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
   IsIn,
+  IsUUID,
 } from 'class-validator';
 import { ENUM_PART_STATUS } from '../../enums/part.enum';
 
 export class PartCreateRequestDto {
   @ApiProperty({
     example: 'Lọc gió k&n',
-    description: 'Tên loại phụ tùng',
+    description: 'Tên phụ tùng',
     required: true,
-    maxLength: 100,
+    maxLength: 150,
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(150)
   name: string;
 
   @ApiProperty({
     example: 'loc-gio-123',
-    description: 'Mã định danh hoặc slug của loại phụ tùng',
+    description: 'Mã định danh hoặc slug của phụ tùng',
     required: true,
-    maxLength: 100,
+    maxLength: 200,
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(200)
   slug: string;
 
   @ApiProperty({
-    example: 'LG020016',
-    description: 'Code loại phụ tùng',
-    required: true,
-    maxLength: 100,
+    example: '0',
+    description: 'Thứ tự sắp xếp khi hiển thị các dịch vụ',
+    required: false,
+    default: '0',
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  code: string;
+  order?: string;
 
   @ApiProperty({
-    example: '7b51301a-09ca-4846-8063-4b6fe88e5e35',
+    example: faker.string.uuid(),
     description: 'Hãng xe',
     required: true,
-    maxLength: 100,
   })
-  @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
-  branch: string;
+  @IsUUID()
+  vehicleBrand: string;
 
   @ApiProperty({
-    example: '7b51301a-09ca-4846-8063-4b6fe88e5e35',
+    example: faker.string.uuid(),
     description: 'Loại phụ tùng',
     required: true,
-    maxLength: 100,
   })
-  @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
-  type: string;
+  @IsUUID()
+  partType: string;
 
   @ApiProperty({
     example: 'Phụ tùng giúp lọc không khí trước khi vào động cơ.',

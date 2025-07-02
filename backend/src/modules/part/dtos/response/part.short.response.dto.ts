@@ -5,8 +5,8 @@ import { ENUM_PART_STATUS } from '../../enums/part.enum';
 import { AwsS3ResponseDto } from '@/modules/aws/dtos/response/aws.s3-response.dto';
 
 export class PartShortResponseDto extends OmitType(PartListResponseDto, [
-  'type',
-  'branch',
+  'partType',
+  'vehicleBrand',
   'status',
   'photo',
   'createdAt',
@@ -14,11 +14,11 @@ export class PartShortResponseDto extends OmitType(PartListResponseDto, [
 ]) {
   @ApiHideProperty()
   @Exclude()
-  type: string;
+  partType: string;
 
   @ApiHideProperty()
   @Exclude()
-  branch: string;
+  vehicleBrand: string;
 
   @ApiHideProperty()
   @Exclude()

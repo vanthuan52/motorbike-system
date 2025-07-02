@@ -67,8 +67,11 @@ export class VehicleModelPublicController {
         message: 'vehicle-model.error.notFound',
       });
     }
+
+    const partFull = await this.vehicleModelService.join(vehicleModel);
+
     const mapped: VehicleModelGetFullResponseDto =
-      this.vehicleModelService.mapGetPopulate(vehicleModel);
+      this.vehicleModelService.mapGetPopulate(partFull);
     return { data: mapped };
   }
 

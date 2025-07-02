@@ -40,3 +40,25 @@ export const PartTypeDocQueryStatus: DocField[] = [
     description: "value with ',' delimiter",
   },
 ];
+
+export const PartTypeDocQueryOrderBy: DocField[] = [
+  {
+    name: 'orderBy',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: 'order',
+    description: 'Arrange the position sorting by order field',
+  },
+];
+
+export const PartTypeDocQueryOrderDirection: DocField[] = [
+  {
+    name: 'orderDirection',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: 'asc',
+    description: 'Arrange the position sorting by order field',
+  },
+];

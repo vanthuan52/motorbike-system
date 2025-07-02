@@ -11,6 +11,7 @@ import {
   InternalServerErrorException,
   HttpException,
   ConflictException,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PartService } from '../services/part.services';
@@ -72,6 +73,9 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { PartParsePipe } from '../pipes/part.parse.pipe';
 import { PartDoc } from '../entities/part.entity';
 import { IPartDoc } from '../interfaces/part.interface';
+import { PartTypeService } from '@/modules/part-type/services/part-type.services';
+import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
+import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
 
 @ApiTags('modules.admin.part')
 @Controller({
@@ -80,6 +84,8 @@ import { IPartDoc } from '../interfaces/part.interface';
 })
 export class PartAdminController {
   constructor(
+    private readonly vehicleBrandService: VehicleBrandService,
+    private readonly partTypeService: PartTypeService,
     private readonly partService: PartService,
     private readonly paginationService: PaginationService,
   ) {}
@@ -106,21 +112,37 @@ export class PartAdminController {
       ENUM_PART_STATUS,
     )
     status: Record<string, any>,
+    @Query('partType', OptionalParseUUIDPipe)
+    partTypeId: string,
+    @Query('vehicleBrand', OptionalParseUUIDPipe)
+    vehicleBrandId: string,
   ): Promise<IResponsePaging<PartListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
     };
 
-    const parts = await this.partService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
+    if (partTypeId) {
+      find['partType'] = partTypeId;
+    }
 
-    const total: number = await this.partService.getTotal(find);
+    if (vehicleBrandId) {
+      find['vehicleBrand'] = vehicleBrandId;
+    }
+
+    const parts = await this.partService.findAllWithVehicleBrandAndPartType(
+      find,
+      {
+        paging: {
+          limit: _limit,
+          offset: _offset,
+        },
+        order: _order,
+      },
+    );
+
+    const total: number =
+      await this.partService.getTotalWithVehicleBrandAndPartType(find);
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
@@ -149,9 +171,9 @@ export class PartAdminController {
     @Param('id', RequestRequiredPipe, PartParsePipe)
     part: PartDoc,
   ): Promise<IResponse<PartGetResponseDto>> {
-    const partWithType: IPartDoc = await this.partService.join(part);
+    const partFull: IPartDoc = await this.partService.join(part);
 
-    const mapped: PartGetResponseDto = this.partService.mapGet(partWithType);
+    const mapped: PartGetResponseDto = this.partService.mapGet(partFull);
     return { data: mapped };
   }
 
@@ -170,15 +192,22 @@ export class PartAdminController {
     @Body() body: PartCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
     const promises: Promise<any>[] = [
-      this.partService.findByCode(body.code),
+      this.vehicleBrandService.findOneById(body.vehicleBrand),
+      this.partTypeService.findOneById(body.partType),
       this.partService.findBySlug(body.slug),
     ];
-    const [existingCode, existingSlug] = await Promise.all(promises);
+    const [checkVehicleBrand, checkPartType, existingSlug] =
+      await Promise.all(promises);
 
-    if (existingCode) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.CODE_EXISTED,
-        message: 'part.error.codeExisted',
+    if (!checkVehicleBrand) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'vehicle-brand.error.notFound',
+      });
+    } else if (!checkPartType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'part-type.error.notFound',
       });
     } else if (existingSlug) {
       throw new InternalServerErrorException({
@@ -186,6 +215,7 @@ export class PartAdminController {
         message: 'part.error.slugExisted',
       });
     }
+
     try {
       const created = await this.partService.create(body, {
         actionBy: createdBy,
@@ -215,22 +245,6 @@ export class PartAdminController {
     @AuthJwtPayload('user') updatedBy: string,
     @Body() body: PartUpdateRequestDto,
   ): Promise<void> {
-    if (body.code && body.code !== part.code) {
-      const existingByCode = await this.partService.findOne({
-        code: body.code,
-      });
-
-      if (
-        existingByCode &&
-        existingByCode._id.toString() !== part._id.toString()
-      ) {
-        throw new ConflictException({
-          statusCode: ENUM_PART_STATUS_CODE_ERROR.CODE_EXISTED,
-          message: 'part.error.codeExisted',
-        });
-      }
-    }
-
     if (body.slug && body.slug !== part.slug) {
       const existingBySlug = await this.partService.findOne({
         slug: body.slug,

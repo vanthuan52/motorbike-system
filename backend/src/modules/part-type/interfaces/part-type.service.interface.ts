@@ -1,16 +1,12 @@
-import { PipelineStage } from 'mongoose';
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
   IDatabaseOptions,
   IDatabaseSaveOptions,
-  IDatabaseUpdateOptions,
 } from '@/common/database/interfaces/database.interface';
 
 import { PartTypeDoc, PartTypeEntity } from '../entities/part-type.entity';

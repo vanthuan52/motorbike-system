@@ -1,7 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
-  DocAuth,
   DocRequest,
   DocResponse,
   DocResponsePaging,
@@ -21,9 +20,6 @@ export function PartTypePublicGetOneDoc(): MethodDecorator {
     DocRequest({
       params: PartTypeDocParamsSlug,
     }),
-    DocAuth({
-      jwtAccessToken: false,
-    }),
     DocResponse<PartTypeGetResponseDto>('part-type.get', {
       dto: PartTypeGetResponseDto,
     }),
@@ -37,9 +33,6 @@ export function PartTypePublicListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [...PartTypeDocQueryStatus],
-    }),
-    DocAuth({
-      jwtAccessToken: false,
     }),
     DocResponsePaging<PartTypeListResponseDto>('part-type.list', {
       dto: PartTypeListResponseDto,

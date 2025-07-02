@@ -1,7 +1,9 @@
 import {
+  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
+  IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
@@ -15,12 +17,23 @@ import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
 import { PartGetResponseDto } from '../dtos/response/part.get.response.dto';
 import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
 import { PartUploadPhotoRequestDto } from '../dtos/request/part.upload-photo.request.dto';
+import { IPartEntity } from './part.interface';
 
 export interface IPartService {
   findAll(
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,
   ): Promise<PartDoc[]>;
+
+  findAllWithVehicleBrandAndPartType(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllAggregateOptions,
+  ): Promise<IPartEntity[]>;
+
+  getTotalWithVehicleBrandAndPartType(
+    find?: Record<string, any>,
+    options?: IDatabaseAggregateOptions,
+  ): Promise<number>;
 
   findAllActive(
     find?: Record<string, any>,
