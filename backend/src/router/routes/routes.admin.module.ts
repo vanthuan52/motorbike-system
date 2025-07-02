@@ -16,6 +16,8 @@ import { HiringModule } from '@/modules/hiring/hiring.module';
 import { CandidateAdminController } from '@/modules/hiring/controllers/candidate.admin.controller';
 import { StoreAdminController } from '@/modules/store/controllers/store.admin.controller';
 import { CandidateReviewAdminController } from '@/modules/hiring/controllers/candidate-review.admin.controller';
+import { PartAdminController } from '@/modules/part/controllers/part.admin.controller';
+import { PartModule } from '@/modules/part/part.module';
 import { StoreModule } from '@/modules/store/store.module';
 import { ServiceCategoryAdminController } from '@/modules/service-category/controllers/service-category.admin.controller';
 import { ServiceCategoryModule } from '@/modules/service-category/service-category.module';
@@ -33,8 +35,9 @@ import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.
     HiringAdminController,
     CandidateAdminController,
     CandidateReviewAdminController,
-    StoreAdminController,
     ServiceCategoryAdminController,
+    StoreAdminController,
+    PartAdminController,
     VehicleServiceAdminController,
   ],
   providers: [],
@@ -50,6 +53,7 @@ import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.
     HiringModule,
     StoreModule,
     ServiceCategoryModule,
+    PartModule,
     VehicleServiceModule,
   ],
 })

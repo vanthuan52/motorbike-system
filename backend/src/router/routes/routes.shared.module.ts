@@ -7,15 +7,25 @@ import { UserSharedController } from '@/modules/user/controllers/user.shared.con
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { AuthSharedController } from '@/modules/auth/controllers/auth.shared.controller';
 import { AwsModule } from '@/modules/aws/aws.module';
+import { PartSharedController } from '@/modules/part/controllers/part.shared.controller';
+import { PartModule } from '@/modules/part/part.module';
 
 @Module({
   controllers: [
     SessionSharedController,
     UserSharedController,
     AuthSharedController,
+    PartSharedController,
   ],
   providers: [],
   exports: [],
-  imports: [UserModule, AuthModule, AwsModule, SessionModule, ApiKeyModule],
+  imports: [
+    UserModule,
+    AuthModule,
+    AwsModule,
+    SessionModule,
+    ApiKeyModule,
+    PartModule,
+  ],
 })
 export class RoutesSharedModule {}

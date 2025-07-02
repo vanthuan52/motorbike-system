@@ -27,8 +27,8 @@
     "package:check": "npx npm-check-updates -i",
     "generate:keys": "npx ts-node scripts/generate-keys.ts",
     "migrate:fresh": "NODE_ENV=development npm run migrate:remove && npm run migrate:seed",
-    "migrate:seed": "NODE_ENV=development nestjs-command seed:role && nestjs-command seed:user && nestjs-command seed:part-type && nestjs-command seed:hiring && nestjs-command seed:store",
-    "migrate:remove": "NODE_ENV=development nestjs-command remove:user && nestjs-command remove:role && nestjs-command remove:part-type && nestjs-command remove:hiring  && nestjs-command remove:store"
+    "migrate:seed": "NODE_ENV=development nestjs-command seed:role && nestjs-command seed:user && nestjs-command seed:part-type && nestjs-command seed:hiring && nestjs-command seed:store && nestjs-command seed:part",
+    "migrate:remove": "NODE_ENV=development nestjs-command remove:user && nestjs-command remove:role && nestjs-command remove:part-type && nestjs-command remove:hiring  && nestjs-command remove:store  && nestjs-command remove:part"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.782.0",

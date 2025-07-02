@@ -1,0 +1,17 @@
+{
+  "list": "Danh sách phụ tùng được lấy thành công.",
+  "get": "Chi tiết phụ tùng được lấy thành công.",
+  "create": "Tạo mới phụ tùng thành công.",
+  "update": "Cập nhật phụ tùng thành công.",
+  "delete": "Xóa phụ tùng thành công.",
+  "updateStatus": "Trạng thái của phụ tùng đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên phụ tùng này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy phụ tùng bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái phụ tùng thất bại.",
+    "deleteFailed": "Xóa phụ tùng thất bại.",
+    "createFailed": "Tạo mới phụ tùng thất bại.",
+    "slugExisted": "Slug của phụ tùng này đã tồn tại.",
+    "codeExisted": "Code của phụ tùng này đã tồn tại."
+  }
+}
