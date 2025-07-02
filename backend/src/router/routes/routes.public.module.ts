@@ -14,6 +14,8 @@ import { HiringPublicController } from '@/modules/hiring/controllers/hiring.publ
 import { StorePublicController } from '@/modules/store/controllers/store.public.controller';
 import { PartTypePublicController } from '@/modules/part-type/controllers/part-type.public.controller';
 import { PartTypeModule } from '@/modules/part-type/part-type.module';
+import { PartPublicController } from '@/modules/part/controllers/part.public.controller';
+import { PartModule } from '@/modules/part/part.module';
 import { StoreModule } from '@/modules/store/store.module';
 import { ServiceCategoryPublicController } from '@/modules/service-category/controllers/service-category.public.controller';
 import { ServiceCategoryModule } from '@/modules/service-category/service-category.module';
@@ -34,6 +36,7 @@ import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module
     HiringPublicController,
     StorePublicController,
     ServiceCategoryPublicController,
+    PartPublicController,
     VehicleServicePublicController,
     VehicleBrandPublicController,
     VehicleModelPublicController,
@@ -51,6 +54,7 @@ import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module
     HiringModule,
     StoreModule,
     ServiceCategoryModule,
+    PartModule,
     VehicleServiceModule,
     VehicleBrandModule,
     VehicleModelModule,
