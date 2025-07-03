@@ -1,0 +1,15 @@
+{
+  "list": "Danh sách Giá dịch vụ được lấy thành công.",
+  "get": "Chi tiết Giá dịch vụ được lấy thành công.",
+  "create": "Tạo mới Giá dịch vụ thành công.",
+  "update": "Cập nhật Giá dịch vụ thành công.",
+  "delete": "Xóa Giá dịch vụ thành công.",
+  "updateStatus": "Trạng thái của Giá dịch vụ đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên Giá dịch vụ này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy Giá dịch vụ bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái Giá dịch vụ thất bại.",
+    "deleteFailed": "Xóa Giá dịch vụ thất bại.",
+    "createFailed": "Tạo mới Giá dịch vụ thất bại."
+  }
+}

@@ -64,6 +64,12 @@ const menuItems = [
     label: "Dịch vụ xe máy",
   },
   {
+    key: "service-prices",
+    icon: <ScrollText />,
+    href: ROUTER_PATH.SERVICE_PRICES,
+    label: "Giá dịch vụ",
+  },
+  {
     key: "part-types",
     icon: <TbSettingsCode />,
     href: ROUTER_PATH.PART_TYPES,
@@ -162,13 +168,13 @@ const DesktopSidebar = () => {
       )}
     >
       {/* Top Header */}
-      <div className='flex items-center justify-between p-4 h-16'>
+      <div className="flex items-center justify-between p-4 h-16">
         {!sidebarCollapsed && (
-          <span className='font-bold text-md md:text-lg'>Logo name.</span>
+          <span className="font-bold text-md md:text-lg">Logo name.</span>
         )}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className='text-xl cursor-pointer'
+          className="text-xl cursor-pointer"
         >
           <CgMenuRightAlt />
         </button>
