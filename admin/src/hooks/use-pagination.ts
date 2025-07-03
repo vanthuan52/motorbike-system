@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
 
 type UsePaginationProps = {
@@ -15,9 +15,12 @@ export default function usePagination({
     perPage,
   });
 
-  const handlePaginationChange = (next: UsePaginationProps) => {
-    setPagination((prev) => ({ ...prev, ...next }));
-  };
+  const handlePaginationChange = useCallback((next: UsePaginationProps) => {
+    setPagination((prev) => {
+      if (prev.page === next.page && prev.perPage === next.perPage) return prev;
+      return { ...prev, ...next };
+    });
+  }, []);
 
   return { pagination, handlePaginationChange };
 }

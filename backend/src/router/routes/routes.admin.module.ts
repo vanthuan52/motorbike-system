@@ -27,6 +27,8 @@ import { VehicleBrandAdminController } from '@/modules/vehicle-brand/controllers
 import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module';
 import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
 import { VehicleModelAdminController } from '@/modules/vehicle-model/controllers/vehicle-model.admin.controller';
+import { ServicePriceAdminController } from '@/modules/service-price/controllers/service-price.admin.controller';
+import { ServicePriceModule } from '@/modules/service-price/service-price.module';
 
 @Module({
   controllers: [
@@ -45,6 +47,7 @@ import { VehicleModelAdminController } from '@/modules/vehicle-model/controllers
     VehicleServiceAdminController,
     VehicleBrandAdminController,
     VehicleModelAdminController,
+    ServicePriceAdminController,
   ],
   providers: [],
   exports: [],
@@ -63,6 +66,7 @@ import { VehicleModelAdminController } from '@/modules/vehicle-model/controllers
     VehicleServiceModule,
     VehicleBrandModule,
     VehicleModelModule,
+    ServicePriceModule,
   ],
 })
 export class RoutesAdminModule {}

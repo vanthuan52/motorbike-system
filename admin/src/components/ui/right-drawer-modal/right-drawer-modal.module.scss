@@ -1,0 +1,70 @@
+/* Overlay bao phủ toàn màn hình */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Nửa trong suốt */
+  display: flex;
+  justify-content: flex-end; /* Căn nội dung modal sang phải */
+  align-items: flex-start; /* Căn nội dung modal lên trên */
+  z-index: 1000; /* Đảm bảo modal nằm trên cùng */
+
+  /* Hiệu ứng mờ dần cho overlay */
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Nội dung chính của modal (cái drawer) */
+.modalContent {
+  height: 100vh; /* Chiều cao 100% của viewport */
+  background-color: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15); /* Đổ bóng nhẹ */
+  display: flex;
+  flex-direction: column;
+  /* Hiệu ứng slide từ phải sang trái */
+  transform: translateX(0); /* Vị trí cuối cùng là 0 (đã hiển thị) */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Trạng thái ẩn của modal (nếu không dùng `if (!isOpen) return null;`) */
+/* Bạn có thể thêm class riêng khi modal đóng để điều khiển opacity và transform */
+/* Ví dụ:
+.overlay.hidden { opacity: 0; pointer-events: none; }
+.modalContent.hidden { transform: translateX(100%); }
+*/
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: #8c8c8c;
+}
+
+.closeButton:hover {
+  color: #595959;
+}
+
+.body {
+  flex-grow: 1; /* Cho phép phần body chiếm hết không gian còn lại */
+  padding: 24px;
+  overflow-y: auto; /* Cho phép cuộn nếu nội dung quá dài */
+}

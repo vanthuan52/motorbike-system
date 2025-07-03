@@ -1,0 +1,15 @@
+{
+  "list": "Service price list retrieved successfully.",
+  "get": "Service price details fetched successfully.",
+  "create": "New service price created successfully.",
+  "update": "Service price updated successfully.",
+  "delete": "Service price deleted successfully.",
+  "updateStatus": "Service price status updated to {status}.",
+  "error": {
+    "nameExist": "This service price name already exists.",
+    "notFound": "Sorry, we couldn't find the service price you requested.",
+    "updateStatusFailed": "Failed to update service price status.",
+    "deleteFailed": "Failed to delete service price.",
+    "createFailed": "Failed to create new service price."
+  }
+}

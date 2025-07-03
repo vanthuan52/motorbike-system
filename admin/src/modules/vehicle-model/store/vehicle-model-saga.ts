@@ -168,7 +168,7 @@ function* updateVehicleModelStatusHandler(
     yield put(vehicleModelActions.updateVehicleModelStatusFailure(message));
   }
 }
-export function* VehicleModelSaga() {
+export function* vehicleModelSaga() {
   yield takeLatest(
     vehicleModelActions.getVehicleModels,
     getVehicleModelListHandler
