@@ -185,11 +185,15 @@ export const router = createBrowserRouter([
         element: <PartTypeDetailsPage />,
       },
       {
-        path: ROUTER_PATH.PART_TYPES,
+        path: ROUTER_PATH.VEHICLE_PARTS,
         element: <VehiclePartsPage />,
       },
       {
-        path: `${ROUTER_PATH.VEHICLE_TYPE}/:action/:id`,
+        path: ROUTER_PATH.VEHICLE_PART_DETAILS,
+        element: <VehiclePartDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_PART_CREATION,
         element: <VehiclePartDetailPage />,
       },
       {

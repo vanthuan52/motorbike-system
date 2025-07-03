@@ -17,6 +17,15 @@ export const API_ENDPOINTS = {
     PART_TYPE_DELETE: (id: string) => `part-type/delete/${id}`,
     PART_TYPE_UPDATE_STATUS: (id: string) => `part-type/update/${id}/status`,
 
+    // vehicle part module
+    VEHICLE_PARTS: "vehicle-part/list",
+    VEHICLE_PART_DETAILS: (id: string) => `vehicle-part/get/${id}`,
+    VEHICLE_PART_CREATE: "vehicle-part/create",
+    VEHICLE_PART_UPDATE: (id: string) => `vehicle-part/update/${id}`,
+    VEHICLE_PART_DELETE: (id: string) => `vehicle-part/delete/${id}`,
+    VEHICLE_PART_UPDATE_STATUS: (id: string) =>
+      `vehicle-part/update/${id}/status`,
+
     // hiring module
     HIRING: "hiring/list",
     HIRING_DETAILS: (id: string) => `hiring/get/${id}`,
