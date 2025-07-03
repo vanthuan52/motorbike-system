@@ -33,6 +33,14 @@ export class StoreEntity extends DatabaseEntityBase {
   workHours: string;
 
   @DatabaseProp({
+    required: false,
+    maxlength: 255,
+    default: null,
+    trim: true,
+  })
+  description?: string;
+
+  @DatabaseProp({
     required: true,
     trim: true,
     maxlength: 100,

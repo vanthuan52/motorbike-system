@@ -5,7 +5,6 @@ import { CgMenuRightAlt } from "react-icons/cg";
 import { IoCarSportSharp } from "react-icons/io5";
 import { RxDashboard, RxHome } from "react-icons/rx";
 import { BiCategoryAlt, BiMessageDetail } from "react-icons/bi";
-import { FaBriefcase, FaMotorcycle, FaUserShield } from "react-icons/fa";
 import { TbSettingsCode } from "react-icons/tb";
 import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
@@ -13,6 +12,12 @@ import { AiOutlineSchedule } from "react-icons/ai";
 import { FiEdit2, FiUsers } from "react-icons/fi";
 import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
+import {
+  FaBriefcase,
+  FaMotorcycle,
+  FaStore,
+  FaUserShield,
+} from "react-icons/fa";
 
 const menuItems = [
   {
@@ -138,6 +143,12 @@ const menuItems = [
     label: "Tuyển dụng",
     href: ROUTER_PATH.HIRING,
   },
+  {
+    key: "stores",
+    icon: <FaStore />,
+    label: "Cửa hàng",
+    href: ROUTER_PATH.STORES,
+  },
 ];
 
 const DesktopSidebar = () => {
@@ -151,13 +162,13 @@ const DesktopSidebar = () => {
       )}
     >
       {/* Top Header */}
-      <div className="flex items-center justify-between p-4 h-16">
+      <div className='flex items-center justify-between p-4 h-16'>
         {!sidebarCollapsed && (
-          <span className="font-bold text-md md:text-lg">Logo name.</span>
+          <span className='font-bold text-md md:text-lg'>Logo name.</span>
         )}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="text-xl cursor-pointer"
+          className='text-xl cursor-pointer'
         >
           <CgMenuRightAlt />
         </button>

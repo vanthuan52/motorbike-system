@@ -15,6 +15,7 @@ import { vehicleBrandReducer } from "@/modules/vehicle-brand/store";
 import { hiringReducer } from "@/modules/hiring/store";
 import { customerReducer } from "@/modules/customer-management/store";
 import { candidateReducer } from "@/modules/candidates/store";
+import { storesReducer } from "@/modules/stores/store";
 import { serviceCategoryReducer } from "@/modules/service-category/store";
 import { vehicleServiceReducer } from "@/modules/vehicle-service/store";
 import { vehicleModelReducer } from "@/modules/vehicle-model/store";
@@ -31,12 +32,13 @@ export const store = configureStore({
     hiring: hiringReducer,
     customer: customerReducer,
     candidates: candidateReducer,
+    stores: storesReducer,
     serviceCategory: serviceCategoryReducer,
     vehicleService: vehicleServiceReducer,
     vehicleBrand: vehicleBrandReducer,
     vehicleModel: vehicleModelReducer,
   },
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({ serializableCheck: false }).concat(sagaMiddleware),
 });
 

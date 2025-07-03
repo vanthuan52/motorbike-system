@@ -115,6 +115,7 @@ export class StoreService implements IStoreService {
     create.name = payload.name;
     create.address = payload.address;
     create.workHours = payload.workHours;
+    create.description = payload.description;
     create.slug = payload.slug ?? this.createSlug(payload.name);
     return this.storeRepository.create(create, options);
   }
@@ -127,6 +128,7 @@ export class StoreService implements IStoreService {
     repository.name = payload.name ?? repository.name;
     repository.address = payload.address ?? repository.address;
     repository.workHours = payload.workHours ?? repository.workHours;
+    repository.description = payload.description ?? repository.description;
     repository.slug = payload.slug ?? repository.slug;
     return this.storeRepository.save(repository, options);
   }

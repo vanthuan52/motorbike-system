@@ -8,6 +8,7 @@ import { notificationSaga } from "@/modules/notification/store/notification-saga
 import { hiringRootSaga } from "@/modules/hiring/store/hiring-saga";
 import { customerSaga } from "@/modules/customer-management/store/customer-saga";
 import { candidateSaga } from "@/modules/candidates/store/candidate-saga";
+import { storesRootSaga } from "@/modules/stores/store/stores-saga";
 import { serviceCategorySaga } from "@/modules/service-category/store/service-category-saga";
 import { vehicleServiceSaga } from "@/modules/vehicle-service/store/vehicle-service-saga";
 import { VehicleModelSaga } from "@/modules/vehicle-model/store/vehicle-model-saga";
@@ -22,6 +23,7 @@ export default function* rootSaga() {
     hiringRootSaga(),
     customerSaga(),
     candidateSaga(),
+    storesRootSaga(),
     serviceCategorySaga(),
     vehicleServiceSaga(),
     vehicleBrandSaga(),

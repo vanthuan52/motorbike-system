@@ -89,6 +89,11 @@ const CandidateDetailsPage = lazy(
   () => import("@/modules/candidates/pages/candidate-detail-page")
 );
 
+const StorePage = lazy(() => import("@/modules/stores/pages/store-page"));
+
+const StoreDetailsPage = lazy(
+  () => import("@/modules/stores/pages/store-details-page")
+);
 const ServiceCategoryPage = lazy(
   () => import("@/modules/service-category/pages/service-category-page")
 );
@@ -254,6 +259,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.CANDIDATE_DETAILS,
         element: <CandidateDetailsPage />,
+      },
+      {
+        path: ROUTER_PATH.STORES,
+        element: <StorePage />,
+      },
+      {
+        path: ROUTER_PATH.STORE_CREATION,
+        element: <StoreDetailsPage />,
+      },
+      {
+        path: ROUTER_PATH.STORE_DETAILS,
+        element: <StoreDetailsPage />,
       },
       {
         path: ROUTER_PATH.SERVICE_CATEGORIES,
