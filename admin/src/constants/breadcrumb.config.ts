@@ -1,5 +1,6 @@
 export const BREADCRUMB_LABELS: Record<string, string> = {
   dashboard: "Tổng quan",
+  stores: "Cửa hàng",
   employees: "Nhân viên",
   posts: "Bài viết",
   messages: "Tin nhắn",
