@@ -14,6 +14,9 @@ export class StoreGetResponseDto {
   @ApiProperty()
   workHours: string;
 
+  @ApiProperty({ required: false })
+  description?: string;
+
   @ApiProperty()
   slug: string;
 

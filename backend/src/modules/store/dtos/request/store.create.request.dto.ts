@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import {
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ENUM_STORE_STATUS } from '../../enums/store.enum';
 
 export class StoreCreateRequestDto {
@@ -35,6 +41,17 @@ export class StoreCreateRequestDto {
   @IsNotEmpty()
   @MaxLength(100)
   workHours: string;
+
+  @ApiProperty({
+    example: 'Phụ tùng giúp lọc không khí trước khi vào động cơ.',
+    description: 'Mô tả chi tiết (có thể bỏ trống)',
+    required: false,
+    maxLength: 500,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  description?: string;
 
   @ApiProperty({
     example: 'cua-hang-abc',

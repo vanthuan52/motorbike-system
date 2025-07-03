@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
     PART_TYPE_UPDATE: (id: string) => `part-type/update/${id}`,
     PART_TYPE_DELETE: (id: string) => `part-type/delete/${id}`,
     PART_TYPE_UPDATE_STATUS: (id: string) => `part-type/update/${id}/status`,
+
     // hiring module
     HIRING: "hiring/list",
     HIRING_DETAILS: (id: string) => `hiring/get/${id}`,
@@ -23,6 +24,7 @@ export const API_ENDPOINTS = {
     HIRING_UPDATE: (id: string) => `hiring/update/${id}`,
     HIRING_DELETE: (id: string) => `hiring/delete/${id}`,
     HIRING_UPDATE_STATUS: (id: string) => `hiring/update/${id}/status`,
+
     // candidate module
     CANDIDATE_LIST: "hiring/candidate/list",
     CANDIDATE_DETAILS: (id: string) => `hiring/candidate/get/${id}`,
@@ -30,6 +32,7 @@ export const API_ENDPOINTS = {
       `hiring/candidate/update/${id}/status`,
     CANDIDATE_REVIEW_LIST: `hiring/candidate-review/list`,
     CANDIDATE_REVIEW_CREATE: "hiring/candidate-review/create",
+
     // user module
     USER_LIST: "user/list",
     USER_LIST_TYPE_USER: "user/list/user",
@@ -39,6 +42,15 @@ export const API_ENDPOINTS = {
     USER_UPDATE_STATUS: (id: string) => `user/update/${id}/status`,
     USER_DELETION: (id: string) => `user/delete/${id}`,
     USER_TYPE_USER_CREATE: "user/create/user",
+
+    // store module
+    STORE_LIST: "store/list",
+    STORE_DETAILS: (id: string) => `store/get/${id}`,
+    STORE_CREATE: "store/create",
+    STORE_UPDATE: (id: string) => `store/update/${id}`,
+    STORE_DELETE: (id: string) => `store/delete/${id}`,
+    STORE_UPDATE_STATUS: (id: string) => `store/update/${id}/status`,
+
     // service category module
     SERVICE_CATEGORY_LIST: "service-category/list",
     SERVICE_CATEGORY_DETAIL: (id: string) => `service-category/get/${id}`,
