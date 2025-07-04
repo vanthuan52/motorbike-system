@@ -13,6 +13,9 @@ import { StoreModule } from '@/modules/store/store.module';
 import { MigrationHiringSeed } from './seeds/migration.hiring.seed';
 import { PartModule } from '@/modules/part/part.module';
 import { MigrationStoreSeed } from './seeds/migration.store.seed';
+import { MigrationVehicleBrandSeed } from './seeds/migration.brand.seed';
+import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module';
+import { MigrationPartSeed } from './seeds/migration.part.seed';
 
 // TODO: Change With Commander
 @Module({
@@ -25,6 +28,8 @@ import { MigrationStoreSeed } from './seeds/migration.store.seed';
     PartTypeModule,
     HiringModule,
     StoreModule,
+    PartModule,
+    VehicleBrandModule,
   ],
   providers: [
     MigrationRoleSeed,
@@ -32,6 +37,8 @@ import { MigrationStoreSeed } from './seeds/migration.store.seed';
     MigrationPartTypeSeed,
     MigrationHiringSeed,
     MigrationStoreSeed,
+    MigrationVehicleBrandSeed,
+    MigrationPartSeed,
   ],
   exports: [],
 })
