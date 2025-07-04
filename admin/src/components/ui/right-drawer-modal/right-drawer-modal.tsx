@@ -21,10 +21,14 @@ const RightDrawerModal: FC<RightDrawerModalProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as HTMLElement;
+      if (modalRef.current && !modalRef.current.contains(target)) {
+        if (
+          target.closest(".ant-select-dropdown") ||
+          target.closest(".ant-picker-dropdown")
+        ) {
+          return;
+        }
         onClose();
       }
     };
