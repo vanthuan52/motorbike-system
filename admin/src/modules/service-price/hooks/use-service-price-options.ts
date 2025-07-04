@@ -17,7 +17,7 @@ export function useVehicleOptions() {
         vehicleServiceActions.getVehicleServices({ page: 1, perPage: 1000 })
       );
     }
-  }, [dispatch, vehicleServices]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!vehicleModels?.length) {
@@ -25,7 +25,7 @@ export function useVehicleOptions() {
         vehicleModelActions.getVehicleModels({ page: 1, perPage: 1000 })
       );
     }
-  }, [dispatch, vehicleModels]);
+  }, [dispatch]);
 
   const vehicleServiceOptions = useMemo(
     () =>

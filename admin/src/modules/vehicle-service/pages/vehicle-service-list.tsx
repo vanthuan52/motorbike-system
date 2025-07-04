@@ -71,7 +71,7 @@ export default function VehicleServiceList() {
         })
       );
     }
-  }, [dispatch, serviceCategories]);
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
