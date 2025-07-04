@@ -58,6 +58,9 @@ const ServicePriceForm = ({
       dispatch(
         servicePriceActions.createServicePrice({ servicePrice: payload })
       );
+      if (create.success) {
+        onSuccess();
+      }
     } else if (isEdit && initialValues?._id) {
       dispatch(
         servicePriceActions.updateServicePrice({
@@ -65,6 +68,9 @@ const ServicePriceForm = ({
           servicePrice: payload,
         })
       );
+      if (update.success) {
+        onSuccess();
+      }
     }
   };
 
