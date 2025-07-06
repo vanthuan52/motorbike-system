@@ -9,8 +9,8 @@ import {
   Param,
   NotFoundException,
   InternalServerErrorException,
-  ConflictException,
   Query,
+  Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ServicePriceService } from '../services/service-price.services';
@@ -25,16 +25,16 @@ import {
   IResponse,
   IResponsePaging,
 } from '@/common/response/interfaces/response.interface';
-import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
+import {
+  CustomServicePriceListResponseDto,
+  ServicePriceListResponseDto,
+} from '../dtos/response/service-price.list.response.dto';
 import { ServicePriceGetResponseDto } from '../dtos/response/service-price.get.response.dto';
 import {
   IDatabaseCreateOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import {
-  PaginationQuery,
-  PaginationQueryFilterInEnum,
-} from '@/common/pagination/decorators/pagination.decorator';
+import { PaginationQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
   ServicePriceAdminCreateDoc,
@@ -63,15 +63,18 @@ import {
 import {
   SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
   SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
-  SERVICE_PRICE_DEFAULT_STATUS,
 } from '../constants/service-price.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { ServicePriceParsePipe } from '../pipes/service-price.parse.pipe';
 import { ServicePriceDoc } from '../entities/service-price.entity';
-import { IServicePriceDoc } from '../interfaces/service-price.interface';
+import {
+  ICustomServicePrice,
+  IServicePriceDoc,
+} from '../interfaces/service-price.interface';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
+import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
 
 @ApiTags('modules.admin.service-price')
 @Controller({
@@ -79,6 +82,7 @@ import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-mo
   path: '/service-price',
 })
 export class ServicePriceAdminController {
+  private readonly logger = new Logger(ServicePriceAdminController.name);
   constructor(
     private readonly vehicleServiceService: VehicleServiceService,
     private readonly vehicleModelService: VehicleModelService,
@@ -119,6 +123,7 @@ export class ServicePriceAdminController {
       find['vehicleModel'] = vehicleModelId;
     }
 
+    this.logger.log(`find: ${JSON.stringify(find)}`);
     const ServicePrices =
       await this.servicePriceService.findAllWithVehicleServiceAndVehicleModel(
         find,
@@ -271,5 +276,148 @@ export class ServicePriceAdminController {
         _error: err,
       });
     }
+  }
+
+  @ServicePriceAdminListDoc()
+  @ResponsePaging('service-price.list')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/list/combined')
+  async listServicePriceCombined(
+    @PaginationQuery({
+      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    { _search, _limit, _offset, _order }: PaginationListDto,
+    @Query('vehicleService', OptionalParseUUIDPipe)
+    vehicleServiceId: string,
+    @Query('vehicleModel', OptionalParseUUIDPipe)
+    vehicleModelId: string,
+  ): Promise<IResponsePaging<CustomServicePriceListResponseDto>> {
+    const find: Record<string, any> = {
+      ..._search,
+    };
+
+    if (vehicleServiceId) {
+      find['_id'] = vehicleServiceId;
+    }
+
+    const allServices = await this.vehicleServiceService.findAll(find);
+
+    let modelQuery = {};
+    if (vehicleModelId) {
+      modelQuery['_id'] = vehicleModelId;
+    }
+
+    const allModels = await this.vehicleModelService.findAll(modelQuery);
+
+    const latestPrices: ICustomServicePrice[] =
+      await this.servicePriceService.getLatestServicePrices();
+    const priceMap = new Map(); // Key: `${vehicleServiceId}_${vehicleModelId}`
+    latestPrices.forEach((p) =>
+      priceMap.set(`${p.vehicleServiceId}_${p.vehicleModelId}`, p),
+    );
+
+    const combinedList: ICustomServicePrice[] = [];
+    allServices.forEach((vehicleService) => {
+      allModels.forEach((vehicleModel) => {
+        const key = `${vehicleService._id}_${vehicleModel._id}`;
+        const existingPrice = priceMap.get(key);
+
+        if (existingPrice) {
+          combinedList.push({
+            _id: existingPrice.servicePriceId,
+            vehicleServiceId: vehicleService._id.toString(),
+            vehicleServiceName: vehicleService.name,
+            vehicleModelId: vehicleModel._id.toString(),
+            vehicleModelName: vehicleModel.fullName,
+            price: existingPrice.price,
+            dateStart: existingPrice.dateStart,
+            dateEnd: existingPrice.dateEnd,
+            status: existingPrice.status,
+          } as ICustomServicePrice);
+        } else {
+          combinedList.push({
+            _id: null,
+            vehicleServiceId: vehicleService._id.toString(),
+            vehicleServiceName: vehicleService.name,
+            vehicleModelId: vehicleModel._id.toString(),
+            vehicleModelName: vehicleModel.fullName,
+            price: null,
+            dateStart: null,
+            dateEnd: null,
+            status: ENUM_SERVICE_PRICE_STATUS.NO_PRICE,
+          } as ICustomServicePrice);
+        }
+      });
+    });
+
+    const startIndex = _offset * _limit;
+    const endIndex = startIndex + _limit;
+    const paginatedList = combinedList.slice(startIndex, endIndex);
+
+    const total: number = combinedList.length;
+    const totalPage: number = this.paginationService.totalPage(total, _limit);
+
+    return {
+      _pagination: {
+        total,
+        totalPage,
+      },
+      data: paginatedList,
+    };
+  }
+
+  @ServicePriceAdminListDoc()
+  @ResponsePaging('service-price.list')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/list/for-service/:vehicleServiceId')
+  async listByVehicleService(
+    @Param('vehicleServiceId', RequestRequiredPipe)
+    vehicleServiceId: string,
+
+    @PaginationQuery({
+      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    { _search, _limit, _offset, _order }: PaginationListDto,
+  ): Promise<IResponsePaging<CustomServicePriceListResponseDto>> {
+    const find: Record<string, any> = {
+      ..._search,
+      vehicleServiceId,
+    };
+
+    const servicePrices: ICustomServicePrice[] =
+      await this.servicePriceService.getLatestPricesForService(find, {
+        paging: {
+          limit: _limit,
+          offset: _offset,
+        },
+        order: _order,
+      });
+
+    const total: number =
+      await this.servicePriceService.getTotalLatestPricesForService(find);
+
+    const totalPage: number = this.paginationService.totalPage(total, _limit);
+
+    return {
+      _pagination: {
+        total,
+        totalPage,
+      },
+      data: servicePrices,
+    };
   }
 }
