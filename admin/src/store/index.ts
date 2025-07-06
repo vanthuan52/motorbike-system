@@ -20,6 +20,7 @@ import { serviceCategoryReducer } from "@/modules/service-category/store";
 import { vehicleServiceReducer } from "@/modules/vehicle-service/store";
 import { vehicleModelReducer } from "@/modules/vehicle-model/store";
 import { servicePriceReducer } from "@/modules/service-price/store";
+import { vehiclePartReducer } from "@/modules/vehicle-parts/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -39,6 +40,7 @@ export const store = configureStore({
     vehicleBrand: vehicleBrandReducer,
     vehicleModel: vehicleModelReducer,
     servicePrice: servicePriceReducer,
+    vehicleParts: vehiclePartReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(sagaMiddleware),

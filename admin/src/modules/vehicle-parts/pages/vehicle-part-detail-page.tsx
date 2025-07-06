@@ -1,120 +1,75 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, Form, Input, Upload, Select, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
-import { PartType } from "@/modules/vehicle-parts/types/types";
-
-const { Option } = Select;
+import { RootState, useAppDispatch, useAppSelector } from "@/store";
+import { vehiclePartActions } from "../store/part-slice";
+import { ENUM_PAGE_MODE } from "@/types/app.type";
+import { usePageMode } from "@/hooks/use-page-mode";
+import { LocalSpinner } from "@/components/ui/local-spinner";
+import PageInfo from "@/components/page-info";
 
 export const VehiclePartDetailPage: React.FC = () => {
-  const { action, id } = useParams<{ action: string; id?: string }>();
+  const { id } = useParams<{ action: string; id?: string }>();
   const navigate = useNavigate();
-  const isEdit = (action === "edit" || action === "view") && !!id;
-  const [form] = Form.useForm<PartType>();
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+
+  const {
+    detail: vehiclePart,
+    loadingSingle,
+    create,
+    update,
+    deletion,
+    partialUpdate,
+  } = useAppSelector((state: RootState) => state.vehicleParts);
 
   useEffect(() => {
-    if (isEdit) {
-      const found = mockDataTableVehiclePart.find((item) => item.id === id);
-      if (found) {
-        form.setFieldsValue(found as any);
-      } else {
-        message.error("Không tìm thấy phụ tùng");
-        navigate(-1);
-      }
+    if (create.success || deletion.success) {
+      navigate(-1);
+      dispatch(vehiclePartActions.resetState());
     }
-    setLoading(false);
-  }, [isEdit, id, form, navigate]);
+  }, [create.success, deletion.success, navigate, dispatch]);
 
-  const onFinish = (values: any) => {
-    if (isEdit) {
-      console.log("Cập nhật phụ tùng:", values);
-      message.success("Cập nhật thành công");
-    } else {
-      console.log("Tạo mới phụ tùng:", values);
-      message.success("Tạo mới thành công");
+  const mode: ENUM_PAGE_MODE = usePageMode();
+  const isLoading =
+    loadingSingle ||
+    create.loading ||
+    deletion.loading ||
+    update.loading ||
+    partialUpdate.loading;
+
+  useEffect(() => {
+    if (id && mode === ENUM_PAGE_MODE.EDIT) {
+      dispatch(
+        vehiclePartActions.getPartDetail({
+          partId: id,
+        })
+      );
     }
-    navigate(-1);
-  };
+  }, [id, mode, dispatch]);
 
-  const normFile = (e: any) => (Array.isArray(e) ? e : e?.fileList);
-
-  if (loading) return <div className="p-4 text-gray-600">Đang tải...</div>;
+  const pageName = useMemo(() => {
+    switch (mode) {
+      case ENUM_PAGE_MODE.CREATE:
+        return "Tạo mới phụ tùng";
+      case ENUM_PAGE_MODE.EDIT:
+        return "Chỉnh sửa phụ tùng";
+      case ENUM_PAGE_MODE.VIEW:
+        return "Chi tiết phụ tùng";
+      default:
+        return "Phụ tùng";
+    }
+  }, [mode]);
 
   return (
-    <div className="w-full px-4 md:px-6 lg:px-8 py-6">
-      <h2 className="text-2xl font-semibold mb-4">
-        {isEdit ? "Chỉnh sửa phụ tùng" : "Tạo phụ tùng mới"}
-      </h2>
-      <Form<PartType>
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{ status: true }}
-      >
-        <Form.Item
-          name="vehicle_type_id"
-          label="Mã hãng xe"
-          rules={[{ required: true }]}
-        >
-          <Select placeholder="Chọn hãng xe">
-            {/* map options từ API hoặc mock */}
-            <Option value="1">Hãng A</Option>
-            <Option value="2">Hãng B</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="name"
-          label="Tên phụ tùng"
-          rules={[{ required: true }]}
-        >
-          <Input placeholder="Nhập tên phụ tùng" />
-        </Form.Item>
-
-        <Form.Item name="price" label="Giá (VNĐ)" rules={[{ required: true }]}>
-          <Input type="number" placeholder="Nhập giá" />
-        </Form.Item>
-
-        <Form.Item
-          name="image"
-          label="Ảnh phụ tùng"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
-        >
-          <Upload
-            name="image"
-            listType="picture"
-            maxCount={1}
-            beforeUpload={() => false}
-          >
-            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-          </Upload>
-        </Form.Item>
-
-        <Form.Item
-          name="status"
-          label="Trạng thái"
-          rules={[{ required: true }]}
-        >
-          <Select>
-            <Option value={true}>Hoạt động</Option>
-            <Option value={false}>Không hoạt động</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {isEdit ? "Cập nhật" : "Tạo mới"}
-          </Button>
-          <Button className="ml-2" onClick={() => navigate(-1)}>
-            Hủy
-          </Button>
-        </Form.Item>
-      </Form>
+    <div className="w-full min-h-full relative">
+      {isLoading && <LocalSpinner text="Loading..." />}
+      <div className="px-4 pt-3 pb-14 flex flex-col gap-3">
+        <PageInfo name={pageName} />
+        {!vehiclePart && mode === ENUM_PAGE_MODE.EDIT ? (
+          <h2 className="text-center text-lg">Không tìm thấy phụ tùng</h2>
+        ) : (
+          <VehiclePartForm mode={mode} initialValues={vehiclePart} />
+        )}
+      </div>
     </div>
   );
 };
