@@ -1,5 +1,6 @@
 {
   "list": "Service price list retrieved successfully.",
+  "listByService": "Latest service price list of all models retrieved successfully",
   "get": "Service price details fetched successfully.",
   "create": "New service price created successfully.",
   "update": "Service price updated successfully.",

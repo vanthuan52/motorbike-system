@@ -1,4 +1,6 @@
 export enum ENUM_SERVICE_PRICE_STATUS {
   ACTIVE = 'active',
-  INACTIVE = 'inactive',
+  EXPIRED = 'expired',
+  UPCOMING = 'upcoming',
+  NO_PRICE = 'no_price',
 }
