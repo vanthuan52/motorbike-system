@@ -9,6 +9,8 @@ import {
   ServicePriceDetailResponse,
   ServicePriceListResponse,
   ServicePricePaginationQuery,
+  ModelServicePriceListResponse,
+  ModelServicePricePaginationQuery,
   ServicePriceUpdateResponse,
 } from "../types";
 import servicePriceService from "../services/service-price.service";
@@ -129,6 +131,66 @@ function* deleteServicePriceHandler(
   }
 }
 
+function* getModelServicePriceListHandler(
+  action: PayloadAction<{
+    vehicleServiceId: string;
+    query: ModelServicePricePaginationQuery;
+  }>
+) {
+  try {
+    const { vehicleServiceId, query } = action.payload;
+    const response: ModelServicePriceListResponse = yield call(
+      servicePriceService.getModelServicePriceList,
+      vehicleServiceId,
+      query
+    );
+
+    const ModelServicePrices = response.data;
+    const paginationMetadata = response?._metadata?.pagination;
+
+    yield put(
+      servicePriceActions.getModelServicePricesSuccess({
+        list: ModelServicePrices ?? [],
+        pagination: paginationMetadata,
+      })
+    );
+  } catch (error: any) {
+    const message = error.message || "Lấy danh sách giá của dịch vụ thất bại!";
+    yield put(servicePriceActions.getModelServicePricesFailure(message));
+    yield put(notificationActions.notify({ type: "error", message }));
+  }
+}
+
+function* getServicePriceListHistoryHandler(
+  action: PayloadAction<{
+    vehicleServiceId: string;
+    vehicleModelId: string;
+  }>
+) {
+  try {
+    const { vehicleServiceId, vehicleModelId } = action.payload;
+    const response: ServicePriceListResponse = yield call(
+      servicePriceService.getServicePriceHistoryList,
+      vehicleServiceId,
+      vehicleModelId
+    );
+
+    const servicePrices = response.data;
+    const paginationMetadata = response?._metadata?.pagination;
+
+    yield put(
+      servicePriceActions.getServicePricesHistorySuccess({
+        list: servicePrices ?? [],
+        pagination: paginationMetadata,
+      })
+    );
+  } catch (error: any) {
+    const message = error.message || "Lấy danh sách giá của dịch vụ thất bại!";
+    yield put(servicePriceActions.getServicePricesHistoryFailure(message));
+    yield put(notificationActions.notify({ type: "error", message }));
+  }
+}
+
 export function* ServicePriceSaga() {
   yield takeLatest(
     servicePriceActions.getServicePrices,
@@ -149,5 +211,13 @@ export function* ServicePriceSaga() {
   yield takeLatest(
     servicePriceActions.deleteServicePrice,
     deleteServicePriceHandler
+  );
+  yield takeLatest(
+    servicePriceActions.getModelServicePrices,
+    getModelServicePriceListHandler
+  );
+  yield takeLatest(
+    servicePriceActions.getServicePricesHistory,
+    getServicePriceListHistoryHandler
   );
 }

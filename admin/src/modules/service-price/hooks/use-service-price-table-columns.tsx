@@ -5,7 +5,7 @@ import { ColumnsType } from "antd/es/table";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { ServicePrice } from "../types";
 import { dateHelper } from "@/utils/datetime.utils";
-import { useDeleteServicePrice } from "./use-delete-service-price";
+import { useServicePriceDelete } from "./use-service-price-delete";
 
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const useServicePriceTableColumns = ({ onEditClick }: Props) => {
-  const { confirmModalProps, handleDeleteClick } = useDeleteServicePrice();
+  const { confirmModalProps, handleDeleteClick } = useServicePriceDelete();
 
   const columns: ColumnsType<ServicePrice> = useMemo(
     () => [

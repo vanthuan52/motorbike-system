@@ -20,13 +20,23 @@ export const ServicePriceDocParamsId: DocField[] = [
   },
 ];
 
-export const ServicePriceDocParamsSlug: DocField[] = [
+export const ServicePriceDocParamsVehicleServiceId: DocField[] = [
   {
-    name: 'slug',
+    name: 'vehicleServiceId',
     allowEmptyValue: false,
     required: true,
     type: 'string',
-    example: faker.internet.url(),
+    example: faker.string.uuid(),
+  },
+];
+
+export const ServicePriceDocParamsVehicleModelId: DocField[] = [
+  {
+    name: 'vehicleModelId',
+    allowEmptyValue: false,
+    required: true,
+    type: 'string',
+    example: faker.string.uuid(),
   },
 ];
 
@@ -63,9 +73,9 @@ export const ServicePriceDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryServicePriceType: DocField[] = [
+export const ServicePriceDocQueryVehicleModel: DocField[] = [
   {
-    name: 'ServicePriceType',
+    name: 'vehicleModel',
     allowEmptyValue: true,
     required: false,
     type: 'string',
@@ -74,9 +84,31 @@ export const ServicePriceDocQueryServicePriceType: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryVehicleBrand: DocField[] = [
+export const ServicePriceDocQueryVehicleService: DocField[] = [
   {
-    name: 'vehicleBrand',
+    name: 'vehicleService',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '',
+    description: faker.string.uuid(),
+  },
+];
+
+export const ServicePriceDocQueryVehicleModelId: DocField[] = [
+  {
+    name: 'vehicleModelId',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '',
+    description: faker.string.uuid(),
+  },
+];
+
+export const ServicePriceDocQueryVehicleServiceId: DocField[] = [
+  {
+    name: 'vehicleServiceId',
     allowEmptyValue: true,
     required: false,
     type: 'string',

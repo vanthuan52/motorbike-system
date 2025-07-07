@@ -11,19 +11,19 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import { SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY } from '../constants/service-price.list.constant';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 
-@ApiTags('module.public.ServicePrice')
+@ApiTags('module.public.service-price')
 @Controller({
   version: '1',
-  path: '/ServicePrice',
+  path: '/service-price',
 })
 export class ServicePricePublicController {
   constructor(
-    private readonly ServicePriceService: ServicePriceService,
+    private readonly servicePriceService: ServicePriceService,
     private readonly paginationService: PaginationService,
   ) {}
 
   @ServicePricePublicListDoc()
-  @ResponsePaging('ServicePrice.list')
+  @ResponsePaging('service-price.list')
   @Get('/list')
   async list(
     @PaginationQuery({
@@ -48,8 +48,8 @@ export class ServicePricePublicController {
       find['vehicleModel'] = vehicleModelId;
     }
 
-    const ServicePrices =
-      await this.ServicePriceService.findAllWithVehicleServiceAndVehicleModel(
+    const servicePrices =
+      await this.servicePriceService.findAllWithVehicleServiceAndVehicleModel(
         find,
         {
           paging: {
@@ -61,13 +61,13 @@ export class ServicePricePublicController {
       );
 
     const total: number =
-      await this.ServicePriceService.getTotalWithVehicleServiceAndVehicleModel(
+      await this.servicePriceService.getTotalWithVehicleServiceAndVehicleModel(
         find,
       );
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
-    const mapped = this.ServicePriceService.mapList(ServicePrices);
+    const mapped = this.servicePriceService.mapList(servicePrices);
     return {
       _pagination: {
         total,

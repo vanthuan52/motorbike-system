@@ -40,7 +40,7 @@ export class ServicePriceGetResponseDto extends DatabaseDto {
   dateEnd: Date | null;
 }
 
-export class CustomServicePriceGetResponseDto {
+export class ModelServicePriceGetResponseDto {
   @ApiProperty({
     example: faker.string.uuid(),
     description: 'ID giá dịch vụ',

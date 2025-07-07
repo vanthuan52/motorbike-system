@@ -18,6 +18,7 @@ export const ROUTER_PATH = {
   VEHICLE_SERVICES: "/vehicle-services",
   VEHICLE_SERVICE_DETAIL: "/vehicle-services/:id",
   VEHICLE_SERVICE_CREATION: "/vehicle-services/create",
+  VEHICLE_SERVICE_PRICES: "/vehicle-services/:id/prices",
   SERVICE_PRICES: "/service-prices",
   SERVICE_PRICE_DETAIL: "/service-prices/:id",
   SERVICE_PRICE_CREATION: "/service-prices/create",

@@ -134,6 +134,10 @@ const ServicePriceDetailPage = lazy(
   () => import("@/modules/service-price/pages/service-price-detail-page")
 );
 
+const ModelServicePricePage = lazy(
+  () => import("@/modules/service-price/pages/model-service-price-page")
+);
+
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -331,6 +335,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.VEHICLE_MODEL_DETAIL,
         element: <VehicleModelDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.VEHICLE_SERVICE_PRICES,
+        element: <ModelServicePricePage />,
       },
       {
         path: ROUTER_PATH.SERVICE_PRICES,

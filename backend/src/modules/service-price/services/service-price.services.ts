@@ -6,6 +6,7 @@ import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
+  IDatabaseDeleteOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
@@ -20,7 +21,7 @@ import {
   ServicePriceTableName,
 } from '../entities/service-price.entity';
 import {
-  ICustomServicePrice,
+  IModelServicePrice,
   IServicePriceDoc,
   IServicePriceEntity,
 } from '../interfaces/service-price.interface';
@@ -31,7 +32,7 @@ import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.upda
 import { ServicePriceGetFullResponseDto } from '../dtos/response/service-price.full.response.dto';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
-import { PipelineStage } from 'mongoose';
+import { PipelineStage, RootFilterQuery } from 'mongoose';
 import { VehicleServiceTableName } from '@/modules/vehicle-service/entities/vehicle-service.entity';
 import { VehicleModelTableName } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
@@ -145,6 +146,13 @@ export class ServicePriceService implements IServicePriceService {
     return this.servicePriceRepository.save(repository, options);
   }
 
+  async delete(
+    repository: ServicePriceDoc,
+    options?: IDatabaseDeleteOptions,
+  ): Promise<ServicePriceDoc> {
+    return this.servicePriceRepository.delete({ _id: repository._id }, options);
+  }
+
   async softDelete(
     repository: ServicePriceDoc,
     options?: IDatabaseSaveOptions,
@@ -193,7 +201,7 @@ export class ServicePriceService implements IServicePriceService {
     );
   }
 
-  async getLatestServicePrices(): Promise<ICustomServicePrice[]> {
+  async getLatestServicePrices(): Promise<IModelServicePrice[]> {
     const pipeline: PipelineStage[] = [
       // Stage 1: Sort by most recent/effective prices
       {
@@ -289,7 +297,7 @@ export class ServicePriceService implements IServicePriceService {
       },
     ];
 
-    return this.servicePriceRepository.findAllAggregate<ICustomServicePrice>(
+    return this.servicePriceRepository.findAllAggregate<IModelServicePrice>(
       pipeline,
     );
   }
@@ -340,6 +348,7 @@ export class ServicePriceService implements IServicePriceService {
           _id: 0,
           vehicleModelId: '$_id',
           vehicleModelName: '$fullName',
+          vehicleServiceId: serviceIdAsString,
           price: { $ifNull: ['$latestPrice.price', null] },
           dateStart: { $ifNull: ['$latestPrice.dateStart', null] },
           dateEnd: { $ifNull: ['$latestPrice.dateEnd', null] },
@@ -386,11 +395,11 @@ export class ServicePriceService implements IServicePriceService {
   async getLatestPricesForService(
     find: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICustomServicePrice[]> {
+  ): Promise<IModelServicePrice[]> {
     const pipeline: PipelineStage[] =
       this.createVehicleModelWithLatestServicePricePipeline(find);
 
-    return this.vehicleModelRepository.findAllAggregate<ICustomServicePrice>(
+    return this.vehicleModelRepository.findAllAggregate<IModelServicePrice>(
       pipeline,
       options,
     );

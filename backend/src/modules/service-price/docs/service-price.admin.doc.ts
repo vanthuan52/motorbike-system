@@ -2,15 +2,20 @@ import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceGetResponseDto } from '../dtos/response/service-price.get.response.dto';
-import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
+import {
+  ModelServicePriceListResponseDto,
+  ServicePriceListResponseDto,
+} from '../dtos/response/service-price.list.response.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
 import {
   ServicePriceDocParamsId,
+  ServicePriceDocParamsVehicleModelId,
+  ServicePriceDocParamsVehicleServiceId,
   ServicePriceDocQueryOrderBy,
   ServicePriceDocQueryOrderDirection,
-  ServicePriceDocQueryServicePriceType,
   ServicePriceDocQueryStatus,
-  ServicePriceDocQueryVehicleBrand,
+  ServicePriceDocQueryVehicleModel,
+  ServicePriceDocQueryVehicleService,
 } from '../constants/service-price.doc.constant';
 import {
   Doc,
@@ -26,12 +31,12 @@ import { ServicePriceGetFullResponseDto } from '../dtos/response/service-price.f
 export function ServicePriceAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all ServicePrice',
+      summary: 'get all service prices',
     }),
     DocRequest({
       queries: [
-        ...ServicePriceDocQueryVehicleBrand,
-        ...ServicePriceDocQueryServicePriceType,
+        ...ServicePriceDocQueryVehicleModel,
+        ...ServicePriceDocQueryVehicleService,
         ...ServicePriceDocQueryStatus,
         ...ServicePriceDocQueryOrderBy,
         ...ServicePriceDocQueryOrderDirection,
@@ -41,7 +46,7 @@ export function ServicePriceAdminListDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<ServicePriceListResponseDto>('ServicePrice.list', {
+    DocResponsePaging<ServicePriceListResponseDto>('service-price.list', {
       dto: ServicePriceListResponseDto,
     }),
   );
@@ -60,7 +65,7 @@ export function ServicePriceAdminCreateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServicePriceGetResponseDto>('ServicePrice.create', {
+    DocResponse<ServicePriceGetResponseDto>('service-price.create', {
       dto: ServicePriceGetResponseDto,
       statusCode: HttpStatus.CREATED,
     }),
@@ -70,7 +75,7 @@ export function ServicePriceAdminCreateDoc(): MethodDecorator {
 export function ServicePriceAdminUpdateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'update a ServicePrice',
+      summary: 'update a service price',
     }),
     DocRequest({
       params: ServicePriceDocParamsId,
@@ -81,14 +86,14 @@ export function ServicePriceAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('ServicePrice.update'),
+    DocResponse('service-price.update'),
   );
 }
 
 export function ServicePriceAdminDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'delete a ServicePrice',
+      summary: 'delete a service price',
     }),
     DocRequest({
       params: ServicePriceDocParamsId,
@@ -97,14 +102,14 @@ export function ServicePriceAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('ServicePrice.delete'),
+    DocResponse('service-price.delete'),
   );
 }
 
 export function ServicePriceAdminParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get a ServicePrice by id',
+      summary: 'get a service price by id',
     }),
     DocRequest({
       params: ServicePriceDocParamsId,
@@ -113,7 +118,7 @@ export function ServicePriceAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServicePriceGetResponseDto>('ServicePrice.getById', {
+    DocResponse<ServicePriceGetResponseDto>('service-price.getById', {
       dto: ServicePriceGetResponseDto,
     }),
   );
@@ -131,8 +136,84 @@ export function ServicePriceAdminGetDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServicePriceGetFullResponseDto>('ServicePrice.get', {
+    DocResponse<ServicePriceGetFullResponseDto>('service-price.get', {
       dto: ServicePriceGetFullResponseDto,
     }),
+  );
+}
+
+export function ServicePriceAdminListCombinedDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all service prices with a set of services and models',
+    }),
+    DocRequest({
+      queries: [
+        ...ServicePriceDocQueryVehicleModel,
+        ...ServicePriceDocQueryVehicleService,
+        ...ServicePriceDocQueryOrderBy,
+        ...ServicePriceDocQueryOrderDirection,
+      ],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<ModelServicePriceListResponseDto>(
+      'service-price.listByService',
+      {
+        dto: ModelServicePriceListResponseDto,
+      },
+    ),
+  );
+}
+
+export function ServicePriceAdminListCombinedByServiceDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all service prices with a set of service and models',
+    }),
+    DocRequest({
+      params: ServicePriceDocParamsVehicleServiceId,
+      queries: [
+        ...ServicePriceDocQueryOrderBy,
+        ...ServicePriceDocQueryOrderDirection,
+      ],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<ModelServicePriceListResponseDto>(
+      'service-price.listByService',
+      {
+        dto: ModelServicePriceListResponseDto,
+      },
+    ),
+  );
+}
+
+export function ServicePriceAdminListHistoryDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary:
+        'get all service prices history for a set of a service and a model ',
+    }),
+    DocRequest({
+      params: [
+        ...ServicePriceDocParamsVehicleServiceId,
+        ...ServicePriceDocParamsVehicleModelId,
+      ],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<ServicePriceListResponseDto>(
+      'service-price.listHistory',
+      {
+        dto: ServicePriceListResponseDto,
+      },
+    ),
   );
 }

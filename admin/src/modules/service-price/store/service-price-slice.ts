@@ -2,22 +2,36 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { PAGINATION_QUERY_INITIAL_STATE } from "@/store/constant";
 import { ApiResponsePagination } from "@/types/api.type";
 import { BaseApiState } from "@/types/redux-common.type";
-import { ServicePrice, ServicePricePaginationQuery } from "../types";
+import {
+  ServicePrice,
+  ServicePricePaginationQuery,
+  ModelServicePrice,
+  ModelServicePricePaginationQuery,
+} from "../types";
 
 interface ServicePriceState extends BaseApiState {
   list: ServicePrice[];
+  listForService: ModelServicePrice[];
+  listHistory: ServicePrice[];
   detail: ServicePrice | null;
   error: string | null;
   pagination: ApiResponsePagination | undefined;
 }
 
-interface GetServicePriceSuccessPayload {
+interface GetServicePriceListSuccessPayload {
   list: ServicePrice[];
+  pagination: ApiResponsePagination | undefined;
+}
+
+interface GetServicePriceListForServiceSuccessPayload {
+  list: ModelServicePrice[];
   pagination: ApiResponsePagination | undefined;
 }
 
 const initialState: ServicePriceState = {
   list: [],
+  listForService: [],
+  listHistory: [],
   detail: null,
   loadingList: false,
   loadingSingle: false,
@@ -55,7 +69,7 @@ export const servicePriceSlice = createSlice({
     },
     getServicePricesSuccess(
       state,
-      action: PayloadAction<GetServicePriceSuccessPayload>
+      action: PayloadAction<GetServicePriceListSuccessPayload>
     ) {
       state.loadingList = false;
       state.list = action.payload.list;
@@ -148,6 +162,64 @@ export const servicePriceSlice = createSlice({
       state.error = null;
     },
 
+    getModelServicePrices(
+      state,
+      action: PayloadAction<{
+        vehicleServiceId: string;
+        query: ModelServicePricePaginationQuery;
+      }>
+    ) {
+      state.loadingList = true;
+      state.error = null;
+      state.pagination = undefined;
+    },
+    getModelServicePricesSuccess(
+      state,
+      action: PayloadAction<GetServicePriceListForServiceSuccessPayload>
+    ) {
+      state.loadingList = false;
+      state.listForService = action.payload.list;
+      state.pagination = action.payload.pagination;
+    },
+    getModelServicePricesFailure(state, action: PayloadAction<string>) {
+      state.loadingList = false;
+      state.error = action.payload;
+      state.listForService = [];
+      state.pagination = undefined;
+    },
+
+    getServicePricesHistory(
+      state,
+      action: PayloadAction<{
+        vehicleServiceId: string;
+        vehicleModelId: string;
+      }>
+    ) {
+      state.loadingList = true;
+      state.error = null;
+      state.pagination = undefined;
+    },
+    getServicePricesHistorySuccess(
+      state,
+      action: PayloadAction<GetServicePriceListSuccessPayload>
+    ) {
+      state.loadingList = false;
+      state.listHistory = action.payload.list;
+      state.pagination = action.payload.pagination;
+    },
+    getServicePricesHistoryFailure(state, action: PayloadAction<string>) {
+      state.loadingList = false;
+      state.error = action.payload;
+      state.listHistory = [];
+      state.pagination = undefined;
+    },
+
+    resetServicePricesHistory(state) {
+      state.loadingList = false;
+      state.listHistory = [];
+      state.error = null;
+    },
+
     resetState(state) {
       state.create = { loading: false, success: false };
       state.update = { loading: false, success: false };
@@ -156,6 +228,7 @@ export const servicePriceSlice = createSlice({
       state.loadingList = false;
       state.loadingSingle = false;
       state.list = [];
+      state.listForService = [];
       state.detail = null;
       state.error = null;
       state.pagination = undefined;

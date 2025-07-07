@@ -7,6 +7,8 @@ import {
   ServicePriceCreationResponse,
   ServicePriceUpdateResponse,
   ServicePriceDeleteResponse,
+  ModelServicePricePaginationQuery,
+  ModelServicePriceListResponse,
 } from "../types";
 import { ServicePrice } from "../types";
 import { API_ENDPOINTS } from "@/constants/api-endpoint";
@@ -112,6 +114,56 @@ const servicePriceService = {
       if (response.status !== 200) {
         throw new Error(
           response.data.message || "Delete service price failed."
+        );
+      }
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+
+  getModelServicePriceList: async (
+    vehicleServiceId: string,
+    queries?: ModelServicePricePaginationQuery
+  ): Promise<ModelServicePriceListResponse> => {
+    try {
+      const response = await adminApi.get<ModelServicePriceListResponse>(
+        API_ENDPOINTS.ADMIN.MODEL_SERVICE_PRICE_LIST(vehicleServiceId),
+        {
+          params: queries,
+        }
+      );
+      if (response.status !== 200 || !response.data.data) {
+        throw new Error(
+          response.data.message || "Get service price list failed."
+        );
+      }
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiErrorResponse>;
+      throw new Error(
+        axiosError.response?.data.message || "An unexpected error."
+      );
+    }
+  },
+
+  getServicePriceHistoryList: async (
+    vehicleServiceId: string,
+    vehicleModelId: string
+  ): Promise<ServicePriceListResponse> => {
+    try {
+      const response = await adminApi.get<ServicePriceListResponse>(
+        API_ENDPOINTS.ADMIN.SERVICE_PRICE_HISTORY_LIST(
+          vehicleServiceId,
+          vehicleModelId
+        )
+      );
+      if (response.status !== 200 || !response.data.data) {
+        throw new Error(
+          response.data.message || "Get service price list failed."
         );
       }
       return response.data;
