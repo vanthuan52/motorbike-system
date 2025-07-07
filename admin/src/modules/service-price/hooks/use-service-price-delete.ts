@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/store";
 import { servicePriceActions } from "../store/service-price-slice";
 import { ServicePrice } from "../types";
 
-export function useDeleteServicePrice() {
+export function useServicePriceDelete() {
   const dispatch = useAppDispatch();
   const [isVisible, setIsVisible] = useState(false);
   const [servicePrice, setServicePrice] = useState<ServicePrice | null>(null);

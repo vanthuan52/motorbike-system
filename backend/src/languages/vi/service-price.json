@@ -1,6 +1,7 @@
 {
   "list": "Danh sách Giá dịch vụ được lấy thành công.",
   "listByService": "Danh sách giá dịch vụ mới nhất của tất cả dòng xe được lấy thành công.",
+  "listHistory": "Lịch sử giá của một dịch vụ và dòng xe được lấy thành công",
   "get": "Chi tiết Giá dịch vụ được lấy thành công.",
   "create": "Tạo mới Giá dịch vụ thành công.",
   "update": "Cập nhật Giá dịch vụ thành công.",

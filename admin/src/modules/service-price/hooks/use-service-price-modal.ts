@@ -3,9 +3,10 @@ import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
 import { servicePriceActions } from "../store/service-price-slice";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
+import { ServicePrice } from "../types";
 
 export function useServicePriceModal(
-  servicePriceDetail: any,
+  servicePriceDetail: ServicePrice | null,
   loadingSingle: boolean
 ) {
   const dispatch = useDispatch();

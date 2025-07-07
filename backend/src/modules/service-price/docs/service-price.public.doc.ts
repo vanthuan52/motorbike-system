@@ -4,15 +4,16 @@ import { ServicePriceListResponseDto } from '../dtos/response/service-price.list
 import {
   ServicePriceDocQueryOrderBy,
   ServicePriceDocQueryOrderDirection,
-  ServicePriceDocQueryServicePriceType,
   ServicePriceDocQueryStatus,
-  ServicePriceDocQueryVehicleBrand,
+  ServicePriceDocQueryVehicleModel,
+  ServicePriceDocQueryVehicleService,
 } from '../constants/service-price.doc.constant';
 import {
   Doc,
   DocRequest,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
+
 export function ServicePricePublicListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
@@ -20,8 +21,8 @@ export function ServicePricePublicListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [
-        ...ServicePriceDocQueryVehicleBrand,
-        ...ServicePriceDocQueryServicePriceType,
+        ...ServicePriceDocQueryVehicleModel,
+        ...ServicePriceDocQueryVehicleService,
         ...ServicePriceDocQueryStatus,
         ...ServicePriceDocQueryOrderBy,
         ...ServicePriceDocQueryOrderDirection,

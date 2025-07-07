@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { DollarSign } from "lucide-react";
 import { Button, Tooltip } from "antd";
 import { useAppDispatch } from "@/store";
 import { ColumnsType } from "antd/es/table";
-import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { FilterOptions } from "@/hooks/use-filters";
 import { GreenSwitch } from "@/components/ui/switch";
 import { ROUTER_PATH } from "@/constants/router-path";
@@ -127,19 +128,19 @@ export const useVehicleServiceTableColumns = ({
         key: "action",
         render: (_: any, record: VehicleService) => (
           <div className="flex items-center justify-center gap-1">
-            <Tooltip title="Sửa">
+            <Tooltip title="Quản lý giá">
               <Button
-                icon={<EyeOutlined />}
+                icon={<DollarSign size={16} />}
                 onClick={() =>
                   navigate(
-                    `${ROUTER_PATH.VEHICLE_SERVICE_DETAIL.replace(":id", record._id)}`
+                    `${ROUTER_PATH.VEHICLE_SERVICE_PRICES.replace(":id", record._id)}?name=${record.name}`
                   )
                 }
               />
             </Tooltip>
             <Tooltip title="Sửa">
               <Button
-                icon={<EditOutlined />}
+                icon={<EyeOutlined />}
                 onClick={() =>
                   navigate(
                     `${ROUTER_PATH.VEHICLE_SERVICE_DETAIL.replace(":id", record._id)}?edit=1`

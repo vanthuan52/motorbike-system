@@ -14,7 +14,7 @@ export interface IServicePriceDoc
   servicePrice: ServicePriceDoc;
 }
 
-export interface ICustomServicePrice
+export interface IModelServicePrice
   extends Omit<
     ServicePriceEntity,
     | '_id'

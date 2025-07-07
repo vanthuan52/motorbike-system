@@ -26,12 +26,13 @@ import {
   IResponsePaging,
 } from '@/common/response/interfaces/response.interface';
 import {
-  CustomServicePriceListResponseDto,
+  ModelServicePriceListResponseDto,
   ServicePriceListResponseDto,
 } from '../dtos/response/service-price.list.response.dto';
 import { ServicePriceGetResponseDto } from '../dtos/response/service-price.get.response.dto';
 import {
   IDatabaseCreateOptions,
+  IDatabaseDeleteOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { PaginationQuery } from '@/common/pagination/decorators/pagination.decorator';
@@ -39,7 +40,10 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import {
   ServicePriceAdminCreateDoc,
   ServicePriceAdminDeleteDoc,
+  ServicePriceAdminListCombinedByServiceDoc,
+  ServicePriceAdminListCombinedDoc,
   ServicePriceAdminListDoc,
+  ServicePriceAdminListHistoryDoc,
   ServicePriceAdminParamsIdDoc,
   ServicePriceAdminUpdateDoc,
 } from '../docs/service-price.admin.doc';
@@ -68,7 +72,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { ServicePriceParsePipe } from '../pipes/service-price.parse.pipe';
 import { ServicePriceDoc } from '../entities/service-price.entity';
 import {
-  ICustomServicePrice,
+  IModelServicePrice,
   IServicePriceDoc,
 } from '../interfaces/service-price.interface';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
@@ -263,12 +267,12 @@ export class ServicePriceAdminController {
   async delete(
     @Param('id', RequestRequiredPipe, ServicePriceParsePipe)
     servicePrice: ServicePriceDoc,
-    @AuthJwtPayload('user') updatedBy: string,
   ): Promise<IResponse<void>> {
     try {
-      await this.servicePriceService.softDelete(servicePrice, {
-        actionBy: updatedBy,
-      } as IDatabaseSaveOptions);
+      await this.servicePriceService.delete(
+        servicePrice,
+        {} as IDatabaseDeleteOptions,
+      );
       return {};
     } catch (err) {
       throw new InternalServerErrorException({
@@ -278,8 +282,8 @@ export class ServicePriceAdminController {
     }
   }
 
-  @ServicePriceAdminListDoc()
-  @ResponsePaging('service-price.list')
+  @ServicePriceAdminListCombinedDoc()
+  @ResponsePaging('service-price.listByService')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
@@ -298,7 +302,7 @@ export class ServicePriceAdminController {
     vehicleServiceId: string,
     @Query('vehicleModel', OptionalParseUUIDPipe)
     vehicleModelId: string,
-  ): Promise<IResponsePaging<CustomServicePriceListResponseDto>> {
+  ): Promise<IResponsePaging<ModelServicePriceListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
     };
@@ -316,14 +320,14 @@ export class ServicePriceAdminController {
 
     const allModels = await this.vehicleModelService.findAll(modelQuery);
 
-    const latestPrices: ICustomServicePrice[] =
+    const latestPrices: IModelServicePrice[] =
       await this.servicePriceService.getLatestServicePrices();
     const priceMap = new Map(); // Key: `${vehicleServiceId}_${vehicleModelId}`
     latestPrices.forEach((p) =>
       priceMap.set(`${p.vehicleServiceId}_${p.vehicleModelId}`, p),
     );
 
-    const combinedList: ICustomServicePrice[] = [];
+    const combinedList: IModelServicePrice[] = [];
     allServices.forEach((vehicleService) => {
       allModels.forEach((vehicleModel) => {
         const key = `${vehicleService._id}_${vehicleModel._id}`;
@@ -340,7 +344,7 @@ export class ServicePriceAdminController {
             dateStart: existingPrice.dateStart,
             dateEnd: existingPrice.dateEnd,
             status: existingPrice.status,
-          } as ICustomServicePrice);
+          } as IModelServicePrice);
         } else {
           combinedList.push({
             _id: null,
@@ -352,7 +356,7 @@ export class ServicePriceAdminController {
             dateStart: null,
             dateEnd: null,
             status: ENUM_SERVICE_PRICE_STATUS.NO_PRICE,
-          } as ICustomServicePrice);
+          } as IModelServicePrice);
         }
       });
     });
@@ -373,8 +377,8 @@ export class ServicePriceAdminController {
     };
   }
 
-  @ServicePriceAdminListDoc()
-  @ResponsePaging('service-price.list')
+  @ServicePriceAdminListCombinedByServiceDoc()
+  @ResponsePaging('service-price.listByService')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
@@ -392,13 +396,13 @@ export class ServicePriceAdminController {
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
-  ): Promise<IResponsePaging<CustomServicePriceListResponseDto>> {
+  ): Promise<IResponsePaging<ModelServicePriceListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       vehicleServiceId,
     };
 
-    const servicePrices: ICustomServicePrice[] =
+    const servicePrices: IModelServicePrice[] =
       await this.servicePriceService.getLatestPricesForService(find, {
         paging: {
           limit: _limit,
@@ -418,6 +422,63 @@ export class ServicePriceAdminController {
         totalPage,
       },
       data: servicePrices,
+    };
+  }
+
+  @ServicePriceAdminListHistoryDoc()
+  @ResponsePaging('service-price.listHistory')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/list/history/:vehicleServiceId/:vehicleModelId')
+  async listHistory(
+    @PaginationQuery({
+      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    { _search, _limit, _offset, _order }: PaginationListDto,
+    @Param('vehicleServiceId', RequestRequiredPipe)
+    vehicleServiceId: string,
+    @Param('vehicleModelId', RequestRequiredPipe)
+    vehicleModelId: string,
+  ): Promise<IResponsePaging<ServicePriceListResponseDto>> {
+    const find: Record<string, any> = {
+      ..._search,
+      vehicleService: vehicleServiceId,
+      vehicleModel: vehicleModelId,
+    };
+
+    const servicePrices =
+      await this.servicePriceService.findAllWithVehicleServiceAndVehicleModel(
+        find,
+        {
+          paging: {
+            limit: _limit,
+            offset: _offset,
+          },
+          order: _order,
+        },
+      );
+
+    const total: number =
+      await this.servicePriceService.getTotalWithVehicleServiceAndVehicleModel(
+        find,
+      );
+
+    const totalPage: number = this.paginationService.totalPage(total, _limit);
+
+    const mapped = this.servicePriceService.mapList(servicePrices);
+
+    return {
+      _pagination: {
+        total,
+        totalPage,
+      },
+      data: mapped,
     };
   }
 }

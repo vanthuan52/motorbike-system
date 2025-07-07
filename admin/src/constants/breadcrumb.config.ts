@@ -19,6 +19,7 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "service-prices": "Giá dịch vụ",
   "vehicle-brands": "Hãng xe",
   "vehicle-models": "Dòng xe",
+  prices: "Bảng giá",
   roles: "Vai trò",
   permissions: "Phân quyền",
   products: "Sản phẩm",

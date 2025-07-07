@@ -1,23 +1,41 @@
-import { FC, ReactNode, useRef } from "react";
+import { FC, ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import styles from "./right-drawer-modal.module.scss";
+import styles from "./center-modal.module.scss";
 
-interface RightDrawerModalProps {
+interface CenterModalProps {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   title?: string;
-  width?: string;
 }
 
-const RightDrawerModal: FC<RightDrawerModalProps> = ({
+const CenterModal: FC<CenterModalProps> = ({
   isOpen,
   onClose,
   children,
   title = "Chi tiết",
-  width = "400px",
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) {
     return null;
@@ -27,14 +45,14 @@ const RightDrawerModal: FC<RightDrawerModalProps> = ({
     <div className={styles.overlay}>
       <div
         className={styles.modalContent}
-        style={{ width: width }}
         ref={modalRef}
         onClick={(e) => {
           e.stopPropagation();
           const target = e.target as HTMLElement;
           if (
             target.closest(".ant-select-dropdown") ||
-            target.closest(".ant-picker-dropdown")
+            target.closest(".ant-picker-dropdown") ||
+            target.closest(".ant-modal-mask")
           ) {
           }
         }}
@@ -52,4 +70,4 @@ const RightDrawerModal: FC<RightDrawerModalProps> = ({
   );
 };
 
-export default RightDrawerModal;
+export default CenterModal;

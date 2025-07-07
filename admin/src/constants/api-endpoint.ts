@@ -71,10 +71,20 @@ export const API_ENDPOINTS = {
 
     // service price module
     SERVICE_PRICE_LIST: "service-price/list",
+    SERVICE_PRICE_LIST_HISTORY: (
+      vehicleServiceId: string,
+      vehicleModelId: string
+    ) => `service-price/list/history/${vehicleServiceId}/${{ vehicleModelId }}`,
     SERVICE_PRICE_DETAIL: (id: string) => `service-price/get/${id}`,
     SERVICE_PRICE_CREATE: "service-price/create",
     SERVICE_PRICE_UPDATE: (id: string) => `service-price/update/${id}`,
     SERVICE_PRICE_DELETION: (id: string) => `service-price/delete/${id}`,
+    MODEL_SERVICE_PRICE_LIST: (id: string) =>
+      `service-price/list/for-service/${id}`,
+    SERVICE_PRICE_HISTORY_LIST: (
+      vehicleServiceId: string,
+      vehicleModelId: string
+    ) => `service-price/list/history/${vehicleServiceId}/${vehicleModelId}`,
 
     // vehicle brand module
     VEHICLE_BRAND_LIST: "vehicle-brand/list",

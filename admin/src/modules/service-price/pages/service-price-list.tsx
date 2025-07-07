@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import Table from "@/components/ui/table/table";
@@ -31,9 +31,6 @@ export default function ServicePriceList() {
     list: servicePrices,
     loadingList,
     pagination: paginationState,
-    create,
-    update,
-    deletion,
     detail: servicePriceDetail,
     loadingSingle,
   } = useSelector((state: RootState) => state.servicePrice);
@@ -47,7 +44,7 @@ export default function ServicePriceList() {
 
   const modal = useServicePriceModal(servicePriceDetail, loadingSingle);
 
-  const { fetchServicePrices } = useServicePriceActions({
+  useServicePriceActions({
     pagination,
     mappedFilters,
   });
@@ -55,10 +52,6 @@ export default function ServicePriceList() {
   const { columns, confirmModalProps } = useServicePriceTableColumns({
     onEditClick: modal.openEdit,
   });
-
-  useEffect(() => {
-    fetchServicePrices();
-  }, [fetchServicePrices, create.success, update.success, deletion.success]);
 
   const handlePageChange = useCallback(
     (page: number, perPage: number) => {
