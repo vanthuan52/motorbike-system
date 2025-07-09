@@ -1,104 +1,85 @@
 "use client";
-
-import Image from "next/image";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { MaintenanceRegistrationType } from "@/types/MaintenanceRegistration";
-import { validate } from "@/utils/validation/MaintenanceRegistration";
-import FormMaintenance from "./FormMaintenance";
-import { TRANSLATION_FILES } from "@/lib/i18n";
+import { Form, Input, Button } from "antd";
+import BookingTabs from "./BookingTabs";
+import CustomerInfoSection from "./CustomerInfoSection";
+import VehicleInfoSection from "./VehicleInfoSection";
+import ServiceDetailSection from "./ServiceDetailSection";
+import PickupInfoSection from "./PickupInfoSection";
+import PickupMapSection from "./PickupMapSection";
+import PickupCostSection from "./PickupCostSection";
+import { useBookingForm } from "../hooks/useBookingForm";
+import { useVehicleBrandModel } from "../hooks/useVehicleBrandModel";
+import { useServiceCategory } from "../hooks/useServiceCategory";
 
 export default function VehicleMaintenanceRegistration() {
-  const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRSATION);
-  const [formData, setFormData] = useState<MaintenanceRegistrationType>({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone_number: "",
-    vehicle_type: "",
-    vehicle_brand: "",
-    service_type: "",
-    vehicle_number: "",
-    date: "",
-    time: "",
-    address: "",
-    note: "",
-  });
+  const { form, serviceType, handleTabChange, handleFinish } = useBookingForm();
 
-  const [errors, setErrors] = useState<typeof formData>({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone_number: "",
-    vehicle_type: "",
-    vehicle_brand: "",
-    service_type: "",
-    vehicle_number: "",
-    date: "",
-    time: "",
-    address: "",
-    note: "",
-  });
+  const {
+    selectedBrand,
+    handleBrandChange,
+    vehicleBrands,
+    loadingVehicleBrands,
+    loadingVehicleModels,
+    modelOptions,
+  } = useVehicleBrandModel();
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-    field: keyof MaintenanceRegistrationType
-  ) => {
-    const value = e.target.value;
-    const updatedData = { ...formData, [field]: value };
-    setFormData(updatedData);
-
-    const fieldError = validate(updatedData, t)[field];
-    setErrors({ ...errors, [field]: fieldError });
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    const formattedDate = date ? date.toISOString().split("T")[0] : "";
-
-    const updatedData = { ...formData, date: formattedDate };
-    setFormData(updatedData);
-
-    const fieldError = validate(updatedData, t).date;
-    setErrors({ ...errors, date: fieldError });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors = validate(formData, t);
-    setErrors(newErrors);
-
-    const isValid = Object.values(newErrors).every((msg) => msg === "");
-    if (!isValid) return;
-
-    console.log("Submit data:", formData);
-  };
-
+  const { serviceCategories, loadingServiceCategories } = useServiceCategory();
   return (
-    <div className="w-full py-6 lg:py-10">
-      <div className="container flex flex-col lg:flex-row gap-10">
-        <div className="flex flex-col items-center lg:w-1/2">
-          <h2 className="text-xl md:text-2xl font-bold mb-4 text-center">
-            {t("title")}
-          </h2>
-          <Image
-            src="/images/dang-ky-bao-duong.png"
-            alt="dang-ky-bao-duong-xe"
-            width={400}
-            height={400}
-            className="w-full max-w-[200px] md:max-w-[300px] lg:max-w-[500px] h-auto"
-          />
-        </div>
-
-        <FormMaintenance
-          formData={formData}
-          handleSubmit={handleSubmit}
-          errors={errors}
-          handleChange={handleChange}
-          handleDateChange={handleDateChange}
+    <div className="container mx-auto my-4 bg-white p-4 md:p-8">
+      <h1 className="text-2xl font-bold text-gray-800 text-center mb-3 uppercase">
+        Đặt lịch bảo dưỡng xe
+      </h1>
+      <BookingTabs value={serviceType} onChange={handleTabChange} />
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFinish}
+        requiredMark={false}
+      >
+        <CustomerInfoSection />
+        <VehicleInfoSection
+          brands={vehicleBrands}
+          loadingVehicleBrands={loadingVehicleBrands}
+          loadingVehicleModels={loadingVehicleModels}
+          modelOptions={modelOptions}
+          selectedBrand={selectedBrand}
+          onBrandChange={handleBrandChange}
+          serviceCategories={serviceCategories}
+          loadingServiceCategories={loadingServiceCategories}
         />
-      </div>
+        <ServiceDetailSection />
+
+        {serviceType === "pickup" && (
+          <div className="flex flex-col gap-4">
+            <PickupInfoSection />
+            <PickupMapSection />
+            <PickupCostSection />
+          </div>
+        )}
+        <Form.Item
+          label={<span className="font-semibold text-base">Ghi chú</span>}
+          name="note"
+        >
+          <Input.TextArea
+            rows={3}
+            placeholder="Nhập thông tin thêm về tình trạng xe hoặc yêu cầu đặc biệt"
+            maxLength={500}
+            showCount
+            size="large"
+          />
+        </Form.Item>
+        <Form.Item className="mt-6">
+          <Button
+            color="default"
+            variant="solid"
+            htmlType="submit"
+            className=" bg-black text-white font-bold text-base h-12 rounded-lg hover:bg-gray-800"
+            size="large"
+          >
+            Xác nhận đặt lịch
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 }

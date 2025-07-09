@@ -18,6 +18,9 @@ import { partTypeReducer } from "@/features/part-type/store";
 import storage from "@/utils/ssr-safe-storage";
 import { notificationReducer } from "@/features/notification/store";
 import { hiringReducer } from "@/features/hiring/store";
+import { vehicleBrandReducer } from "@/features/vehicle-brand/store";
+import { vehicleModelReducer } from "@/features/vehicle-model/store";
+import { serviceCategoryReducer } from "@/features/service-category/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -35,6 +38,9 @@ const rootReducer = combineReducers({
   notification: notificationReducer,
   partType: partTypeReducer,
   hiring: hiringReducer,
+  vehicleBrand: vehicleBrandReducer,
+  vehicleModel: vehicleModelReducer,
+  serviceCategory: serviceCategoryReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
