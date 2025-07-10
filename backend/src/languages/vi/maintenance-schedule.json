@@ -1,0 +1,15 @@
+{
+  "list": "Danh sách lịch bảo dưỡng được lấy thành công.",
+  "get": "Chi tiết lịch bảo dưỡng được lấy thành công.",
+  "create": "Tạo mới lịch bảo dưỡng thành công.",
+  "update": "Cập nhật lịch bảo dưỡng thành công.",
+  "delete": "Xóa lịch bảo dưỡng thành công.",
+  "updateStatus": "Trạng thái lịch bảo dưỡng đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên lịch bảo dưỡng này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy lịch bảo dưỡng bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái lịch bảo dưỡng thất bại.",
+    "deleteFailed": "Xóa lịch bảo dưỡng thất bại.",
+    "createFailed": "Tạo mới lịch bảo dưỡng thất bại."
+  }
+}
