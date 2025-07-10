@@ -96,13 +96,13 @@ export class MaintenanceScheduleCreateRequestPublicDto {
   @ApiProperty({
     example: '123 Đường Lớn, Quận 1, TP.HCM',
     description: 'Địa chỉ nhận xe hoặc địa chỉ cửa hàng',
-    required: true,
+    required: false,
     maxLength: 255,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  address: string;
+  @MaxLength(500)
+  address?: string;
 
   @ApiProperty({
     example: 'Xe có tiếng kêu lạ',
