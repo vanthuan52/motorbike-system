@@ -85,11 +85,11 @@ export class MaintenanceScheduleEntity extends DatabaseEntityBase {
   timeSlot: string;
 
   @DatabaseProp({
-    required: true,
+    required: false,
     trim: true,
     maxlength: 255,
   })
-  address: string;
+  address?: string;
 
   @DatabaseProp({
     required: false,
