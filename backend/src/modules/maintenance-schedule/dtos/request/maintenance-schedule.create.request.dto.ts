@@ -124,11 +124,11 @@ export class MaintenanceScheduleCreateRequestDto {
   note?: string;
 
   @ApiProperty({
-    example: ENUM_MAINTENANCE_SCHEDULE_STATUS.ACTIVE,
-    description: 'Trạng thái hoạt động (active/inactive)',
+    example: ENUM_MAINTENANCE_SCHEDULE_STATUS.PENDING,
+    description: 'Trạng thái lịch hẹn',
     required: false,
     enum: ENUM_MAINTENANCE_SCHEDULE_STATUS,
-    default: ENUM_MAINTENANCE_SCHEDULE_STATUS.ACTIVE,
+    default: ENUM_MAINTENANCE_SCHEDULE_STATUS.PENDING,
   })
   @IsOptional()
   @IsIn(Object.values(ENUM_MAINTENANCE_SCHEDULE_STATUS))
