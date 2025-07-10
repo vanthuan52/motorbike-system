@@ -2,8 +2,9 @@ import { ApiResponse } from "@/types/api.type";
 import { BaseEntity } from "@/types/base.type";
 
 export enum ENUM_MAINTENANCE_SCHEDULE_STATUS {
-  ACTIVE = "active",
-  INACTIVE = "inactive",
+  PENDING = "pending",
+  UPCOMING = "upcoming",
+  DONE = "done",
 }
 
 export interface MaintenanceSchedule extends BaseEntity {

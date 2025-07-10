@@ -5,7 +5,7 @@ import { ENUM_MAINTENANCE_SCHEDULE_STATUS } from '../../enums/maintenance-schedu
 export class MaintenanceScheduleUpdateStatusRequestDto {
   @ApiProperty({
     required: true,
-    example: ENUM_MAINTENANCE_SCHEDULE_STATUS.ACTIVE,
+    example: ENUM_MAINTENANCE_SCHEDULE_STATUS.PENDING,
     enum: ENUM_MAINTENANCE_SCHEDULE_STATUS,
   })
   @IsEnum(ENUM_MAINTENANCE_SCHEDULE_STATUS)

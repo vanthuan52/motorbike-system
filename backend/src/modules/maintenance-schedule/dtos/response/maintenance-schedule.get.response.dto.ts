@@ -54,8 +54,8 @@ export class MaintenanceScheduleGetResponseDto extends DatabaseDto {
   note?: string;
 
   @ApiProperty({
-    example: ENUM_MAINTENANCE_SCHEDULE_STATUS.ACTIVE,
-    description: 'Trạng thái hoạt động (active/inactive)',
+    example: ENUM_MAINTENANCE_SCHEDULE_STATUS.PENDING,
+    description: 'Trạng thái lịch hẹn',
     enum: ENUM_MAINTENANCE_SCHEDULE_STATUS,
   })
   status: ENUM_MAINTENANCE_SCHEDULE_STATUS;

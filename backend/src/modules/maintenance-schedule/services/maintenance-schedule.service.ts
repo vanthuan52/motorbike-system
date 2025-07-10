@@ -258,7 +258,7 @@ export class MaintenanceScheduleService implements IMaintenanceScheduleService {
     create.timeSlot = timeSlot;
     create.note = note ?? '';
     create.serviceCategory = serviceCategory;
-    create.status = ENUM_MAINTENANCE_SCHEDULE_STATUS.ACTIVE;
+    create.status = ENUM_MAINTENANCE_SCHEDULE_STATUS.PENDING;
 
     return this.MaintenanceScheduleRepository.create<MaintenanceScheduleEntity>(
       create,

@@ -99,7 +99,7 @@ export class MaintenanceScheduleEntity extends DatabaseEntityBase {
   note: string;
   @DatabaseProp({
     required: true,
-    default: ENUM_MAINTENANCE_SCHEDULE_STATUS.ACTIVE,
+    default: ENUM_MAINTENANCE_SCHEDULE_STATUS.PENDING,
     index: true,
     type: String,
     enum: ENUM_MAINTENANCE_SCHEDULE_STATUS,
