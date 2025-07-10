@@ -27,6 +27,8 @@ import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module
 import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
 import { ServicePricePublicController } from '@/modules/service-price/controllers/service-price.public.controller';
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
+import { MaintenanceSchedulePublicController } from '@/modules/maintenance-schedule/controllers/maintenance-schedule.public.controller';
+import { MaintenanceScheduleModule } from '@/modules/maintenance-schedule/maintenance-schedule.module';
 
 @Module({
   controllers: [
@@ -43,6 +45,7 @@ import { ServicePriceModule } from '@/modules/service-price/service-price.module
     VehicleBrandPublicController,
     VehicleModelPublicController,
     ServicePricePublicController,
+    MaintenanceSchedulePublicController,
   ],
   providers: [],
   exports: [],
@@ -62,6 +65,7 @@ import { ServicePriceModule } from '@/modules/service-price/service-price.module
     VehicleBrandModule,
     VehicleModelModule,
     ServicePriceModule,
+    MaintenanceScheduleModule,
   ],
 })
 export class RoutesPublicModule {}
