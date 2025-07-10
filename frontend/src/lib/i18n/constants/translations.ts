@@ -17,5 +17,5 @@ export enum TRANSLATION_FILES {
   HIRING_DETAIL = "hiring-detail",
   MAINTENANCE = "maintenance",
   MAINTENANCE_HISTORY = "maintenance-history",
-  CARE_REGISTRSATION = "care-registration",
+  CARE_REGISTRATION = "care-registration",
 }

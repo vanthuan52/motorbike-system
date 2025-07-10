@@ -25,7 +25,7 @@ export default function HeroSection() {
             {t("description")}
           </p>
           <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
-            <Link href={ROUTER_PATH.CARE_REGISTRSATION}>
+            <Link href={ROUTER_PATH.CARE_REGISTRATION}>
               <motion.button
                 className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-3 rounded-md transition cursor-pointer"
                 whileHover={{ scale: 1.05 }}

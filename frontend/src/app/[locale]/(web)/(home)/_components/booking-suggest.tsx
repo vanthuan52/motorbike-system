@@ -40,7 +40,7 @@ export default function BookingSuggest() {
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
         >
           <Link
-            href={ROUTER_PATH.CARE_REGISTRSATION}
+            href={ROUTER_PATH.CARE_REGISTRATION}
             className="bg-white !text-blue-600 font-semibold px-6 py-3 rounded-full text-lg hover:bg-gray-100 transition shadow-md"
           >
             {t("button")}

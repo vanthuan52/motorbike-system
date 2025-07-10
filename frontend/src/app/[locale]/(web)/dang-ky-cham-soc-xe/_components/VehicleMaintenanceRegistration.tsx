@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { Form, Input, Button } from "antd";
 import BookingTabs from "./BookingTabs";
 import CustomerInfoSection from "./CustomerInfoSection";
@@ -10,9 +11,12 @@ import PickupCostSection from "./PickupCostSection";
 import { useBookingForm } from "../hooks/useBookingForm";
 import { useVehicleBrandModel } from "../hooks/useVehicleBrandModel";
 import { useServiceCategory } from "../hooks/useServiceCategory";
+import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export default function VehicleMaintenanceRegistration() {
-  const { form, serviceType, handleTabChange, handleFinish } = useBookingForm();
+  const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
+  const { form, serviceType, handleTabChange, handleFinish, submitLoading } =
+    useBookingForm();
 
   const {
     selectedBrand,
@@ -27,7 +31,7 @@ export default function VehicleMaintenanceRegistration() {
   return (
     <div className="container mx-auto my-4 bg-white p-4 md:p-8">
       <h1 className="text-2xl font-bold text-gray-800 text-center mb-3 uppercase">
-        Đặt lịch bảo dưỡng xe
+        {t("pageTitle")}
       </h1>
       <BookingTabs value={serviceType} onChange={handleTabChange} />
       <Form
@@ -57,12 +61,14 @@ export default function VehicleMaintenanceRegistration() {
           </div>
         )}
         <Form.Item
-          label={<span className="font-semibold text-base">Ghi chú</span>}
+          label={
+            <span className="font-semibold text-base">{t("form.note")}</span>
+          }
           name="note"
         >
           <Input.TextArea
             rows={3}
-            placeholder="Nhập thông tin thêm về tình trạng xe hoặc yêu cầu đặc biệt"
+            placeholder={t("form.notePlaceholder")}
             maxLength={500}
             showCount
             size="large"
@@ -75,8 +81,9 @@ export default function VehicleMaintenanceRegistration() {
             htmlType="submit"
             className=" bg-black text-white font-bold text-base h-12 rounded-lg hover:bg-gray-800"
             size="large"
+            loading={submitLoading}
           >
-            Xác nhận đặt lịch
+            {t("form.submitButton")}
           </Button>
         </Form.Item>
       </Form>

@@ -3,87 +3,58 @@
     "title": "Vehicle Maintenance Registration",
     "description": "Vehicle Maintenance Registration"
   },
-  "selectOption": "Select",
-  "title": "Vehicle Maintenance Registration",
-  "titleForm": "Schedule an appointment with us",
-  "basicInfo": "Basic Information",
-  "firstName": "Please enter your first name",
-  "lastName": "Please enter your last name",
-  "email": "Email",
-  "phone": "Please enter your phone number",
-
-  "vehicleInfo": "Vehicle Information",
-  "vehicleType": {
-    "title": "Vehicle Type",
-    "motorcycle": "Motorcycle",
-    "scooter": "Scooter",
-    "clutchBike": "Clutch bike"
+  "pageTitle": "Book Vehicle Maintenance",
+  "tabs": {
+    "store": "Book at Store",
+    "pickup": "Pickup at Home"
   },
-  "vehicleBrand": "Enter brand",
-  "serviceType": {
-    "title": "Service Type",
-    "maintenance": "Maintenance",
-    "oilChange": "Oil Change",
-    "repair": "Repair"
-  },
-  "vehicleNumber": "Enter license plate",
+  "form": {
+    "name": "Full Name",
+    "nameRequired": "Please enter your full name",
+    "namePlaceholder": "Enter full name",
 
-  "timeInfo": "Time",
-  "date": "Pick a date",
-  "time": "HH:MM",
-  "address": "Enter address",
-  "note": "Add note if needed",
+    "phone": "Phone Number",
+    "phonePlaceholder": "Enter phone number",
+    "phoneRequired": "Please enter your phone number",
+    "phoneInvalid": "Invalid phone number",
 
-  "workingHour": "Working hours: 9:00 AM - 6:00 PM",
-  "onTime": "Please arrive on time for your appointment!",
-  "submit": "Submit",
-  "errors": {
-    "first_name": "Please enter your first name",
-    "last_name": "Please enter your last name",
-    "email": "Please enter a valid email",
-    "phone_number": "Please enter a valid phone number",
-    "vehicle_type": "Please select vehicle type",
-    "vehicle_brand": "Please enter vehicle brand",
-    "service_type": "Please select service type",
-    "vehicle_number": "Please enter vehicle number",
-    "date": "Please select a valid date",
-    "time": "Please select a valid time",
-    "address": "Please enter your address"
+    "vehicleBrand": "Vehicle Brand",
+    "vehicleBrandRequired": "Please select a vehicle brand",
+    "vehicleBrandPlaceholder": "Select vehicle brand",
+
+    "vehicleModel": "Vehicle Model",
+    "vehicleModelRequired": "Please select a vehicle model",
+    "vehicleModelPlaceholder": "Select vehicle model",
+
+    "vehicleNumber": "License Plate",
+    "vehicleNumberRequired": "Please enter the license plate",
+    "vehicleNumberPlaceholder": "Enter license plate",
+
+    "address": "Address",
+    "addressRequired": "Please enter your address",
+    "addressPlaceholder": "Enter address",
+
+    "date": "Booking Date",
+    "dateRequired": "Please select a booking date",
+    "datePlaceholder": "Select booking date",
+
+    "timeSlot": "Time Slot",
+    "timeSlotRequired": "Please select a time slot",
+    "timeSlotPlaceholder": "Select time slot",
+
+    "serviceCategory": "Maintenance / Repair Package",
+    "serviceCategoryRequired": "Please select at least one package",
+    "serviceCategoryPlaceholder": "Select maintenance or repair package",
+
+    "note": "Notes",
+    "notePlaceholder": "Enter additional vehicle condition or specific requests",
+
+    "submitButton": "Confirm Booking"
   },
-  "scheduleList": {
-    "title": "Maintenance Schedule",
-    "filter": {
-      "startDate": "From date",
-      "endDate": "To date",
-      "button": "Search"
-    },
-    "info": {
-      "phone": "Phone",
-      "email": "Email",
-      "address": "Address",
-      "vehicle_type": "Vehicle Type",
-      "vehicle_number": "Vehicle Number",
-      "note": "Note"
-    },
-    "service_type": {
-      "maintenance": "Maintenance",
-      "oil_change": "Oil Change",
-      "repair": "Repair"
-    },
-    "status": {
-      "confirmed": "Confirmed",
-      "pending": "Pending",
-      "cancelled": "Cancelled"
-    },
-    "confirmDelete": {
-      "title": "Confirm deletion of this appointment?",
-      "ok": "Delete",
-      "cancel": "Cancel"
-    },
-    "actions": {
-      "edit": "Edit appointment",
-      "delete": "Delete appointment"
-    },
-    "empty": "No matching appointments."
+  "pickupCost": {
+    "title": "Pickup and Delivery Cost Information",
+    "free": "Free pickup and delivery within a 3km radius.",
+    "inWorkHour": "Pickup fee: <b>30,000 VND/km</b> (for distances over 3km) during working hours.",
+    "outOfWorkHour": "Off-hour fee: <b>45,000 VND/km</b> (after 7 PM or outside working hours)."
   }
 }
