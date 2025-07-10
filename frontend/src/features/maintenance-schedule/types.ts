@@ -12,7 +12,6 @@ export interface MaintenanceSchedule extends BaseEntity {
   vehicleBrand: string;
   vehicleModel: string;
   serviceCategories: string[];
-  staff?: string;
   vehicleNumber: string;
   scheduleDate: Date;
   timeSlot: string;
@@ -25,9 +24,6 @@ export interface MaintenanceSchedulePaginationQuery extends BaseEntity {
   status?: ENUM_MAINTENANCE_SCHEDULE_STATUS;
 }
 
-export type MaintenanceScheduleListResponse = ApiResponse<
-  MaintenanceSchedule[]
+export type MaintenanceScheduleCreationResponse = ApiResponse<
+  MaintenanceSchedule["_id"]
 >;
-
-export type MaintenanceScheduleDetailResponse =
-  ApiResponse<MaintenanceSchedule>;

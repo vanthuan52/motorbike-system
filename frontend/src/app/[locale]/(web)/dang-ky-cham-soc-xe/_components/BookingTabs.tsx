@@ -1,17 +1,20 @@
 import React from "react";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
+import { TRANSLATION_FILES } from "@/lib/i18n";
 
 type BookingTabsProps = {
   value: string;
   onChange: (key: string) => void;
 };
 
-const tabs = [
-  { key: "store", label: "Đặt lịch tại cửa hàng" },
-  { key: "pickup", label: "Tiếp nhận xe tận nơi" },
-];
-
 export default function BookingTabs({ value, onChange }: BookingTabsProps) {
+  const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
+
+  const tabs = [
+    { key: "store", label: t("tabs.store") },
+    { key: "pickup", label: t("tabs.pickup") },
+  ];
   return (
     <div className="flex bg-gray-100 rounded-lg p-1 mb-6 border border-gray-200">
       {tabs.map((tab) => {

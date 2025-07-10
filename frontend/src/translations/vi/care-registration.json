@@ -3,87 +3,58 @@
     "title": "Đăng Ký Bảo Dưỡng Xe",
     "description": "Đăng Ký Bảo Dưỡng Xe"
   },
-  "selectOption": "Chọn",
-  "title": "Đăng Ký Bảo Dưỡng Xe",
-  "titleForm": "Đặt lịch hẹn với chúng tôi",
-  "basicInfo": "Thông Tin Cơ Bản",
-  "firstName": "Vui lòng nhập tên",
-  "lastName": "Vui lòng nhập họ",
-  "email": "Email",
-  "phone": "Vui lòng nhập số điện thoại",
-
-  "vehicleInfo": "Thông Tin Xe",
-  "vehicleType": {
-    "title": "Loại Xe",
-    "motorcycle": "Xe số",
-    "scooter": "Xe tay ga",
-    "clutchBike": "Xe côn"
+  "pageTitle": "Đặt lịch bảo dưỡng xe",
+  "tabs": {
+    "store": "Đặt lịch tại cửa hàng",
+    "pickup": "Tiếp nhận xe tận nơi"
   },
-  "vehicleBrand": "Nhập hãng xe",
-  "serviceType": {
-    "title": "Loại Dịch Vụ",
-    "maintenance": "Bảo Dưỡng",
-    "oilChange": "Thay Nhớt",
-    "repair": "Sửa Chữa"
-  },
-  "vehicleNumber": "Nhập biển số xe",
+  "form": {
+    "name": "Họ và tên",
+    "nameRequired": "Vui lòng nhập họ và tên",
+    "namePlaceholder": "Nhập họ và tên",
 
-  "timeInfo": "Thời Gian",
-  "date": "Chọn ngày",
-  "time": "HH:MM",
-  "address": "Nhập địa chỉ",
-  "note": "Ghi chú nếu cần",
+    "phone": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại",
+    "phoneRequired": "Vui lòng nhập số điện thoại",
+    "phoneInvalid": "Số điện thoại không hợp lệ",
 
-  "workingHour": "Thời gian làm việc: 9:00 - 18:00",
-  "onTime": "Vui lòng đến đúng giờ theo lịch hẹn!",
-  "submit": "Gửi Đăng Ký",
-  "errors": {
-    "first_name": "Vui lòng nhập tên",
-    "last_name": "Vui lòng nhập họ",
-    "email": "Vui lòng nhập email hợp lệ",
-    "phone_number": "Vui lòng nhập số điện thoại hợp lệ",
-    "vehicle_type": "Vui lòng chọn loại xe",
-    "vehicle_brand": "Vui lòng nhập hãng xe",
-    "service_type": "Vui lòng chọn loại dịch vụ",
-    "vehicle_number": "Vui lòng nhập biển số xe",
-    "date": "Vui lòng chọn ngày hợp lệ",
-    "time": "Vui lòng chọn thời gian hợp lệ",
-    "address": "Vui lòng nhập địa chỉ"
+    "vehicleBrand": "Hãng xe",
+    "vehicleBrandRequired": "Vui lòng chọn hãng xe",
+    "vehicleBrandPlaceholder": "Chọn hãng xe",
+
+    "vehicleModel": "Tên xe",
+    "vehicleModelRequired": "Vui lòng chọn tên xe",
+    "vehicleModelPlaceholder": "Chọn tên xe",
+
+    "vehicleNumber": "Biển số xe",
+    "vehicleNumberRequired": "Vui lòng nhập biển số xe",
+    "vehicleNumberPlaceholder": "Nhập biển số xe",
+
+    "address": "Địa chỉ",
+    "addressRequired": "Vui lòng nhập địa chỉ",
+    "addressPlaceholder": "Nhập địa chỉ",
+
+    "date": "Ngày đặt lịch",
+    "dateRequired": "Vui chọn ngày đặt lịch",
+    "datePlaceholder": "Chọn ngày đặt lịch",
+
+    "timeSlot": "Khung giờ",
+    "timeSlotRequired": "Vui chọn khung giờ",
+    "timeSlotPlaceholder": "Chọn khung giờ",
+
+    "serviceCategory": "Gói bảo dưỡng, sửa chữa",
+    "serviceCategoryRequired": "Vui lòng chọn gói bảo dưỡng, sửa chữa",
+    "serviceCategoryPlaceholder": "Chọn gói bảo dưỡng, sửa chữa",
+
+    "note": "Ghi chú",
+    "notePlaceholder": "Nhập thông tin thêm về tình trạng xe hoặc yêu cầu đặc biệt",
+
+    "submitButton": "Xác nhận đặt lịch"
   },
-  "scheduleList": {
-    "title": "Lịch Bảo Dưỡng",
-    "filter": {
-      "startDate": "Từ ngày",
-      "endDate": "Đến ngày",
-      "button": "Tìm kiếm"
-    },
-    "info": {
-      "phone": "Số điện thoại",
-      "email": "Email",
-      "address": "Địa chỉ",
-      "vehicle_type": "Loại Xe",
-      "vehicle_number": "Biển Số Xe",
-      "note": "Ghi chú"
-    },
-    "service_type": {
-      "maintenance": "Bảo Dưỡng",
-      "oil_change": "Thay Nhớt",
-      "repair": "Sửa Chữa"
-    },
-    "status": {
-      "confirmed": "Đã xác nhận",
-      "pending": "Chờ xác nhận",
-      "cancelled": "Đã hủy"
-    },
-    "confirmDelete": {
-      "title": "Xác nhận xóa lịch hẹn này?",
-      "ok": "Xóa",
-      "cancel": "Hủy"
-    },
-    "actions": {
-      "edit": "Chỉnh sửa lịch hẹn",
-      "delete": "Xóa lịch hẹn"
-    },
-    "empty": "Không có lịch hẹn phù hợp."
+  "pickupCost": {
+    "title": "Thông tin về chi phí giao nhận xe",
+    "free": "Miễn phí giao nhận trong phạm vi bán kính 3km.",
+    "inWorkHour": "Phí giao nhận: <b>30.000đ/km</b> (cho khoảng cách lớn hơn 3km) trong giờ làm việc.",
+    "outOfWorkHour": "Phí ngoài giờ: <b>45.000đ/km</b> (sau 19h hoặc ngoài khung giờ làm việc)."
   }
 }

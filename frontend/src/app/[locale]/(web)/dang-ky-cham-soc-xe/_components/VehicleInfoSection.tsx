@@ -1,6 +1,8 @@
 import { Row, Col, Form, Select, Input } from "antd";
 import { VehicleBrand } from "@/features/vehicle-brand/types";
 import { ServiceCategory } from "@/features/service-category/types";
+import { useTranslations } from "next-intl";
+import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export default function VehicleInfoSection({
   brands,
@@ -21,16 +23,22 @@ export default function VehicleInfoSection({
   serviceCategories: ServiceCategory[];
   loadingServiceCategories: boolean;
 }) {
+  const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
+
   return (
     <Row gutter={16}>
       <Col xs={24} md={12}>
         <Form.Item
-          label={<span className="font-semibold text-base">Hãng xe</span>}
+          label={
+            <span className="font-semibold text-base">
+              {t("form.vehicleBrand")}
+            </span>
+          }
           name="vehicleBrand"
-          rules={[{ required: true, message: "Vui lòng chọn hãng xe" }]}
+          rules={[{ required: true, message: t("form.vehicleBrandRequired") }]}
         >
           <Select
-            placeholder="Select..."
+            placeholder={t("form.vehicleBrandPlaceholder")}
             options={brands.map((b) => ({ label: b.name, value: b._id }))}
             onChange={onBrandChange}
             allowClear
@@ -39,14 +47,19 @@ export default function VehicleInfoSection({
           />
         </Form.Item>
       </Col>
+
       <Col xs={24} md={12}>
         <Form.Item
-          label={<span className="font-semibold text-base">Tên xe</span>}
+          label={
+            <span className="font-semibold text-base">
+              {t("form.vehicleModel")}
+            </span>
+          }
           name="vehicleModel"
-          rules={[{ required: true, message: "Vui lòng chọn tên xe" }]}
+          rules={[{ required: true, message: t("form.vehicleModelRequired") }]}
         >
           <Select
-            placeholder="Select..."
+            placeholder={t("form.vehicleModelPlaceholder")}
             options={modelOptions}
             disabled={!selectedBrand}
             allowClear
@@ -55,32 +68,38 @@ export default function VehicleInfoSection({
           />
         </Form.Item>
       </Col>
-      <Col xs={24} md={12}>
-        <Form.Item
-          label={<span className="font-semibold text-base">Biển số xe</span>}
-          name="vehicleNumber"
-          rules={[{ required: true, message: "Vui lòng nhập biển số xe" }]}
-        >
-          <Input placeholder="Nhập Biển số xe" size="large" />
-        </Form.Item>
-      </Col>
+
       <Col xs={24} md={12}>
         <Form.Item
           label={
             <span className="font-semibold text-base">
-              Gói bảo dưỡng, sửa chữa
+              {t("form.vehicleNumber")}
             </span>
           }
-          name="serviceCategories"
+          name="vehicleNumber"
+          rules={[{ required: true, message: t("form.vehicleNumberRequired") }]}
+        >
+          <Input
+            placeholder={t("form.vehicleNumberPlaceholder")}
+            size="large"
+          />
+        </Form.Item>
+      </Col>
+
+      <Col xs={24} md={12}>
+        <Form.Item
+          label={
+            <span className="font-semibold text-base">
+              {t("form.serviceCategory")}
+            </span>
+          }
+          name="serviceCategory"
           rules={[
-            {
-              required: true,
-              message: "Vui lòng chọn gói bảo dưỡng, sửa chữa",
-            },
+            { required: true, message: t("form.serviceCategoryRequired") },
           ]}
         >
           <Select
-            placeholder="Select..."
+            placeholder={t("form.selectPlaceholder")}
             options={serviceCategories.map((s) => ({
               label: s.name,
               value: s._id,
