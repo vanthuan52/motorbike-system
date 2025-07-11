@@ -69,6 +69,14 @@ export const API_ENDPOINTS = {
       `vehicle-service/update/${id}/status`,
     VEHICLE_SERVICE_DELETION: (id: string) => `vehicle-service/delete/${id}`,
 
+    // service checklist module
+    SERVICE_CHECKLIST_LIST: "service-checklist/list",
+    SERVICE_CHECKLIST_DETAIL: (id: string) => `service-checklist/get/${id}`,
+    SERVICE_CHECKLIST_CREATE: "service-checklist/create",
+    SERVICE_CHECKLIST_UPDATE: (id: string) => `service-checklist/update/${id}`,
+    SERVICE_CHECKLIST_DELETION: (id: string) =>
+      `service-checklist/delete/${id}`,
+
     // service price module
     SERVICE_PRICE_LIST: "service-price/list",
     SERVICE_PRICE_LIST_HISTORY: (

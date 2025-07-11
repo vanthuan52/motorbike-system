@@ -4,7 +4,7 @@ import { LayoutList, ScrollText } from "lucide-react";
 import { CgMenuRightAlt } from "react-icons/cg";
 import { IoCarSportSharp } from "react-icons/io5";
 import { RxDashboard, RxHome } from "react-icons/rx";
-import { BiCategoryAlt, BiMessageDetail } from "react-icons/bi";
+import { BiCategoryAlt, BiMessageDetail, BiTask } from "react-icons/bi";
 import { TbSettingsCode } from "react-icons/tb";
 import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { GrSchedulePlay } from "react-icons/gr";
@@ -68,6 +68,12 @@ const menuItems = [
     icon: <ScrollText />,
     href: ROUTER_PATH.SERVICE_PRICES,
     label: "Giá dịch vụ",
+  },
+  {
+    key: "service-checklist",
+    icon: <BiTask />,
+    href: ROUTER_PATH.SERVICE_CHECKLIST,
+    label: "Danh sách công việc",
   },
   {
     key: "part-types",

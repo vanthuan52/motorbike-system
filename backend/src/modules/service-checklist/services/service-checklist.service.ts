@@ -9,6 +9,7 @@ import {
   IDatabaseCreateManyOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
+  IDatabaseDeleteOptions,
   IDatabaseExistsOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
@@ -139,6 +140,16 @@ export class ServiceChecklistService implements IServiceChecklistService {
     options?: IDatabaseSaveOptions,
   ): Promise<ServiceChecklistDoc> {
     return this.serviceChecklistRepository.softDelete(repository, options);
+  }
+
+  async delete(
+    repository: ServiceChecklistDoc,
+    options?: IDatabaseDeleteOptions,
+  ): Promise<ServiceChecklistDoc> {
+    return this.serviceChecklistRepository.delete(
+      { _id: repository._id },
+      options,
+    );
   }
 
   async deleteMany(
