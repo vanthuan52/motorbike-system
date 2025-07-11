@@ -31,6 +31,8 @@ import { ServicePriceAdminController } from '@/modules/service-price/controllers
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
 import { MaintenanceScheduleAdminController } from '@/modules/maintenance-schedule/controllers/maintenance-schedule.admin.controller';
 import { MaintenanceScheduleModule } from '@/modules/maintenance-schedule/maintenance-schedule.module';
+import { ServiceChecklistAdminController } from '@/modules/service-checklist/controllers/service-checklist.admin.controller';
+import { ServiceChecklistModule } from '@/modules/service-checklist/service-checklist.module';
 
 @Module({
   controllers: [
@@ -51,6 +53,7 @@ import { MaintenanceScheduleModule } from '@/modules/maintenance-schedule/mainte
     VehicleModelAdminController,
     ServicePriceAdminController,
     MaintenanceScheduleAdminController,
+    ServiceChecklistAdminController,
   ],
   providers: [],
   exports: [],
@@ -71,6 +74,7 @@ import { MaintenanceScheduleModule } from '@/modules/maintenance-schedule/mainte
     VehicleModelModule,
     ServicePriceModule,
     MaintenanceScheduleModule,
+    ServiceChecklistModule,
   ],
 })
 export class RoutesAdminModule {}

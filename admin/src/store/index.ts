@@ -21,6 +21,7 @@ import { vehicleServiceReducer } from "@/modules/vehicle-service/store";
 import { vehicleModelReducer } from "@/modules/vehicle-model/store";
 import { servicePriceReducer } from "@/modules/service-price/store";
 import { vehiclePartReducer } from "@/modules/vehicle-parts/store";
+import { serviceChecklistReducer } from "@/modules/service-checklist/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -37,6 +38,7 @@ export const store = configureStore({
     stores: storesReducer,
     serviceCategory: serviceCategoryReducer,
     vehicleService: vehicleServiceReducer,
+    serviceChecklist: serviceChecklistReducer,
     vehicleBrand: vehicleBrandReducer,
     vehicleModel: vehicleModelReducer,
     servicePrice: servicePriceReducer,

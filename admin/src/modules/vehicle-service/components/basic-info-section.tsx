@@ -48,6 +48,7 @@ const BasicInfoSection = ({
             rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
           >
             <SelectOption
+              className="!h-10"
               placeholder="Chọn danh mục"
               options={serviceCategoryOptions}
               loading={loadingServiceCategories}

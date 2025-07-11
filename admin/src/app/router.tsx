@@ -138,6 +138,10 @@ const ModelServicePricePage = lazy(
   () => import("@/modules/service-price/pages/model-service-price-page")
 );
 
+const ServiceChecklistPage = lazy(
+  () => import("@/modules/service-checklist/pages/service-checklist-page")
+);
+
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -351,6 +355,10 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.SERVICE_PRICE_DETAIL,
         element: <ServicePriceDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.SERVICE_CHECKLIST,
+        element: <ServiceChecklistPage />,
       },
     ],
   },
