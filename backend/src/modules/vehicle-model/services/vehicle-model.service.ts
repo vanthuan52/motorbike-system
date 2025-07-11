@@ -35,7 +35,6 @@ import {
 import { VehicleModelUploadPhotoRequestDto } from '../dtos/request/vehicle-model.upload-photo.request.dto';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { ServiceCategoryTableName } from '@/modules/service-category/entities/service-category.entity';
 import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
 import { VehicleModelGetResponseDto } from '../dtos/response/vehicle-model.get.response.dto';
 import { VehicleBrandTableName } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';

@@ -6,6 +6,7 @@ import {
   MaxLength,
   IsIn,
   IsUUID,
+  IsArray,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
 import { ENUM_VEHICLE_SERVICE_STATUS } from '../../enums/vehicle-service.enum';
@@ -73,4 +74,11 @@ export class VehicleServiceCreateRequestDto {
   @IsNotEmpty()
   @IsUUID()
   serviceCategory: string;
+
+  @ApiProperty({
+    example: [faker.string.uuid()],
+    required: true,
+  })
+  @IsArray()
+  checklistItems: string[];
 }

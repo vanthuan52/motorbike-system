@@ -1,0 +1,18 @@
+{
+  "list": "Service categories list retrieved successfully.",
+  "get": "Service checklist details fetched successfully.",
+  "create": "New Service checklist created successfully.",
+  "update": "Service checklist updated successfully.",
+  "delete": "Service checklist deleted successfully.",
+  "updateStatus": "Service checklist status updated to {status}.",
+  "error": {
+    "nameExist": "This Service checklist name already exists.",
+    "notFound": "Sorry, we couldn't find the Service checklist you requested.",
+    "updateStatusFailed": "Failed to update Service checklist status.",
+    "deleteFailed": "Failed to delete Service checklist.",
+    "createFailed": "Failed to create new Service checklist.",
+    "slugExisted": "This Service checklist slug already exists.",
+    "inconsistentIds": "One or more provided IDs do not exist or are invalid.",
+    "invalidIds": "One or more provided IDs are invalid."
+  }
+}

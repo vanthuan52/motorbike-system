@@ -3,6 +3,7 @@ import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
+  IDatabaseDeleteOptions,
   IDatabaseExistsOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
@@ -82,6 +83,11 @@ export interface IVehicleServiceService {
   softDelete(
     repository: VehicleServiceDoc,
     options?: IDatabaseSaveOptions,
+  ): Promise<VehicleServiceDoc>;
+
+  delete(
+    repository: VehicleServiceDoc,
+    options?: IDatabaseDeleteOptions,
   ): Promise<VehicleServiceDoc>;
 
   deleteMany(
