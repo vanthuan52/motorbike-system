@@ -1,0 +1,18 @@
+{
+  "list": "Danh sách công việc được lấy thành công.",
+  "get": "Chi tiết công việc được lấy thành công.",
+  "create": "Tạo mới công việc thành công.",
+  "update": "Cập nhật công việc thành công.",
+  "delete": "Xóa công việc thành công.",
+  "updateStatus": "Trạng thái của công việc đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên công việc này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy công việc bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái công việc thất bại.",
+    "deleteFailed": "Xóa công việc thất bại.",
+    "createFailed": "Tạo mới công việc thất bại.",
+    "slugExisted": "Slug của công việc này đã tồn tại.",
+    "inconsistentIds": "Một trong số các Ids không tồn tại hoặc sai",
+    "invalidIds": "Một trong số các Ids bị sai"
+  }
+}

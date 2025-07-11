@@ -8,6 +8,7 @@ import {
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
 import { ServiceCategoryEntity } from '@/modules/service-category/entities/service-category.entity';
+import { ServiceChecklistEntity } from '@/modules/service-checklist/entities/service-checklist.entity';
 
 export const VehicleServiceTableName = 'vehicle_services';
 
@@ -65,6 +66,13 @@ export class VehicleServiceEntity extends DatabaseEntityBase {
     schema: AwsS3Schema,
   })
   photo?: AwsS3Entity;
+
+  @DatabaseProp({
+    type: [String],
+    ref: () => ServiceChecklistEntity.name,
+    default: [],
+  })
+  checklistItems: string[];
 }
 
 export const VehicleServiceSchema = DatabaseSchema(VehicleServiceEntity);

@@ -79,6 +79,8 @@ import {
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { VehicleServiceParsePipe } from '../pipes/vehicle-service.parse.pipe';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
+import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
+import { VehicleServiceChecklistIdsPipe } from '../pipes/vehicle-service.checklist-ids.pipe';
 
 @ApiTags('modules.admin.vehicle-service')
 @Controller({
@@ -89,6 +91,7 @@ export class VehicleServiceAdminController {
   constructor(
     private readonly serviceCategoryService: ServiceCategoryService,
     private readonly vehicleServiceService: VehicleServiceService,
+    private readonly serviceChecklistService: ServiceChecklistService,
     private readonly paginationService: PaginationService,
   ) {}
 
@@ -184,8 +187,12 @@ export class VehicleServiceAdminController {
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
+    @Body('checklistItems', VehicleServiceChecklistIdsPipe)
+    checklistItems: string[],
     @Body() body: VehicleServiceCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
+    body.checklistItems = checklistItems;
+
     const promises: Promise<any>[] = [
       this.serviceCategoryService.findOneById(body.serviceCategory),
       this.vehicleServiceService.existBySlug(body.slug),
@@ -233,8 +240,24 @@ export class VehicleServiceAdminController {
     @Param('id', RequestRequiredPipe, VehicleServiceParsePipe)
     vehicleService: VehicleServiceDoc,
     @AuthJwtPayload('user') updatedBy: string,
+    @Body('checklistItems', VehicleServiceChecklistIdsPipe)
+    checklistItems: string[],
     @Body() body: VehicleServiceUpdateRequestDto,
   ): Promise<void> {
+    body.checklistItems = checklistItems;
+
+    if (body.serviceCategory) {
+      const checkServiceCategory =
+        await this.serviceCategoryService.findOneById(body.serviceCategory);
+
+      if (!checkServiceCategory) {
+        throw new NotFoundException({
+          statusCode: ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR.NOT_FOUND,
+          message: 'service-category.error.notFound',
+        });
+      }
+    }
+
     if (body.slug && body.slug !== vehicleService.slug) {
       const existingBySlug = await this.vehicleServiceService.findOne({
         slug: body.slug,
@@ -319,7 +342,7 @@ export class VehicleServiceAdminController {
     @AuthJwtPayload('user') updatedBy: string,
   ): Promise<IResponse<void>> {
     try {
-      await this.vehicleServiceService.softDelete(vehicleService, {
+      await this.vehicleServiceService.delete(vehicleService, {
         actionBy: updatedBy,
       } as IDatabaseSaveOptions);
       return {};

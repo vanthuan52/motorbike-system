@@ -12,6 +12,7 @@ import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
+  IDatabaseDeleteOptions,
   IDatabaseExistsOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
@@ -156,23 +157,20 @@ export class VehicleServiceService implements IVehicleServiceService {
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<IVehicleServiceEntity[]> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithServiceCategory(find);
-
-    return this.vehicleServiceRepository.findAllAggregate<IVehicleServiceEntity>(
-      pipeline,
-      options,
-    );
+    return this.vehicleServiceRepository.findAll<IVehicleServiceEntity>(find, {
+      ...options,
+      join: true,
+    });
   }
 
   async getTotalWithServiceCategory(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
   ): Promise<number> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithServiceCategory(find);
-
-    return this.vehicleServiceRepository.getTotalAggregate(pipeline, options);
+    return this.vehicleServiceRepository.getTotal(find, {
+      ...options,
+      join: true,
+    });
   }
 
   async findOneById(
@@ -226,6 +224,7 @@ export class VehicleServiceService implements IVehicleServiceService {
       description,
       order,
       serviceCategory,
+      checklistItems,
     }: VehicleServiceCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<VehicleServiceDoc> {
@@ -235,6 +234,7 @@ export class VehicleServiceService implements IVehicleServiceService {
     create.description = description;
     create.order = order;
     create.serviceCategory = serviceCategory;
+    create.checklistItems = checklistItems;
     create.status = ENUM_VEHICLE_SERVICE_STATUS.ACTIVE;
 
     return this.vehicleServiceRepository.create<VehicleServiceEntity>(
@@ -251,6 +251,7 @@ export class VehicleServiceService implements IVehicleServiceService {
       description,
       order,
       serviceCategory,
+      checklistItems,
     }: VehicleServiceUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<VehicleServiceDoc> {
@@ -259,6 +260,7 @@ export class VehicleServiceService implements IVehicleServiceService {
     repository.description = description ?? repository.description;
     repository.order = order ?? repository.order;
     repository.serviceCategory = serviceCategory ?? repository.serviceCategory;
+    repository.checklistItems = checklistItems ?? repository.checklistItems;
 
     return this.vehicleServiceRepository.save(repository, options);
   }
@@ -268,6 +270,16 @@ export class VehicleServiceService implements IVehicleServiceService {
     options?: IDatabaseSaveOptions,
   ): Promise<VehicleServiceDoc> {
     return this.vehicleServiceRepository.softDelete(repository, options);
+  }
+
+  async delete(
+    repository: VehicleServiceDoc,
+    options?: IDatabaseDeleteOptions,
+  ): Promise<VehicleServiceDoc> {
+    return this.vehicleServiceRepository.delete(
+      { _id: repository._id },
+      options,
+    );
   }
 
   async deleteMany(

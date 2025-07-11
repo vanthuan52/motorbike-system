@@ -46,4 +46,10 @@ export class VehicleServiceGetResponseDto extends DatabaseDto {
   })
   @Type(() => AwsS3ResponseDto)
   photo?: AwsS3ResponseDto;
+
+  @ApiProperty({
+    required: true,
+    example: [],
+  })
+  checklistItems: string[];
 }

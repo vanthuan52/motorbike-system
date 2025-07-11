@@ -6,6 +6,7 @@ import {
 } from '../entities/vehicle-service.entity';
 import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
 import { ServiceCategoryEntity } from '@/modules/service-category/entities/service-category.entity';
+import { ServiceChecklistEntity } from '@/modules/service-checklist/entities/service-checklist.entity';
 
 export class VehicleServiceRepository extends DatabaseRepositoryBase<
   VehicleServiceEntity,
@@ -22,13 +23,19 @@ export class VehicleServiceRepository extends DatabaseRepositoryBase<
         isActive: true,
       },
     },
+    {
+      path: 'checklistItems',
+      localField: 'checklistItems',
+      foreignField: '_id',
+      model: ServiceChecklistEntity.name,
+    },
   ];
 
   constructor(
     @InjectDatabaseModel(VehicleServiceEntity.name)
-    private readonly VehicleServiceModel: Model<VehicleServiceEntity>,
+    private readonly vehicleServiceModel: Model<VehicleServiceEntity>,
   ) {
-    super(VehicleServiceModel, [
+    super(vehicleServiceModel, [
       {
         path: 'serviceCategory',
         localField: 'serviceCategory',
@@ -36,10 +43,17 @@ export class VehicleServiceRepository extends DatabaseRepositoryBase<
         model: ServiceCategoryEntity.name,
         justOne: true,
       },
+      {
+        path: 'checklistItems',
+        localField: 'checklistItems',
+        foreignField: '_id',
+        model: ServiceChecklistEntity.name,
+        select: '-createdAt -updatedAt -__v',
+      },
     ]);
   }
 
   async findOneBySlug(slug: string): Promise<VehicleServiceDoc | null> {
-    return this.VehicleServiceModel.findOne({ slug }).exec();
+    return this.vehicleServiceModel.findOne({ slug }).exec();
   }
 }
