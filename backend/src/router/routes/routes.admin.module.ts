@@ -29,10 +29,10 @@ import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module
 import { VehicleModelAdminController } from '@/modules/vehicle-model/controllers/vehicle-model.admin.controller';
 import { ServicePriceAdminController } from '@/modules/service-price/controllers/service-price.admin.controller';
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
-import { MaintenanceScheduleAdminController } from '@/modules/maintenance-schedule/controllers/maintenance-schedule.admin.controller';
-import { MaintenanceScheduleModule } from '@/modules/maintenance-schedule/maintenance-schedule.module';
 import { ServiceChecklistAdminController } from '@/modules/service-checklist/controllers/service-checklist.admin.controller';
 import { ServiceChecklistModule } from '@/modules/service-checklist/service-checklist.module';
+import { AppointmentsAdminController } from '@/modules/appointment/controllers/appointment.admin.controller';
+import { AppointmentsModule } from '@/modules/appointment/appointment.module';
 
 @Module({
   controllers: [
@@ -52,8 +52,8 @@ import { ServiceChecklistModule } from '@/modules/service-checklist/service-chec
     VehicleBrandAdminController,
     VehicleModelAdminController,
     ServicePriceAdminController,
-    MaintenanceScheduleAdminController,
     ServiceChecklistAdminController,
+    AppointmentsAdminController,
   ],
   providers: [],
   exports: [],
@@ -73,8 +73,8 @@ import { ServiceChecklistModule } from '@/modules/service-checklist/service-chec
     VehicleBrandModule,
     VehicleModelModule,
     ServicePriceModule,
-    MaintenanceScheduleModule,
     ServiceChecklistModule,
+    AppointmentsModule,
   ],
 })
 export class RoutesAdminModule {}
