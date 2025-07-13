@@ -39,7 +39,7 @@ const OtherInfoSection = ({ mode }: OtherInfoSectionProps) => {
           </Form.Item>
           <Form.Item
             label="Danh sách công việc"
-            name="checklistItemIds"
+            name="checklistItems"
             className="md:col-span-2"
           >
             <Checkbox.Group>

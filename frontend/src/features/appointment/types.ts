@@ -1,13 +1,13 @@
 import { ApiResponse } from "@/types/api.type";
 import { BaseEntity } from "@/types/base.type";
 
-export enum ENUM_MAINTENANCE_SCHEDULE_STATUS {
+export enum ENUM_APPOINTMENTS_STATUS {
   PENDING = "pending",
   UPCOMING = "upcoming",
   DONE = "done",
 }
 
-export interface MaintenanceSchedule extends BaseEntity {
+export interface Appointments extends BaseEntity {
   customer: string;
   phone: string;
   vehicleBrand: string;
@@ -18,13 +18,11 @@ export interface MaintenanceSchedule extends BaseEntity {
   timeSlot: string;
   address: string;
   note?: string;
-  status?: ENUM_MAINTENANCE_SCHEDULE_STATUS;
+  status?: ENUM_APPOINTMENTS_STATUS;
 }
 
-export interface MaintenanceSchedulePaginationQuery extends BaseEntity {
-  status?: ENUM_MAINTENANCE_SCHEDULE_STATUS;
+export interface AppointmentsPaginationQuery extends BaseEntity {
+  status?: ENUM_APPOINTMENTS_STATUS;
 }
 
-export type MaintenanceScheduleCreationResponse = ApiResponse<
-  MaintenanceSchedule["_id"]
->;
+export type AppointmentsCreationResponse = ApiResponse<Appointments["_id"]>;

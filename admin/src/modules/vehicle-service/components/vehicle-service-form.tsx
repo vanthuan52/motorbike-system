@@ -57,12 +57,14 @@ const VehicleServiceForm = ({
       setFileList([]);
     }
   }, [mode, id, form]);
+  console.log(vehicleService?.checklistItems);
 
   useEffect(() => {
     if (vehicleService && isEdit) {
       form.setFieldsValue({
         ...vehicleService,
         serviceCategory: vehicleService.serviceCategory._id,
+        checklistItems: vehicleService.checklistItems?.map((item) => item._id),
       });
       if (vehicleService.photo) {
         setFileList([

@@ -16,8 +16,6 @@ export class AppointmentsRepository extends DatabaseRepositoryBase<
   readonly _joinActive: PopulateOptions[] = [
     {
       path: 'serviceCategory',
-      localField: 'serviceCategory',
-      foreignField: '_id',
       model: ServiceCategoryEntity.name,
       justOne: false,
       match: {
@@ -25,6 +23,7 @@ export class AppointmentsRepository extends DatabaseRepositoryBase<
       },
     },
   ];
+
   readonly _joinVehicleBrand: PopulateOptions = {
     path: 'vehicleBrand',
     localField: 'vehicleBrand',

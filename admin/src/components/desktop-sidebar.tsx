@@ -90,7 +90,7 @@ const menuItems = [
   {
     key: "maintenance-schedule",
     icon: <GrSchedulePlay />,
-    href: ROUTER_PATH.MAINTENANCE_SCHEDULE,
+    href: ROUTER_PATH.APPOINTMENTS,
     label: "Lịch hẹn",
   },
   {
