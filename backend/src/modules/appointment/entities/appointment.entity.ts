@@ -10,71 +10,73 @@ import { ServiceCategoryEntity } from '@/modules/service-category/entities/servi
 import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 import { VehicleBrandEntity } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
 import { UserEntity } from '@/modules/user/entities/user.entity';
+import { VehicleServiceEntity } from '@/modules/vehicle-service/entities/vehicle-service.entity';
+import { UserVehicleEntity } from '@/modules/user-vehicle/entities/user-vehicle.entity';
 
 export const AppointmentsTableName = 'appointments';
 
 @DatabaseEntity({ collection: AppointmentsTableName })
 export class AppointmentsEntity extends DatabaseEntityBase {
   @DatabaseProp({
-    required: true,
-    trim: true,
-    maxlength: 100,
+    required: false,
+    ref: () => UserEntity.name,
+    index: true,
+    maxlength: 255,
   })
-  customer: string;
+  user?: string;
+
+  @DatabaseProp({
+    required: false,
+    ref: () => UserVehicleEntity.name,
+    index: true,
+    maxlength: 255,
+  })
+  userVehicle?: string;
 
   @DatabaseProp({
     required: true,
     trim: true,
-    maxlength: 100,
+    maxlength: 200,
+  })
+  name: string;
+
+  @DatabaseProp({
+    required: true,
+    trim: true,
+    index: true,
+    maxlength: 20,
   })
   phone: string;
 
   @DatabaseProp({
     required: true,
-    ref: () => VehicleBrandEntity.name,
-    index: true,
-    trim: true,
-    maxlength: 255,
-  })
-  vehicleBrand: string;
-
-  @DatabaseProp({
-    required: true,
     ref: () => VehicleModelEntity.name,
-    trim: true,
+    index: true,
     maxlength: 255,
   })
   vehicleModel: string;
 
   @DatabaseProp({
     required: true,
-    ref: () => ServiceCategoryEntity.name,
+    ref: () => VehicleServiceEntity.name,
     index: true,
     trim: true,
     type: [String],
   })
-  serviceCategory: string[];
+  vehicleServices: string[];
 
   @DatabaseProp({
     required: true,
     trim: true,
-    maxlength: 255,
+    maxlength: 20,
   })
-  vehicleNumber: string;
+  licensePlate: string;
 
   @DatabaseProp({
     required: true,
     trim: true,
-    maxlength: 255,
   })
-  scheduleDate: Date;
-
-  @DatabaseProp({
-    required: true,
-    trim: true,
-    maxlength: 255,
-  })
-  timeSlot: string;
+  appointmentDate: Date;
 
   @DatabaseProp({
     required: false,
@@ -89,6 +91,7 @@ export class AppointmentsEntity extends DatabaseEntityBase {
     maxlength: 500,
   })
   note: string;
+
   @DatabaseProp({
     required: true,
     default: ENUM_APPOINTMENTS_STATUS.PENDING,
