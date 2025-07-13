@@ -3,44 +3,54 @@ import { ENUM_APPOINTMENTS_STATUS } from '../../enums/appointment.enum';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 
 export class AppointmentsGetResponseDto extends DatabaseDto {
-  @ApiProperty({ example: 'Nguyễn Văn A', description: 'Tên khách hàng' })
-  customer: string;
+  @ApiProperty({
+    example: 'userId',
+    description: 'ID người dùng',
+    required: false,
+  })
+  user?: string;
 
-  @ApiProperty({ example: '0123456789', description: 'Số điện thoại' })
+  @ApiProperty({
+    example: 'userVehicleId',
+    description: 'ID xe của người dùng',
+    required: false,
+  })
+  userVehicle?: string;
+
+  @ApiProperty({ example: 'Nguyễn Văn A', description: 'Tên khách hàng' })
+  name: string;
+
+  @ApiProperty({ example: '0912345678', description: 'Số điện thoại' })
   phone: string;
 
-  @ApiProperty({ example: 'vehicleBrandId', description: 'Id Hãng xe' })
-  vehicleBrand: string;
-
-  @ApiProperty({ example: 'vehicleModelId', description: 'Id Tên xe' })
+  @ApiProperty({ example: 'vehicleModelId', description: 'ID model xe' })
   vehicleModel: string;
 
+  @ApiProperty({
+    example: ['serviceId1', 'serviceId2'],
+    description: 'Danh sách dịch vụ',
+    type: [String],
+  })
+  vehicleServices: string[];
+
   @ApiProperty({ example: '59A1-12345', description: 'Biển số xe' })
-  vehicleNumber: string;
+  licensePlate: string;
 
   @ApiProperty({
-    example: '2024-07-10',
-    description: 'Ngày đặt lịch (ISO date string)',
+    example: '2024-07-14T08:00:00.000Z',
+    description: 'Ngày đặt lịch (ISO date)',
   })
-  scheduleDate: string;
-
-  @ApiProperty({
-    example: '2024-07-10T08:00:00.000Z',
-    description: 'Giờ đặt lịch (ISO date string)',
-  })
-  timeSlot: string;
-
-  @ApiProperty({ example: 'serviceCategoryId', description: 'Id gói dịch vụ' })
-  serviceCategory: string;
+  appointmentDate: string;
 
   @ApiProperty({
     example: '123 Đường Lớn, Quận 1, TP.HCM',
-    description: 'Địa chỉ nhận xe hoặc địa chỉ cửa hàng',
+    description: 'Địa chỉ',
+    required: false,
   })
-  address: string;
+  address?: string;
 
   @ApiProperty({
-    example: 'Xe có tiếng kêu lạ',
+    example: 'Xe bị rung đầu',
     description: 'Ghi chú',
     required: false,
   })

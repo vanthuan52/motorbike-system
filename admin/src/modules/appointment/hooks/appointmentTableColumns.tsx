@@ -85,8 +85,8 @@ export const useAppointmentsTableColumns = ({
       },
       {
         title: "Khách hàng",
-        dataIndex: "customer",
-        key: "customer",
+        dataIndex: "name",
+        key: "name",
       },
       {
         title: "SỐ điện thoại",
@@ -95,16 +95,11 @@ export const useAppointmentsTableColumns = ({
       },
       {
         title: "Ngày hẹn",
-        dataIndex: "scheduleDate",
-        key: "scheduleDate",
-        render: (scheduleDate: Date) => (
-          <span>{dayjs(scheduleDate).format("DD/MM/YYYY HH:mm")}</span>
+        dataIndex: "appointmentDate",
+        key: "appointmentDate",
+        render: (appointmentDate: Date) => (
+          <span>{dayjs(appointmentDate).format("DD/MM/YYYY HH:mm")}</span>
         ),
-      },
-      {
-        title: "Giờ hẹn",
-        dataIndex: "timeSlot",
-        key: "timeSlot",
       },
       {
         title: "Địa chỉ",

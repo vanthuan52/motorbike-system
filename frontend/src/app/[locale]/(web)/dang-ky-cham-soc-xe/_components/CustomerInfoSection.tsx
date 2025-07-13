@@ -11,7 +11,7 @@ export default function CustomerInfoSection() {
           label={
             <span className="font-semibold text-base">{t("form.name")}</span>
           }
-          name="customer"
+          name="name"
           rules={[{ required: true, message: t("form.nameRequired") }]}
         >
           <Input placeholder={t("form.namePlaceholder")} size="large" />

@@ -3,13 +3,13 @@
     "title": "Đăng Ký Bảo Dưỡng Xe",
     "description": "Đăng Ký Bảo Dưỡng Xe"
   },
-  "pageTitle": "Đặt lịch bảo dưỡng xe",
+  "pageTitle": "Đặt Lịch Bảo Dưỡng Xe",
   "tabs": {
-    "store": "Đặt lịch tại cửa hàng",
-    "pickup": "Tiếp nhận xe tận nơi"
+    "store": "Đặt tại cửa hàng",
+    "pickup": "Nhận xe tại nhà"
   },
   "form": {
-    "name": "Họ và tên",
+    "name": "Họ và Tên",
     "nameRequired": "Vui lòng nhập họ và tên",
     "namePlaceholder": "Nhập họ và tên",
 
@@ -22,39 +22,42 @@
     "vehicleBrandRequired": "Vui lòng chọn hãng xe",
     "vehicleBrandPlaceholder": "Chọn hãng xe",
 
-    "vehicleModel": "Tên xe",
-    "vehicleModelRequired": "Vui lòng chọn tên xe",
-    "vehicleModelPlaceholder": "Chọn tên xe",
+    "userVehicle": "Xe của bạn",
+    "userVehicleRequired": "Vui lòng chọn xe của bạn",
+    "userVehiclePlaceholder": "Chọn xe của bạn",
 
-    "vehicleNumber": "Biển số xe",
-    "vehicleNumberRequired": "Vui lòng nhập biển số xe",
-    "vehicleNumberPlaceholder": "Nhập biển số xe",
+    "vehicleModel": "Dòng xe",
+    "vehicleModelRequired": "Vui lòng chọn dòng xe",
+    "vehicleModelPlaceholder": "Chọn dòng xe",
+
+    "licensePlate": "Biển số xe",
+    "licensePlateRequired": "Vui lòng nhập biển số xe",
+    "licensePlatePlaceholder": "Nhập biển số xe",
 
     "address": "Địa chỉ",
     "addressRequired": "Vui lòng nhập địa chỉ",
     "addressPlaceholder": "Nhập địa chỉ",
 
     "date": "Ngày đặt lịch",
-    "dateRequired": "Vui chọn ngày đặt lịch",
+    "dateRequired": "Vui lòng chọn ngày đặt lịch",
     "datePlaceholder": "Chọn ngày đặt lịch",
 
     "timeSlot": "Khung giờ",
-    "timeSlotRequired": "Vui chọn khung giờ",
+    "timeSlotRequired": "Vui lòng chọn khung giờ",
     "timeSlotPlaceholder": "Chọn khung giờ",
 
-    "serviceCategory": "Gói bảo dưỡng, sửa chữa",
-    "serviceCategoryRequired": "Vui lòng chọn gói bảo dưỡng, sửa chữa",
-    "serviceCategoryPlaceholder": "Chọn gói bảo dưỡng, sửa chữa",
-
+    "serviceCategory": "Gói bảo dưỡng / sửa chữa",
+    "serviceCategoryRequired": "Vui lòng chọn ít nhất một gói",
+    "serviceCategoryPlaceholder": "Chọn gói bảo dưỡng hoặc sửa chữa",
+    "timeSlotExtra": "(Bạn có thể đến trong vòng 2 giờ kể từ thời gian này)",
     "note": "Ghi chú",
-    "notePlaceholder": "Nhập thông tin thêm về tình trạng xe hoặc yêu cầu đặc biệt",
-
-    "submitButton": "Xác nhận đặt lịch"
+    "notePlaceholder": "Nhập tình trạng xe hoặc yêu cầu cụ thể",
+    "submitButton": "Đặt lịch"
   },
   "pickupCost": {
-    "title": "Thông tin về chi phí giao nhận xe",
-    "free": "Miễn phí giao nhận trong phạm vi bán kính 3km.",
-    "inWorkHour": "Phí giao nhận: <b>30.000đ/km</b> (cho khoảng cách lớn hơn 3km) trong giờ làm việc.",
-    "outOfWorkHour": "Phí ngoài giờ: <b>45.000đ/km</b> (sau 19h hoặc ngoài khung giờ làm việc)."
+    "title": "Thông Tin Chi Phí Nhận và Giao Xe",
+    "free": "Miễn phí nhận và giao xe trong phạm vi 3km.",
+    "inWorkHour": "Phí nhận xe: <b>30.000đ/km</b> (cho khoảng cách trên 3km) trong giờ làm việc.",
+    "outOfWorkHour": "Phí ngoài giờ: <b>45.000đ/km</b> (sau 19h hoặc ngoài giờ làm việc)."
   }
 }

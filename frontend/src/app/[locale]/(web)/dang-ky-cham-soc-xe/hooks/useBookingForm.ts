@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Form } from "antd";
+import dayjs from "dayjs";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
 import { AppointmentsActions } from "@/features/appointment/store/appointment-slice";
-import { Appointments } from "@/features/appointment/types";
+import { FormValuesAppointments } from "@/features/appointment/types";
 
 export const useBookingForm = () => {
   const dispatch = useAppDispatch();
@@ -13,10 +14,22 @@ export const useBookingForm = () => {
     setServiceType(key as "store" | "pickup");
   };
 
-  const handleFinish = (values: Appointments) => {
+  const handleFinish = (values: FormValuesAppointments) => {
+    const { date, time, ...rest } = values;
+
+    const appointmentDate = dayjs(date)
+      .hour(dayjs(time).hour())
+      .minute(dayjs(time).minute())
+      .second(0)
+      .toDate();
+    console.log(values);
+
     dispatch(
       AppointmentsActions.createAppointments({
-        appointments: values,
+        appointments: {
+          ...rest,
+          appointmentDate,
+        },
       })
     );
   };

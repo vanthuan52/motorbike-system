@@ -214,15 +214,15 @@ export class AppointmentsService implements IAppointmentsService {
 
   async create(
     {
-      customer,
+      user,
+      userVehicle,
+      name,
       phone,
-      vehicleBrand,
       vehicleModel,
-      serviceCategory,
-      vehicleNumber,
+      vehicleServices,
+      licensePlate,
+      appointmentDate,
       address,
-      scheduleDate,
-      timeSlot,
       note,
       status,
     }: AppointmentsCreateRequestDto,
@@ -230,17 +230,17 @@ export class AppointmentsService implements IAppointmentsService {
   ): Promise<AppointmentsDoc> {
     const create: AppointmentsEntity = new AppointmentsEntity();
 
-    create.customer = customer;
+    create.user = user;
+    create.userVehicle = userVehicle;
+    create.name = name;
     create.phone = phone;
-    create.vehicleBrand = vehicleBrand;
     create.vehicleModel = vehicleModel;
-    create.vehicleNumber = vehicleNumber;
+    create.vehicleServices = vehicleServices;
+    create.licensePlate = licensePlate;
+    create.appointmentDate = new Date(appointmentDate);
     create.address = address;
-    create.scheduleDate = new Date(scheduleDate);
-    create.timeSlot = timeSlot;
     create.note = note ?? '';
-    create.serviceCategory = serviceCategory;
-    create.status = ENUM_APPOINTMENTS_STATUS.PENDING;
+    create.status = status ?? ENUM_APPOINTMENTS_STATUS.PENDING;
 
     return this.AppointmentsRepository.create<AppointmentsEntity>(
       create,
@@ -251,36 +251,34 @@ export class AppointmentsService implements IAppointmentsService {
   async update(
     repository: AppointmentsDoc,
     {
-      customer,
+      user,
+      userVehicle,
+      name,
       phone,
-      vehicleBrand,
       vehicleModel,
-      serviceCategory,
-      vehicleNumber,
+      vehicleServices,
+      licensePlate,
+      appointmentDate,
       address,
-      scheduleDate,
-      timeSlot,
       note,
       status,
     }: AppointmentsUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<AppointmentsDoc> {
-    repository.customer = customer ?? repository.customer;
+    repository.user = user ?? repository.user;
+    repository.userVehicle = userVehicle ?? repository.userVehicle;
+    repository.name = name ?? repository.name;
     repository.phone = phone ?? repository.phone;
-    repository.vehicleBrand = vehicleBrand ?? repository.vehicleBrand;
     repository.vehicleModel = vehicleModel ?? repository.vehicleModel;
-    repository.vehicleNumber = vehicleNumber ?? repository.vehicleNumber;
+    repository.vehicleServices = vehicleServices ?? repository.vehicleServices;
+    repository.licensePlate = licensePlate ?? repository.licensePlate;
+    repository.appointmentDate =
+      appointmentDate !== undefined
+        ? new Date(appointmentDate)
+        : repository.appointmentDate;
     repository.address = address ?? repository.address;
-    repository.scheduleDate =
-      scheduleDate !== undefined
-        ? typeof scheduleDate === 'string'
-          ? new Date(scheduleDate)
-          : scheduleDate
-        : repository.scheduleDate;
-    repository.timeSlot = timeSlot ?? repository.timeSlot;
     repository.note = note ?? repository.note;
     repository.status = status ?? repository.status;
-    repository.serviceCategory = serviceCategory ?? repository.serviceCategory;
 
     return this.AppointmentsRepository.save(repository, options);
   }

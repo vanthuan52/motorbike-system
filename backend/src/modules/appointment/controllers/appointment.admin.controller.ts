@@ -77,6 +77,8 @@ import { ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR } from '@/modules/vehicle-brand/en
 import { ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR } from '@/modules/vehicle-model/enums/vehicle-model.status-code.enum';
 import { ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR } from '@/modules/service-category/enums/service-category.status-code.enum';
 import { IAppointmentsDoc } from '../interfaces/appointment.interface';
+import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
+import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
 
 @ApiTags('modules.admin.appointment')
 @Controller({
@@ -91,6 +93,7 @@ export class AppointmentsAdminController {
     private readonly vehicleBrandService: VehicleBrandService,
     private readonly vehicleModelService: VehicleModelService,
     private readonly serviceCategoryService: ServiceCategoryService,
+    private readonly userVehicleService: UserVehicleService,
   ) {}
 
   @AppointmentsAdminListDoc()
@@ -178,40 +181,45 @@ export class AppointmentsAdminController {
     @AuthJwtPayload('user') createdBy: string,
     @Body() body: AppointmentsCreateRequestDto,
   ): Promise<any> {
-    const promises: Promise<any>[] = [
-      this.vehicleBrandService.findOneById(body.vehicleBrand),
-      this.vehicleModelService.findOneById(body.vehicleModel),
-    ];
-    const [existingVehicleBrand, existingVehicleModel] =
-      await Promise.all(promises);
+    const { userVehicle, vehicleModel, vehicleServices } = body;
 
-    if (!existingVehicleBrand) {
-      throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'vehicle-brand.error.notFound',
-      });
-    }
-
-    if (!existingVehicleModel) {
+    const foundVehicleModel =
+      await this.vehicleModelService.findOneById(vehicleModel);
+    if (!foundVehicleModel) {
       throw new NotFoundException({
         statusCode: ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'vehicle-model.error.notFound',
       });
     }
 
-    for (const categoryId of body.serviceCategory) {
-      const existing =
-        await this.serviceCategoryService.findOneById(categoryId);
-      if (!existing) {
+    if (userVehicle) {
+      const foundUserVehicle =
+        await this.userVehicleService.findOneById(userVehicle);
+      if (!foundUserVehicle) {
         throw new NotFoundException({
-          message: 'service-category.error.notFound',
+          statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+          message: 'user-vehicle.error.notFound',
         });
       }
     }
+
+    await Promise.all(
+      vehicleServices.map(async (id) => {
+        const service = await this.serviceCategoryService.findOneById(id);
+        if (!service) {
+          throw new NotFoundException({
+            statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
+            message: 'service-category.error.notFound',
+          });
+        }
+      }),
+    );
+
     try {
       const created = await this.appointmentsService.create(body, {
         actionBy: createdBy,
       } as IDatabaseCreateOptions);
+
       return { data: { _id: created._id } };
     } catch (err) {
       throw new InternalServerErrorException({
@@ -237,37 +245,31 @@ export class AppointmentsAdminController {
     @AuthJwtPayload('user') updatedBy: string,
     @Body() body: AppointmentsUpdateRequestDto,
   ): Promise<any> {
-    const promises: Promise<any>[] = [
-      this.vehicleBrandService.findOneById(body.vehicleBrand!),
-      this.vehicleModelService.findOneById(body.vehicleModel!),
-      this.appointmentsService.findOneById(id),
-    ];
-    const [existingVehicleBrand, existingVehicleModel, appointment] =
-      await Promise.all(promises);
+    const { userVehicle, vehicleModel, vehicleServices } = body;
 
-    if (!existingVehicleBrand) {
+    const [foundUserVehicle, foundVehicleModel, appointment] =
+      await Promise.all([
+        userVehicle
+          ? this.userVehicleService.findOneById(userVehicle)
+          : Promise.resolve(null),
+        vehicleModel
+          ? this.vehicleModelService.findOneById(vehicleModel)
+          : Promise.resolve(null),
+        this.appointmentsService.findOneById(id),
+      ]);
+
+    if (userVehicle && !foundUserVehicle) {
       throw new NotFoundException({
         statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'vehicle-brand.error.notFound',
       });
     }
 
-    if (!existingVehicleModel) {
+    if (vehicleModel && !foundVehicleModel) {
       throw new NotFoundException({
         statusCode: ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'vehicle-model.error.notFound',
       });
-    }
-
-    for (const categoryId of body.serviceCategory!) {
-      const existing =
-        await this.serviceCategoryService.findOneById(categoryId);
-      if (!existing) {
-        throw new NotFoundException({
-          statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
-          message: 'service-category.error.notFound',
-        });
-      }
     }
 
     if (!appointment) {
@@ -276,6 +278,21 @@ export class AppointmentsAdminController {
         message: 'appointment.error.notFound',
       });
     }
+
+    if (vehicleServices?.length) {
+      await Promise.all(
+        vehicleServices.map(async (id) => {
+          const service = await this.serviceCategoryService.findOneById(id);
+          if (!service) {
+            throw new NotFoundException({
+              statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
+              message: 'service-category.error.notFound',
+            });
+          }
+        }),
+      );
+    }
+
     try {
       await this.appointmentsService.update(appointment, body, {
         actionBy: updatedBy,

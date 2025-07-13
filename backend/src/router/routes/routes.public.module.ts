@@ -29,6 +29,7 @@ import { ServicePricePublicController } from '@/modules/service-price/controller
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
 import { AppointmentsPublicController } from '@/modules/appointment/controllers/appointment.public.controller';
 import { AppointmentsModule } from '@/modules/appointment/appointment.module';
+import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
 
 @Module({
   controllers: [
@@ -66,6 +67,7 @@ import { AppointmentsModule } from '@/modules/appointment/appointment.module';
     VehicleModelModule,
     ServicePriceModule,
     AppointmentsModule,
+    UserVehicleModule,
   ],
 })
 export class RoutesPublicModule {}

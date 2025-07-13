@@ -22,13 +22,17 @@
     "vehicleBrandRequired": "Please select a vehicle brand",
     "vehicleBrandPlaceholder": "Select vehicle brand",
 
+    "userVehicle": "Vehicle",
+    "userVehicleRequired": "Please select your vehicle",
+    "userVehiclePlaceholder": "Select your vehicle",
+
     "vehicleModel": "Vehicle Model",
     "vehicleModelRequired": "Please select a vehicle model",
     "vehicleModelPlaceholder": "Select vehicle model",
 
-    "vehicleNumber": "License Plate",
-    "vehicleNumberRequired": "Please enter the license plate",
-    "vehicleNumberPlaceholder": "Enter license plate",
+    "licensePlate": "License Plate",
+    "licensePlateRequired": "Please enter the license plate",
+    "licensePlatePlaceholder": "Enter license plate",
 
     "address": "Address",
     "addressRequired": "Please enter your address",
@@ -45,7 +49,7 @@
     "serviceCategory": "Maintenance / Repair Package",
     "serviceCategoryRequired": "Please select at least one package",
     "serviceCategoryPlaceholder": "Select maintenance or repair package",
-
+    "timeSlotExtra": "(You can arrive within 2 hours from this time)",
     "note": "Notes",
     "notePlaceholder": "Enter additional vehicle condition or specific requests",
 

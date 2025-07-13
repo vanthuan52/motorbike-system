@@ -13,62 +13,33 @@ export class AppointmentsRepository extends DatabaseRepositoryBase<
   AppointmentsEntity,
   AppointmentsDoc
 > {
-  readonly _joinActive: PopulateOptions[] = [
-    {
-      path: 'serviceCategory',
-      model: ServiceCategoryEntity.name,
-      justOne: false,
-      match: {
-        isActive: true,
-      },
-    },
-  ];
-
-  readonly _joinVehicleBrand: PopulateOptions = {
-    path: 'vehicleBrand',
-    localField: 'vehicleBrand',
-    foreignField: '_id',
-    model: VehicleBrandEntity.name,
-    justOne: true,
-    match: {
-      isActive: true,
-    },
+  readonly _joinServiceCategory: PopulateOptions = {
+    path: 'vehicleServices',
+    model: ServiceCategoryEntity.name,
+    justOne: false,
+    match: { isActive: true },
   };
 
   readonly _joinVehicleModel: PopulateOptions = {
     path: 'vehicleModel',
-    localField: 'vehicleModel',
-    foreignField: '_id',
     model: VehicleModelEntity.name,
     justOne: true,
-    match: {
-      isActive: true,
-    },
+    match: { isActive: true },
   };
+
   constructor(
     @InjectDatabaseModel(AppointmentsEntity.name)
     private readonly AppointmentsModel: Model<AppointmentsEntity>,
   ) {
     super(AppointmentsModel, [
       {
-        path: 'serviceCategory',
-        localField: 'serviceCategory',
-        foreignField: '_id',
+        path: 'vehicleServices',
         model: ServiceCategoryEntity.name,
         justOne: false,
       },
       {
         path: 'vehicleModel',
-        localField: 'vehicleModel',
-        foreignField: '_id',
         model: VehicleModelEntity.name,
-        justOne: true,
-      },
-      {
-        path: 'vehicleBrand',
-        localField: 'vehicleBrand',
-        foreignField: '_id',
-        model: VehicleBrandEntity.name,
         justOne: true,
       },
     ]);
