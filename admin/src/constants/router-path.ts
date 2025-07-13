@@ -26,6 +26,8 @@ export const ROUTER_PATH = {
   SERVICE_PRICE_DETAIL: "/service-prices/:id",
   SERVICE_PRICE_CREATION: "/service-prices/create",
   MAINTENANCE_SCHEDULE: "/maintenance-schedule",
+  MAINTENANCE_SCHEDULE_DETAILS: "/maintenance-schedule/:id",
+  MAINTENANCE_SCHEDULE_CREATION: "/maintenance-schedule/create",
   MAINTENANCE: "/maintenance",
   CUSTOMERS: "/customers",
   CUSTOMERS_CREATION: "/customers/create",
@@ -54,4 +56,7 @@ export const ROUTER_PATH = {
   VEHICLE_MODELS: "/vehicle-models",
   VEHICLE_MODEL_DETAIL: "/vehicle-models/:id",
   VEHICLE_MODEL_CREATION: "/vehicle-models/create",
+  APPOINTMENTS: "/appointments",
+  APPOINTMENT_DETAILS: "/appointments/:id",
+  APPOINTMENT_CREATION: "/appointments/create",
 };

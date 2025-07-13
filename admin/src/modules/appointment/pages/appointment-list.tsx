@@ -1,0 +1,149 @@
+import { useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useQueryParams } from "@/hooks/use-query-params";
+import usePagination from "@/hooks/use-pagination";
+import { DEFAULT_PAGINATION_QUERY } from "@/constants/pagination";
+import { useFilters } from "@/hooks/use-filters";
+import { useDebounce } from "@/hooks/useDebounce";
+import { useAppointmentsTableColumns } from "../hooks/appointmentTableColumns";
+import { RootState } from "@/store";
+import { AppointmentsActions } from "../store/appointment-slice";
+import { ROUTER_PATH } from "@/constants/router-path";
+import SelectOption, {
+  SelectOptionItem,
+} from "@/components/ui/ant-design/select-option";
+import { ENUM_APPOINTMENTS_STATUS } from "../types";
+import TableToolbar from "@/components/ui/table/table-toolbar";
+import { ConfirmModal } from "@/components/ui/modal/confirm-modal";
+import Table from "@/components/ui/table/table";
+
+export default function AppointmentsList() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [queryParams, setQueryParams] = useQueryParams();
+  const {
+    page: pageParam,
+    perPage: limitParam,
+    search,
+    ...restParams
+  } = queryParams;
+
+  const { pagination, handlePaginationChange } = usePagination({
+    page: Number(pageParam) || DEFAULT_PAGINATION_QUERY.page,
+    perPage: Number(limitParam) || DEFAULT_PAGINATION_QUERY.perPage,
+  });
+
+  const { filters, mappedFilters, handleFiltersChange } =
+    useFilters(restParams);
+
+  const debouncedSearchTerm = useDebounce(search ?? "", 500);
+
+  const { columns, confirmModalProps } = useAppointmentsTableColumns({
+    currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
+    pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
+    search: debouncedSearchTerm,
+    mappedFilters: mappedFilters,
+  });
+
+  const {
+    list: AppointmentsList,
+    loadingList,
+    pagination: paginationState,
+    deletion,
+  } = useSelector((state: RootState) => state.appointments);
+
+  useEffect(() => {
+    dispatch(
+      AppointmentsActions.getAppointments({
+        page: pagination.page,
+        perPage: pagination.perPage,
+        // search: debouncedSearchTerm,
+        ...mappedFilters,
+      })
+    );
+  }, [dispatch, pagination, deletion.success, mappedFilters]);
+
+  useEffect(() => {
+    setQueryParams({
+      page: pagination.page?.toString(),
+      perPage: pagination.perPage?.toString(),
+      search: search ?? "",
+      ...mappedFilters,
+    });
+  }, [pagination, mappedFilters, search]);
+
+  const handlePageChange = useCallback(
+    (page: number, perPage: number) => {
+      handlePaginationChange({ page, perPage });
+    },
+    [handlePaginationChange]
+  );
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setQueryParams({
+        ...mappedFilters,
+        page: "1",
+        search: value,
+      });
+    },
+    [mappedFilters]
+  );
+
+  const handleStatusFilterChange = useCallback(
+    (value: string | string[] | undefined) => {
+      handleFiltersChange("status", value);
+      handlePaginationChange({
+        page: DEFAULT_PAGINATION_QUERY.page,
+        perPage: DEFAULT_PAGINATION_QUERY.perPage,
+      });
+    },
+    []
+  );
+
+  const handleCreate = () => {
+    navigate(`${ROUTER_PATH.APPOINTMENT_CREATION}`);
+  };
+  const statusOptions: SelectOptionItem[] = [
+    { value: ENUM_APPOINTMENTS_STATUS.PENDING, label: "Đang chờ" },
+    { value: ENUM_APPOINTMENTS_STATUS.UPCOMING, label: "Sắp tới" },
+    { value: ENUM_APPOINTMENTS_STATUS.DONE, label: "Đã tiếp nhận" },
+  ];
+  return (
+    <div className="bg-white rounded-lg shadow-md">
+      <TableToolbar
+        // onSearchChange={handleSearchChange}
+        onAddNewClick={handleCreate}
+        // searchValue={search ?? ""}
+        // placeholderSearch="Tìm kiếm theo tên"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <SelectOption
+            placeholder="Trạng thái"
+            value={filters.status || "all"}
+            onChange={handleStatusFilterChange}
+            options={statusOptions}
+            className="!h-10 w-40 xs:w-50"
+            allowClear
+          />
+        </div>
+      </TableToolbar>
+      <Table
+        dataSource={AppointmentsList}
+        columns={columns}
+        rowKey="_id"
+        loading={loadingList}
+        pagination={{
+          current: pagination.page,
+          pageSize: pagination.perPage,
+          total: paginationState?.total ?? 0,
+          onChange: handlePageChange,
+        }}
+      />
+
+      <ConfirmModal {...confirmModalProps} />
+    </div>
+  );
+}

@@ -119,5 +119,14 @@ export const API_ENDPOINTS = {
     VEHICLE_PART_UPDATE: (id: string) => `part/update/${id}`,
     VEHICLE_PART_UPDATE_STATUS: (id: string) => `part/update/${id}/status`,
     VEHICLE_PART_DELETION: (id: string) => `part/delete/${id}`,
+
+    // maintenance schedule module
+    APPOINTMENTS_LIST: "appointment/list",
+    APPOINTMENTS_DETAIL: (id: string) => `appointment/get/${id}`,
+    APPOINTMENTS_CREATE: "appointment/create",
+    APPOINTMENTS_UPDATE: (id: string) => `appointment/update/${id}`,
+    APPOINTMENTS_UPDATE_STATUS: (id: string) =>
+      `appointment/update/${id}/status`,
+    APPOINTMENTS_DELETION: (id: string) => `appointment/delete/${id}`,
   },
 };
