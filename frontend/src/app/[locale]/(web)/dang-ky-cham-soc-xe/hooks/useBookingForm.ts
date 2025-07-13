@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
 import { Form } from "antd";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
-import { maintenanceScheduleActions } from "@/features/maintenance-schedule/store/maintenance-schedule-slice";
-import { MaintenanceSchedule } from "@/features/maintenance-schedule/types";
+import { AppointmentsActions } from "@/features/appointment/store/appointment-slice";
+import { Appointments } from "@/features/appointment/types";
 
 export const useBookingForm = () => {
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
   const [serviceType, setServiceType] = useState<"store" | "pickup">("store");
-  const { create } = useAppSelector(
-    (state: RootState) => state.maintenanceSchedule
-  );
+  const { create } = useAppSelector((state: RootState) => state.appointments);
   const handleTabChange = (key: string) => {
     setServiceType(key as "store" | "pickup");
   };
 
-  const handleFinish = (values: MaintenanceSchedule) => {
+  const handleFinish = (values: Appointments) => {
     dispatch(
-      maintenanceScheduleActions.createMaintenanceSchedule({
-        maintenanceSchedule: values,
+      AppointmentsActions.createAppointments({
+        appointments: values,
       })
     );
   };

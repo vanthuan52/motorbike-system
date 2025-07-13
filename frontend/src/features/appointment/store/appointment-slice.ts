@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BaseApiState } from "@/types/redux-common.type";
-import { MaintenanceSchedule } from "../types";
+import { Appointments } from "../types";
 
-interface MaintenanceScheduleState extends BaseApiState {
+interface AppointmentsState extends BaseApiState {
   error: string | null;
 }
 
-const initialState: MaintenanceScheduleState = {
+const initialState: AppointmentsState = {
   create: { loading: false, success: false },
   error: null,
   loadingList: false,
@@ -16,33 +16,33 @@ const initialState: MaintenanceScheduleState = {
   partialUpdate: { loading: false, success: false },
 };
 
-export const maintenanceScheduleSlice = createSlice({
-  name: "maintenanceSchedule",
+export const AppointmentsSlice = createSlice({
+  name: "Appointments",
   initialState,
   reducers: {
-    createMaintenanceSchedule(
+    createAppointments(
       state,
-      action: PayloadAction<{ maintenanceSchedule: MaintenanceSchedule }>
+      action: PayloadAction<{ appointments: Appointments }>
     ) {
       state.create.loading = true;
       state.create.success = false;
       state.error = null;
     },
-    createMaintenanceScheduleSuccess(state) {
+    createAppointmentsSuccess(state) {
       state.create.loading = false;
       state.create.success = true;
     },
-    createMaintenanceScheduleFailure(state, action: PayloadAction<string>) {
+    createAppointmentsFailure(state, action: PayloadAction<string>) {
       state.create.loading = false;
       state.create.success = false;
       state.error = action.payload;
     },
-    resetCreateMaintenanceSchedule(state) {
+    resetCreateAppointments(state) {
       state.create = { loading: false, success: false };
       state.error = null;
     },
   },
 });
 
-export const maintenanceScheduleActions = maintenanceScheduleSlice.actions;
-export default maintenanceScheduleSlice.reducer;
+export const AppointmentsActions = AppointmentsSlice.actions;
+export default AppointmentsSlice.reducer;

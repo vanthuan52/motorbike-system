@@ -2,21 +2,13 @@ import { AxiosError, AxiosResponse } from "axios";
 import { publicApi } from "@/lib/axios";
 import { ApiErrorResponse } from "@/types/api.type";
 import { API_ENDPOINTS } from "@/constant/api-endpoint";
-import {
-  MaintenanceSchedule,
-  MaintenanceScheduleCreationResponse,
-} from "./types";
+import { Appointments, AppointmentsCreationResponse } from "./types";
 
-const maintenanceScheduleService = {
-  create: async (
-    data: MaintenanceSchedule
-  ): Promise<MaintenanceScheduleCreationResponse> => {
+const AppointmentsService = {
+  create: async (data: Appointments): Promise<AppointmentsCreationResponse> => {
     try {
-      const response: AxiosResponse<MaintenanceScheduleCreationResponse> =
-        await publicApi.post(
-          API_ENDPOINTS.PUBLIC.CREATE_MAINTENANCE_SCHEDULE,
-          data
-        );
+      const response: AxiosResponse<AppointmentsCreationResponse> =
+        await publicApi.post(API_ENDPOINTS.PUBLIC.CREATE_APPOINTMENT, data);
       if (response.status !== 201 || !response.data.data) {
         throw new Error(
           response.data.message || "Create maintenance schedule failed."
@@ -32,4 +24,4 @@ const maintenanceScheduleService = {
   },
 };
 
-export default maintenanceScheduleService;
+export default AppointmentsService;
