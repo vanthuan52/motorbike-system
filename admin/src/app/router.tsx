@@ -36,10 +36,12 @@ const VehiclePartsPage = lazy(
   () => import("@/modules/vehicle-parts/pages/vehicle-part-page")
 );
 
-const MaintenanceSchedule = lazy(
-  () => import("@/modules/maintenance-schedule/pages/maintenance-schedule")
+const Appointments = lazy(
+  () => import("@/modules/appointment/pages/appointment-page")
 );
-
+const AppointmentsDetailPage = lazy(
+  () => import("@/modules/appointment/pages/appointment-detail-page")
+);
 const Maintenance = lazy(
   () => import("@/modules/maintenance/pages/maintenance")
 );
@@ -213,8 +215,12 @@ export const router = createBrowserRouter([
         element: <VehiclePartDetailPage />,
       },
       {
-        path: ROUTER_PATH.MAINTENANCE_SCHEDULE,
-        element: <MaintenanceSchedule />,
+        path: ROUTER_PATH.APPOINTMENTS,
+        element: <Appointments />,
+      },
+      {
+        path: ROUTER_PATH.APPOINTMENT_DETAILS,
+        element: <AppointmentsDetailPage />,
       },
       {
         path: ROUTER_PATH.MAINTENANCE,
