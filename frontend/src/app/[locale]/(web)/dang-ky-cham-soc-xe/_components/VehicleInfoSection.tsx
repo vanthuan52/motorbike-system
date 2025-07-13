@@ -99,7 +99,7 @@ export default function VehicleInfoSection({
           ]}
         >
           <Select
-            placeholder={t("form.selectPlaceholder")}
+            placeholder={t("form.serviceCategoryPlaceholder")}
             options={serviceCategories.map((s) => ({
               label: s.name,
               value: s._id,

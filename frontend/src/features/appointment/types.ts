@@ -7,7 +7,7 @@ export enum ENUM_MAINTENANCE_SCHEDULE_STATUS {
   DONE = "done",
 }
 
-export interface MaintenanceSchedule extends BaseEntity {
+export interface Appointments extends BaseEntity {
   customer: string;
   phone: string;
   vehicleBrand: string;
@@ -21,10 +21,8 @@ export interface MaintenanceSchedule extends BaseEntity {
   status?: ENUM_MAINTENANCE_SCHEDULE_STATUS;
 }
 
-export interface MaintenanceSchedulePaginationQuery extends BaseEntity {
+export interface AppointmentsPaginationQuery extends BaseEntity {
   status?: ENUM_MAINTENANCE_SCHEDULE_STATUS;
 }
 
-export type MaintenanceScheduleCreationResponse = ApiResponse<
-  MaintenanceSchedule["_id"]
->;
+export type AppointmentsCreationResponse = ApiResponse<Appointments["_id"]>;
