@@ -1,0 +1,15 @@
+{
+  "list": "Appointment list retrieved successfully.",
+  "get": "Appointment details fetched successfully.",
+  "create": "New appointment created successfully.",
+  "update": "Appointment updated successfully.",
+  "delete": "Appointment deleted successfully.",
+  "updateStatus": "Appointment status updated to {status}.",
+  "error": {
+    "nameExist": "This appointment name already exists.",
+    "notFound": "Sorry, we couldn't find the appointment you requested.",
+    "updateStatusFailed": "Failed to update appointment status.",
+    "deleteFailed": "Failed to delete appointment.",
+    "createFailed": "Failed to create new appointment."
+  }
+}
