@@ -1,6 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { PipelineStage, RootFilterQuery } from 'mongoose';
 import _ from 'lodash';
 import {
   IDatabaseAggregateOptions,
@@ -31,8 +32,8 @@ import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.r
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
 import { CareRecordGetFullResponseDto } from '../dtos/response/care-record.full.response.dto';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { ENUM_SERVICE_PRICE_STATUS } from '../enums/care-record.enum';
-import { PipelineStage, RootFilterQuery } from 'mongoose';
+import { ENUM_CARE_RECORD_STATUS } from '../enums/care-record.enum';
+
 import { VehicleServiceTableName } from '@/modules/vehicle-service/entities/vehicle-service.entity';
 import { VehicleModelTableName } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
@@ -113,11 +114,7 @@ export class CareRecordService implements ICareRecordService {
     options?: IDatabaseCreateOptions,
   ): Promise<CareRecordDoc> {
     const create: CareRecordEntity = new CareRecordEntity();
-    create.price = price;
-    create.vehicleService = vehicleService;
-    create.vehicleModel = vehicleModel;
-    create.dateStart = dateStart;
-    create.dateEnd = dateEnd;
+
     return this.CareRecordRepository.create<CareRecordEntity>(create, options);
   }
 
@@ -132,11 +129,6 @@ export class CareRecordService implements ICareRecordService {
     }: CareRecordUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<CareRecordDoc> {
-    repository.price = price ?? repository.price;
-    repository.vehicleService = vehicleService ?? repository.vehicleService;
-    repository.vehicleModel = vehicleModel ?? repository.vehicleModel;
-    repository.dateStart = dateStart ?? repository.dateStart;
-    repository.dateEnd = dateEnd ?? repository.dateEnd;
     return this.CareRecordRepository.save(repository, options);
   }
 
@@ -193,219 +185,5 @@ export class CareRecordService implements ICareRecordService {
         ? (CareRecord as any).toObject()
         : CareRecord,
     );
-  }
-
-  async getLatestCareRecords(): Promise<IModelCareRecord[]> {
-    const pipeline: PipelineStage[] = [
-      // Stage 1: Sort by most recent/effective prices
-      {
-        $sort: {
-          dateEnd: 1,
-          dateStart: -1,
-          createdAt: -1,
-        },
-      },
-      // Stage 2: Group by serviceId + modelId to get the latest price per pair
-      {
-        $group: {
-          _id: {
-            vehicleService: '$vehicleService',
-            vehicleModel: '$vehicleModel',
-          },
-          latestPriceDoc: { $first: '$$ROOT' },
-        },
-      },
-
-      // Stage 3: Flatten the grouped document
-      {
-        $replaceRoot: { newRoot: '$latestPriceDoc' },
-      },
-
-      // Stage 4: Lookup detailed info for service and model
-      {
-        $lookup: {
-          from: VehicleServiceTableName,
-          localField: 'vehicleService',
-          foreignField: '_id',
-          as: 'vehicleServiceInfo',
-        },
-      },
-      {
-        $unwind: '$vehicleServiceInfo',
-      },
-      {
-        $lookup: {
-          from: VehicleModelTableName,
-          localField: 'vehicleModel',
-          foreignField: '_id',
-          as: 'vehicleModelInfo',
-        },
-      },
-      {
-        $unwind: '$vehicleModelInfo',
-      },
-
-      // Stage 5: Final projection with status field
-      {
-        $project: {
-          _id: '$$ROOT._id',
-          CareRecordId: '$$ROOT._id',
-          price: '$price',
-          dateStart: '$dateStart',
-          dateEnd: '$dateEnd',
-
-          vehicleServiceId: '$vehicleServiceInfo._id',
-          vehicleServiceName: '$vehicleServiceInfo.name',
-
-          vehicleModelId: '$vehicleModelInfo._id',
-          vehicleModelName: '$vehicleModelInfo.fullName',
-
-          status: {
-            $cond: {
-              if: {
-                // dateStart <= today AND (dateEnd >= today OR dateEnd is null)
-                $and: [
-                  { $lte: ['$dateStart', '$$NOW'] },
-                  {
-                    $or: [
-                      { $eq: ['$dateEnd', null] },
-                      { $gte: ['$dateEnd', '$$NOW'] },
-                    ],
-                  },
-                ],
-              },
-              then: ENUM_SERVICE_PRICE_STATUS.ACTIVE,
-              else: {
-                $cond: {
-                  if: {
-                    // UPCOMING: dateStart > today
-                    $gt: ['$dateStart', '$$NOW'],
-                  },
-                  then: ENUM_SERVICE_PRICE_STATUS.UPCOMING,
-                  else: ENUM_SERVICE_PRICE_STATUS.EXPIRED,
-                },
-              },
-            },
-          },
-        },
-      },
-    ];
-
-    return this.CareRecordRepository.findAllAggregate<IModelCareRecord>(
-      pipeline,
-    );
-  }
-
-  createVehicleModelWithLatestCareRecordPipeline(
-    find: Record<string, any>,
-  ): PipelineStage[] {
-    const serviceIdAsString = find['vehicleServiceId'] as string;
-
-    return [
-      { $match: _.omit(find, ['vehicleServiceId']) },
-      {
-        $lookup: {
-          from: CareRecordTableName,
-          let: { currentModelId: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    {
-                      $eq: ['$vehicleService', serviceIdAsString],
-                    },
-                    { $eq: ['$vehicleModel', '$$currentModelId'] },
-                  ],
-                },
-              },
-            },
-            {
-              $sort: {
-                dateEnd: 1,
-                dateStart: -1,
-                createdAt: -1,
-              },
-            },
-            { $limit: 1 },
-          ],
-          as: 'latestPrice',
-        },
-      },
-      {
-        $addFields: {
-          latestPrice: { $arrayElemAt: ['$latestPrice', 0] },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          vehicleModelId: '$_id',
-          vehicleModelName: '$fullName',
-          vehicleServiceId: serviceIdAsString,
-          price: { $ifNull: ['$latestPrice.price', null] },
-          dateStart: { $ifNull: ['$latestPrice.dateStart', null] },
-          dateEnd: { $ifNull: ['$latestPrice.dateEnd', null] },
-          CareRecordId: { $ifNull: ['$latestPrice._id', null] },
-          status: {
-            $cond: {
-              if: {
-                $or: [
-                  { $eq: ['$latestPrice.price', null] },
-                  { $not: { $ifNull: ['$latestPrice.price', false] } },
-                ],
-              },
-              then: ENUM_SERVICE_PRICE_STATUS.NO_PRICE,
-              else: {
-                $cond: {
-                  if: {
-                    $and: [
-                      { $lte: ['$latestPrice.dateStart', '$$NOW'] },
-                      {
-                        $or: [
-                          { $eq: ['$latestPrice.dateEnd', null] },
-                          { $gte: ['$latestPrice.dateEnd', '$$NOW'] },
-                        ],
-                      },
-                    ],
-                  },
-                  then: ENUM_SERVICE_PRICE_STATUS.ACTIVE,
-                  else: {
-                    $cond: {
-                      if: { $gt: ['$latestPrice.dateStart', '$$NOW'] },
-                      then: ENUM_SERVICE_PRICE_STATUS.UPCOMING,
-                      else: ENUM_SERVICE_PRICE_STATUS.EXPIRED,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    ];
-  }
-
-  async getLatestPricesForService(
-    find: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IModelCareRecord[]> {
-    const pipeline: PipelineStage[] =
-      this.createVehicleModelWithLatestCareRecordPipeline(find);
-
-    return this.vehicleModelRepository.findAllAggregate<IModelCareRecord>(
-      pipeline,
-      options,
-    );
-  }
-
-  async getTotalLatestPricesForService(
-    find: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number> {
-    const pipeline: PipelineStage[] =
-      this.createVehicleModelWithLatestCareRecordPipeline(find);
-
-    return this.vehicleModelRepository.getTotalAggregate(pipeline, options);
   }
 }

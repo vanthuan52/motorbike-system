@@ -1,4 +1,5 @@
 "use client";
+
 import { useTranslations } from "next-intl";
 import { Form, Input, Button } from "antd";
 import BookingTabs from "./BookingTabs";
@@ -8,19 +9,15 @@ import ServiceDetailSection from "./ServiceDetailSection";
 import PickupInfoSection from "./PickupInfoSection";
 import PickupMapSection from "./PickupMapSection";
 import PickupCostSection from "./PickupCostSection";
-import { useBookingForm } from "../hooks/useBookingForm";
-import { useVehicleBrandModel } from "../hooks/useVehicleBrandModel";
-import { useServiceCategory } from "../hooks/useServiceCategory";
+import { useBookingForm } from "../../../../../features/appointment/hooks/useBookingForm";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export default function VehicleMaintenanceRegistration() {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
+
   const { form, serviceType, handleTabChange, handleFinish, submitLoading } =
     useBookingForm();
 
-  const { loadingVehicleModels, modelOptions } = useVehicleBrandModel();
-
-  const { serviceCategories, loadingServiceCategories } = useServiceCategory();
   return (
     <div className="container mx-auto my-4 bg-white p-4 md:p-8">
       <h1 className="text-2xl font-bold text-gray-800 text-center mb-3 uppercase">
@@ -34,12 +31,7 @@ export default function VehicleMaintenanceRegistration() {
         requiredMark={false}
       >
         <CustomerInfoSection />
-        <VehicleInfoSection
-          loadingVehicleModels={loadingVehicleModels}
-          modelOptions={modelOptions}
-          serviceCategories={serviceCategories}
-          loadingServiceCategories={loadingServiceCategories}
-        />
+        <VehicleInfoSection form={form} />
         <ServiceDetailSection />
 
         {serviceType === "pickup" && (

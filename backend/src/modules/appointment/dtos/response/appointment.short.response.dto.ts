@@ -1,11 +1,10 @@
-import { ApiHideProperty, ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiHideProperty, OmitType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ENUM_APPOINTMENTS_STATUS } from '../../enums/appointment.enum';
-import { AwsS3ResponseDto } from '@/modules/aws/dtos/response/aws.s3-response.dto';
-import { AppointmentsListResponseDto } from './appointment.list.response.dto';
+import { ENUM_APPOINTMENT_STATUS } from '../../enums/appointment.enum';
+import { AppointmentListResponseDto } from './appointment.list.response.dto';
 
 export class AppointmentShortResponseDto extends OmitType(
-  AppointmentsListResponseDto,
+  AppointmentListResponseDto,
   ['vehicleServices', 'status', 'createdAt', 'updatedAt'],
 ) {
   @ApiHideProperty()
@@ -14,7 +13,7 @@ export class AppointmentShortResponseDto extends OmitType(
 
   @ApiHideProperty()
   @Exclude()
-  status: ENUM_APPOINTMENTS_STATUS;
+  status: ENUM_APPOINTMENT_STATUS;
 
   @ApiHideProperty()
   @Exclude()

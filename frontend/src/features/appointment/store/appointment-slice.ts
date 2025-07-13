@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { BaseApiState } from "@/types/redux-common.type";
-import { Appointments } from "../types";
+import { Appointment } from "../types";
 
-interface AppointmentsState extends BaseApiState {
+interface AppointmentState extends BaseApiState {
   error: string | null;
 }
 
-const initialState: AppointmentsState = {
+const initialState: AppointmentState = {
   create: { loading: false, success: false },
   error: null,
   loadingList: false,
@@ -16,33 +16,33 @@ const initialState: AppointmentsState = {
   partialUpdate: { loading: false, success: false },
 };
 
-export const AppointmentsSlice = createSlice({
-  name: "Appointments",
+export const appointmentSlice = createSlice({
+  name: "appointment",
   initialState,
   reducers: {
-    createAppointments(
+    createAppointment(
       state,
-      action: PayloadAction<{ appointments: Appointments }>
+      action: PayloadAction<{ appointment: Appointment }>
     ) {
       state.create.loading = true;
       state.create.success = false;
       state.error = null;
     },
-    createAppointmentsSuccess(state) {
+    createAppointmentSuccess(state) {
       state.create.loading = false;
       state.create.success = true;
     },
-    createAppointmentsFailure(state, action: PayloadAction<string>) {
+    createAppointmentFailure(state, action: PayloadAction<string>) {
       state.create.loading = false;
       state.create.success = false;
       state.error = action.payload;
     },
-    resetCreateAppointments(state) {
+    resetCreateAppointment(state) {
       state.create = { loading: false, success: false };
       state.error = null;
     },
   },
 });
 
-export const AppointmentsActions = AppointmentsSlice.actions;
-export default AppointmentsSlice.reducer;
+export const appointmentActions = appointmentSlice.actions;
+export default appointmentSlice.reducer;

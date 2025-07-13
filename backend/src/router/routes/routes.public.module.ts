@@ -28,7 +28,7 @@ import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module
 import { ServicePricePublicController } from '@/modules/service-price/controllers/service-price.public.controller';
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
 import { AppointmentsPublicController } from '@/modules/appointment/controllers/appointment.public.controller';
-import { AppointmentsModule } from '@/modules/appointment/appointment.module';
+import { AppointmentModule } from '@/modules/appointment/appointment.module';
 import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
 
 @Module({
@@ -66,7 +66,7 @@ import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
     VehicleBrandModule,
     VehicleModelModule,
     ServicePriceModule,
-    AppointmentsModule,
+    AppointmentModule,
     UserVehicleModule,
   ],
 })

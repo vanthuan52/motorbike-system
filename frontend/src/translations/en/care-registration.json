@@ -46,9 +46,9 @@
     "timeSlotRequired": "Please select a time slot",
     "timeSlotPlaceholder": "Select time slot",
 
-    "serviceCategory": "Maintenance / Repair Package",
-    "serviceCategoryRequired": "Please select at least one package",
-    "serviceCategoryPlaceholder": "Select maintenance or repair package",
+    "vehicleService": "Maintenance / Repair Package",
+    "vehicleServiceRequired": "Please select at least one package",
+    "vehicleServicePlaceholder": "Select maintenance or repair package",
     "timeSlotExtra": "(You can arrive within 2 hours from this time)",
     "note": "Notes",
     "notePlaceholder": "Enter additional vehicle condition or specific requests",
@@ -58,7 +58,7 @@
   "pickupCost": {
     "title": "Pickup and Delivery Cost Information",
     "free": "Free pickup and delivery within a 3km radius.",
-    "inWorkHour": "Pickup fee: <b>30,000 VND/km</b> (for distances over 3km) during working hours.",
-    "outOfWorkHour": "Off-hour fee: <b>45,000 VND/km</b> (after 7 PM or outside working hours)."
+    "inWorkHour": "Pickup fee: 30,000 VND/km (for distances over 3km) during working hours.",
+    "outOfWorkHour": "Off-hour fee: 45,000 VND/km (after 7 PM or outside working hours)."
   }
 }

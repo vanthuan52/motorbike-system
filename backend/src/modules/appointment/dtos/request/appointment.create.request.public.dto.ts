@@ -10,7 +10,7 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class AppointmentsCreateRequestPublicDto {
+export class AppointmentCreateRequestPublicDto {
   @ApiProperty({
     example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
     description: 'ID người dùng',

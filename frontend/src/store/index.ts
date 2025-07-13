@@ -21,7 +21,8 @@ import { hiringReducer } from "@/features/hiring/store";
 import { vehicleBrandReducer } from "@/features/vehicle-brand/store";
 import { vehicleModelReducer } from "@/features/vehicle-model/store";
 import { serviceCategoryReducer } from "@/features/service-category/store";
-import { appointmentsReducer } from "@/features/appointment/store";
+import { appointmentReducer } from "@/features/appointment/store";
+import { vehicleServiceReducer } from "@/features/vehicle-service/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -42,7 +43,8 @@ const rootReducer = combineReducers({
   vehicleBrand: vehicleBrandReducer,
   vehicleModel: vehicleModelReducer,
   serviceCategory: serviceCategoryReducer,
-  appointments: appointmentsReducer,
+  vehicleService: vehicleServiceReducer,
+  appointment: appointmentReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

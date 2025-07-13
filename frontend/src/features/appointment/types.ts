@@ -7,7 +7,7 @@ export enum ENUM_APPOINTMENTS_STATUS {
   DONE = "done",
 }
 
-export interface Appointments extends BaseEntity {
+export interface Appointment extends BaseEntity {
   user?: string;
   userVehicle?: string;
   name: string;
@@ -22,7 +22,7 @@ export interface Appointments extends BaseEntity {
 }
 
 export interface FormValuesAppointments
-  extends Omit<Appointments, "appointmentDate"> {
+  extends Omit<Appointment, "appointmentDate"> {
   date: Date;
   time: string;
 }
@@ -31,4 +31,4 @@ export interface AppointmentsPaginationQuery extends BaseEntity {
   status?: ENUM_APPOINTMENTS_STATUS;
 }
 
-export type AppointmentsCreationResponse = ApiResponse<Appointments["_id"]>;
+export type AppointmentsCreationResponse = ApiResponse<Appointment["_id"]>;

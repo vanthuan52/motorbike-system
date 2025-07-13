@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { vehicleModelActions } from "@/features/vehicle-model/store/vehicle-model-slice";
 import { RootState } from "@/store";
 
-export const useVehicleBrandModel = () => {
+export const useVehicleModel = () => {
   const dispatch = useDispatch();
 
   const { list: vehicleModels, loadingList: loadingVehicleModels } =
@@ -12,14 +14,13 @@ export const useVehicleBrandModel = () => {
   useEffect(() => {
     dispatch(
       vehicleModelActions.getVehicleModels({
-        search: "",
         page: 1,
         perPage: 100,
       })
     );
   }, [dispatch]);
 
-  const modelOptions =
+  const vehicleModelOptions =
     vehicleModels.map((m) => ({
       label: m.fullName || m.name,
       value: m._id,
@@ -28,6 +29,6 @@ export const useVehicleBrandModel = () => {
   return {
     vehicleModels,
     loadingVehicleModels,
-    modelOptions,
+    vehicleModelOptions,
   };
 };

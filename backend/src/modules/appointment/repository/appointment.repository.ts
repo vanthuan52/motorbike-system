@@ -1,44 +1,63 @@
 import { Model, PopulateOptions } from 'mongoose';
 import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
 import {
-  AppointmentsDoc,
-  AppointmentsEntity,
+  AppointmentDoc,
+  AppointmentEntity,
 } from '../entities/appointment.entity';
 import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
-import { ServiceCategoryEntity } from '@/modules/service-category/entities/service-category.entity';
-import { VehicleBrandEntity } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
 import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
+import { VehicleServiceEntity } from '@/modules/vehicle-service/entities/vehicle-service.entity';
 
-export class AppointmentsRepository extends DatabaseRepositoryBase<
-  AppointmentsEntity,
-  AppointmentsDoc
+export class AppointmentRepository extends DatabaseRepositoryBase<
+  AppointmentEntity,
+  AppointmentDoc
 > {
-  readonly _joinServiceCategory: PopulateOptions = {
+  readonly _joinVehicleServices: PopulateOptions = {
     path: 'vehicleServices',
-    model: ServiceCategoryEntity.name,
-    justOne: false,
-    match: { isActive: true },
+    localField: 'vehicleServices',
+    foreignField: '_id',
+    model: VehicleServiceEntity.name,
   };
 
   readonly _joinVehicleModel: PopulateOptions = {
     path: 'vehicleModel',
+    localField: 'vehicleModel',
+    foreignField: '_id',
     model: VehicleModelEntity.name,
     justOne: true,
-    match: { isActive: true },
   };
 
+  readonly _joinActive: PopulateOptions[] = [
+    {
+      path: 'vehicleModel',
+      localField: 'vehicleModel',
+      foreignField: '_id',
+      model: VehicleModelEntity.name,
+      justOne: true,
+    },
+    {
+      path: 'vehicleServices',
+      localField: 'vehicleServices',
+      foreignField: '_id',
+      model: VehicleServiceEntity.name,
+    },
+  ];
+
   constructor(
-    @InjectDatabaseModel(AppointmentsEntity.name)
-    private readonly AppointmentsModel: Model<AppointmentsEntity>,
+    @InjectDatabaseModel(AppointmentEntity.name)
+    private readonly appointmentModel: Model<AppointmentEntity>,
   ) {
-    super(AppointmentsModel, [
+    super(appointmentModel, [
       {
         path: 'vehicleServices',
-        model: ServiceCategoryEntity.name,
-        justOne: false,
+        localField: 'vehicleServices',
+        foreignField: '_id',
+        model: VehicleServiceEntity.name,
       },
       {
         path: 'vehicleModel',
+        localField: 'vehicleModel',
+        foreignField: '_id',
         model: VehicleModelEntity.name,
         justOne: true,
       },

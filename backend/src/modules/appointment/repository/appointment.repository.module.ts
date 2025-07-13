@@ -1,26 +1,26 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppointmentsRepository } from './appointment.repository';
+import { AppointmentRepository } from './appointment.repository';
 import {
-  AppointmentsEntity,
-  AppointmentsSchema,
+  AppointmentEntity,
+  AppointmentSchema,
 } from '../entities/appointment.entity';
 import { DATABASE_CONNECTION_NAME } from '@/common/database/constants/database.constant';
 
 @Module({
-  providers: [AppointmentsRepository],
-  exports: [AppointmentsRepository],
+  providers: [AppointmentRepository],
+  exports: [AppointmentRepository],
   controllers: [],
   imports: [
     MongooseModule.forFeature(
       [
         {
-          name: AppointmentsEntity.name,
-          schema: AppointmentsSchema,
+          name: AppointmentEntity.name,
+          schema: AppointmentSchema,
         },
       ],
       DATABASE_CONNECTION_NAME,
     ),
   ],
 })
-export class AppointmentsRepositoryModule {}
+export class AppointmentRepositoryModule {}

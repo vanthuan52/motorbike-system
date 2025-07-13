@@ -13,6 +13,8 @@ export const API_ENDPOINTS = {
     VEHICLE_MODEL_DETAIL: (slug: string) => `vehicle-model/get/${slug}`,
     SERVICE_CATEGORY_LIST: "service-category/list",
     SERVICE_CATEGORY_DETAIL: (slug: string) => `service-category/get/${slug}`,
+    VEHICLE_SERVICE_LIST: "vehicle-service/list",
+    VEHICLE_SERVICE_DETAIL: (slug: string) => `vehicle-service/get/${slug}`,
     CREATE_APPOINTMENT: "appointment/create",
   },
   SHARED: {

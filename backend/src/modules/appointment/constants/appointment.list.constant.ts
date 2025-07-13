@@ -1,4 +1,4 @@
-import { ENUM_APPOINTMENTS_STATUS } from '../enums/appointment.enum';
+import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
 
 export const APPOINTMENTS_DEFAULT_AVAILABLE_SEARCH = ['name'];
 export const APPOINTMENTS_DEFAULT_AVAILABLE_ORDER_BY = [
@@ -7,5 +7,5 @@ export const APPOINTMENTS_DEFAULT_AVAILABLE_ORDER_BY = [
   'updatedAt',
 ];
 export const APPOINTMENTS_DEFAULT_STATUS = Object.values(
-  ENUM_APPOINTMENTS_STATUS,
+  ENUM_APPOINTMENT_STATUS,
 );

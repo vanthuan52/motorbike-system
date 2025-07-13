@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
-import { FilterQuery, PipelineStage, Types } from 'mongoose';
-import { AppointmentsRepository } from '../repository/appointment.repository';
-import { IAppointmentsService } from '../interfaces/appointment.service.interface';
+import { FilterQuery, PipelineStage } from 'mongoose';
+import { AppointmentRepository } from '../repository/appointment.repository';
+import { IAppointmentService } from '../interfaces/appointment.service.interface';
 import {
-  AppointmentsDoc,
-  AppointmentsEntity,
+  AppointmentDoc,
+  AppointmentEntity,
 } from '../entities/appointment.entity';
 import {
   IDatabaseAggregateOptions,
@@ -19,110 +19,49 @@ import {
   IDatabaseGetTotalOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { AppointmentsCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
-import { AppointmentsUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
-import { ENUM_APPOINTMENTS_STATUS } from '../enums/appointment.enum';
-import { AppointmentsListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { AppointmentsUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
+import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
+import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
+import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
+import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
+import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
 import {
-  IAppointmentsDoc,
-  IAppointmentsEntity,
+  IAppointmentDoc,
+  IAppointmentEntity,
 } from '../interfaces/appointment.interface';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { ServiceCategoryTableName } from '@/modules/service-category/entities/service-category.entity';
-import { AppointmentsGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
-import { AppointmentsGetResponseDto } from '../dtos/response/appointment.get.response.dto';
+import { VehicleServiceTableName } from '@/modules/vehicle-service/entities/vehicle-service.entity';
+import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
+import { AppointmentGetResponseDto } from '../dtos/response/appointment.get.response.dto';
 
 @Injectable()
-export class AppointmentsService implements IAppointmentsService {
+export class AppointmentService implements IAppointmentService {
   constructor(
-    private readonly AppointmentsRepository: AppointmentsRepository,
+    private readonly appointmentRepository: AppointmentRepository,
     private readonly configService: ConfigService,
     private readonly helperStringService: HelperStringService,
   ) {}
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const Appointment = await this.AppointmentsRepository.findOne(
-      { name },
-      options,
-    );
-    return !!Appointment;
-  }
-
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const Appointment = await this.AppointmentsRepository.findOne(
-      { slug },
-      options,
-    );
-    return !!Appointment;
-  }
-
-  mapList(
-    Appointment: AppointmentsDoc[] | IAppointmentsEntity[],
-  ): AppointmentsListResponseDto[] {
-    return plainToInstance(
-      AppointmentsListResponseDto,
-      Appointment.map((p: AppointmentsDoc | IAppointmentsEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-
-  mapGet(
-    Appointment: AppointmentsDoc | IAppointmentsEntity,
-  ): AppointmentsGetResponseDto {
-    return plainToInstance(
-      AppointmentsGetResponseDto,
-      typeof (Appointment as any).toObject === 'function'
-        ? (Appointment as any).toObject()
-        : Appointment,
-    );
-  }
-
-  mapGetPopulate(
-    Appointment: AppointmentsDoc | IAppointmentsEntity,
-  ): AppointmentsGetFullResponseDto {
-    return plainToInstance(
-      AppointmentsGetFullResponseDto,
-      typeof (Appointment as any).toObject === 'function'
-        ? (Appointment as any).toObject()
-        : Appointment,
-    );
-  }
 
   async findAll(
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,
-  ): Promise<AppointmentsDoc[]> {
-    return this.AppointmentsRepository.findAll<AppointmentsDoc>(find, options);
+  ): Promise<AppointmentDoc[]> {
+    return this.appointmentRepository.findAll<AppointmentDoc>(find, options);
   }
 
-  async findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<AppointmentsDoc[]> {
-    return this.AppointmentsRepository.findAll<AppointmentsDoc>(find, options);
-  }
-
-  createRawQueryFindAllWithServiceCategory(
+  createRawQueryFindAllWithVehicleService(
     find?: Record<string, any>,
   ): PipelineStage[] {
     return [
       {
         $lookup: {
-          from: ServiceCategoryTableName,
-          as: 'serviceCategory',
+          from: VehicleServiceTableName,
+          as: 'vehicleService',
           foreignField: '_id',
-          localField: 'serviceCategory',
+          localField: 'vehicleService',
         },
       },
       {
-        $unwind: '$serviceCategory',
+        $unwind: '$VehicleService',
       },
       {
         $match: find as FilterQuery<any>,
@@ -130,86 +69,82 @@ export class AppointmentsService implements IAppointmentsService {
     ];
   }
 
-  async findAllWithServiceCategory(
+  async findAllWithVehicleModel(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IAppointmentsEntity[]> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithServiceCategory(find);
-
-    return this.AppointmentsRepository.findAllAggregate<IAppointmentsEntity>(
-      pipeline,
-      options,
-    );
+  ): Promise<IAppointmentEntity[]> {
+    return this.appointmentRepository.findAll<IAppointmentEntity>(find, {
+      ...options,
+      join: this.appointmentRepository._joinVehicleModel,
+    });
   }
 
-  async getTotalWithServiceCategory(
+  async getTotalWithVehicleModel(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
   ): Promise<number> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithServiceCategory(find);
-
-    return this.AppointmentsRepository.getTotalAggregate(pipeline, options);
+    return this.appointmentRepository.getTotal(find, {
+      ...options,
+      join: this.appointmentRepository._joinVehicleModel,
+    });
   }
 
-  async findOneById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentsDoc | null> {
-    return this.AppointmentsRepository.findOneById<AppointmentsDoc>(
-      _id,
-      options,
-    );
-  }
-
-  async findOneWithServiceCategoryById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IAppointmentsDoc | null> {
-    return this.AppointmentsRepository.findOneById<IAppointmentsDoc>(_id, {
+  async findAllWithVehicleService(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllAggregateOptions,
+  ): Promise<IAppointmentEntity[]> {
+    return this.appointmentRepository.findAll<IAppointmentEntity>(find, {
       ...options,
       join: true,
     });
   }
 
-  async join(repository: AppointmentsDoc): Promise<IAppointmentsDoc> {
-    return this.AppointmentsRepository.join(
-      repository,
-      this.AppointmentsRepository._join!,
-    );
+  async getTotalWithVehicleService(
+    find?: Record<string, any>,
+    options?: IDatabaseAggregateOptions,
+  ): Promise<number> {
+    return this.appointmentRepository.getTotal(find, {
+      ...options,
+      join: true,
+    });
   }
 
-  async joinVehicleBrand(
-    repository: AppointmentsDoc,
-  ): Promise<IAppointmentsDoc> {
-    return this.AppointmentsRepository.join(
-      repository,
-      this.AppointmentsRepository._joinVehicleBrand!,
-    );
+  async findOneById(
+    _id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<AppointmentDoc | null> {
+    return this.appointmentRepository.findOneById<AppointmentDoc>(_id, options);
   }
 
-  async joinVehicleModel(
-    repository: AppointmentsDoc,
-  ): Promise<IAppointmentsDoc> {
-    return this.AppointmentsRepository.join(
+  async findOneWithVehicleServiceById(
+    _id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<IAppointmentDoc | null> {
+    return this.appointmentRepository.findOneById<IAppointmentDoc>(_id, {
+      ...options,
+      join: true,
+    });
+  }
+
+  async join(repository: AppointmentDoc): Promise<IAppointmentDoc> {
+    return this.appointmentRepository.join(
       repository,
-      this.AppointmentsRepository._joinVehicleModel!,
+      this.appointmentRepository._joinActive,
     );
   }
 
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentsDoc | null> {
-    return this.AppointmentsRepository.findOne<AppointmentsDoc>(find, options);
+  ): Promise<AppointmentDoc | null> {
+    return this.appointmentRepository.findOne<AppointmentDoc>(find, options);
   }
 
   async getTotal(
     find?: Record<string, any>,
     options?: IDatabaseGetTotalOptions,
   ): Promise<number> {
-    return this.AppointmentsRepository.getTotal(find, options);
+    return this.appointmentRepository.getTotal(find, options);
   }
 
   async create(
@@ -225,10 +160,10 @@ export class AppointmentsService implements IAppointmentsService {
       address,
       note,
       status,
-    }: AppointmentsCreateRequestDto,
+    }: AppointmentCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<AppointmentsDoc> {
-    const create: AppointmentsEntity = new AppointmentsEntity();
+  ): Promise<AppointmentDoc> {
+    const create: AppointmentEntity = new AppointmentEntity();
 
     create.user = user;
     create.userVehicle = userVehicle;
@@ -240,16 +175,16 @@ export class AppointmentsService implements IAppointmentsService {
     create.appointmentDate = new Date(appointmentDate);
     create.address = address;
     create.note = note ?? '';
-    create.status = status ?? ENUM_APPOINTMENTS_STATUS.PENDING;
+    create.status = status ?? ENUM_APPOINTMENT_STATUS.PENDING;
 
-    return this.AppointmentsRepository.create<AppointmentsEntity>(
+    return this.appointmentRepository.create<AppointmentEntity>(
       create,
       options,
     );
   }
 
   async update(
-    repository: AppointmentsDoc,
+    repository: AppointmentDoc,
     {
       user,
       userVehicle,
@@ -262,9 +197,9 @@ export class AppointmentsService implements IAppointmentsService {
       address,
       note,
       status,
-    }: AppointmentsUpdateRequestDto,
+    }: AppointmentUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentsDoc> {
+  ): Promise<AppointmentDoc> {
     repository.user = user ?? repository.user;
     repository.userVehicle = userVehicle ?? repository.userVehicle;
     repository.name = name ?? repository.name;
@@ -280,31 +215,64 @@ export class AppointmentsService implements IAppointmentsService {
     repository.note = note ?? repository.note;
     repository.status = status ?? repository.status;
 
-    return this.AppointmentsRepository.save(repository, options);
+    return this.appointmentRepository.save(repository, options);
   }
 
   async softDelete(
-    repository: AppointmentsDoc,
+    repository: AppointmentDoc,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentsDoc> {
-    return this.AppointmentsRepository.softDelete(repository, options);
+  ): Promise<AppointmentDoc> {
+    return this.appointmentRepository.softDelete(repository, options);
   }
 
   async deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean> {
-    await this.AppointmentsRepository.deleteMany(find, options);
+    await this.appointmentRepository.deleteMany(find, options);
     return true;
   }
 
   async updateStatus(
-    repository: AppointmentsDoc,
-    { status }: AppointmentsUpdateStatusRequestDto,
+    repository: AppointmentDoc,
+    { status }: AppointmentUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentsDoc> {
+  ): Promise<AppointmentDoc> {
     repository.status = status;
 
-    return this.AppointmentsRepository.save(repository, options);
+    return this.appointmentRepository.save(repository, options);
+  }
+
+  mapList(
+    appointment: AppointmentDoc[] | IAppointmentEntity[],
+  ): AppointmentListResponseDto[] {
+    return plainToInstance(
+      AppointmentListResponseDto,
+      appointment.map((p: AppointmentDoc | IAppointmentEntity) =>
+        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
+      ),
+    );
+  }
+
+  mapGet(
+    appointment: IAppointmentDoc | IAppointmentEntity,
+  ): AppointmentGetResponseDto {
+    return plainToInstance(
+      AppointmentGetResponseDto,
+      typeof (appointment as any).toObject === 'function'
+        ? (appointment as any).toObject()
+        : appointment,
+    );
+  }
+
+  mapGetPopulate(
+    appointment: AppointmentDoc | IAppointmentEntity,
+  ): AppointmentGetFullResponseDto {
+    return plainToInstance(
+      AppointmentGetFullResponseDto,
+      typeof (appointment as any).toObject === 'function'
+        ? (appointment as any).toObject()
+        : appointment,
+    );
   }
 }

@@ -1,15 +1,17 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Form } from "antd";
 import dayjs from "dayjs";
 import { RootState, useAppDispatch, useAppSelector } from "@/store";
-import { AppointmentsActions } from "@/features/appointment/store/appointment-slice";
+import { appointmentActions } from "@/features/appointment/store/appointment-slice";
 import { FormValuesAppointments } from "@/features/appointment/types";
 
 export const useBookingForm = () => {
   const dispatch = useAppDispatch();
   const [form] = Form.useForm();
   const [serviceType, setServiceType] = useState<"store" | "pickup">("store");
-  const { create } = useAppSelector((state: RootState) => state.appointments);
+  const { create } = useAppSelector((state: RootState) => state.appointment);
   const handleTabChange = (key: string) => {
     setServiceType(key as "store" | "pickup");
   };
@@ -25,8 +27,8 @@ export const useBookingForm = () => {
     console.log(values);
 
     dispatch(
-      AppointmentsActions.createAppointments({
-        appointments: {
+      appointmentActions.createAppointment({
+        appointment: {
           ...rest,
           appointmentDate,
         },

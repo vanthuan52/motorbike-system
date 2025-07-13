@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_APPOINTMENTS_STATUS } from '../enums/appointment.enum';
+import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
 
 interface DocField {
   name: string;
@@ -26,7 +26,7 @@ export const AppointmentsDocQueryStatus: DocField[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_APPOINTMENTS_STATUS).join(','),
+    example: Object.values(ENUM_APPOINTMENT_STATUS).join(','),
     description: "value with ',' delimiter",
   },
 ];

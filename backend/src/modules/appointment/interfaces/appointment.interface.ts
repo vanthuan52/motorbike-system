@@ -1,18 +1,24 @@
 import {
-  AppointmentsDoc,
-  AppointmentsEntity,
+  VehicleServiceDoc,
+  VehicleServiceEntity,
+} from '@/modules/vehicle-service/entities/vehicle-service.entity';
+import {
+  AppointmentDoc,
+  AppointmentEntity,
 } from './../entities/appointment.entity';
 import {
-  ServiceCategoryDoc,
-  ServiceCategoryEntity,
-} from '@/modules/service-category/entities/service-category.entity';
+  VehicleModelDoc,
+  VehicleModelEntity,
+} from '@/modules/vehicle-model/entities/vehicle-model.entity';
 
-export interface IAppointmentsEntity
-  extends Omit<AppointmentsEntity, 'vehicleServices'> {
-  vehicleServices: ServiceCategoryEntity;
+export interface IAppointmentEntity
+  extends Omit<AppointmentEntity, 'vehicleServices' | 'vehicleModel'> {
+  vehicleServices: VehicleServiceEntity[];
+  vehicleModel: VehicleModelEntity;
 }
 
-export interface IAppointmentsDoc
-  extends Omit<AppointmentsDoc, 'vehicleServices'> {
-  vehicleServices: ServiceCategoryDoc;
+export interface IAppointmentDoc
+  extends Omit<AppointmentDoc, 'vehicleServices' | 'vehicleModel'> {
+  vehicleServices: VehicleServiceDoc;
+  vehicleModel: VehicleModelDoc;
 }

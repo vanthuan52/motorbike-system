@@ -1,20 +1,43 @@
-import { Row, Col, Form, Select, Input } from "antd";
-import { ServiceCategory } from "@/features/service-category/types";
+"use client";
+
+import { Row, Col, Form, Select, Input, FormInstance } from "antd";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import { useVehicleBrand } from "@/features/appointment/hooks/useVehicleBrand";
+import { useVehicleModelByBrand } from "@/features/appointment/hooks/useVehicleModelByBrand";
+import { useEffect, useState } from "react";
+import { useVehicleService } from "@/features/appointment/hooks/useVehicleService";
 
-export default function VehicleInfoSection({
-  modelOptions,
-  serviceCategories,
-  loadingVehicleModels,
-  loadingServiceCategories,
-}: {
-  loadingVehicleModels: boolean;
-  modelOptions: { label: string; value: string }[];
-  serviceCategories: ServiceCategory[];
-  loadingServiceCategories: boolean;
-}) {
+interface Props {
+  form: FormInstance;
+}
+
+export default function VehicleInfoSection({ form }: Props) {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
+
+  const [localSelectedBrand, setLocalSelectedBrand] = useState<
+    string | undefined
+  >(undefined);
+
+  useEffect(() => {
+    const initialBrand = form.getFieldValue("vehicleBrand");
+    if (initialBrand) {
+      setLocalSelectedBrand(initialBrand);
+    }
+  }, [form]);
+
+  const { loadingVehicleBrands, vehicleBrandOptions } = useVehicleBrand();
+  const { loadingVehicleModels, vehicleModelOptions } =
+    useVehicleModelByBrand(localSelectedBrand);
+  const { loadingVehicleServices, vehicleServices } = useVehicleService();
+
+  const handleBrandChange = (vehicleBrandId: string) => {
+    setLocalSelectedBrand(vehicleBrandId);
+
+    form.setFieldsValue({ vehicleBrand: vehicleBrandId });
+
+    form.setFieldsValue({ vehicleModel: undefined });
+  };
 
   return (
     <Row gutter={16}>
@@ -22,19 +45,19 @@ export default function VehicleInfoSection({
         <Form.Item
           label={
             <span className="font-semibold text-base">
-              {t("form.userVehicle")}
+              {t("form.vehicleBrand")}
             </span>
           }
-          name="userVehicle"
-          // rules={[{ required: true, message: t("form.userVehicleRequired") }]}
+          name="vehicleBrand"
+          rules={[{ required: true, message: t("form.vehicleBrandRequired") }]}
         >
           <Select
-            placeholder={t("form.userVehiclePlaceholder")}
-            // options={brands.map((b) => ({ label: b.name, value: b._id }))}
-            // onChange={onBrandChange}
+            placeholder={t("form.vehicleBrandPlaceholder")}
+            options={vehicleBrandOptions}
             allowClear
             size="large"
-            // loading={loadingVehicleBrands}
+            loading={loadingVehicleBrands}
+            onChange={handleBrandChange}
           />
         </Form.Item>
       </Col>
@@ -51,10 +74,11 @@ export default function VehicleInfoSection({
         >
           <Select
             placeholder={t("form.vehicleModelPlaceholder")}
-            options={modelOptions}
+            options={vehicleModelOptions}
             allowClear
             size="large"
             loading={loadingVehicleModels}
+            disabled={!localSelectedBrand}
           />
         </Form.Item>
       </Col>
@@ -77,24 +101,24 @@ export default function VehicleInfoSection({
         <Form.Item
           label={
             <span className="font-semibold text-base">
-              {t("form.serviceCategory")}
+              {t("form.vehicleService")}
             </span>
           }
           name="vehicleServices"
           rules={[
-            { required: true, message: t("form.serviceCategoryRequired") },
+            { required: true, message: t("form.vehicleServiceRequired") },
           ]}
         >
           <Select
-            placeholder={t("form.serviceCategoryPlaceholder")}
-            options={serviceCategories.map((s) => ({
+            placeholder={t("form.vehicleServicePlaceholder")}
+            options={vehicleServices.map((s) => ({
               label: s.name,
               value: s._id,
             }))}
             allowClear
             mode="multiple"
             size="large"
-            loading={loadingServiceCategories}
+            loading={loadingVehicleServices}
           />
         </Form.Item>
       </Col>

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_SERVICE_PRICE_STATUS } from '../enums/care-record.enum';
+import { ENUM_CARE_RECORD_STATUS } from '../enums/care-record.enum';
 
 interface DocField {
   name: string;
@@ -46,7 +46,7 @@ export const CareRecordDocQueryStatus: DocField[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_SERVICE_PRICE_STATUS).join(','),
+    example: Object.values(ENUM_CARE_RECORD_STATUS).join(','),
     description: 'one value',
   },
 ];
