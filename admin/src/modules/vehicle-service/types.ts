@@ -1,6 +1,7 @@
 import { ApiResponse } from "@/types/api.type";
 import { BaseEntity, PaginationQuery } from "@/types/base.type";
 import { ServiceCategory } from "../service-category/types";
+import { ServiceChecklist } from "../service-checklist/types";
 
 export enum ENUM_VEHICLE_SERVICE_STATUS {
   ACTIVE = "active",
@@ -15,6 +16,7 @@ export interface VehicleService extends BaseEntity {
   order?: string;
   serviceCategory: ServiceCategory;
   photo?: string;
+  checklistItems?: ServiceChecklist[];
 }
 
 export interface VehicleServicePaginationQuery extends PaginationQuery {
