@@ -14,12 +14,12 @@ import {
   AppointmentsDocQueryOrderDirection,
   AppointmentsDocQueryStatus,
 } from '../constants/appointment.doc.constant';
-import { AppointmentsListResponseDto } from '../dtos/response/appointment.list.response.dto';
+import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
-import { AppointmentsUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
-import { AppointmentsCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
+import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
+import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
-import { AppointmentsGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
+import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 
 export function AppointmentsAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -38,8 +38,8 @@ export function AppointmentsAdminListDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<AppointmentsListResponseDto>('appointment.list', {
-      dto: AppointmentsListResponseDto,
+    DocResponsePaging<AppointmentListResponseDto>('appointment.list', {
+      dto: AppointmentListResponseDto,
     }),
   );
 }
@@ -56,8 +56,8 @@ export function AppointmentsAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<AppointmentsGetFullResponseDto>('appointment.getById', {
-      dto: AppointmentsGetFullResponseDto,
+    DocResponse<AppointmentGetFullResponseDto>('appointment.getById', {
+      dto: AppointmentGetFullResponseDto,
     }),
   );
 }
@@ -72,11 +72,11 @@ export function AppointmentsAdminCreateDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: AppointmentsCreateRequestDto,
+      dto: AppointmentCreateRequestDto,
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse<DatabaseIdResponseDto>('appointment.create', {
-      dto: AppointmentsListResponseDto,
+      dto: AppointmentListResponseDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -90,7 +90,7 @@ export function AppointmentsAdminUpdateDoc(): MethodDecorator {
     DocRequest({
       params: AppointmentsDocParamsId,
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: AppointmentsUpdateRequestDto,
+      dto: AppointmentUpdateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,

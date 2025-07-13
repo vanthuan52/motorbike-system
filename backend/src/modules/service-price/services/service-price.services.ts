@@ -169,24 +169,24 @@ export class ServicePriceService implements IServicePriceService {
   }
 
   mapList(
-    ServicePrice: ServicePriceDoc[] | IServicePriceEntity[],
+    servicePrice: ServicePriceDoc[] | IServicePriceEntity[],
   ): ServicePriceListResponseDto[] {
     return plainToInstance(
       ServicePriceListResponseDto,
-      ServicePrice.map((p: ServicePriceDoc | IServicePriceEntity) =>
+      servicePrice.map((p: ServicePriceDoc | IServicePriceEntity) =>
         typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
       ),
     );
   }
 
   mapGet(
-    ServicePrice: ServicePriceDoc | IServicePriceEntity,
+    servicePrice: ServicePriceDoc | IServicePriceEntity,
   ): ServicePriceGetResponseDto {
     return plainToInstance(
       ServicePriceGetResponseDto,
-      typeof (ServicePrice as any).toObject === 'function'
-        ? (ServicePrice as any).toObject()
-        : ServicePrice,
+      typeof (servicePrice as any).toObject === 'function'
+        ? (servicePrice as any).toObject()
+        : servicePrice,
     );
   }
 

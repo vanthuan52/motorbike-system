@@ -1,1 +1,1 @@
-export { default as appointmentsReducer } from "./appointment-slice";
+export { default as appointmentReducer } from "./appointment-slice";

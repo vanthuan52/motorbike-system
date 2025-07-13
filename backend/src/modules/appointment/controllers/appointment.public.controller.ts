@@ -6,18 +6,17 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AppointmentsService } from '../services/appointment.service';
-import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
+import { AppointmentService } from '../services/appointment.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
-import { ServiceCategoryService } from '@/modules/service-category/services/service-category.services';
 import { AppointmentsPublicCreateDoc } from '../docs/appointment.public.doc';
 import { Response } from '@/common/response/decorators/response.decorator';
-import { AppointmentsCreateRequestPublicDto } from '../dtos/request/appointment.create.request.public.dto';
+import { AppointmentCreateRequestPublicDto } from '../dtos/request/appointment.create.request.public.dto';
 import { ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR } from '@/modules/vehicle-brand/enums/vehicle-brand.status-code.enum';
 import { ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR } from '@/modules/vehicle-model/enums/vehicle-model.status-code.enum';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
 import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
-import { ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR } from '@/modules/service-category/enums/service-category.status-code.enum';
+import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
+import { ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR } from '@/modules/vehicle-service/enums/vehicle-service.status-code.enum';
 
 @ApiTags('modules.public.appointment')
 @Controller({
@@ -26,17 +25,16 @@ import { ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR } from '@/modules/service-categ
 })
 export class AppointmentsPublicController {
   constructor(
-    private readonly appointmentsService: AppointmentsService,
-    private readonly vehicleBrandService: VehicleBrandService,
+    private readonly appointmentsService: AppointmentService,
     private readonly vehicleModelService: VehicleModelService,
-    private readonly serviceCategoryService: ServiceCategoryService,
+    private readonly vehileServiceService: VehicleServiceService,
     private readonly userVehicleService: UserVehicleService,
   ) {}
 
   @AppointmentsPublicCreateDoc()
   @Response('appointment.create')
   @Post('/create')
-  async create(@Body() body: AppointmentsCreateRequestPublicDto): Promise<any> {
+  async create(@Body() body: AppointmentCreateRequestPublicDto): Promise<any> {
     const { userVehicle, vehicleModel, vehicleServices } = body;
     const foundVehicleModel =
       await this.vehicleModelService.findOneById(vehicleModel);
@@ -60,11 +58,11 @@ export class AppointmentsPublicController {
 
     await Promise.all(
       vehicleServices.map(async (id) => {
-        const service = await this.serviceCategoryService.findOneById(id);
+        const service = await this.vehileServiceService.findOneById(id);
         if (!service) {
           throw new NotFoundException({
-            statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
-            message: 'service-category.error.notFound',
+            statusCode: ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR.NOT_FOUND,
+            message: 'vehicle-service.error.notFound',
           });
         }
       }),

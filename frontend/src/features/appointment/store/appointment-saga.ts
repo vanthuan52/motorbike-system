@@ -1,18 +1,18 @@
-import { notificationActions } from "@/features/notification/store/notification-slice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { call, put, takeLatest } from "redux-saga/effects";
-import { AppointmentsActions } from "./appointment-slice";
-import { Appointments, AppointmentsCreationResponse } from "../types";
-import AppointmentsService from "../appointments.service";
+import { appointmentActions } from "./appointment-slice";
+import { Appointment, AppointmentsCreationResponse } from "../types";
+import { notificationActions } from "@/features/notification/store/notification-slice";
+import appointmentsService from "../appointments.service";
 
-function* createAppointmentsHandler(
-  action: PayloadAction<{ appointments: Appointments }>
+function* createAppointmentHandler(
+  action: PayloadAction<{ appointment: Appointment }>
 ) {
   try {
-    const { appointments } = action.payload;
+    const { appointment } = action.payload;
     const response: AppointmentsCreationResponse = yield call(
-      AppointmentsService.create,
-      appointments
+      appointmentsService.create,
+      appointment
     );
 
     yield put(
@@ -21,17 +21,17 @@ function* createAppointmentsHandler(
         message: response.message,
       })
     );
-    yield put(AppointmentsActions.createAppointmentsSuccess());
+    yield put(appointmentActions.createAppointmentSuccess());
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
     yield put(notificationActions.notify({ type: "error", message }));
-    yield put(AppointmentsActions.createAppointmentsFailure(message));
+    yield put(appointmentActions.createAppointmentFailure(message));
   }
 }
 
-export function* AppointmentsSaga() {
+export function* appointmentSaga() {
   yield takeLatest(
-    AppointmentsActions.createAppointments,
-    createAppointmentsHandler
+    appointmentActions.createAppointment,
+    createAppointmentHandler
   );
 }

@@ -10,34 +10,29 @@ import {
   IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { AppointmentsDoc } from '../entities/appointment.entity';
-import { AppointmentsCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
-import { AppointmentsUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
-import { AppointmentsGetResponseDto } from '../dtos/response/appointment.get.response.dto';
-import { AppointmentsListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { IAppointmentsDoc, IAppointmentsEntity } from './appointment.interface';
+import { AppointmentDoc } from '../entities/appointment.entity';
+import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
+import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
+import { AppointmentGetResponseDto } from '../dtos/response/appointment.get.response.dto';
+import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
+import { IAppointmentDoc, IAppointmentEntity } from './appointment.interface';
 
-export interface IAppointmentsService {
+export interface IAppointmentService {
   findAll(
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,
-  ): Promise<AppointmentsDoc[]>;
+  ): Promise<AppointmentDoc[]>;
 
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<AppointmentsDoc[]>;
-
-  createRawQueryFindAllWithServiceCategory(
+  createRawQueryFindAllWithVehicleService(
     find?: Record<string, any>,
   ): PipelineStage[];
 
-  findAllWithServiceCategory(
+  findAllWithVehicleService(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IAppointmentsEntity[]>;
+  ): Promise<IAppointmentEntity[]>;
 
-  getTotalWithServiceCategory(
+  getTotalWithVehicleService(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
   ): Promise<number>;
@@ -45,17 +40,12 @@ export interface IAppointmentsService {
   findOneById(
     _id: string,
     options?: IDatabaseOptions,
-  ): Promise<AppointmentsDoc | null>;
-
-  findOneWithServiceCategoryById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IAppointmentsDoc | null>;
+  ): Promise<AppointmentDoc | null>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentsDoc | null>;
+  ): Promise<AppointmentDoc | null>;
 
   getTotal(
     find?: Record<string, any>,
@@ -63,26 +53,26 @@ export interface IAppointmentsService {
   ): Promise<number>;
 
   create(
-    payload: AppointmentsCreateRequestDto,
+    payload: AppointmentCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<AppointmentsDoc>;
+  ): Promise<AppointmentDoc>;
 
   update(
-    repository: AppointmentsDoc,
-    payload: AppointmentsUpdateRequestDto,
+    repository: AppointmentDoc,
+    payload: AppointmentUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentsDoc>;
+  ): Promise<AppointmentDoc>;
 
   softDelete(
-    repository: AppointmentsDoc,
+    repository: AppointmentDoc,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentsDoc>;
+  ): Promise<AppointmentDoc>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
 
-  mapList(data: AppointmentsDoc[]): AppointmentsListResponseDto[];
-  mapGet(data: AppointmentsDoc): AppointmentsGetResponseDto;
+  mapList(data: AppointmentDoc[]): AppointmentListResponseDto[];
+  mapGet(data: IAppointmentDoc): AppointmentGetResponseDto;
 }

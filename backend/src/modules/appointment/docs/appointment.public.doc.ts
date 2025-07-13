@@ -8,8 +8,8 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { AppointmentsListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { AppointmentsCreateRequestPublicDto } from '../dtos/request/appointment.create.request.public.dto';
+import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
+import { AppointmentCreateRequestPublicDto } from '../dtos/request/appointment.create.request.public.dto';
 export function AppointmentsPublicCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
@@ -20,11 +20,11 @@ export function AppointmentsPublicCreateDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: AppointmentsCreateRequestPublicDto,
+      dto: AppointmentCreateRequestPublicDto,
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse<DatabaseIdResponseDto>('appointment.create', {
-      dto: AppointmentsListResponseDto,
+      dto: AppointmentListResponseDto,
       statusCode: HttpStatus.CREATED,
     }),
   );

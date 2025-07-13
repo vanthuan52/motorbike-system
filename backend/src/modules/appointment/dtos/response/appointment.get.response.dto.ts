@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ENUM_APPOINTMENTS_STATUS } from '../../enums/appointment.enum';
+import { ENUM_APPOINTMENT_STATUS } from '../../enums/appointment.enum';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 
-export class AppointmentsGetResponseDto extends DatabaseDto {
+export class AppointmentGetResponseDto extends DatabaseDto {
   @ApiProperty({
     example: 'userId',
     description: 'ID người dùng',
@@ -57,9 +57,9 @@ export class AppointmentsGetResponseDto extends DatabaseDto {
   note?: string;
 
   @ApiProperty({
-    example: ENUM_APPOINTMENTS_STATUS.PENDING,
+    example: ENUM_APPOINTMENT_STATUS.PENDING,
     description: 'Trạng thái lịch hẹn',
-    enum: ENUM_APPOINTMENTS_STATUS,
+    enum: ENUM_APPOINTMENT_STATUS,
   })
-  status: ENUM_APPOINTMENTS_STATUS;
+  status: ENUM_APPOINTMENT_STATUS;
 }

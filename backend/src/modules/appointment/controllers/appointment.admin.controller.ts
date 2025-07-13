@@ -11,10 +11,9 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AppointmentsService } from '../services/appointment.service';
+import { AppointmentService } from '../services/appointment.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { UserService } from '@/modules/user/services/user.service';
-import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 import { ServiceCategoryService } from '@/modules/service-category/services/service-category.services';
 import {
@@ -53,32 +52,34 @@ import {
   APPOINTMENTS_DEFAULT_STATUS,
 } from '../constants/appointment.list.constant';
 import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { ENUM_APPOINTMENTS_STATUS } from '../enums/appointment.enum';
+import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
 import {
   IResponse,
   IResponsePaging,
 } from '@/common/response/interfaces/response.interface';
-import { AppointmentsListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { AppointmentsGetResponseDto } from '../dtos/response/appointment.get.response.dto';
-import { AppointmentsCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
-import { AppointmentsUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
-import { ENUM_APPOINTMENTS_STATUS_CODE_ERROR } from '../enums/appointment.status-code.enum';
+import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
+import { AppointmentGetResponseDto } from '../dtos/response/appointment.get.response.dto';
+import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
+import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
+import { ENUM_APPOINTMENT_STATUS_CODE_ERROR } from '../enums/appointment.status-code.enum';
 import {
   IDatabaseCreateOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
-import { AppointmentsUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
+import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { AppointmentsParsePipe } from '../pipes/appointment.parse.pipe';
-import { AppointmentsDoc } from '../entities/appointment.entity';
-import { ENUM_USER_STATUS_CODE_ERROR } from '@/modules/user/enums/user.status-code.enum';
+import { AppointmentDoc } from '../entities/appointment.entity';
 import { ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR } from '@/modules/vehicle-brand/enums/vehicle-brand.status-code.enum';
 import { ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR } from '@/modules/vehicle-model/enums/vehicle-model.status-code.enum';
 import { ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR } from '@/modules/service-category/enums/service-category.status-code.enum';
-import { IAppointmentsDoc } from '../interfaces/appointment.interface';
+import { IAppointmentDoc } from '../interfaces/appointment.interface';
 import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
 import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
+import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
+import { ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR } from '@/modules/vehicle-service/enums/vehicle-service.status-code.enum';
+import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
 
 @ApiTags('modules.admin.appointment')
 @Controller({
@@ -87,12 +88,11 @@ import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '@/modules/user-vehicle/enum
 })
 export class AppointmentsAdminController {
   constructor(
-    private readonly appointmentsService: AppointmentsService,
+    private readonly appointmentService: AppointmentService,
     private readonly paginationService: PaginationService,
     private readonly userService: UserService,
-    private readonly vehicleBrandService: VehicleBrandService,
     private readonly vehicleModelService: VehicleModelService,
-    private readonly serviceCategoryService: ServiceCategoryService,
+    private readonly vehicleServiceService: VehicleServiceService,
     private readonly userVehicleService: UserVehicleService,
   ) {}
 
@@ -115,28 +115,32 @@ export class AppointmentsAdminController {
     @PaginationQueryFilterInEnum(
       'status',
       APPOINTMENTS_DEFAULT_STATUS,
-      ENUM_APPOINTMENTS_STATUS,
+      ENUM_APPOINTMENT_STATUS,
     )
     status: Record<string, any>,
-  ): Promise<IResponsePaging<AppointmentsListResponseDto>> {
+  ): Promise<IResponsePaging<AppointmentListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
     };
 
-    const Appointments = await this.appointmentsService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
+    const appointments = await this.appointmentService.findAllWithVehicleModel(
+      find,
+      {
+        paging: {
+          limit: _limit,
+          offset: _offset,
+        },
+        order: _order,
       },
-      order: _order,
-    });
+    );
 
-    const total: number = await this.appointmentsService.getTotal(find);
+    const total: number =
+      await this.appointmentService.getTotalWithVehicleModel(find);
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
-    const mapped = this.appointmentsService.mapList(Appointments);
+    const mapped = this.appointmentService.mapList(appointments);
 
     return {
       _pagination: { total, totalPage },
@@ -156,14 +160,13 @@ export class AppointmentsAdminController {
   @Get('/get/:id')
   async get(
     @Param('id', RequestRequiredPipe, AppointmentsParsePipe)
-    appointment: AppointmentsDoc,
-  ): Promise<IResponse<AppointmentsGetResponseDto>> {
-    const AppointmentsWithCategory: IAppointmentsDoc =
-      await this.appointmentsService.join(appointment);
+    appointment: AppointmentDoc,
+  ): Promise<IResponse<AppointmentGetResponseDto>> {
+    const appointmentFull: IAppointmentDoc =
+      await this.appointmentService.join(appointment);
 
-    const mapped: AppointmentsGetResponseDto = this.appointmentsService.mapGet(
-      AppointmentsWithCategory,
-    );
+    const mapped: AppointmentGetResponseDto =
+      this.appointmentService.mapGet(appointmentFull);
     return { data: mapped };
   }
 
@@ -179,7 +182,7 @@ export class AppointmentsAdminController {
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() body: AppointmentsCreateRequestDto,
+    @Body() body: AppointmentCreateRequestDto,
   ): Promise<any> {
     const { userVehicle, vehicleModel, vehicleServices } = body;
 
@@ -205,18 +208,18 @@ export class AppointmentsAdminController {
 
     await Promise.all(
       vehicleServices.map(async (id) => {
-        const service = await this.serviceCategoryService.findOneById(id);
+        const service = await this.vehicleServiceService.findOneById(id);
         if (!service) {
           throw new NotFoundException({
-            statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
-            message: 'service-category.error.notFound',
+            statusCode: ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR.NOT_FOUND,
+            message: 'vehicle-service.error.notFound',
           });
         }
       }),
     );
 
     try {
-      const created = await this.appointmentsService.create(body, {
+      const created = await this.appointmentService.create(body, {
         actionBy: createdBy,
       } as IDatabaseCreateOptions);
 
@@ -243,25 +246,32 @@ export class AppointmentsAdminController {
   async update(
     @Param('id') id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: AppointmentsUpdateRequestDto,
+    @Body() body: AppointmentUpdateRequestDto,
   ): Promise<any> {
     const { userVehicle, vehicleModel, vehicleServices } = body;
 
-    const [foundUserVehicle, foundVehicleModel, appointment] =
+    const [appointment, foundUserVehicle, foundVehicleModel] =
       await Promise.all([
+        this.appointmentService.findOneById(id),
         userVehicle
           ? this.userVehicleService.findOneById(userVehicle)
           : Promise.resolve(null),
         vehicleModel
           ? this.vehicleModelService.findOneById(vehicleModel)
           : Promise.resolve(null),
-        this.appointmentsService.findOneById(id),
       ]);
+
+    if (!appointment) {
+      throw new NotFoundException({
+        statusCode: ENUM_APPOINTMENT_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'appointment.error.notFound',
+      });
+    }
 
     if (userVehicle && !foundUserVehicle) {
       throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'vehicle-brand.error.notFound',
+        statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'user-vehicle.error.notFound',
       });
     }
 
@@ -272,21 +282,14 @@ export class AppointmentsAdminController {
       });
     }
 
-    if (!appointment) {
-      throw new NotFoundException({
-        statusCode: ENUM_APPOINTMENTS_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'appointment.error.notFound',
-      });
-    }
-
     if (vehicleServices?.length) {
       await Promise.all(
         vehicleServices.map(async (id) => {
-          const service = await this.serviceCategoryService.findOneById(id);
+          const service = await this.vehicleServiceService.findOneById(id);
           if (!service) {
             throw new NotFoundException({
-              statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
-              message: 'service-category.error.notFound',
+              statusCode: ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR.NOT_FOUND,
+              message: 'vehicle-service.error.notFound',
             });
           }
         }),
@@ -294,7 +297,7 @@ export class AppointmentsAdminController {
     }
 
     try {
-      await this.appointmentsService.update(appointment, body, {
+      await this.appointmentService.update(appointment, body, {
         actionBy: updatedBy,
       } as IDatabaseSaveOptions);
     } catch (err) {
@@ -318,12 +321,12 @@ export class AppointmentsAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, AppointmentsParsePipe)
-    appointment: AppointmentsDoc,
+    appointment: AppointmentDoc,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() { status }: AppointmentsUpdateStatusRequestDto,
+    @Body() { status }: AppointmentUpdateStatusRequestDto,
   ): Promise<IResponse<void>> {
     try {
-      await this.appointmentsService.updateStatus(appointment, { status }, {
+      await this.appointmentService.updateStatus(appointment, { status }, {
         actionBy: updatedBy,
       } as IDatabaseSaveOptions);
       return {
@@ -356,11 +359,11 @@ export class AppointmentsAdminController {
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, AppointmentsParsePipe)
-    appointment: AppointmentsDoc,
+    appointment: AppointmentDoc,
     @AuthJwtPayload('user') updatedBy: string,
   ): Promise<void> {
     try {
-      await this.appointmentsService.softDelete(appointment, {
+      await this.appointmentService.softDelete(appointment, {
         actionBy: updatedBy,
       } as IDatabaseSaveOptions);
     } catch (err) {

@@ -46,9 +46,9 @@
     "timeSlotRequired": "Vui lòng chọn khung giờ",
     "timeSlotPlaceholder": "Chọn khung giờ",
 
-    "serviceCategory": "Gói bảo dưỡng / sửa chữa",
-    "serviceCategoryRequired": "Vui lòng chọn ít nhất một gói",
-    "serviceCategoryPlaceholder": "Chọn gói bảo dưỡng hoặc sửa chữa",
+    "vehicleService": "Gói bảo dưỡng / sửa chữa",
+    "vehicleServiceRequired": "Vui lòng chọn ít nhất một gói",
+    "vehicleServicePlaceholder": "Chọn gói bảo dưỡng hoặc sửa chữa",
     "timeSlotExtra": "(Bạn có thể đến trong vòng 2 giờ kể từ thời gian này)",
     "note": "Ghi chú",
     "notePlaceholder": "Nhập tình trạng xe hoặc yêu cầu cụ thể",
@@ -57,7 +57,7 @@
   "pickupCost": {
     "title": "Thông Tin Chi Phí Nhận và Giao Xe",
     "free": "Miễn phí nhận và giao xe trong phạm vi 3km.",
-    "inWorkHour": "Phí nhận xe: <b>30.000đ/km</b> (cho khoảng cách trên 3km) trong giờ làm việc.",
-    "outOfWorkHour": "Phí ngoài giờ: <b>45.000đ/km</b> (sau 19h hoặc ngoài giờ làm việc)."
+    "inWorkHour": "Phí nhận xe: 30.000đ/km (cho khoảng cách trên 3km) trong giờ làm việc.",
+    "outOfWorkHour": "Phí ngoài giờ: 45.000đ/km (sau 19h hoặc ngoài giờ làm việc)."
   }
 }

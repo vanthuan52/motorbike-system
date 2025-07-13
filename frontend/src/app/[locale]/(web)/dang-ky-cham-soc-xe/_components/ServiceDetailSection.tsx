@@ -1,6 +1,6 @@
-import { TRANSLATION_FILES } from "@/lib/i18n";
-import { Row, Col, Form, Select, DatePicker, TimePicker } from "antd";
+import { Row, Col, Form, DatePicker, TimePicker } from "antd";
 import { useTranslations } from "next-intl";
+import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export default function ServiceDetailSection() {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);

@@ -1,3 +1,3 @@
-import { AppointmentsGetFullResponseDto } from './appointment.full.response.dto';
+import { AppointmentGetFullResponseDto } from './appointment.full.response.dto';
 
-export class AppointmentsListResponseDto extends AppointmentsGetFullResponseDto {}
+export class AppointmentListResponseDto extends AppointmentGetFullResponseDto {}

@@ -32,7 +32,7 @@ import { ServicePriceModule } from '@/modules/service-price/service-price.module
 import { ServiceChecklistAdminController } from '@/modules/service-checklist/controllers/service-checklist.admin.controller';
 import { ServiceChecklistModule } from '@/modules/service-checklist/service-checklist.module';
 import { AppointmentsAdminController } from '@/modules/appointment/controllers/appointment.admin.controller';
-import { AppointmentsModule } from '@/modules/appointment/appointment.module';
+import { AppointmentModule } from '@/modules/appointment/appointment.module';
 import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
 
 @Module({
@@ -75,7 +75,7 @@ import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
     VehicleModelModule,
     ServicePriceModule,
     ServiceChecklistModule,
-    AppointmentsModule,
+    AppointmentModule,
     UserVehicleModule,
   ],
 })

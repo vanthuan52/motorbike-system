@@ -2,10 +2,10 @@ import { AxiosError, AxiosResponse } from "axios";
 import { publicApi } from "@/lib/axios";
 import { ApiErrorResponse } from "@/types/api.type";
 import { API_ENDPOINTS } from "@/constant/api-endpoint";
-import { Appointments, AppointmentsCreationResponse } from "./types";
+import { Appointment, AppointmentsCreationResponse } from "./types";
 
-const AppointmentsService = {
-  create: async (data: Appointments): Promise<AppointmentsCreationResponse> => {
+const appointmentService = {
+  create: async (data: Appointment): Promise<AppointmentsCreationResponse> => {
     try {
       const response: AxiosResponse<AppointmentsCreationResponse> =
         await publicApi.post(API_ENDPOINTS.PUBLIC.CREATE_APPOINTMENT, data);
@@ -24,4 +24,4 @@ const AppointmentsService = {
   },
 };
 
-export default AppointmentsService;
+export default appointmentService;

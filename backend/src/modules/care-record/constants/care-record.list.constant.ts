@@ -1,4 +1,4 @@
-import { ENUM_SERVICE_PRICE_STATUS } from '../enums/care-record.enum';
+import { ENUM_CARE_RECORD_STATUS } from '../enums/care-record.enum';
 
 export const SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH = [];
 export const SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY = [

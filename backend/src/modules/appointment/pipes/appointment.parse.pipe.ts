@@ -1,19 +1,19 @@
 import { Injectable, NotFoundException, PipeTransform } from '@nestjs/common';
-import { AppointmentsService } from '../services/appointment.service';
-import { AppointmentsDoc } from '../entities/appointment.entity';
-import { ENUM_APPOINTMENTS_STATUS_CODE_ERROR } from '../enums/appointment.status-code.enum';
+import { AppointmentService } from '../services/appointment.service';
+import { AppointmentDoc } from '../entities/appointment.entity';
+import { ENUM_APPOINTMENT_STATUS_CODE_ERROR } from '../enums/appointment.status-code.enum';
 
 @Injectable()
 export class AppointmentsParsePipe implements PipeTransform {
-  constructor(private readonly AppointmentsService: AppointmentsService) {}
+  constructor(private readonly appointmentService: AppointmentService) {}
 
   async transform(value: any) {
-    const Appointment: AppointmentsDoc | null =
-      await this.AppointmentsService.findOneById(value);
+    const Appointment: AppointmentDoc | null =
+      await this.appointmentService.findOneById(value);
 
     if (!Appointment) {
       throw new NotFoundException({
-        statusCode: ENUM_APPOINTMENTS_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: ENUM_APPOINTMENT_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'appointment.error.notFound',
       });
     }
@@ -24,14 +24,14 @@ export class AppointmentsParsePipe implements PipeTransform {
 
 @Injectable()
 export class AppointmentsActiveParsePipe implements PipeTransform {
-  constructor(private readonly AppointmentsService: AppointmentsService) {}
+  constructor(private readonly AppointmentsService: AppointmentService) {}
 
   async transform(value: any) {
     const Appointment =
-      await this.AppointmentsService.findOneWithServiceCategoryById(value);
+      await this.AppointmentsService.findOneWithVehicleServiceById(value);
     if (!Appointment) {
       throw new NotFoundException({
-        statusCode: ENUM_APPOINTMENTS_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: ENUM_APPOINTMENT_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'appointment.error.notFound',
       });
     }

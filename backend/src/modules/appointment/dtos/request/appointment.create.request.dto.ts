@@ -9,9 +9,9 @@ import {
   IsArray,
   IsUUID,
 } from 'class-validator';
-import { ENUM_APPOINTMENTS_STATUS } from '../../enums/appointment.enum';
+import { ENUM_APPOINTMENT_STATUS } from '../../enums/appointment.enum';
 
-export class AppointmentsCreateRequestDto {
+export class AppointmentCreateRequestDto {
   @ApiProperty({
     example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
     description: 'ID người dùng',
@@ -113,13 +113,13 @@ export class AppointmentsCreateRequestDto {
   note?: string;
 
   @ApiProperty({
-    example: ENUM_APPOINTMENTS_STATUS.PENDING,
+    example: ENUM_APPOINTMENT_STATUS.PENDING,
     description: 'Trạng thái',
     required: false,
-    enum: ENUM_APPOINTMENTS_STATUS,
-    default: ENUM_APPOINTMENTS_STATUS.PENDING,
+    enum: ENUM_APPOINTMENT_STATUS,
+    default: ENUM_APPOINTMENT_STATUS.PENDING,
   })
   @IsOptional()
   @IsString()
-  status?: ENUM_APPOINTMENTS_STATUS;
+  status?: ENUM_APPOINTMENT_STATUS;
 }
