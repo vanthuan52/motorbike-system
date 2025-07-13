@@ -6,19 +6,15 @@ import { AppointmentsListResponseDto } from './appointment.list.response.dto';
 
 export class AppointmentShortResponseDto extends OmitType(
   AppointmentsListResponseDto,
-  ['serviceCategory', 'status', 'createdAt', 'updatedAt'],
+  ['vehicleServices', 'status', 'createdAt', 'updatedAt'],
 ) {
   @ApiHideProperty()
   @Exclude()
-  serviceCategory: string;
+  vehicleServices: string;
 
   @ApiHideProperty()
   @Exclude()
   status: ENUM_APPOINTMENTS_STATUS;
-
-  @ApiHideProperty()
-  @Exclude()
-  photo?: AwsS3ResponseDto;
 
   @ApiHideProperty()
   @Exclude()

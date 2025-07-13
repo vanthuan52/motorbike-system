@@ -8,17 +8,23 @@ export enum ENUM_APPOINTMENTS_STATUS {
 }
 
 export interface Appointments extends BaseEntity {
-  customer: string;
+  user?: string;
+  userVehicle?: string;
+  name: string;
   phone: string;
-  vehicleBrand: string;
   vehicleModel: string;
-  serviceCategories: string[];
-  vehicleNumber: string;
-  scheduleDate: Date;
-  timeSlot: string;
-  address: string;
+  vehicleServices: string[];
+  licensePlate: string;
+  appointmentDate: Date;
+  address?: string;
   note?: string;
   status?: ENUM_APPOINTMENTS_STATUS;
+}
+
+export interface FormValuesAppointments
+  extends Omit<Appointments, "appointmentDate"> {
+  date: Date;
+  time: string;
 }
 
 export interface AppointmentsPaginationQuery extends BaseEntity {

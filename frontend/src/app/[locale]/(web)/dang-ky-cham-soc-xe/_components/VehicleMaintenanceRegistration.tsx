@@ -18,14 +18,7 @@ export default function VehicleMaintenanceRegistration() {
   const { form, serviceType, handleTabChange, handleFinish, submitLoading } =
     useBookingForm();
 
-  const {
-    selectedBrand,
-    handleBrandChange,
-    vehicleBrands,
-    loadingVehicleBrands,
-    loadingVehicleModels,
-    modelOptions,
-  } = useVehicleBrandModel();
+  const { loadingVehicleModels, modelOptions } = useVehicleBrandModel();
 
   const { serviceCategories, loadingServiceCategories } = useServiceCategory();
   return (
@@ -42,12 +35,8 @@ export default function VehicleMaintenanceRegistration() {
       >
         <CustomerInfoSection />
         <VehicleInfoSection
-          brands={vehicleBrands}
-          loadingVehicleBrands={loadingVehicleBrands}
           loadingVehicleModels={loadingVehicleModels}
           modelOptions={modelOptions}
-          selectedBrand={selectedBrand}
-          onBrandChange={handleBrandChange}
           serviceCategories={serviceCategories}
           loadingServiceCategories={loadingServiceCategories}
         />

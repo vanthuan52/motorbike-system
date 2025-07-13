@@ -3,7 +3,11 @@ import { Form } from "antd";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import { ENUM_PAGE_MODE } from "@/types/app.type";
-import { ENUM_APPOINTMENTS_STATUS, Appointments } from "../types";
+import {
+  ENUM_APPOINTMENTS_STATUS,
+  Appointments,
+  FormValuesAppointments,
+} from "../types";
 import { useAppDispatch } from "@/store";
 import { AppointmentsActions } from "../store/appointment-slice";
 import Button from "@/components/ui/button";
@@ -36,12 +40,15 @@ export default function AppointmentsForm({
 
   useEffect(() => {
     if (Appointments && isEdit) {
+      const appointmentDate = dayjs(Appointments.appointmentDate);
+
       form.setFieldsValue({
         ...Appointments,
-        vehicleBrand: Appointments.vehicleBrand?._id,
+        userVehicle: Appointments.userVehicle?._id,
         vehicleModel: Appointments.vehicleModel?._id,
-        serviceCategory: Appointments.serviceCategory?.map((item) => item._id),
-        scheduleDate: dayjs(Appointments.scheduleDate),
+        vehicleServices: Appointments.vehicleServices?.map((item) => item._id),
+        date: appointmentDate.startOf("day"),
+        time: appointmentDate,
         status: Appointments.status,
       });
     } else {
@@ -52,47 +59,49 @@ export default function AppointmentsForm({
   const {
     serviceCategoryOptions,
     vehicleModelOptions,
-    vehicleBrandOptions,
     loadingServiceCategory,
     loadingVehicleModels,
-    loadingVehicleBrands,
   } = useAppointmentOptions();
 
   const handleCancel = () => {
     navigate(-1);
   };
 
-  const handleSubmit = async (values: Appointments) => {
-    let status: ENUM_APPOINTMENTS_STATUS;
+  const handleSubmit = async (values: FormValuesAppointments) => {
+    const { date, time, vehicleServices, status, ...rest } = values;
 
-    switch (values.status) {
-      case "pending":
-        status = ENUM_APPOINTMENTS_STATUS.PENDING;
-        break;
-      case "upcoming":
-        status = ENUM_APPOINTMENTS_STATUS.UPCOMING;
-        break;
-      case "done":
-        status = ENUM_APPOINTMENTS_STATUS.DONE;
-        break;
-      default:
-        status = ENUM_APPOINTMENTS_STATUS.PENDING;
-    }
+    const statusMap: Record<
+      keyof typeof ENUM_APPOINTMENTS_STATUS,
+      ENUM_APPOINTMENTS_STATUS
+    > = {
+      PENDING: ENUM_APPOINTMENTS_STATUS.PENDING,
+      UPCOMING: ENUM_APPOINTMENTS_STATUS.UPCOMING,
+      DONE: ENUM_APPOINTMENTS_STATUS.DONE,
+    };
+
+    const statusKey = (status ?? "pending") as keyof typeof statusMap;
+    const finalStatus = statusMap[statusKey];
+
+    const appointmentDate = dayjs(date)
+      .hour(dayjs(time).hour())
+      .minute(dayjs(time).minute())
+      .second(0)
+      .toDate();
+
+    const normalizedVehicleServices = Array.isArray(vehicleServices)
+      ? vehicleServices
+      : [vehicleServices];
 
     const submitValues = {
-      ...values,
-      status,
-      staff: "b4424043-e82e-4e70-9b95-f7712f2301e9", // TODO: get current staff
-      serviceCategory: Array.isArray(values.serviceCategory)
-        ? values.serviceCategory
-        : [values.serviceCategory],
+      ...rest,
+      status: finalStatus,
+      vehicleServices: normalizedVehicleServices,
+      appointmentDate,
     };
 
     if (isCreate) {
       dispatch(
-        AppointmentsActions.createAppointment({
-          Appointments: submitValues,
-        })
+        AppointmentsActions.createAppointment({ Appointments: submitValues })
       );
     } else if (isEdit && id) {
       dispatch(
@@ -134,12 +143,10 @@ export default function AppointmentsForm({
         <BasicInfoSection mode={mode} onStatusChange={handleStatusChange} />
         <OtherInfoSection
           mode={mode}
-          vehicleBrandOptions={vehicleBrandOptions}
           vehicleModelOptions={vehicleModelOptions}
           serviceCategoryOptions={serviceCategoryOptions}
           loadingServiceCategory={loadingServiceCategory}
           loadingVehicleModels={loadingVehicleModels}
-          loadingVehicleBrands={loadingVehicleBrands}
         />
 
         {(isCreate || isEdit) && (

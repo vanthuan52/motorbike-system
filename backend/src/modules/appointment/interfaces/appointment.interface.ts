@@ -8,11 +8,11 @@ import {
 } from '@/modules/service-category/entities/service-category.entity';
 
 export interface IAppointmentsEntity
-  extends Omit<AppointmentsEntity, 'serviceCategory'> {
-  serviceCategory: ServiceCategoryEntity;
+  extends Omit<AppointmentsEntity, 'vehicleServices'> {
+  vehicleServices: ServiceCategoryEntity;
 }
 
 export interface IAppointmentsDoc
-  extends Omit<AppointmentsDoc, 'serviceCategory'> {
-  serviceCategory: ServiceCategoryDoc;
+  extends Omit<AppointmentsDoc, 'vehicleServices'> {
+  vehicleServices: ServiceCategoryDoc;
 }

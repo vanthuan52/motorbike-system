@@ -1,13 +1,6 @@
 import { TRANSLATION_FILES } from "@/lib/i18n";
-import { Row, Col, Form, Select, DatePicker } from "antd";
+import { Row, Col, Form, Select, DatePicker, TimePicker } from "antd";
 import { useTranslations } from "next-intl";
-
-const timeSlots = [
-  "08:00 - 10:00",
-  "10:00 - 12:00",
-  "13:00 - 15:00",
-  "15:00 - 17:00",
-];
 
 export default function ServiceDetailSection() {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
@@ -18,7 +11,7 @@ export default function ServiceDetailSection() {
           label={
             <span className="font-semibold text-base">{t("form.date")}</span>
           }
-          name="scheduleDate"
+          name="date"
           rules={[{ required: true, message: t("form.dateRequired") }]}
         >
           <DatePicker
@@ -36,16 +29,20 @@ export default function ServiceDetailSection() {
               {t("form.timeSlot")}
             </span>
           }
-          name="timeSlot"
+          name="time"
           rules={[{ required: true, message: t("form.timeSlotRequired") }]}
+          extra={
+            <span className="text-xs text-gray-500">
+              {t("form.timeSlotExtra")}
+            </span>
+          }
         >
-          <Select placeholder={t("form.timeSlotPlaceholder")} size="large">
-            {timeSlots.map((slot) => (
-              <Select.Option key={slot} value={slot}>
-                {slot}
-              </Select.Option>
-            ))}
-          </Select>
+          <TimePicker
+            className="w-full"
+            format="HH:mm"
+            placeholder={t("form.timeSlotPlaceholder")}
+            size="large"
+          />
         </Form.Item>
       </Col>
     </Row>

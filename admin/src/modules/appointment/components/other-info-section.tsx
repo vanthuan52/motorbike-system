@@ -7,22 +7,18 @@ type Option = { label: string; value: string };
 
 type OtherInfoSectionProps = {
   mode: ENUM_PAGE_MODE;
-  vehicleBrandOptions: Option[];
   vehicleModelOptions: Option[];
   serviceCategoryOptions: Option[];
   loadingServiceCategory: boolean;
   loadingVehicleModels: boolean;
-  loadingVehicleBrands: boolean;
 };
 
 const OtherInfoSection = ({
   mode,
-  vehicleBrandOptions,
   vehicleModelOptions,
   serviceCategoryOptions,
   loadingServiceCategory,
   loadingVehicleModels,
-  loadingVehicleBrands,
 }: OtherInfoSectionProps) => {
   const isDisabled = mode === ENUM_PAGE_MODE.VIEW;
 
@@ -31,16 +27,18 @@ const OtherInfoSection = ({
       <h2 className="text-lg font-semibold mb-4">Thông tin chi tiết</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
         <Form.Item
-          label="Hãng xe"
-          name="vehicleBrand"
-          rules={[{ required: true, message: "Vui lòng chọn hãng xe" }]}
+          label="Xe của người dùng"
+          name="userVehicle"
+          // rules={[
+          //   { required: true, message: "Vui lòng chọn xe của người dùng" },
+          // ]}
         >
           <Select
-            options={vehicleBrandOptions}
-            placeholder="Chọn hãng xe"
+            // options={vehicleBrandOptions}
+            placeholder="Chọn xe của người dùng"
             size="large"
             disabled={isDisabled}
-            loading={loadingVehicleBrands}
+            // loading={loadingVehicleBrands}
           />
         </Form.Item>
 
@@ -60,7 +58,7 @@ const OtherInfoSection = ({
 
         <Form.Item
           label="Dịch vụ"
-          name="serviceCategory"
+          name="vehicleServices"
           rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
         >
           <Select
@@ -75,7 +73,7 @@ const OtherInfoSection = ({
 
         <Form.Item
           label="Biển số xe"
-          name="vehicleNumber"
+          name="licensePlate"
           rules={[{ required: true, message: "Vui lòng nhập biển số xe" }]}
         >
           <Input

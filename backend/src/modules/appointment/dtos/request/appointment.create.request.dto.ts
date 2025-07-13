@@ -4,108 +4,105 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  IsIn,
-  IsUUID,
   IsDateString,
   ArrayNotEmpty,
+  IsArray,
+  IsUUID,
 } from 'class-validator';
 import { ENUM_APPOINTMENTS_STATUS } from '../../enums/appointment.enum';
 
 export class AppointmentsCreateRequestDto {
   @ApiProperty({
-    example: 'Nguyễn Văn A',
-    description: 'Tên khách hàng',
-    required: true,
-    maxLength: 100,
+    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
+    description: 'ID người dùng',
+    required: false,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @MaxLength(100)
-  customer: string;
+  user?: string;
 
   @ApiProperty({
-    example: '0123456789',
-    description: 'Số điện thoại',
-    required: true,
-    maxLength: 100,
+    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
+    description: 'ID xe của người dùng',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  userVehicle?: string;
+
+  @ApiProperty({
+    example: 'Nguyễn Văn A',
+    description: 'Tên khách hàng',
+    maxLength: 200,
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
+  @MaxLength(200)
+  name: string;
+
+  @ApiProperty({
+    example: '0912345678',
+    description: 'Số điện thoại',
+    maxLength: 20,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(20)
   phone: string;
 
   @ApiProperty({
-    example: '261de7c3-15a1-45ae-b8bb-b7cf180bc5e2',
-    description: 'Id Hãng xe',
-    required: true,
+    example: '61384a81-4425-4b33-84a5-691af292171c',
+    description: 'ID model xe',
     maxLength: 255,
   })
-  @IsNotEmpty()
-  @MaxLength(255)
-  vehicleBrand: string;
-
-  @ApiProperty({
-    example: '261de7c3-15a1-45ae-b8bb-b7cf180bc5e2',
-    description: 'Id Tên xe',
-    required: true,
-    maxLength: 255,
-  })
+  @IsString()
   @IsNotEmpty()
   @MaxLength(255)
   vehicleModel: string;
 
   @ApiProperty({
-    example: '59A1-12345',
-    description: 'Biển số xe',
-    required: true,
-    maxLength: 255,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(255)
-  vehicleNumber: string;
-
-  @ApiProperty({
-    example: '2024-07-10',
-    description: 'Ngày đặt lịch (ISO date string)',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  scheduleDate: string;
-
-  @ApiProperty({
-    example: '14:00-16:00',
-    description: 'Giờ đặt lịch',
-    required: true,
-  })
-  @IsNotEmpty()
-  timeSlot: string;
-
-  @ApiProperty({
-    example: ['261de7c3-15a1-45ae-b8bb-b7cf180bc5e2'],
-    description: 'Danh sách ID gói dịch vụ',
-    required: true,
-    isArray: true,
+    example: [
+      '9d78e9f8-1942-4aed-9963-0001e7e5efd9',
+      '0fca60d0-46a2-4dbd-a590-160d748ea1fb',
+    ],
+    description: 'Danh sách dịch vụ',
     type: String,
   })
   @ArrayNotEmpty()
   @IsUUID('4', { each: true })
-  serviceCategory: string[];
+  vehicleServices: string[];
+
+  @ApiProperty({
+    example: '59A1-12345',
+    description: 'Biển số xe',
+    maxLength: 20,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(20)
+  licensePlate: string;
+
+  @ApiProperty({
+    example: '2024-07-14T08:00:00.000Z',
+    description: 'Ngày đặt lịch (ISO date)',
+  })
+  @IsNotEmpty()
+  @IsDateString()
+  appointmentDate: Date;
 
   @ApiProperty({
     example: '123 Đường Lớn, Quận 1, TP.HCM',
-    description: 'Địa chỉ nhận xe hoặc địa chỉ cửa hàng',
+    description: 'Địa chỉ',
     required: false,
     maxLength: 255,
   })
   @IsOptional()
   @IsString()
-  @MaxLength(500)
+  @MaxLength(255)
   address?: string;
 
   @ApiProperty({
-    example: 'Xe có tiếng kêu lạ',
+    example: 'Xe bị rung đầu',
     description: 'Ghi chú',
     required: false,
     maxLength: 500,
@@ -117,12 +114,12 @@ export class AppointmentsCreateRequestDto {
 
   @ApiProperty({
     example: ENUM_APPOINTMENTS_STATUS.PENDING,
-    description: 'Trạng thái lịch hẹn',
+    description: 'Trạng thái',
     required: false,
     enum: ENUM_APPOINTMENTS_STATUS,
     default: ENUM_APPOINTMENTS_STATUS.PENDING,
   })
   @IsOptional()
-  @IsIn(Object.values(ENUM_APPOINTMENTS_STATUS))
+  @IsString()
   status?: ENUM_APPOINTMENTS_STATUS;
 }

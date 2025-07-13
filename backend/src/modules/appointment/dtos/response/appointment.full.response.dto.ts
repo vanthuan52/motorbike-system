@@ -2,12 +2,12 @@ import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { AppointmentsGetResponseDto } from './appointment.get.response.dto';
 import { ServiceCategoryGetResponseDto } from '@/modules/service-category/dtos/response/service-category.get.response.dto';
-import { VehicleBrandGetResponseDto } from '@/modules/vehicle-brand/dtos/response/vehicle-brand.get.response.dto';
 import { VehicleModelGetResponseDto } from '@/modules/vehicle-model/dtos/response/vehicle-model.get.response.dto';
+import { UserVehicleGetResponseDto } from '@/modules/user-vehicle/dtos/response/user-vehicle.get.response.dto';
 
 export class AppointmentsGetFullResponseDto extends OmitType(
   AppointmentsGetResponseDto,
-  ['vehicleBrand', 'vehicleModel', 'serviceCategory'] as const,
+  ['userVehicle', 'vehicleModel', 'vehicleServices'] as const,
 ) {
   @ApiProperty({
     required: true,
@@ -15,15 +15,15 @@ export class AppointmentsGetFullResponseDto extends OmitType(
     oneOf: [{ $ref: getSchemaPath(ServiceCategoryGetResponseDto) }],
   })
   @Type(() => ServiceCategoryGetResponseDto)
-  serviceCategory: ServiceCategoryGetResponseDto;
+  vehicleServices: ServiceCategoryGetResponseDto;
 
   @ApiProperty({
     required: true,
-    type: VehicleBrandGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(VehicleBrandGetResponseDto) }],
+    type: UserVehicleGetResponseDto,
+    oneOf: [{ $ref: getSchemaPath(UserVehicleGetResponseDto) }],
   })
-  @Type(() => VehicleBrandGetResponseDto)
-  vehicleBrand: VehicleBrandGetResponseDto;
+  @Type(() => UserVehicleGetResponseDto)
+  userVehicle: UserVehicleGetResponseDto;
 
   @ApiProperty({
     required: true,
