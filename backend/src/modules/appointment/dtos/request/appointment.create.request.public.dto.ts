@@ -6,7 +6,6 @@ import {
   MaxLength,
   IsDateString,
   ArrayNotEmpty,
-  IsArray,
   IsUUID,
 } from 'class-validator';
 

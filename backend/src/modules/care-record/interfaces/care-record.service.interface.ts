@@ -2,7 +2,6 @@ import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
@@ -15,9 +14,13 @@ import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.r
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
 import { CareRecordListResponseDto } from '../dtos/response/care-record.list.response.dto';
 import { CareRecordGetResponseDto } from '../dtos/response/care-record.get.response.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
 import { ICareRecordEntity } from './care-record.interface';
 import { CareRecordGetFullResponseDto } from '../dtos/response/care-record.full.response.dto';
+import {
+  CareRecordUpdatePaymentStatusRequestDto,
+  CareRecordUpdateStatusRequestDto,
+} from '../dtos/request/care-record.update-status.request.dto';
+import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
 
 export interface ICareRecordService {
   findAll(
@@ -25,12 +28,12 @@ export interface ICareRecordService {
     options?: IDatabaseFindAllOptions,
   ): Promise<CareRecordDoc[]>;
 
-  findAllWithVehicleServiceAndVehicleModel(
+  findAllWithPopulate(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<ICareRecordEntity[]>;
 
-  getTotalWithVehicleServiceAndVehicleModel(
+  getTotalWithPopulate(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
   ): Promise<number>;
@@ -61,6 +64,24 @@ export interface ICareRecordService {
     options?: IDatabaseSaveOptions,
   ): Promise<CareRecordDoc>;
 
+  updateStatus(
+    repository: CareRecordDoc,
+    { status }: CareRecordUpdateStatusRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordDoc>;
+
+  updatePaymentStatus(
+    repository: CareRecordDoc,
+    { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordDoc>;
+
+  updateTechnician(
+    repository: CareRecordDoc,
+    { technician }: CareRecordUpdateTechnicianRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordDoc>;
+
   softDelete(
     repository: CareRecordDoc,
     options?: IDatabaseSaveOptions,
@@ -76,6 +97,6 @@ export interface ICareRecordService {
   mapGet(data: CareRecordDoc): CareRecordGetResponseDto;
 
   mapGetPopulate(
-    CareRecord: CareRecordDoc | ICareRecordEntity,
+    careRecord: CareRecordDoc | ICareRecordEntity,
   ): CareRecordGetFullResponseDto;
 }

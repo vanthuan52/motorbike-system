@@ -28,7 +28,7 @@ import {
   VEHICLE_BRAND_DEFAULT_STATUS,
 } from '../constants/vehicle-brand.list.constant';
 
-@ApiTags('module.public.vehicle-brand')
+@ApiTags('modules.public.vehicle-brand')
 @Controller({
   version: '1',
   path: '/vehicle-brand',

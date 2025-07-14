@@ -39,7 +39,7 @@ import { VehicleServiceDoc } from '../entities/vehicle-service.entity';
 import { VehicleServiceGetFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
 import { IVehicleServiceDoc } from '../interfaces/vehicle-service.interface';
 
-@ApiTags('module.public.vehicle-service')
+@ApiTags('modules.public.vehicle-service')
 @Controller({
   version: '1',
   path: '/vehicle-service',

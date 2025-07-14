@@ -1,5 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_CARE_RECORD_STATUS } from '../enums/care-record.enum';
+import {
+  ENUM_CARE_RECORD_STATUS,
+  ENUM_PAYMENT_STATUS,
+} from '../enums/care-record.enum';
 
 interface DocField {
   name: string;
@@ -20,26 +23,6 @@ export const CareRecordDocParamsId: DocField[] = [
   },
 ];
 
-export const CareRecordDocParamsVehicleServiceId: DocField[] = [
-  {
-    name: 'vehicleServiceId',
-    allowEmptyValue: false,
-    required: true,
-    type: 'string',
-    example: faker.string.uuid(),
-  },
-];
-
-export const CareRecordDocParamsVehicleModelId: DocField[] = [
-  {
-    name: 'vehicleModelId',
-    allowEmptyValue: false,
-    required: true,
-    type: 'string',
-    example: faker.string.uuid(),
-  },
-];
-
 export const CareRecordDocQueryStatus: DocField[] = [
   {
     name: 'status',
@@ -47,6 +30,17 @@ export const CareRecordDocQueryStatus: DocField[] = [
     required: false,
     type: 'string',
     example: Object.values(ENUM_CARE_RECORD_STATUS).join(','),
+    description: 'one value',
+  },
+];
+
+export const CareRecordDocQueryPaymentStatus: DocField[] = [
+  {
+    name: 'paymentStatus',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: Object.values(ENUM_PAYMENT_STATUS).join(','),
     description: 'one value',
   },
 ];
@@ -73,9 +67,9 @@ export const CareRecordDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryVehicleModel: DocField[] = [
+export const CareRecordDocQueryTechnician: DocField[] = [
   {
-    name: 'vehicleModel',
+    name: 'technician',
     allowEmptyValue: true,
     required: false,
     type: 'string',
@@ -84,9 +78,9 @@ export const CareRecordDocQueryVehicleModel: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryVehicleService: DocField[] = [
+export const CareRecordDocQueryUserVehicle: DocField[] = [
   {
-    name: 'vehicleService',
+    name: 'userVehicle',
     allowEmptyValue: true,
     required: false,
     type: 'string',
@@ -95,20 +89,9 @@ export const CareRecordDocQueryVehicleService: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryVehicleModelId: DocField[] = [
+export const CareRecordDocQueryAppointment: DocField[] = [
   {
-    name: 'vehicleModelId',
-    allowEmptyValue: true,
-    required: false,
-    type: 'string',
-    example: '',
-    description: faker.string.uuid(),
-  },
-];
-
-export const CareRecordDocQueryVehicleServiceId: DocField[] = [
-  {
-    name: 'vehicleServiceId',
+    name: 'appointment',
     allowEmptyValue: true,
     required: false,
     type: 'string',

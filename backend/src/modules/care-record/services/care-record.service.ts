@@ -1,7 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PipelineStage, RootFilterQuery } from 'mongoose';
 import _ from 'lodash';
 import {
   IDatabaseAggregateOptions,
@@ -22,7 +21,6 @@ import {
   CareRecordTableName,
 } from '../entities/care-record.entity';
 import {
-  IModelCareRecord,
   ICareRecordDoc,
   ICareRecordEntity,
 } from '../interfaces/care-record.interface';
@@ -32,18 +30,23 @@ import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.r
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
 import { CareRecordGetFullResponseDto } from '../dtos/response/care-record.full.response.dto';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { ENUM_CARE_RECORD_STATUS } from '../enums/care-record.enum';
-
-import { VehicleServiceTableName } from '@/modules/vehicle-service/entities/vehicle-service.entity';
-import { VehicleModelTableName } from '@/modules/vehicle-model/entities/vehicle-model.entity';
-import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
+import {
+  ENUM_CARE_RECORD_STATUS,
+  ENUM_PAYMENT_STATUS,
+} from '../enums/care-record.enum';
+import { UserVehicleRepository } from '@/modules/user-vehicle/repository/user-vehicle.repository';
+import {
+  CareRecordUpdatePaymentStatusRequestDto,
+  CareRecordUpdateStatusRequestDto,
+} from '../dtos/request/care-record.update-status.request.dto';
+import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
 
 @Injectable()
 export class CareRecordService implements ICareRecordService {
   private readonly uploadPath: string;
   constructor(
-    private readonly CareRecordRepository: CareRecordRepository,
-    private readonly vehicleModelRepository: VehicleModelRepository,
+    private readonly careRecordRepository: CareRecordRepository,
+    private readonly userVehicleRepository: UserVehicleRepository,
     private readonly configService: ConfigService,
     private readonly helperStringService: HelperStringService,
   ) {}
@@ -52,31 +55,31 @@ export class CareRecordService implements ICareRecordService {
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,
   ): Promise<CareRecordDoc[]> {
-    return this.CareRecordRepository.findAll<CareRecordDoc>(find, options);
+    return this.careRecordRepository.findAll<CareRecordDoc>(find, options);
   }
 
   async getTotal(
     find?: Record<string, any>,
     options?: IDatabaseGetTotalOptions,
   ): Promise<number> {
-    return this.CareRecordRepository.getTotal(find, options);
+    return this.careRecordRepository.getTotal(find, options);
   }
 
-  async findAllWithVehicleServiceAndVehicleModel(
+  async findAllWithPopulate(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<ICareRecordEntity[]> {
-    return this.CareRecordRepository.findAll<ICareRecordEntity>(find, {
+    return this.careRecordRepository.findAll<ICareRecordEntity>(find, {
       ...options,
       join: true,
     });
   }
 
-  async getTotalWithVehicleServiceAndVehicleModel(
+  async getTotalWithPopulate(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
   ): Promise<number> {
-    return this.CareRecordRepository.getTotal(find, {
+    return this.careRecordRepository.getTotal(find, {
       ...options,
       join: true,
     });
@@ -86,13 +89,13 @@ export class CareRecordService implements ICareRecordService {
     _id: string,
     options?: IDatabaseFindOneOptions,
   ): Promise<CareRecordDoc | null> {
-    return this.CareRecordRepository.findOneById<CareRecordDoc>(_id, options);
+    return this.careRecordRepository.findOneById<CareRecordDoc>(_id, options);
   }
 
   async join(repository: CareRecordDoc): Promise<ICareRecordDoc> {
-    return this.CareRecordRepository.join(
+    return this.careRecordRepository.join(
       repository,
-      this.CareRecordRepository._join!,
+      this.careRecordRepository._join!,
     );
   }
 
@@ -100,57 +103,91 @@ export class CareRecordService implements ICareRecordService {
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
   ): Promise<CareRecordDoc | null> {
-    return this.CareRecordRepository.findOne<CareRecordDoc>(find, options);
+    return this.careRecordRepository.findOne<CareRecordDoc>(find, options);
   }
 
   async create(
     {
-      price,
-      vehicleService,
-      vehicleModel,
-      dateStart,
-      dateEnd,
+      appointment,
+      userVehicle,
+      technician,
+      store,
+      confirmedByOwner,
     }: CareRecordCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<CareRecordDoc> {
     const create: CareRecordEntity = new CareRecordEntity();
+    create.appointment = appointment;
+    create.userVehicle = userVehicle;
+    create.technician = technician;
+    create.store = store;
+    create.confirmedByOwner = confirmedByOwner ? confirmedByOwner : false;
+    create.status = ENUM_CARE_RECORD_STATUS.PENDING;
+    create.paymentStatus = ENUM_PAYMENT_STATUS.UNPAID;
 
-    return this.CareRecordRepository.create<CareRecordEntity>(create, options);
+    return this.careRecordRepository.create<CareRecordEntity>(create, options);
   }
 
   async update(
     repository: CareRecordDoc,
-    {
-      price,
-      vehicleService,
-      vehicleModel,
-      dateStart,
-      dateEnd,
-    }: CareRecordUpdateRequestDto,
+    { confirmedByOwner }: CareRecordUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<CareRecordDoc> {
-    return this.CareRecordRepository.save(repository, options);
+    repository.confirmedByOwner =
+      confirmedByOwner ?? repository.confirmedByOwner;
+
+    return this.careRecordRepository.save(repository, options);
+  }
+
+  async updateStatus(
+    repository: CareRecordDoc,
+    { status }: CareRecordUpdateStatusRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordDoc> {
+    repository.status = status;
+
+    return this.careRecordRepository.save(repository, options);
+  }
+
+  async updatePaymentStatus(
+    repository: CareRecordDoc,
+    { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordDoc> {
+    repository.paymentStatus = paymentStatus;
+
+    return this.careRecordRepository.save(repository, options);
+  }
+
+  async updateTechnician(
+    repository: CareRecordDoc,
+    { technician }: CareRecordUpdateTechnicianRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordDoc> {
+    repository.technician = technician;
+
+    return this.careRecordRepository.save(repository, options);
   }
 
   async delete(
     repository: CareRecordDoc,
     options?: IDatabaseDeleteOptions,
   ): Promise<CareRecordDoc> {
-    return this.CareRecordRepository.delete({ _id: repository._id }, options);
+    return this.careRecordRepository.delete({ _id: repository._id }, options);
   }
 
   async softDelete(
     repository: CareRecordDoc,
     options?: IDatabaseSaveOptions,
   ): Promise<CareRecordDoc> {
-    return this.CareRecordRepository.softDelete(repository, options);
+    return this.careRecordRepository.softDelete(repository, options);
   }
 
   async deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean> {
-    await this.CareRecordRepository.deleteMany(find, options);
+    await this.careRecordRepository.deleteMany(find, options);
     return true;
   }
 
@@ -177,13 +214,13 @@ export class CareRecordService implements ICareRecordService {
   }
 
   mapGetPopulate(
-    CareRecord: CareRecordDoc | ICareRecordEntity,
+    careRecord: CareRecordDoc | ICareRecordEntity,
   ): CareRecordGetFullResponseDto {
     return plainToInstance(
       CareRecordGetFullResponseDto,
-      typeof (CareRecord as any).toObject === 'function'
-        ? (CareRecord as any).toObject()
-        : CareRecord,
+      typeof (careRecord as any).toObject === 'function'
+        ? (careRecord as any).toObject()
+        : careRecord,
     );
   }
 }

@@ -13,6 +13,8 @@ import {
   ENUM_CARE_RECORD_STATUS,
   ENUM_PAYMENT_STATUS,
 } from '../enums/care-record.enum';
+import { AppointmentEntity } from '@/modules/appointment/entities/appointment.entity';
+import { UserVehicleEntity } from '@/modules/user-vehicle/entities/user-vehicle.entity';
 
 export const CareRecordTableName = 'care_records';
 
@@ -22,27 +24,27 @@ export const CareRecordTableName = 'care_records';
 export class CareRecordEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: false,
-    ref: () => VehicleServiceEntity.name,
+    ref: () => AppointmentEntity.name,
   })
   appointment: string;
 
   @DatabaseProp({
     required: true,
-    ref: () => VehicleModelEntity.name,
+    ref: () => UserVehicleEntity.name,
   })
   userVehicle: string;
 
   @DatabaseProp({
-    required: true,
+    required: false,
     ref: () => UserEntity.name,
   })
-  technician: string;
+  technician?: string;
 
   @DatabaseProp({
     required: false,
     ref: () => StoreEntity.name,
   })
-  store: string;
+  store?: string;
 
   @DatabaseProp({
     required: true,
@@ -59,7 +61,6 @@ export class CareRecordEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
     default: ENUM_CARE_RECORD_STATUS.PENDING,
-    index: true,
     type: String,
     enum: ENUM_CARE_RECORD_STATUS,
   })
@@ -74,7 +75,6 @@ export class CareRecordEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
     default: ENUM_PAYMENT_STATUS.UNPAID,
-    index: true,
     type: String,
     enum: ENUM_PAYMENT_STATUS,
   })

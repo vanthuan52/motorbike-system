@@ -11,7 +11,7 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import { SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY } from '../constants/service-price.list.constant';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 
-@ApiTags('module.public.service-price')
+@ApiTags('modules.public.service-price')
 @Controller({
   version: '1',
   path: '/service-price',

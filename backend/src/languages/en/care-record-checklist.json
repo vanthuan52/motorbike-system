@@ -1,0 +1,16 @@
+{
+  "list": "Care record list retrieved successfully.",
+  "get": "Care record details fetched successfully.",
+  "create": "New Care record created successfully.",
+  "update": "Care record updated successfully.",
+  "delete": "Care record deleted successfully.",
+  "updateStatus": "Care record status updated to {status}.",
+  "error": {
+    "nameExist": "This Care record name already exists.",
+    "notFound": "Sorry, we couldn't find the Care record you requested.",
+    "updateStatusFailed": "Failed to update Care record status.",
+    "deleteFailed": "Failed to delete Care record.",
+    "createFailed": "Failed to create new Care record.",
+    "slugExisted": "This Care record slug already exists."
+  }
+}

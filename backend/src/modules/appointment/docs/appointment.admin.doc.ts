@@ -9,7 +9,6 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import {
   AppointmentsDocParamsId,
-  AppointmentsDocQueryCategory,
   AppointmentsDocQueryOrderBy,
   AppointmentsDocQueryOrderDirection,
   AppointmentsDocQueryStatus,
@@ -28,7 +27,6 @@ export function AppointmentsAdminListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [
-        ...AppointmentsDocQueryCategory,
         ...AppointmentsDocQueryStatus,
         ...AppointmentsDocQueryOrderBy,
         ...AppointmentsDocQueryOrderDirection,

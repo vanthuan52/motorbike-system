@@ -15,7 +15,6 @@ import { AppointmentService } from '../services/appointment.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { UserService } from '@/modules/user/services/user.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
-import { ServiceCategoryService } from '@/modules/service-category/services/service-category.services';
 import {
   AppointmentsAdminCreateDoc,
   AppointmentsAdminDeleteDoc,
@@ -86,7 +85,7 @@ import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicl
   version: '1',
   path: '/appointment',
 })
-export class AppointmentsAdminController {
+export class AppointmentAdminController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly paginationService: PaginationService,

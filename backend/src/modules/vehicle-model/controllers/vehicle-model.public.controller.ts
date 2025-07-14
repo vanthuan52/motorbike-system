@@ -42,7 +42,7 @@ import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleModelDoc } from '../entities/vehicle-model.entity';
 import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
 
-@ApiTags('module.public.vehicle-model')
+@ApiTags('modules.public.vehicle-model')
 @Controller({
   version: '1',
   path: '/vehicle-model',
