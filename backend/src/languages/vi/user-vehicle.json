@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách xe máy của khách hàng được lấy thành công.",
+  "get": "Chi tiết xe máy của khách hàng được lấy thành công.",
+  "create": "Tạo mới xe máy của khách hàng thành công.",
+  "update": "Cập nhật xe máy của khách hàng thành công.",
+  "delete": "Xóa xe máy của khách hàng thành công.",
+  "updateStatus": "Trạng thái của xe máy của khách hàng đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên xe máy của khách hàng này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy xe máy của khách hàng bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái xe máy của khách hàng thất bại.",
+    "deleteFailed": "Xóa xe máy của khách hàng thất bại.",
+    "createFailed": "Tạo mới xe máy của khách hàng thất bại.",
+    "slugExisted": "Slug của xe máy của khách hàng này đã tồn tại."
+  }
+}

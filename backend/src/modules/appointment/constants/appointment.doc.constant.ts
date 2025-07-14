@@ -53,9 +53,9 @@ export const AppointmentsDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const AppointmentsDocQueryCategory: DocField[] = [
+export const AppointmentsDocQueryVehicleService: DocField[] = [
   {
-    name: 'serviceCategory',
+    name: 'vehicleService',
     allowEmptyValue: true,
     required: false,
     type: 'string',

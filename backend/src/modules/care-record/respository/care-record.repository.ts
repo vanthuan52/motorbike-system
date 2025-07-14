@@ -5,8 +5,9 @@ import {
   CareRecordDoc,
   CareRecordEntity,
 } from '../entities/care-record.entity';
-import { VehicleServiceEntity } from '@/modules/vehicle-service/entities/vehicle-service.entity';
-import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
+import { AppointmentEntity } from '@/modules/appointment/entities/appointment.entity';
+import { UserVehicleEntity } from '@/modules/user-vehicle/entities/user-vehicle.entity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 
 export class CareRecordRepository extends DatabaseRepositoryBase<
   CareRecordEntity,
@@ -14,50 +15,54 @@ export class CareRecordRepository extends DatabaseRepositoryBase<
 > {
   readonly _joinActive: PopulateOptions[] = [
     {
-      path: 'vehicleService',
-      localField: 'vehicleService',
+      path: 'appointment',
+      localField: 'appointment',
       foreignField: '_id',
-      model: VehicleServiceEntity.name,
+      model: AppointmentEntity.name,
       justOne: true,
-      match: {
-        isActive: true,
-      },
     },
     {
-      path: 'vehicleModel',
-      localField: 'vehicleModel',
+      path: 'technician',
+      localField: 'technician',
       foreignField: '_id',
-      model: VehicleModelEntity.name,
+      model: UserEntity.name,
       justOne: true,
-      match: {
-        isActive: true,
-      },
+    },
+    {
+      path: 'userVehicle',
+      localField: 'userVehicle',
+      foreignField: '_id',
+      model: UserVehicleEntity.name,
+      justOne: true,
     },
   ];
 
   constructor(
     @InjectDatabaseModel(CareRecordEntity.name)
-    private readonly CareRecordModel: Model<CareRecordEntity>,
+    private readonly careRecordModel: Model<CareRecordEntity>,
   ) {
-    super(CareRecordModel, [
+    super(careRecordModel, [
       {
-        path: 'vehicleService',
-        localField: 'vehicleService',
+        path: 'appointment',
+        localField: 'appointment',
         foreignField: '_id',
-        model: VehicleServiceEntity.name,
+        model: AppointmentEntity.name,
         justOne: true,
       },
       {
-        path: 'vehicleModel',
-        localField: 'vehicleModel',
+        path: 'technician',
+        localField: 'technician',
         foreignField: '_id',
-        model: VehicleModelEntity.name,
+        model: UserEntity.name,
+        justOne: true,
+      },
+      {
+        path: 'userVehicle',
+        localField: 'userVehicle',
+        foreignField: '_id',
+        model: UserVehicleEntity.name,
         justOne: true,
       },
     ]);
-  }
-
-  async findOneBySlug(slug: string): Promise<CareRecordDoc | null> {
-    return this.CareRecordModel.findOne({ slug }).exec();
   }
 }

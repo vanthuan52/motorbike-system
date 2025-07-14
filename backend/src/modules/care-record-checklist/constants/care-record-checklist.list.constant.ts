@@ -1,0 +1,8 @@
+import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../enums/care-record-checklist.enum';
+
+export const CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH = [];
+export const CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY = ['createdAt'];
+
+export const CARE_RECORD_CHECKLIST_DEFAULT_STATUS = Object.values(
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+);

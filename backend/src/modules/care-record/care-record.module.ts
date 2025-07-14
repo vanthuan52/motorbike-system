@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { CareRecordRepositoryModule } from './respository/care-record.repository.module';
 import { CareRecordService } from './services/care-record.service';
-import { VehicleModelRepositoryModule } from '../vehicle-model/repository/vehicle-model.repository.module';
+import { UserVehicleRepositoryModule } from '../user-vehicle/repository/user-vehicle.repository.module';
+import { AppointmentRepositoryModule } from '../appointment/repository/appointment.repository.module';
 
 @Module({
-  imports: [CareRecordRepositoryModule, VehicleModelRepositoryModule],
+  imports: [
+    CareRecordRepositoryModule,
+    AppointmentRepositoryModule,
+    UserVehicleRepositoryModule,
+  ],
   controllers: [],
   providers: [CareRecordService],
   exports: [CareRecordRepositoryModule, CareRecordService],

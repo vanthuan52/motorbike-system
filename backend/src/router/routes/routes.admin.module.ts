@@ -31,9 +31,13 @@ import { ServicePriceAdminController } from '@/modules/service-price/controllers
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
 import { ServiceChecklistAdminController } from '@/modules/service-checklist/controllers/service-checklist.admin.controller';
 import { ServiceChecklistModule } from '@/modules/service-checklist/service-checklist.module';
-import { AppointmentsAdminController } from '@/modules/appointment/controllers/appointment.admin.controller';
+import { AppointmentAdminController } from '@/modules/appointment/controllers/appointment.admin.controller';
 import { AppointmentModule } from '@/modules/appointment/appointment.module';
 import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
+import { CareRecordModule } from '@/modules/care-record/care-record.module';
+import { CareRecordAdminController } from '@/modules/care-record/controllers/care-record.admin.controller';
+import { CareRecordChecklistAdminController } from '@/modules/care-record-checklist/controllers/care-record-checklist.admin.controller';
+import { CareRecordChecklistModule } from '@/modules/care-record-checklist/care-record-checklist.module';
 
 @Module({
   controllers: [
@@ -54,7 +58,9 @@ import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
     VehicleModelAdminController,
     ServicePriceAdminController,
     ServiceChecklistAdminController,
-    AppointmentsAdminController,
+    AppointmentAdminController,
+    CareRecordAdminController,
+    CareRecordChecklistAdminController,
   ],
   providers: [],
   exports: [],
@@ -77,6 +83,8 @@ import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
     ServiceChecklistModule,
     AppointmentModule,
     UserVehicleModule,
+    CareRecordModule,
+    CareRecordChecklistModule,
   ],
 })
 export class RoutesAdminModule {}

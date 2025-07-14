@@ -7,23 +7,11 @@ import {
   CareRecordSchema,
 } from '../entities/care-record.entity';
 
-CareRecordSchema.index(
-  {
-    vehicleService: 1,
-    vehicleModel: 1,
-    dateStart: 1,
-    dateEnd: 1,
-  },
-  {
-    name: 'idx_service_price_date_range',
-  },
-);
-
-CareRecordSchema.index({ vehicleService: 1 });
-CareRecordSchema.index({ vehicleModel: 1 });
-CareRecordSchema.index({ dateStart: 1 });
-CareRecordSchema.index({ dateEnd: 1 });
-
+CareRecordSchema.index({ technician: 1 });
+CareRecordSchema.index({ userVehicle: 1 });
+CareRecordSchema.index({ appointment: 1 });
+CareRecordSchema.index({ status: 1 });
+CareRecordSchema.index({ paymentStatus: 1 });
 @Module({
   providers: [CareRecordRepository],
   exports: [CareRecordRepository],

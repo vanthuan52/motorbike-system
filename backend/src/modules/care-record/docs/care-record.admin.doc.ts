@@ -2,20 +2,17 @@ import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.request.dto';
 import { CareRecordGetResponseDto } from '../dtos/response/care-record.get.response.dto';
-import {
-  ModelCareRecordListResponseDto,
-  CareRecordListResponseDto,
-} from '../dtos/response/care-record.list.response.dto';
+import { CareRecordListResponseDto } from '../dtos/response/care-record.list.response.dto';
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
 import {
   CareRecordDocParamsId,
-  CareRecordDocParamsVehicleModelId,
-  CareRecordDocParamsVehicleServiceId,
   CareRecordDocQueryOrderBy,
   CareRecordDocQueryOrderDirection,
   CareRecordDocQueryStatus,
-  CareRecordDocQueryVehicleModel,
-  CareRecordDocQueryVehicleService,
+  CareRecordDocQueryPaymentStatus,
+  CareRecordDocQueryTechnician,
+  CareRecordDocQueryUserVehicle,
+  CareRecordDocQueryAppointment,
 } from '../constants/care-record.doc.constant';
 import {
   Doc,
@@ -27,16 +24,23 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { CareRecordGetFullResponseDto } from '../dtos/response/care-record.full.response.dto';
+import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
+import {
+  CareRecordUpdatePaymentStatusRequestDto,
+  CareRecordUpdateStatusRequestDto,
+} from '../dtos/request/care-record.update-status.request.dto';
 
 export function CareRecordAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all service prices',
+      summary: 'get all care records',
     }),
     DocRequest({
       queries: [
-        ...CareRecordDocQueryVehicleModel,
-        ...CareRecordDocQueryVehicleService,
+        ...CareRecordDocQueryAppointment,
+        ...CareRecordDocQueryPaymentStatus,
+        ...CareRecordDocQueryTechnician,
+        ...CareRecordDocQueryUserVehicle,
         ...CareRecordDocQueryStatus,
         ...CareRecordDocQueryOrderBy,
         ...CareRecordDocQueryOrderDirection,
@@ -55,7 +59,7 @@ export function CareRecordAdminListDoc(): MethodDecorator {
 export function CareRecordAdminCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'create a new CareRecord',
+      summary: 'create a new care record',
     }),
     DocRequest({
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
@@ -127,7 +131,7 @@ export function CareRecordAdminParamsIdDoc(): MethodDecorator {
 export function CareRecordAdminGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get detail a CareRecord',
+      summary: 'get detail a care record',
     }),
     DocRequest({
       params: CareRecordDocParamsId,
@@ -142,75 +146,76 @@ export function CareRecordAdminGetDoc(): MethodDecorator {
   );
 }
 
-export function CareRecordAdminListCombinedDoc(): MethodDecorator {
+export function CareRecordAdminUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all service prices with a set of services and models',
+      summary: 'update status of a care record',
     }),
     DocRequest({
-      queries: [
-        ...CareRecordDocQueryVehicleModel,
-        ...CareRecordDocQueryVehicleService,
-        ...CareRecordDocQueryOrderBy,
-        ...CareRecordDocQueryOrderDirection,
-      ],
+      params: CareRecordDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: CareRecordUpdateStatusRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<ModelCareRecordListResponseDto>(
-      'care-record.listByService',
-      {
-        dto: ModelCareRecordListResponseDto,
-      },
-    ),
+    DocResponse('care-record.updateStatus'),
   );
 }
 
-export function CareRecordAdminListCombinedByServiceDoc(): MethodDecorator {
+export function CareRecordAdminUpdatePaymentStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all service prices with a set of service and models',
+      summary: 'update the payment status of a care record',
     }),
     DocRequest({
-      params: CareRecordDocParamsVehicleServiceId,
-      queries: [
-        ...CareRecordDocQueryOrderBy,
-        ...CareRecordDocQueryOrderDirection,
-      ],
+      params: CareRecordDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: CareRecordUpdatePaymentStatusRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<ModelCareRecordListResponseDto>(
-      'care-record.listByService',
-      {
-        dto: ModelCareRecordListResponseDto,
-      },
-    ),
+    DocResponse('care-record.updatePaymentStatus'),
   );
 }
 
-export function CareRecordAdminListHistoryDoc(): MethodDecorator {
+export function CareRecordAdminUpdateTechnicianDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary:
-        'get all service prices history for a set of a service and a model ',
+      summary: 'assign a technician',
     }),
     DocRequest({
-      params: [
-        ...CareRecordDocParamsVehicleServiceId,
-        ...CareRecordDocParamsVehicleModelId,
-      ],
+      params: CareRecordDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: CareRecordUpdateTechnicianRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<CareRecordListResponseDto>('care-record.listHistory', {
-      dto: CareRecordListResponseDto,
+    DocResponse('care-record.updateTechnician'),
+  );
+}
+
+export function CareRecordAdminCreateChecklistDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'create a new checklist',
+    }),
+    DocRequest({
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: CareRecordCreateRequestDto,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<CareRecordGetResponseDto>('care-record.createChecklist', {
+      dto: CareRecordGetResponseDto,
+      statusCode: HttpStatus.CREATED,
     }),
   );
 }

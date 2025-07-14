@@ -36,7 +36,7 @@ import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto'
 import { PartDoc } from '../entities/part.entity';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 
-@ApiTags('module.public.part')
+@ApiTags('modules.public.part')
 @Controller({
   version: '1',
   path: '/part',

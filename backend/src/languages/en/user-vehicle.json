@@ -1,0 +1,16 @@
+{
+  "list": "User vehicles list retrieved successfully.",
+  "get": "User vehicle details fetched successfully.",
+  "create": "New User vehicle created successfully.",
+  "update": "User vehicle updated successfully.",
+  "delete": "User vehicle deleted successfully.",
+  "updateStatus": "User vehicle status updated to {status}.",
+  "error": {
+    "nameExist": "This User vehicle name already exists.",
+    "notFound": "Sorry, we couldn't find the User vehicle you requested.",
+    "updateStatusFailed": "Failed to update User vehicle status.",
+    "deleteFailed": "Failed to delete User vehicle.",
+    "createFailed": "Failed to create new User vehicle.",
+    "slugExisted": "This User vehicle slug already exists."
+  }
+}

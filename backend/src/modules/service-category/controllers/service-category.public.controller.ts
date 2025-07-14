@@ -28,7 +28,7 @@ import {
   SERVICE_CATEGORY_DEFAULT_STATUS,
 } from '../constants/service-category.list.constant';
 
-@ApiTags('module.public.service-category')
+@ApiTags('modules.public.service-category')
 @Controller({
   version: '1',
   path: '/service-category',

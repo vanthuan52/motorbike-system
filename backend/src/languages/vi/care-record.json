@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách bản ghi chăm sóc được lấy thành công.",
+  "get": "Chi tiết bản ghi chăm sóc được lấy thành công.",
+  "create": "Tạo mới bản ghi chăm sóc thành công.",
+  "update": "Cập nhật bản ghi chăm sóc thành công.",
+  "delete": "Xóa bản ghi chăm sóc thành công.",
+  "updateStatus": "Trạng thái của bản ghi chăm sóc đã được cập nhật thành {status}.",
+  "error": {
+    "nameExist": "Tên bản ghi chăm sóc này đã tồn tại.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy bản ghi chăm sóc bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái bản ghi chăm sóc thất bại.",
+    "deleteFailed": "Xóa bản ghi chăm sóc thất bại.",
+    "createFailed": "Tạo mới bản ghi chăm sóc thất bại.",
+    "slugExisted": "Slug của bản ghi chăm sóc này đã tồn tại."
+  }
+}

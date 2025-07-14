@@ -6,7 +6,7 @@ import { Response } from '@/common/response/decorators/response.decorator';
 import { IResponse } from '@/common/response/interfaces/response.interface';
 import { HelloResponseDto } from '../dtos/response/hello.response.dto';
 
-@ApiTags('moduke.public.hello')
+@ApiTags('modules.public.hello')
 @Controller({
   version: VERSION_NEUTRAL,
   path: '/hello',

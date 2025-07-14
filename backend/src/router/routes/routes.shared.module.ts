@@ -9,6 +9,12 @@ import { AuthSharedController } from '@/modules/auth/controllers/auth.shared.con
 import { AwsModule } from '@/modules/aws/aws.module';
 import { ServiceChecklistSharedController } from '@/modules/service-checklist/controllers/service-checklist.shared.controller';
 import { ServiceChecklistModule } from '@/modules/service-checklist/service-checklist.module';
+import { CareRecordSharedController } from '@/modules/care-record/controllers/care-record.shared.controller';
+import { CareRecordModule } from '@/modules/care-record/care-record.module';
+import { CareRecordChecklistModule } from '@/modules/care-record-checklist/care-record-checklist.module';
+import { CareRecordChecklistSharedController } from '@/modules/care-record-checklist/controllers/care-record-checklist.shared.controller';
+import { AppointmentModule } from '@/modules/appointment/appointment.module';
+import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
 
 @Module({
   controllers: [
@@ -16,6 +22,8 @@ import { ServiceChecklistModule } from '@/modules/service-checklist/service-chec
     UserSharedController,
     AuthSharedController,
     ServiceChecklistSharedController,
+    CareRecordSharedController,
+    CareRecordChecklistSharedController,
   ],
   providers: [],
   exports: [],
@@ -26,6 +34,10 @@ import { ServiceChecklistModule } from '@/modules/service-checklist/service-chec
     SessionModule,
     ApiKeyModule,
     ServiceChecklistModule,
+    AppointmentModule,
+    UserVehicleModule,
+    CareRecordModule,
+    CareRecordChecklistModule,
   ],
 })
 export class RoutesSharedModule {}
