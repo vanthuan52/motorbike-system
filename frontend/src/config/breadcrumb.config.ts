@@ -11,4 +11,5 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "danh-muc": "Danh mục",
   contact: "Liên hệ",
   "dang-ky-bao-duong-xe": "Đăng ký bảo dưỡng xe",
+  "dich-vu-cham-soc": "Dịch vụ chăm sóc",
 };
