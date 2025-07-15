@@ -169,7 +169,7 @@ const DesktopSidebar = () => {
   return (
     <div
       className={clsx(
-        "h-screen bg-white shadow-sm hidden flex-col transition-all duration-300 border-r border-r-[#ddd] md:flex",
+        "h-screen bg-white shadow-sm hidden flex-col transition-all duration-300 border-r border-r-[#ddd] md:flex overflow-auto",
         sidebarCollapsed ? "w-13" : "!w-64 !min-w-64"
       )}
     >
