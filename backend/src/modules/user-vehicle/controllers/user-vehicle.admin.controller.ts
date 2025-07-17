@@ -37,12 +37,12 @@ import {
 
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  UserVehicleUserCreateDoc,
-  UserVehicleUserDeleteDoc,
-  UserVehicleUserGetDoc,
-  UserVehicleUserListDoc,
-  UserVehicleUserUpdateDoc,
-} from '../docs/user-vehicle.user.doc';
+  UserVehicleAdminCreateDoc,
+  UserVehicleAdminDeleteDoc,
+  UserVehicleAdminGetDoc,
+  UserVehicleAdminListDoc,
+  UserVehicleAdminUpdateDoc,
+} from '../docs/user-vehicle.admin.doc';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '../enums/user-vehicle.status-code.enum';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
@@ -76,12 +76,12 @@ import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { UserService } from '@/modules/user/services/user.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 
-@ApiTags('modules.user.user-vehicle')
+@ApiTags('modules.admin.user-vehicle')
 @Controller({
   version: '1',
   path: '/user-vehicle',
 })
-export class UserVehicleUserController {
+export class UserVehicleAdminController {
   constructor(
     private readonly vehicleModelService: VehicleModelService,
     private readonly userService: UserService,
@@ -89,13 +89,13 @@ export class UserVehicleUserController {
     private readonly paginationService: PaginationService,
   ) {}
 
-  @UserVehicleUserListDoc()
+  @UserVehicleAdminListDoc()
   @ResponsePaging('user-vehicle.list')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -141,13 +141,13 @@ export class UserVehicleUserController {
     };
   }
 
-  @UserVehicleUserGetDoc()
+  @UserVehicleAdminGetDoc()
   @Response('user-vehicle.get')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -162,13 +162,13 @@ export class UserVehicleUserController {
     return { data: mapped };
   }
 
-  @UserVehicleUserCreateDoc()
+  @UserVehicleAdminCreateDoc()
   @Response('user-vehicle.create')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -186,7 +186,7 @@ export class UserVehicleUserController {
     if (!checkVehicleModel) {
       throw new NotFoundException({
         statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'user-vehicle.error.notFound',
+        message: 'vehicle-model.error.notFound',
       });
     }
     if (!checkUser) {
@@ -210,13 +210,13 @@ export class UserVehicleUserController {
     }
   }
 
-  @UserVehicleUserUpdateDoc()
+  @UserVehicleAdminUpdateDoc()
   @Response('user-vehicle.update')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -251,13 +251,13 @@ export class UserVehicleUserController {
     }
   }
 
-  @UserVehicleUserDeleteDoc()
+  @UserVehicleAdminDeleteDoc()
   @Response('user-vehicle.delete')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
     action: [ENUM_POLICY_ACTION.READ],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.USER)
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

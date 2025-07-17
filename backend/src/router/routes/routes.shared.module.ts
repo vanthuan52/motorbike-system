@@ -21,6 +21,7 @@ import { CareRecordItemModule } from '@/modules/care-record-item/care-record-ite
 import { CareRecordItemSharedController } from '@/modules/care-record-item/controllers/care-record-item.shared.controller';
 import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.module';
 import { PartModule } from '@/modules/part/part.module';
+import { UserVehicleSharedController } from '@/modules/user-vehicle/controllers/user-vehicle.shared.controller';
 
 @Module({
   controllers: [
@@ -32,6 +33,7 @@ import { PartModule } from '@/modules/part/part.module';
     CareRecordChecklistSharedController,
     CareRecordMediaSharedController,
     CareRecordItemSharedController,
+    UserVehicleSharedController,
   ],
   providers: [],
   exports: [],
@@ -50,6 +52,7 @@ import { PartModule } from '@/modules/part/part.module';
     CareRecordChecklistModule,
     CareRecordMediaModule,
     CareRecordItemModule,
+    UserVehicleModule,
   ],
 })
 export class RoutesSharedModule {}

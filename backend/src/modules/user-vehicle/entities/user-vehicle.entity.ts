@@ -29,7 +29,7 @@ export class UserVehicleEntity extends DatabaseEntityBase {
     required: false,
     maxlength: 20,
   })
-  color: string;
+  color?: string;
 
   @DatabaseProp({
     required: true,

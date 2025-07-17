@@ -15,7 +15,6 @@ export class UserVehicleCreateRequestDto {
     required: true,
     maxLength: 20,
   })
-  @IsString()
   @IsNotEmpty()
   @MaxLength(20)
   licensePlate: string;
@@ -26,8 +25,6 @@ export class UserVehicleCreateRequestDto {
     required: false,
     maxLength: 20,
   })
-  @IsString()
-  @IsEmpty()
   @MaxLength(20)
   color: string;
 
@@ -37,8 +34,6 @@ export class UserVehicleCreateRequestDto {
     required: false,
     maxLength: 20,
   })
-  @IsString()
-  @IsEmpty()
   @MaxLength(20)
   engineNumber: string;
 
@@ -48,8 +43,6 @@ export class UserVehicleCreateRequestDto {
     required: false,
     maxLength: 20,
   })
-  @IsString()
-  @IsEmpty()
   @MaxLength(20)
   chassisNumber: string;
 
