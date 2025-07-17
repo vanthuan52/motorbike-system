@@ -23,6 +23,7 @@ import { servicePriceReducer } from "@/modules/service-price/store";
 import { vehiclePartReducer } from "@/modules/vehicle-parts/store";
 import { serviceChecklistReducer } from "@/modules/service-checklist/store";
 import { appointmentReducer } from "@/modules/appointment/store";
+import { userVehicleReducer } from "@/modules/user-vehicle/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -45,6 +46,7 @@ export const store = configureStore({
     servicePrice: servicePriceReducer,
     vehicleParts: vehiclePartReducer,
     appointments: appointmentReducer,
+    userVehicle: userVehicleReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(sagaMiddleware),

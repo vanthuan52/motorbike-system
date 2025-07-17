@@ -14,6 +14,7 @@ import { ROUTER_PATH } from "@/constants/router-path";
 import SidebarMenu from "./sidebar/sidebar-menu";
 import {
   FaBriefcase,
+  FaCar,
   FaMotorcycle,
   FaStore,
   FaUserShield,
@@ -160,6 +161,12 @@ const menuItems = [
     icon: <FaStore />,
     label: "Cửa hàng",
     href: ROUTER_PATH.STORES,
+  },
+  {
+    key: "user-vehicles",
+    icon: <FaCar />,
+    label: "Xe của khách hàng",
+    href: ROUTER_PATH.USER_VEHICLE,
   },
 ];
 

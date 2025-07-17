@@ -16,6 +16,7 @@ import { ServicePriceSaga } from "@/modules/service-price/store/service-price-sa
 import { vehiclePartsRootSaga } from "@/modules/vehicle-parts/store/part-saga";
 import { ServiceChecklistSaga } from "@/modules/service-checklist/store/service-checklist-saga";
 import { AppointmentsSaga } from "@/modules/appointment/store/appointment-saga";
+import { UserVehicleSaga } from "@/modules/user-vehicle/store/user-vehicle-saga";
 
 export default function* rootSaga() {
   yield all([
@@ -36,5 +37,6 @@ export default function* rootSaga() {
     ServicePriceSaga(),
     vehiclePartsRootSaga(),
     AppointmentsSaga(),
+    UserVehicleSaga(),
   ]);
 }

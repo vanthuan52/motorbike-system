@@ -144,6 +144,13 @@ const ServiceChecklistPage = lazy(
   () => import("@/modules/service-checklist/pages/service-checklist-page")
 );
 
+const UserVehiclePage = lazy(
+  () => import("@/modules/user-vehicle/pages/user-vehicle-page")
+);
+
+const UserVehicleDetailPage = lazy(
+  () => import("@/modules/user-vehicle/pages/user-vehicle-detail-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -365,6 +372,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.SERVICE_CHECKLIST,
         element: <ServiceChecklistPage />,
+      },
+      {
+        path: ROUTER_PATH.USER_VEHICLE,
+        element: <UserVehiclePage />,
+      },
+      {
+        path: ROUTER_PATH.USER_VEHICLE_CREATION,
+        element: <UserVehicleDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.USER_VEHICLE_DETAIL,
+        element: <UserVehicleDetailPage />,
       },
     ],
   },
