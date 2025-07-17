@@ -59,4 +59,7 @@ export const ROUTER_PATH = {
   APPOINTMENTS: "/appointments",
   APPOINTMENT_DETAILS: "/appointments/:id",
   APPOINTMENT_CREATION: "/appointments/create",
+  USER_VEHICLE: "/user-vehicle",
+  USER_VEHICLE_DETAIL: "/user-vehicle/:id",
+  USER_VEHICLE_CREATION: "/user-vehicle/create",
 };

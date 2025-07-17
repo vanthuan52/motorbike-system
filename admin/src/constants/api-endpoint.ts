@@ -128,5 +128,11 @@ export const API_ENDPOINTS = {
     APPOINTMENTS_UPDATE_STATUS: (id: string) =>
       `appointment/update/${id}/status`,
     APPOINTMENTS_DELETION: (id: string) => `appointment/delete/${id}`,
+    //maintenance user vehicle
+    USER_VEHICLE_LIST: "user-vehicle/list",
+    USER_VEHICLE_DETAIL: (id: string) => `user-vehicle/get/${id}`,
+    USER_VEHICLE_CREATE: "user-vehicle/create",
+    USER_VEHICLE_UPDATE: (id: string) => `user-vehicle/update/${id}`,
+    USER_VEHICLE_DELETION: (id: string) => `user-vehicle/delete/${id}`,
   },
 };
