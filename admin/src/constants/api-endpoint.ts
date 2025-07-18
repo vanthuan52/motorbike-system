@@ -134,5 +134,28 @@ export const API_ENDPOINTS = {
     USER_VEHICLE_CREATE: "user-vehicle/create",
     USER_VEHICLE_UPDATE: (id: string) => `user-vehicle/update/${id}`,
     USER_VEHICLE_DELETION: (id: string) => `user-vehicle/delete/${id}`,
+    //care record
+    CARE_RECORD_LIST: "care-record/list",
+    CARE_RECORD_DETAIL: (id: string) => `care-record/get/${id}`,
+    CARE_RECORD_CREATE: "care-record/create",
+    CARE_RECORD_UPDATE: (id: string) => `care-record/update/${id}`,
+    CARE_RECORD_UPDATE_STATUS: (id: string) =>
+      `care-record/update/${id}/status`,
+    CARE_RECORD_UPDATE_PAYMENT_STATUS: (id: string) =>
+      `care-record/update/${id}/paymentStatus`,
+    CARE_RECORD_ASSIGN_TECHNICIAN: (id: string) =>
+      `care-record/update/${id}/technician`,
+    CARE_RECORD_DELETION: (id: string) => `care-record/delete/${id}`,
+    //care record checklist
+    CARE_RECORD_CHECKLIST_LIST: "care-record-checklist/list",
+    CARE_RECORD_CHECKLIST_DETAIL: (id: string) =>
+      `care-record-checklist/get/${id}`,
+    CARE_RECORD_CHECKLIST_CREATE: "care-record-checklist/create",
+    CARE_RECORD_CHECKLIST_UPDATE: (id: string) =>
+      `care-record-checklist/update/${id}`,
+    CARE_RECORD_CHECKLIST_UPDATE_STATUS: (id: string) =>
+      `care-record-checklist/update/${id}/status`,
+    CARE_RECORD_CHECKLIST_DELETION: (id: string) =>
+      `care-record-checklist/delete/${id}`,
   },
 };

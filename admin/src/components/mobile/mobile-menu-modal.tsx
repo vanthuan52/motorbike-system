@@ -8,7 +8,7 @@ import { LiaFileInvoiceSolid, LiaUsersCogSolid } from "react-icons/lia";
 import { TbSettingsCode } from "react-icons/tb";
 import { BiCategoryAlt, BiX } from "react-icons/bi";
 import { ROUTER_PATH } from "@/constants/router-path";
-import { FaBriefcase, FaMotorcycle } from "react-icons/fa";
+import { FaBriefcase, FaMotorcycle, FaUserAlt } from "react-icons/fa";
 
 type MobileMenuModalProps = {
   isOpen: boolean;
@@ -95,6 +95,18 @@ const links = [
     icon: <FaBriefcase />,
     label: "Tuyển dụng",
     href: ROUTER_PATH.HIRING,
+  },
+  {
+    key: "user-vehicles",
+    icon: <FaMotorcycle />,
+    label: "Xe của khách hàng",
+    href: ROUTER_PATH.USER_VEHICLE,
+  },
+  {
+    key: "care-records",
+    icon: <FaUserAlt />,
+    label: "Hồ sơ chăm sóc",
+    href: ROUTER_PATH.CARE_RECORDS,
   },
 ];
 

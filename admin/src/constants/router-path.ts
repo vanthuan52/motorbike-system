@@ -62,4 +62,7 @@ export const ROUTER_PATH = {
   USER_VEHICLE: "/user-vehicle",
   USER_VEHICLE_DETAIL: "/user-vehicle/:id",
   USER_VEHICLE_CREATION: "/user-vehicle/create",
+  CARE_RECORDS: "/care-records",
+  CARE_RECORD_DETAIL: "/care-records/:id",
+  CARE_RECORD_CREATION: "/care-records/create",
 };

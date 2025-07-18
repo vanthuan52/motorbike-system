@@ -17,6 +17,7 @@ import {
   FaCar,
   FaMotorcycle,
   FaStore,
+  FaUserAlt,
   FaUserShield,
 } from "react-icons/fa";
 
@@ -164,9 +165,15 @@ const menuItems = [
   },
   {
     key: "user-vehicles",
-    icon: <FaCar />,
+    icon: <FaMotorcycle />,
     label: "Xe của khách hàng",
     href: ROUTER_PATH.USER_VEHICLE,
+  },
+  {
+    key: "care-records",
+    icon: <FaUserAlt />,
+    label: "Hồ sơ chăm sóc",
+    href: ROUTER_PATH.CARE_RECORDS,
   },
 ];
 

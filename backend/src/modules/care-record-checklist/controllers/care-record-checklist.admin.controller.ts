@@ -126,7 +126,7 @@ export class CareRecordChecklistAdminController {
     };
 
     if (careRecordId) {
-      find['careRecord._id'] = careRecordId;
+      find['careRecord'] = careRecordId;
     }
 
     const careRecordChecklists =
