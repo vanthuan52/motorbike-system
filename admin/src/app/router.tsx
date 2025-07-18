@@ -151,6 +151,14 @@ const UserVehiclePage = lazy(
 const UserVehicleDetailPage = lazy(
   () => import("@/modules/user-vehicle/pages/user-vehicle-detail-page")
 );
+
+const CareRecordPage = lazy(
+  () => import("@/modules/care-record/pages/care-record-page")
+);
+
+const CareRecordDetailsPage = lazy(
+  () => import("@/modules/care-record/pages/care-record-details-page")
+);
 export const router = createBrowserRouter([
   {
     path: ROUTER_PATH.LOGIN,
@@ -384,6 +392,18 @@ export const router = createBrowserRouter([
       {
         path: ROUTER_PATH.USER_VEHICLE_DETAIL,
         element: <UserVehicleDetailPage />,
+      },
+      {
+        path: ROUTER_PATH.CARE_RECORDS,
+        element: <CareRecordPage />,
+      },
+      {
+        path: ROUTER_PATH.CARE_RECORD_CREATION,
+        element: <CareRecordDetailsPage />,
+      },
+      {
+        path: ROUTER_PATH.CARE_RECORD_DETAIL,
+        element: <CareRecordDetailsPage />,
       },
     ],
   },

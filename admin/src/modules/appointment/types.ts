@@ -15,7 +15,7 @@ export interface Appointments extends BaseEntity {
   userVehicle?: string[];
   name: string;
   phone: string;
-  vehicleModel: VehicleModel;
+  vehicleModel: string | VehicleModel;
   vehicleServices: ServiceCategory[];
   licensePlate: string;
   appointmentDate: Date;
