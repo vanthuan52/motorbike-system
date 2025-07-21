@@ -9,6 +9,7 @@ import AppProvider from "./provider";
 import AppInitializer from "./app-initializer";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import "@/styles/globals.css";
+import ChatWidget from "@/components/chatWidget";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -37,6 +38,7 @@ export default async function LocaleLayout(props: {
                 <AppProvider>{children}</AppProvider>
               </NextIntlClientProvider>
               <ToastProvider />
+              <ChatWidget />
             </ReduxProvider>
           </AntdRegistry>
         </ReactQueryProvider>
