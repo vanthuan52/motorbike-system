@@ -15,7 +15,7 @@ export default function ChatWidget() {
   const handleSelectChat = (target: "bot" | "agent") => setSelectedChat(target);
 
   return (
-    <div className="fixed sm:bottom-4 sm:right-4 right-0 bottom-0 z-50">
+    <div className="fixed sm:bottom-4 sm:right-4 right-4 bottom-4 z-50">
       <AnimatePresence mode="wait">
         {isOpen ? (
           selectedChat ? (
