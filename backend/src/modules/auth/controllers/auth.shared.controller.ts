@@ -4,7 +4,9 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   NotFoundException,
+  Param,
   Patch,
   Post,
   UnauthorizedException,
@@ -37,6 +39,11 @@ import { ENUM_SESSION_STATUS_CODE_ERROR } from '@/modules/session/enums/session.
 import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import { ENUM_USER_STATUS_CODE_ERROR } from '@/modules/user/enums/user.status-code.enum';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { UserParsePipe } from '@/modules/user/pipes/user.parse.pipe';
+import { UserNotSelfPipe } from '@/modules/user/pipes/user.not-self.pipe';
+import { UserDoc } from '@/modules/user/entities/user.entity';
+import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
 
 @ApiTags('modules.shared.auth')
 @Controller({
@@ -125,6 +132,27 @@ export class AuthSharedController {
       throw new BadRequestException({
         statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_NOT_MATCH,
         message: 'auth.error.passwordNotMatch',
+      });
+    }
+  }
+
+  @Response('auth.logout')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @HttpCode(HttpStatus.OK)
+  @Post('/logout')
+  async logout(
+    @AuthJwtPayload<IAuthJwtRefreshTokenPayload>()
+    { user: userFromPayload, session }: IAuthJwtRefreshTokenPayload,
+  ): Promise<void> {
+    try {
+      await this.sessionService.deleteLoginSession(userFromPayload);
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'http.serverError.internalServerError',
+        _error: err,
       });
     }
   }
