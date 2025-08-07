@@ -71,6 +71,7 @@ export class MessageEntity extends DatabaseEntityBase {
     ref: () => UserEntity.name,
     required: true,
     index: true,
+    default: [],
   })
   readBy?: string[];
 }

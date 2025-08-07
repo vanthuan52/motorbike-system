@@ -3,6 +3,7 @@ import {
   DocAuth,
   DocRequest,
   DocResponse,
+  DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { applyDecorators } from '@nestjs/common';
 import { ConversationGetResponseDto } from '../dtos/response/get-conversation-response.dto';

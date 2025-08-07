@@ -4,7 +4,6 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
-  ParseUUIDPipe,
   Post,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -25,13 +24,13 @@ import {
   ConversationSharedGetDoc,
 } from '../docs/conversation.shared.doc';
 import { UserDoc } from '@/modules/user/entities/user.entity';
-import { ConversationDoc } from '../entities/conversation.entity';
 import { UserService } from '@/modules/user/services/user.service';
 import { ENUM_USER_STATUS_CODE_ERROR } from '@/modules/user/enums/user.status-code.enum';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
 import { ConversationCreateRequestDto } from '../dtos/request/conversation-create-request.dto';
 import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.interface';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
 @ApiTags('modules.shared.chat')
 @Controller({
   version: '1',
@@ -41,10 +40,11 @@ export class ConversationSharedController {
   constructor(
     private readonly chatServices: ChatService,
     private readonly userService: UserService,
+    private readonly paginationService: PaginationService,
   ) {}
 
   @ConversationSharedGetDoc()
-  @Response('conversation.get')
+  @Response('chat.conversation.get')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get')
@@ -60,8 +60,9 @@ export class ConversationSharedController {
 
     return { data: mapped };
   }
+
   @ConversationSharedCreateDoc()
-  @Response('conversation.create')
+  @Response('chat.conversation.create')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')

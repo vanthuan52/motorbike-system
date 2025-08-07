@@ -3,24 +3,51 @@ import {
   DocAuth,
   DocRequest,
   DocResponse,
+  DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { applyDecorators } from '@nestjs/common';
-import { SendMessageDto } from '../dtos/request/send-message.dto';
+import { MessageGetResponseDto } from '../dtos/response/message-response.dto';
+import {
+  MessageDocParamsId,
+  MessageDocParamsIdMessageId,
+} from '../constants/chat.doc.constant';
+import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { MessageSharedUpdateStatusRequestDto } from '../dtos/request/message-update-stauts.request.dto';
 
-export function MessageSharedSendMessageDoc(): MethodDecorator {
+export function MessageSharedListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'send message',
+      summary: 'list messages by conversation id',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: SendMessageDto,
+      params: MessageDocParamsId,
     }),
     DocAuth({
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocResponse('message.send'),
+    DocResponsePaging<MessageGetResponseDto>('conversation.list', {
+      dto: MessageGetResponseDto,
+    }),
+  );
+}
+
+export function MessageSharedUpdateStatusDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'Mark a message as read',
+    }),
+    DocRequest({
+      params: MessageDocParamsIdMessageId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: MessageSharedUpdateStatusRequestDto,
+    }),
+    DocAuth({
+      xApiKey: true,
+      jwtAccessToken: true,
+    }),
+    DocResponse<MessageGetResponseDto>('message.updateStatus', {
+      dto: MessageGetResponseDto,
+    }),
   );
 }

@@ -1,0 +1,18 @@
+{
+  "conversation": {
+    "create": "New conversation created successfully.",
+    "get": "Conversation details fetched successfully.",
+    "error": {
+      "notFound": "Sorry, we couldn't find the conversation you requested.",
+      "invalidConversation": "Invalid conversation."
+    }
+  },
+  "message": {
+    "list": "Message list retrieved successfully.",
+    "get": "Message details fetched successfully.",
+    "updateStatus": "Message status updated to {status}.",
+    "error": {
+      "notFound": "Sorry, we couldn't find the message you requested."
+    }
+  }
+}
