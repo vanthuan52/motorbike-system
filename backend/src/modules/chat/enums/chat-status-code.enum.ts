@@ -1,0 +1,3 @@
+export enum ENUM_CHAT_STATUS_CODE_ERROR {
+  NOT_FOUND = 5600,
+}

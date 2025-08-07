@@ -5,7 +5,9 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { ENUM_MESSAGE_TYPE, ENUM_MESSAGE_STATUS } from '../enums/message.enum';
+import { UserEntity } from '@/modules/user/entities/user.entity';
+import { ENUM_MESSAGE_STATUS, ENUM_MESSAGE_TYPE } from '../enums/message.enum';
+import { ConversationEntity } from './conversation.entity';
 
 export const MessageTableName = 'messages';
 
@@ -13,24 +15,25 @@ export const MessageTableName = 'messages';
 export class MessageEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
-    type: String,
+    ref: () => ConversationEntity.name,
     index: true,
+    trim: true,
   })
-  conversationId: string;
+  conversation: string;
 
   @DatabaseProp({
     required: true,
-    type: String,
+    ref: () => UserEntity.name,
     index: true,
   })
-  senderId: string;
+  sender: string;
 
   @DatabaseProp({
     required: true,
-    type: String,
+    ref: () => UserEntity.name,
     index: true,
   })
-  receiverId: string;
+  receiver: string;
 
   @DatabaseProp({
     required: true,
@@ -64,9 +67,10 @@ export class MessageEntity extends DatabaseEntityBase {
   status: ENUM_MESSAGE_STATUS;
 
   @DatabaseProp({
-    required: false,
     type: [String],
-    default: [],
+    ref: () => UserEntity.name,
+    required: true,
+    index: true,
   })
   readBy?: string[];
 }
