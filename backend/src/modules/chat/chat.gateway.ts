@@ -12,11 +12,16 @@ import { Server, Socket } from 'socket.io';
 import { ChatService } from './services/chat.service';
 import { JoinConversationDto } from './dtos/request/join-conversation.dto';
 import { SendMessageDto } from './dtos/request/send-message.dto';
-import { ReadMessageDto } from './dtos/request/read-message.dto';
 import { MessageEntity } from './entities/message.entity';
 import { ENUM_CHAT_GW_EVENTS } from './enums/chat.gateway-events.enum';
+import { emitSocketError } from './utils/socket-error.util';
+import { ENUM_CHAT_STATUS_CODE_ERROR } from './enums/chat-status-code.enum';
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway(5002, {
+  cors: {
+    origin: '*',
+  },
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -60,6 +65,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage(ENUM_CHAT_GW_EVENTS.SEND_MESSAGE)
+  @SubscribeMessage(ENUM_CHAT_GW_EVENTS.SEND_MESSAGE)
   async handleSendMessage(
     @MessageBody() payload: SendMessageDto,
     @ConnectedSocket() client: Socket,
@@ -67,58 +73,65 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const conversation = await this.chatService.findOneConversation(
       payload.conversation,
     );
+
     if (!conversation) {
-      client.emit(ENUM_CHAT_GW_EVENTS.ERROR, {
-        message: 'Conversation not found',
-      });
+      emitSocketError(
+        client,
+        ENUM_CHAT_STATUS_CODE_ERROR.INVALID_CONVERSATION,
+        'conversation.error.invalidConversation',
+      );
       return;
     }
+
     const savedMessage: MessageEntity = await this.chatService.sendMessage(
       conversation,
       payload,
     );
-    this.server
+
+    client.broadcast
       .to(payload.conversation)
       .emit(ENUM_CHAT_GW_EVENTS.NEW_MESSAGE, savedMessage);
 
-    if (this.onlineUsers.has(payload.receiver)) {
-      const receiverSocketId = this.onlineUsers.get(payload.receiver);
-      if (receiverSocketId && receiverSocketId !== client.id) {
-        this.server
-          .to(receiverSocketId)
-          .emit(ENUM_CHAT_GW_EVENTS.NEW_MESSAGE, savedMessage);
-      }
-    }
     client.emit(ENUM_CHAT_GW_EVENTS.NEW_MESSAGE, savedMessage);
+
     return savedMessage;
   }
 
-  @SubscribeMessage(ENUM_CHAT_GW_EVENTS.READ_MESSAGE)
-  async handleReadMessage(
-    @MessageBody() payload: ReadMessageDto,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const messages = await this.chatService.findAllMessages(
-      payload.conversationId,
-    );
-    const targetMsg = messages?.find(
-      (m) => m._id.toString() === payload.messageId,
-    );
-    if (!targetMsg) {
-      client.emit(ENUM_CHAT_GW_EVENTS.ERROR, { message: 'Message not found' });
-      return;
-    }
-    const readerId = client.data?.userId;
-    const updated = await this.chatService.markMessageRead(targetMsg);
-    this.server
-      .to(payload.conversationId)
-      .emit(ENUM_CHAT_GW_EVENTS.MESSAGE_READ, {
-        messageId: payload.messageId,
-        conversationId: payload.conversationId,
-      });
-    return updated;
-  }
+  // @SubscribeMessage(ENUM_CHAT_GW_EVENTS.READ_MESSAGE)
+  // async handleReadMessage(
+  //   @MessageBody() payload: ReadMessageDto,
+  //   @ConnectedSocket() client: Socket,
+  // ) {
+  //   const messages = await this.chatService.findAllMessages(
+  //     payload.conversationId,
+  //   );
 
+  //   const targetMsg = messages?.find(
+  //     (m) => m._id.toString() === payload.messageId,
+  //   );
+  //   if (!targetMsg) {
+  //     client.emit(ENUM_CHAT_GW_EVENTS.ERROR, { message: 'Message not found' });
+  //     return;
+  //   }
+
+  //   const readerId = client.data?.userId;
+  //   if (!readerId) {
+  //     client.emit(ENUM_CHAT_GW_EVENTS.ERROR, { message: 'User ID missing' });
+  //     return;
+  //   }
+
+  //   const updated = await this.chatService.markMessageRead(targetMsg, readerId);
+
+  //   this.server
+  //     .to(payload.conversationId)
+  //     .emit(ENUM_CHAT_GW_EVENTS.MESSAGE_READ, {
+  //       messageId: payload.messageId,
+  //       conversationId: payload.conversationId,
+  //       readerId,
+  //     });
+
+  //   return updated;
+  // }
   @SubscribeMessage(ENUM_CHAT_GW_EVENTS.TYPING)
   handleTyping(
     @MessageBody() payload: { conversationId: string; isTyping: boolean },

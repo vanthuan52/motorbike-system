@@ -1,0 +1,18 @@
+{
+  "conversation": {
+    "create": "Tạo cuộc trò chuyện mới thành công.",
+    "get": "Lấy thông tin cuộc trò chuyện thành công.",
+    "error": {
+      "notFound": "Xin lỗi, chúng tôi không tìm thấy cuộc trò chuyện bạn yêu cầu.",
+      "invalidConversation": "Cuộc trò chuyện không hợp lệ."
+    }
+  },
+  "message": {
+    "list": "Lấy danh sách tin nhắn thành công.",
+    "get": "Lấy chi tiết tin nhắn thành công.",
+    "updateStatus": "Trạng thái tin nhắn đã được cập nhật thành {status}.",
+    "error": {
+      "notFound": "Xin lỗi, chúng tôi không tìm thấy tin nhắn bạn yêu cầu."
+    }
+  }
+}

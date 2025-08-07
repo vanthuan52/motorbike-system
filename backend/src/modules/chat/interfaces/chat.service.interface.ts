@@ -12,6 +12,9 @@ export interface IChatService {
 
   findAllMessages(conversationId: string): Promise<MessageDoc[] | null>;
   findAllConversations(): Promise<ConversationDoc[] | null>;
-  markMessageRead(messageDoc: MessageDoc): Promise<MessageDoc>;
+  markMessageRead(
+    messageDoc: MessageDoc,
+    readerId: string,
+  ): Promise<MessageDoc>;
   findOneConversation(conversationId: string): Promise<ConversationDoc | null>;
 }
