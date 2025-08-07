@@ -12,12 +12,16 @@ import {
   IDatabaseCreateOptions,
   IDatabaseFindAllOptions,
 } from '@/common/database/interfaces/database.interface';
-import { ConversationDoc } from '../entities/conversation.entity';
+import {
+  ConversationDoc,
+  ConversationEntity,
+} from '../entities/conversation.entity';
 import {
   IUserDoc,
   IUserEntity,
 } from '@/modules/user/interfaces/user.interface';
 import { ConversationGetResponseDto } from '../dtos/response/get-conversation-response.dto';
+import { ConversationCreateRequestDto } from '../dtos/request/conversation-create-request.dto';
 
 @Injectable()
 export class ChatService implements IChatService {
@@ -70,12 +74,39 @@ export class ChatService implements IChatService {
       conversation,
     );
   }
-  mapConversations(user: IUserDoc | IUserEntity): ConversationGetResponseDto {
-    const isMongooseDoc = (u: any): u is Document =>
-      u && typeof u.toObject === 'function';
-    return plainToInstance(
-      ConversationGetResponseDto,
-      isMongooseDoc(user) ? user.toObject() : user,
-    );
+  mapConversations(
+    conversation: ConversationDoc,
+    user: IUserDoc,
+  ): ConversationGetResponseDto {
+    return plainToInstance(ConversationGetResponseDto, {
+      _id: conversation._id,
+      participants: conversation.participants,
+      lastMessage: conversation.lastMessage,
+      createdAt: conversation.createdAt,
+      updatedAt: conversation.updatedAt,
+    });
+  }
+
+  async getConversationsByUser(user: IUserDoc): Promise<ConversationDoc[]> {
+    return this.conversationRepository.findAll<ConversationDoc>({
+      participants: user._id.toString(),
+    });
+  }
+
+  async findByParticipants(
+    participants: string[],
+  ): Promise<ConversationDoc | null> {
+    return this.conversationRepository.findOne<ConversationDoc>({
+      participants: { $all: participants, $size: participants.length },
+    });
+  }
+
+  async create(
+    participants: string[],
+    options?: IDatabaseCreateOptions,
+  ): Promise<ConversationDoc> {
+    const create: ConversationEntity = new ConversationEntity();
+    create.participants = participants;
+    return this.conversationRepository.create(create, options);
   }
 }

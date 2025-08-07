@@ -22,6 +22,8 @@ import { CareRecordItemSharedController } from '@/modules/care-record-item/contr
 import { VehicleServiceModule } from '@/modules/vehicle-service/vehicle-service.module';
 import { PartModule } from '@/modules/part/part.module';
 import { UserVehicleSharedController } from '@/modules/user-vehicle/controllers/user-vehicle.shared.controller';
+import { ConversationSharedController } from '@/modules/chat/controllers/conversation.shared.controller';
+import { ChatModule } from '@/modules/chat/chat.module';
 
 @Module({
   controllers: [
@@ -53,6 +55,7 @@ import { UserVehicleSharedController } from '@/modules/user-vehicle/controllers/
     CareRecordMediaModule,
     CareRecordItemModule,
     UserVehicleModule,
+    ChatModule,
   ],
 })
 export class RoutesSharedModule {}
