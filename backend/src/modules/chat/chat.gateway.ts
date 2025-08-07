@@ -65,7 +65,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
   ) {
     const conversation = await this.chatService.findOneConversation(
-      payload.conversationId,
+      payload.conversation,
     );
     if (!conversation) {
       client.emit(ENUM_CHAT_GW_EVENTS.ERROR, {
@@ -78,11 +78,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       payload,
     );
     this.server
-      .to(payload.conversationId)
+      .to(payload.conversation)
       .emit(ENUM_CHAT_GW_EVENTS.NEW_MESSAGE, savedMessage);
 
-    if (this.onlineUsers.has(payload.receiverId)) {
-      const receiverSocketId = this.onlineUsers.get(payload.receiverId);
+    if (this.onlineUsers.has(payload.receiver)) {
+      const receiverSocketId = this.onlineUsers.get(payload.receiver);
       if (receiverSocketId && receiverSocketId !== client.id) {
         this.server
           .to(receiverSocketId)

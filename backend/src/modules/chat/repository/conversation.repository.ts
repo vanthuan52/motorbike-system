@@ -38,4 +38,8 @@ export class ConversationRepository extends DatabaseRepositoryBase<
       },
     ]);
   }
+
+  getEntityClass(): typeof ConversationEntity {
+    return ConversationEntity;
+  }
 }

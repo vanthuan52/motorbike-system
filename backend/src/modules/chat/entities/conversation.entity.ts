@@ -23,7 +23,8 @@ export class ConversationEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: false,
     default: null,
-    ref: () => MessageEntity.name,
+    ref: 'MessageEntity',
+    // ref: () => MessageEntity.name,
     index: true,
     trim: true,
   })

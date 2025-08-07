@@ -18,10 +18,10 @@ import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.in
 import { ConversationDoc } from '../entities/conversation.entity';
 import { ENUM_CHAT_STATUS_CODE_ERROR } from '../enums/chat-status-code.enum';
 
-@ApiTags('modules.shared.chat.message')
+@ApiTags('modules.shared.chat')
 @Controller({
   version: '1',
-  path: '/chat/message',
+  path: '/messages',
 })
 export class MessageSharedController {
   constructor(private readonly chatServices: ChatService) {}
