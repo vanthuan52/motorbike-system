@@ -14,7 +14,7 @@ import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { UserParsePipe } from '@/modules/user/pipes/user.parse.pipe';
+import { UserActiveParsePipe } from '@/modules/user/pipes/user.parse.pipe';
 import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.interface';
 import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import { IResponse } from '@/common/response/interfaces/response.interface';
@@ -23,14 +23,12 @@ import {
   ConversationSharedCreateDoc,
   ConversationSharedGetDoc,
 } from '../docs/conversation.shared.doc';
-import { UserDoc } from '@/modules/user/entities/user.entity';
 import { UserService } from '@/modules/user/services/user.service';
 import { ENUM_USER_STATUS_CODE_ERROR } from '@/modules/user/enums/user.status-code.enum';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
 import { ConversationCreateRequestDto } from '../dtos/request/conversation-create-request.dto';
 import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.interface';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 @ApiTags('modules.shared.chat')
 @Controller({
   version: '1',
@@ -40,7 +38,6 @@ export class ConversationSharedController {
   constructor(
     private readonly chatServices: ChatService,
     private readonly userService: UserService,
-    private readonly paginationService: PaginationService,
   ) {}
 
   @ConversationSharedGetDoc()
@@ -49,7 +46,7 @@ export class ConversationSharedController {
   @AuthJwtAccessProtected()
   @Get('/get')
   async get(
-    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
+    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserActiveParsePipe)
     user: IUserDoc,
   ): Promise<IResponse<ConversationGetResponseDto[]>> {
     const conversations = await this.chatServices.getConversationsByUser(user);
@@ -67,22 +64,18 @@ export class ConversationSharedController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async createConversation(
-    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserParsePipe)
-    user: UserDoc,
-    @AuthJwtPayload('user') createdBy: string,
     @Body() body: ConversationCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
-    const { participantId } = body;
-    const currentUserId = user._id.toString();
+    const { sender, receiver } = body;
 
-    if (!participantId || participantId === currentUserId) {
+    if (!sender || !receiver || sender === receiver) {
       throw new BadRequestException({
         statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'user.error.notFound',
       });
     }
 
-    const participantIds = [currentUserId, participantId];
+    const participantIds = [sender, receiver];
     const users = await this.userService.findAll({
       _id: { $in: participantIds },
     });
@@ -99,12 +92,13 @@ export class ConversationSharedController {
     try {
       const existingConversation =
         await this.chatServices.findByParticipants(participantsSorted);
+
       if (existingConversation) {
         return { data: existingConversation };
       }
 
       const created = await this.chatServices.create(participantsSorted, {
-        actionBy: createdBy,
+        actionBy: sender,
       } as IDatabaseCreateOptions);
 
       return { data: { _id: created._id } };

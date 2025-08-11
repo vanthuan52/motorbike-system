@@ -24,6 +24,8 @@ import { PartModule } from '@/modules/part/part.module';
 import { UserVehicleSharedController } from '@/modules/user-vehicle/controllers/user-vehicle.shared.controller';
 import { ConversationSharedController } from '@/modules/chat/controllers/conversation.shared.controller';
 import { ChatModule } from '@/modules/chat/chat.module';
+import { MessageSharedController } from '@/modules/chat/controllers/message.shared.controller';
+import { RoleModule } from '@/modules/role/role.module';
 
 @Module({
   controllers: [
@@ -36,6 +38,8 @@ import { ChatModule } from '@/modules/chat/chat.module';
     CareRecordMediaSharedController,
     CareRecordItemSharedController,
     UserVehicleSharedController,
+    MessageSharedController,
+    ConversationSharedController,
   ],
   providers: [],
   exports: [],
@@ -56,6 +60,7 @@ import { ChatModule } from '@/modules/chat/chat.module';
     CareRecordItemModule,
     UserVehicleModule,
     ChatModule,
+    RoleModule,
   ],
 })
 export class RoutesSharedModule {}

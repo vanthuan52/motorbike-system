@@ -2,14 +2,18 @@ import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
+  DocGuard,
   DocRequest,
   DocResponse,
+  DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { AwsS3PresignRequestDto } from '@/modules/aws/dtos/request/aws.s3-presign.request.dto';
 import { AwsS3PresignResponseDto } from '@/modules/aws/dtos/response/aws.s3-presign.response.dto';
 import { UserUpdateProfileRequestDto } from '../dtos/request/user.update-profile.dto';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
+import { UserDocQueryStatus } from '../constants/user.doc.constant';
+import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
 
 export function UserSharedProfileDoc(): MethodDecorator {
   return applyDecorators(
@@ -72,5 +76,21 @@ export function UserSharedUpdatePhotoProfileDoc(): MethodDecorator {
       dto: AwsS3PresignRequestDto,
     }),
     DocResponse('user.updatePhotoProfile'),
+  );
+}
+
+export function UserSharedListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all users with type ADMIN or TECHNICIAN',
+    }),
+    DocRequest({}),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<UserListResponseDto>('user.list', {
+      dto: UserListResponseDto,
+    }),
   );
 }
