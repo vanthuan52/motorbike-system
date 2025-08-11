@@ -1,11 +1,12 @@
 import {
   Doc,
   DocAuth,
+  DocGuard,
   DocRequest,
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ConversationGetResponseDto } from '../dtos/response/get-conversation-response.dto';
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { ConversationCreateRequestDto } from '../dtos/request/conversation-create-request.dto';
@@ -38,8 +39,13 @@ export function ConversationSharedCreateDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
+    DocGuard({
+      role: true,
+      policy: true,
+    }),
     DocResponse<ConversationGetResponseDto>('conversation.create', {
       dto: ConversationGetResponseDto,
+      statusCode: HttpStatus.CREATED,
     }),
   );
 }

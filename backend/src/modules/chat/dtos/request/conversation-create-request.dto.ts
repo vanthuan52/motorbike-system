@@ -9,5 +9,13 @@ export class ConversationCreateRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  participantId: string;
+  sender: string;
+
+  @ApiProperty({
+    required: true,
+    example: faker.string.uuid(),
+  })
+  @IsString()
+  @IsNotEmpty()
+  receiver: string;
 }
