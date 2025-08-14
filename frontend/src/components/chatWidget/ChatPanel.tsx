@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 type ChatPanelProps = {
-  onSelect: (target: "bot" | "agent") => void;
+  onSelect: (target: "support" | "chat") => void;
   onClose: () => void;
 };
 
@@ -30,13 +30,13 @@ export default function ChatPanel({ onSelect, onClose }: ChatPanelProps) {
 
         <div className="space-y-2">
           <button
-            onClick={() => onSelect("bot")}
+            onClick={() => onSelect("support")}
             className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer"
           >
             🤖 Chatbot
           </button>
           <button
-            onClick={() => onSelect("agent")}
+            onClick={() => onSelect("chat")}
             className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-300 cursor-pointer"
           >
             👤 Chat with us

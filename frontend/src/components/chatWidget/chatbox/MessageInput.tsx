@@ -13,14 +13,14 @@ type MessageInputProps = {
   handleEmojiClick: (emoji: any) => void;
 };
 
-export default function MessageInput({
+export function MessageInput({
   input,
   setInput,
   showEmojiPicker,
   setShowEmojiPicker,
   handleSendMessage,
   handleEmojiClick,
-}: MessageInputProps) {
+}: any) {
   return (
     <div className="p-3 border-t bg-white relative">
       <div className="flex items-center gap-2">
@@ -33,10 +33,7 @@ export default function MessageInput({
         <div className="flex items-center flex-1 bg-gray-100 rounded-full px-3 py-2 relative">
           <input
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setShowEmojiPicker(false);
-            }}
+            onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSendMessage(input);
             }}

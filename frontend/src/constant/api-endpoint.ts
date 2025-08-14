@@ -20,5 +20,11 @@ export const API_ENDPOINTS = {
   SHARED: {
     USER_PROFILE: "user/profile",
     AUTH_REFRESH_TOKEN: "auth/refresh",
+    CONVERSATION_CREATE: "conversations/create",
+    CONVERSATION_GET: "conversations/get",
+    MESSAGE_BY_CONVERSATION: (conversationId: string) =>
+      `messages/${conversationId}/messages`,
+    MESSAGE_MARK_AS_READ: (messageId: string) => `messages/${messageId}/status`,
+    USER_LIST_TYPE_ADMIN_TECHNICIAN: "user/list",
   },
 };

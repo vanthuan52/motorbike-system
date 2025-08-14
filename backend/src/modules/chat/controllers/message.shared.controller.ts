@@ -95,8 +95,6 @@ export class MessageSharedController {
     @AuthJwtPayload('user') updatedBy: string,
     @Body() { status }: MessageSharedUpdateStatusRequestDto,
   ): Promise<void> {
-    console.log(status);
-
     try {
       await this.chatServices.updateStatusMessage(
         message,

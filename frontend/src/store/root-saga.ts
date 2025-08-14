@@ -7,6 +7,8 @@ import { vehicleModelSaga } from "@/features/vehicle-model/store/vehicle-model-s
 import { serviceCategorySaga } from "@/features/service-category/store/service-category-saga";
 import { appointmentSaga } from "@/features/appointment/store/appointment-saga";
 import { vehicleServiceSaga } from "@/features/vehicle-service/store/vehicle-service-saga";
+import { chatSaga } from "@/features/chat/store/chat-saga";
+import { userSaga } from "@/features/user/store/user-saga";
 
 export default function* rootSaga() {
   yield all([
@@ -18,5 +20,7 @@ export default function* rootSaga() {
     serviceCategorySaga(),
     vehicleServiceSaga(),
     appointmentSaga(),
+    chatSaga(),
+    userSaga(),
   ]);
 }
