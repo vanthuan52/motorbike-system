@@ -1,18 +1,32 @@
 "use client";
-
-import { useState } from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { AnimatePresence } from "framer-motion";
 import ChatButton from "./ChatButton";
 import ChatPanel from "./ChatPanel";
 import ChatBox from "./chatbox/ChatBox";
-import { AnimatePresence } from "framer-motion";
-export default function ChatWidget() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedChat, setSelectedChat] = useState<"bot" | "agent" | null>(
-    null
-  );
+import { useChatWidget } from "./hooks/useChatWidget";
+import { chatActions } from "@/features/chat/store/chat-slice";
 
-  const toggleChat = () => setIsOpen(!isOpen);
-  const handleSelectChat = (target: "bot" | "agent") => setSelectedChat(target);
+export default function ChatWidget() {
+  const dispatch = useDispatch();
+  const {
+    isOpen,
+    selectedChat,
+    selectedConversation,
+    setSelectedChat,
+    toggleChat,
+    handleSelectChat,
+    user,
+    users,
+    messages,
+  } = useChatWidget();
+  useEffect(() => {
+    if (!isOpen) {
+      dispatch(chatActions.resetChatState());
+    }
+  }, [isOpen, dispatch]);
+  if (!selectedConversation) return null;
 
   return (
     <div className="fixed sm:bottom-4 sm:right-4 right-4 bottom-4 z-50">
@@ -23,6 +37,10 @@ export default function ChatWidget() {
               type={selectedChat}
               onBack={() => setSelectedChat(null)}
               onClose={toggleChat}
+              userId={user?._id}
+              conversationId={selectedConversation[0]?._id}
+              users={users}
+              messages={messages}
             />
           ) : (
             <ChatPanel onSelect={handleSelectChat} onClose={toggleChat} />

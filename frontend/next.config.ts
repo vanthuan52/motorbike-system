@@ -57,7 +57,13 @@ const nextConfig: NextConfig = {
         hostname: "randomuser.me",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "ui-avatars.com",
+        pathname: "/**",
+      },
     ],
+    domains: ["ui-avatars.com"],
   },
   logging: {
     fetches: {

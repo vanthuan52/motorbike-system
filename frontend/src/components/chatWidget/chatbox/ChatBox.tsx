@@ -1,16 +1,21 @@
-import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import dayjs from "dayjs";
 import Image from "next/image";
 import { ChatHeader } from "./ChatHeader";
-import SampleMessages from "./SampleMessages";
 import { MessageList } from "./MessageList";
-import MessageInput from "./MessageInput";
+import { MessageInput } from "./MessageInput";
 import "../css/chatWidget.css";
+import { Message } from "@/features/chat/types";
+import SampleMessages from "./SampleMessages";
+import { User } from "@/features/user/types";
+import { useChatBox } from "../hooks/useChatBox";
 type ChatBoxProps = {
-  type: "bot" | "agent";
-  onBack: () => void;
-  onClose: () => void;
+  type?: "support" | "chat";
+  onBack?: () => void;
+  onClose?: () => void;
+  conversationId?: string | null;
+  userId?: string;
+  users?: User[] | null;
+  messages?: Message[] | null;
 };
 
 const sampleMessages = [
@@ -20,45 +25,36 @@ const sampleMessages = [
   "Chat with a Live Agent",
 ];
 
-type Message = {
-  sender: "user" | "bot";
-  text: string;
-};
-
-export default function ChatBox({ type, onBack, onClose }: ChatBoxProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
-
-  const currentTime = dayjs().format("h:mm A");
-
-  const endRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-  const handleSendMessage = (text: string) => {
-    if (!text.trim()) return;
-
-    const newUserMsg: Message = { sender: "user", text };
-    setMessages((prev) => [...prev, newUserMsg]);
-    setInput("");
-    setIsTyping(true);
-
-    setTimeout(() => {
-      setIsTyping(false);
-      const botMsg: Message = {
-        sender: "bot",
-        text: "Thank you for reaching out. We'll get back to you shortly!",
-      };
-      setMessages((prev) => [...prev, botMsg]);
-    }, 1500);
-  };
-
-  const handleEmojiClick = (emoji: any) => {
-    setInput((prev) => prev + emoji.emoji);
-  };
+export default function ChatBox({
+  type,
+  onBack,
+  onClose,
+  conversationId,
+  userId,
+  users,
+  messages: messageList,
+}: ChatBoxProps) {
+  const {
+    messages,
+    input,
+    isTyping,
+    showEmojiPicker,
+    typingUserId,
+    endRef,
+    currentTime,
+    filteredMessages,
+    filteredMessageList,
+    handleSendMessage,
+    handleEmojiClick,
+    onInputChange,
+    setShowEmojiPicker,
+  } = useChatBox({
+    type,
+    conversationId,
+    userId,
+    users,
+    messageList,
+  });
 
   return (
     <motion.div
@@ -68,8 +64,7 @@ export default function ChatBox({ type, onBack, onClose }: ChatBoxProps) {
       transition={{ duration: 0.3 }}
       className="sm:w-96 w-full h-[500px] bg-white rounded-2xl shadow-xl flex flex-col"
     >
-      <ChatHeader type={type} onBack={onBack} onClose={onClose} />
-
+      <ChatHeader type={type} onBack={onBack} onClose={onClose} users={users} />
       <div className="flex-1 p-3 overflow-y-auto text-sm text-gray-900 space-y-3">
         <SampleMessages
           sampleMessages={sampleMessages}
@@ -78,16 +73,22 @@ export default function ChatBox({ type, onBack, onClose }: ChatBoxProps) {
         />
 
         <MessageList
-          messages={messages}
+          userId={userId}
+          users={users}
+          messages={filteredMessages}
           endRef={endRef}
           currentTime={currentTime}
+          messageList={filteredMessageList}
         />
 
-        {isTyping && (
+        {isTyping && typingUserId && (
           <div className="flex items-start gap-2">
-            <Image
-              src="/bot-avatar.png"
-              alt="Bot"
+            <img
+              src={(() => {
+                const userObj = users?.find((u) => u._id === typingUserId);
+                return `https://ui-avatars.com/api/?name=${userObj?.username}`;
+              })()}
+              alt="Typing User"
               width={32}
               height={32}
               className="rounded-full"
@@ -101,8 +102,7 @@ export default function ChatBox({ type, onBack, onClose }: ChatBoxProps) {
 
       <MessageInput
         input={input}
-        setInput={setInput}
-        sendMessage={handleSendMessage}
+        setInput={(v: string) => onInputChange(v)}
         showEmojiPicker={showEmojiPicker}
         setShowEmojiPicker={setShowEmojiPicker}
         handleEmojiClick={handleEmojiClick}

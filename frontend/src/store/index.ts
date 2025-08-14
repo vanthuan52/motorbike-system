@@ -23,6 +23,8 @@ import { vehicleModelReducer } from "@/features/vehicle-model/store";
 import { serviceCategoryReducer } from "@/features/service-category/store";
 import { appointmentReducer } from "@/features/appointment/store";
 import { vehicleServiceReducer } from "@/features/vehicle-service/store";
+import { chatReducer } from "@/features/chat/store";
+import { userReducer } from "@/features/user/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -45,6 +47,8 @@ const rootReducer = combineReducers({
   serviceCategory: serviceCategoryReducer,
   vehicleService: vehicleServiceReducer,
   appointment: appointmentReducer,
+  chat: chatReducer,
+  users: userReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
