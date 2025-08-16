@@ -19,6 +19,7 @@ import { AppointmentsSaga } from "@/modules/appointment/store/appointment-saga";
 import { UserVehicleSaga } from "@/modules/user-vehicle/store/user-vehicle-saga";
 import { careRecordsSaga } from "@/modules/care-record/store/care-record-saga";
 import { CareRecordChecklistsSaga } from "@/modules/care-record-checklist/store/care-record-checklist-saga";
+import { chatSaga } from "@/modules/chat/store/chat-saga";
 
 export default function* rootSaga() {
   yield all([
@@ -42,5 +43,6 @@ export default function* rootSaga() {
     UserVehicleSaga(),
     careRecordsSaga(),
     CareRecordChecklistsSaga(),
+    chatSaga(),
   ]);
 }

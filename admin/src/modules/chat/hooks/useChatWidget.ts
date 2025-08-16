@@ -1,85 +1,80 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { chatActions } from "@/features/chat/store/chat-slice";
 import { RootState, useAppSelector } from "@/store";
-import { userActions } from "@/features/user/store/user-slice";
+import { chatActions } from "../store/chat-slice";
+import { customerActions } from "@/modules/customer-management/store/customer-slice";
 
 export function useChatWidget() {
   const dispatch = useDispatch();
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedChat, setSelectedChat] = useState<"support" | "chat" | null>(
     null
   );
 
-  const { selectedConversation, messages } = useSelector(
+  const { conversations, messages } = useSelector(
     (state: RootState) => state.chat
   );
 
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
-  const { users } = useAppSelector((state) => state.users);
+  const { users, loadingList: loadingListUsers } = useAppSelector(
+    (state) => state.customer
+  );
 
-  const toggleChat = () => setIsOpen((prev) => !prev);
-
-  const handleSelectChat = (target: "support" | "chat") => {
+  const startNewConversation = (senderId: string) => {
     if (!isAuthenticated || !user) return;
-    setSelectedChat(target);
 
-    if (target === "chat") {
-      dispatch(
-        chatActions.createConversation({
-          senderId: user._id,
-          receiverId: users[0]._id,
-        })
-      );
-    }
+    dispatch(
+      chatActions.createConversation({
+        senderId: user._id,
+        receiverId: senderId,
+      })
+    );
   };
 
   useEffect(() => {
     if (
-      !selectedConversation ||
-      (Array.isArray(selectedConversation) && selectedConversation.length === 0)
+      !conversations ||
+      (Array.isArray(conversations) && conversations.length === 0)
     ) {
       dispatch(chatActions.getConversation({}));
     }
-  }, [selectedConversation, messages]);
+  }, [conversations, messages]);
 
   useEffect(() => {
     if (
-      selectedConversation &&
-      Array.isArray(selectedConversation) &&
-      selectedConversation.length > 0
+      conversations &&
+      Array.isArray(conversations) &&
+      conversations.length > 0
     ) {
       dispatch(
         chatActions.listMessageByConversation({
-          conversationId: selectedConversation[0]._id,
+          conversationId: conversations[0]._id,
           queries: { page: 1, perPage: 1000 },
         })
       );
     }
-  }, [selectedConversation]);
+  }, [conversations]);
 
   useEffect(() => {
     if (!isAuthenticated || !user) return;
     if (users.length === 0) {
       dispatch(
-        userActions.getAdminTechnicians({
+        customerActions.getCustomers({
           page: 1,
-          perPage: 1,
+          perPage: 1000,
         })
       );
     }
   }, [users, dispatch]);
 
   return {
-    isOpen,
     selectedChat,
-    selectedConversation,
+    conversations,
     isAuthenticated,
     user,
     users,
+    loadingListUsers,
     setSelectedChat,
-    toggleChat,
-    handleSelectChat,
+    startNewConversation,
     messages,
   };
 }

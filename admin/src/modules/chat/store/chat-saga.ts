@@ -2,18 +2,16 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { chatActions } from "./chat-slice";
 import {
-  Conversation,
   ConversationCreateResponse,
   ConversationGetResponse,
   ENUM_MESSAGE_STATUS,
-  ListMessageResponse,
   Message,
   MessagePaginationQuery,
 } from "../types";
 import chatService from "../chat.service";
-import { notificationActions } from "@/features/notification/store/notification-slice";
-import { User } from "@/features/user/types";
 import { ApiResponse } from "@/types/api.type";
+import { User } from "@/modules/user/types";
+import { notificationActions } from "@/modules/notification/store/notification-slice";
 
 function* handleCreateConversation(
   action: PayloadAction<{ senderId: User["_id"]; receiverId: User["_id"] }>

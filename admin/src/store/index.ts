@@ -26,6 +26,7 @@ import { appointmentReducer } from "@/modules/appointment/store";
 import { userVehicleReducer } from "@/modules/user-vehicle/store";
 import { careRecordReducer } from "@/modules/care-record/store";
 import { careRecordCheckListReducer } from "@/modules/care-record-checklist/store";
+import { chatReducer } from "@/modules/chat/store";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -51,6 +52,7 @@ export const store = configureStore({
     userVehicle: userVehicleReducer,
     careRecords: careRecordReducer,
     careRecordChecklists: careRecordCheckListReducer,
+    chat: chatReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat(sagaMiddleware),

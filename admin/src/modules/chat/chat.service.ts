@@ -1,15 +1,14 @@
 import { AxiosError, AxiosResponse } from "axios";
 import { sharedApi } from "@/lib/axios";
 import {
-  Conversation,
   ConversationCreateResponse,
   ConversationGetResponse,
   ENUM_MESSAGE_STATUS,
   MessagePaginationQuery,
 } from "./types";
-import { API_ENDPOINTS } from "@/constant/api-endpoint";
 import { ApiErrorResponse } from "@/types/api.type";
 import { User } from "../user/types";
+import { API_ENDPOINTS } from "@/constants/api-endpoint";
 
 const chatService = {
   createConversation: async (

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "antd";
 import { Conversation } from "../types";
-import { mockConversations } from "../mocks/messages";
 import ChatSidebar from "../components/ChatSidebar";
 import ChatMain from "../components/ChatMain";
 import "./messages-page-module.scss";
+import { useChatWidget } from "../hooks/useChatWidget";
 export default function Messages() {
   const [selectedConversation, setSelectedConversation] =
     useState<Conversation | null>(null);
@@ -14,8 +14,6 @@ export default function Messages() {
     "calc(100dvh - 64px)"
   );
   const [loadingSidebar, setLoadingSidebar] = useState(true);
-  const [conversations, setConversations] =
-    useState<Conversation[]>(mockConversations);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -38,34 +36,16 @@ export default function Messages() {
     return () => clearTimeout(t);
   }, []);
 
-  const startNewConversation = (userId: string) => {
-    const existingConversation = conversations.find(
-      (conv) => conv.user.id === userId
-    );
-    if (existingConversation) {
-      setSelectedConversation(existingConversation);
-      return;
-    }
-    const user = mockConversations.find(
-      (conv) => conv.user.id === userId
-    )?.user;
-    if (!user) {
-      console.error("User not found for ID:", userId);
-      return;
-    }
-    const newConversation: Conversation = {
-      id: `conv_${Date.now()}`,
-      user: { ...user },
-      lastMessage: "",
-      lastMessageTime: new Date().toLocaleTimeString(),
-      messages: [],
-      photos: [],
-      files: [],
-    };
-    setConversations((prev) => [newConversation, ...prev]);
-    setSelectedConversation(newConversation);
-  };
-
+  const {
+    selectedChat,
+    conversations,
+    setSelectedChat,
+    user,
+    users,
+    loadingListUsers,
+    messages,
+    startNewConversation,
+  } = useChatWidget();
   const renderSidebar = () => (
     <div className="h-full overflow-y-auto scrollbar-thin">
       {loadingSidebar ? (

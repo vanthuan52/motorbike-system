@@ -26,7 +26,6 @@ export default function ChatWidget() {
       dispatch(chatActions.resetChatState());
     }
   }, [isOpen, dispatch]);
-  if (!selectedConversation) return null;
 
   return (
     <div className="fixed sm:bottom-4 sm:right-4 right-4 bottom-4 z-50">

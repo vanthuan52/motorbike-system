@@ -12,7 +12,7 @@ import {
 } from "../types";
 import { ApiResponsePagination } from "@/types/api.type";
 import { PAGINATION_QUERY_INITIAL_STATE } from "@/store/constant";
-import { User } from "@/features/user/types";
+import { User } from "@/modules/user/types";
 interface GetMessageSuccessPayload {
   list: Message[];
   pagination: ApiResponsePagination | undefined;
