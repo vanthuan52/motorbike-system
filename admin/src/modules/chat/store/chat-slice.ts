@@ -79,12 +79,12 @@ export const chatSlice = createSlice({
     },
     getConversationSuccess(state, action: PayloadAction<Conversation[]>) {
       state.loadingSingle = false;
-      state.selectedConversation = action.payload;
+      state.conversations = action.payload;
     },
     getConversationFailure(state, action: PayloadAction<string>) {
       state.loadingSingle = false;
       state.error = action.payload;
-      state.selectedConversation = null;
+      state.conversations = [];
     },
 
     listMessageByConversation(

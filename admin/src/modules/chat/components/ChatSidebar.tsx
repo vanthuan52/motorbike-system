@@ -1,4 +1,3 @@
-"use client";
 import { Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { MdOutlineSearch } from "react-icons/md";
@@ -13,6 +12,7 @@ interface ChatSidebarProps {
   onSearch?: (search: string) => void;
   selectedConversation?: Conversation | null;
   onStartNewConversation?: (userId: string) => void;
+  currentUserId: string;
 }
 
 export default function ChatSidebar({
@@ -22,6 +22,7 @@ export default function ChatSidebar({
   onSearch,
   selectedConversation,
   onStartNewConversation,
+  currentUserId,
 }: ChatSidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -38,22 +39,37 @@ export default function ChatSidebar({
 
   const filteredConversations =
     (isMobile || showSearch) && searchValue
-      ? conversations.filter(
-          (conv) =>
-            conv.user.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-            conv.lastMessage.toLowerCase().includes(searchValue.toLowerCase())
-        )
+      ? conversations.filter((conv) => {
+          const otherUser = conv.participants.find(
+            (u) => u._id !== currentUserId
+          );
+          return (
+            otherUser?.name
+              ?.toLowerCase()
+              .includes(searchValue.toLowerCase()) ||
+            conv.lastMessage?.toLowerCase().includes(searchValue.toLowerCase())
+          );
+        })
       : conversations;
 
-  const autoCompleteOptions = conversations.map((conv) => ({
-    value: conv.user.id,
-    label: (
-      <div className="flex flex-row gap-2 items-center">
-        <Avatar src={conv.user.avatar} size={24} />
-        <span>{conv.user.name}</span>
-      </div>
-    ),
-  }));
+  const autoCompleteOptions = conversations
+    .map((conv) => {
+      const otherUser = conv.participants.find((u) => u._id !== currentUserId);
+      if (!otherUser) return null;
+      return {
+        value: otherUser._id,
+        label: (
+          <div className="flex flex-row gap-2 items-center">
+            <Avatar
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}`}
+              size={24}
+            />
+            <span>{otherUser.name}</span>
+          </div>
+        ),
+      };
+    })
+    .filter(Boolean);
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -70,11 +86,10 @@ export default function ChatSidebar({
 
   const handleModalOk = () => {
     if (autoCompleteValue) {
-      onStartNewConversation?.(autoCompleteValue); // Call callback with user.id
+      onStartNewConversation?.(autoCompleteValue);
       handleCloseModal();
     }
   };
-
   return (
     <div className="overflow-y-auto overflow-x-hidden p-4 shadow-md scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
       <div className="flex flex-col-reverse lg:flex-row lg:items-center lg:justify-between mb-4 gap-2">
@@ -108,27 +123,36 @@ export default function ChatSidebar({
         />
       )}
       {filteredConversations.map((conv) => {
+        console.log(conv);
+
+        const otherUser = conv.participants.find(
+          (u) => u._id !== currentUserId
+        );
+        if (!otherUser) return null;
         const isSelected =
-          selectedConversation && conv.id === selectedConversation.id;
+          selectedConversation && conv._id === selectedConversation._id;
         return (
           <div
-            key={conv.id}
+            key={conv._id}
             className={`flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer ${
               isSelected ? "bg-gray-300" : ""
             }`}
             onClick={() => onSelectConversation(conv)}
           >
-            <Avatar src={conv.user.avatar} size={40} />
+            <Avatar
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}`}
+              size={40}
+            />
             <div className="ml-3 flex-1 min-w-0">
               <div className="flex justify-between gap-2 min-w-0">
                 <span
                   className="font-medium truncate max-w-[120px] block"
-                  title={conv.user.name}
+                  title={otherUser.name}
                 >
-                  {conv.user.name}
+                  {otherUser.name}
                 </span>
                 <span className="text-xs whitespace-nowrap">
-                  {conv.lastMessageTime}
+                  {conv.lastMessage}
                 </span>
               </div>
               <p

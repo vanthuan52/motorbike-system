@@ -53,7 +53,13 @@ export interface GetMessageSuccessPayload {
 }
 
 export interface Conversation extends BaseEntity {
-  participants: string[];
+  participants: {
+    _id: string;
+    username: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  }[];
   lastMessage?: Message;
 }
 

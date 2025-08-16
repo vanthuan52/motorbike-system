@@ -46,6 +46,8 @@ export default function Messages() {
     messages,
     startNewConversation,
   } = useChatWidget();
+  // console.log(conversations);
+
   const renderSidebar = () => (
     <div className="h-full overflow-y-auto scrollbar-thin">
       {loadingSidebar ? (
