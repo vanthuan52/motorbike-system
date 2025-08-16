@@ -13,12 +13,14 @@ import { Image, Skeleton, Space, Tabs } from "antd";
 import type { TabsProps } from "antd";
 import { Conversation } from "../types";
 import UserDetails from "./UserDetails";
+import { User } from "@/modules/user/types";
 interface ChatMediaSidebarProps {
   photos: string[];
   files: string[];
   onToggleMediaSidebar: () => void;
   conversation: Conversation;
-  loadingMessages: boolean;
+  loadingMessages?: boolean | undefined;
+  user?: User;
 }
 
 export default function ChatMediaSidebar({
@@ -27,7 +29,9 @@ export default function ChatMediaSidebar({
   onToggleMediaSidebar,
   conversation,
   loadingMessages,
+  user,
 }: ChatMediaSidebarProps) {
+  if (!user) return null;
   const items: TabsProps["items"] = [
     {
       key: "photos",
@@ -125,7 +129,11 @@ export default function ChatMediaSidebar({
           className="lg:!hidden mr-2"
         />
       </div>
-      <UserDetails userDetails={conversation.user} />
+      <UserDetails
+        userDetails={
+          conversation.participants.filter((u) => u._id !== user._id)[0] || user
+        }
+      />
       <Tabs defaultActiveKey="photos" items={items} />
     </div>
   );

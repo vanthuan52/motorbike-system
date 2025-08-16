@@ -1,27 +1,24 @@
 import { Modal, AutoComplete } from "antd";
-import { Conversation } from "../../types";
-interface props {
+
+interface Props {
   isModalOpen: boolean;
   handleModalOk: () => void;
   handleCloseModal: () => void;
-  autoCompleteValue: string;
-  autoCompleteOptions: { value: string }[];
-  setAutoCompleteValue: (value: string) => void;
-  handleSelectUser: (value: string) => void;
-  conversations: Conversation[];
-  selectedUserName: string;
+  inputValue: string;
+  autoCompleteOptions: { value: string; label: React.ReactNode }[];
+  setInputValue: (value: string) => void;
+  handleSelectUser: (value: string, option: any) => void;
 }
+
 export default function ModalCreateNewConv({
   isModalOpen,
   handleModalOk,
   handleCloseModal,
-  autoCompleteValue,
+  inputValue,
   autoCompleteOptions,
-  setAutoCompleteValue,
+  setInputValue,
   handleSelectUser,
-  conversations,
-  selectedUserName,
-}: props) {
+}: Props) {
   return (
     <Modal
       title="Tạo cuộc trò chuyện mới"
@@ -30,23 +27,21 @@ export default function ModalCreateNewConv({
       onCancel={handleCloseModal}
       okText="Bắt đầu"
       cancelText="Hủy"
-      okButtonProps={{ disabled: !autoCompleteValue }}
+      okButtonProps={{ disabled: !inputValue }}
     >
       <AutoComplete
         options={autoCompleteOptions}
-        value={selectedUserName}
-        onChange={setAutoCompleteValue}
+        value={inputValue}
+        onChange={(value) => setInputValue(value)}
         onSelect={handleSelectUser}
         placeholder="Nhập tên người dùng..."
         className="w-full"
         filterOption={(inputValue, option) =>
-          conversations
-            .find((conv) => conv.user.id === option?.value)
-            ?.user.name.toLowerCase()
-            .includes(inputValue.toLowerCase()) || false
+          (option as any).searchText
+            ?.toLowerCase()
+            .includes(inputValue.toLowerCase())
         }
         allowClear
-        maxCount={1}
       />
     </Modal>
   );

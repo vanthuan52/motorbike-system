@@ -1,5 +1,6 @@
 import { ApiResponse, ApiResponsePagination } from "@/types/api.type";
 import { BaseEntity, PaginationQuery } from "@/types/base.type";
+import { User } from "../user/types";
 
 export enum ENUM_CHAT_GW_EVENTS {
   JOIN_CONVERSATION = "joinConversation",
@@ -31,8 +32,8 @@ export interface MessagePaginationQuery extends PaginationQuery {}
 
 export interface Message extends BaseEntity {
   conversation: Conversation;
-  sender: string;
-  receiver: string;
+  sender: User;
+  receiver: User;
   content: string;
   type: ENUM_MESSAGE_TYPE;
   timestamp: Date;
@@ -45,6 +46,7 @@ export type MessageSocket = {
   sender: string; // 'user' | 'bot' | userId
   text: string;
   createdAt?: string;
+  status?: ENUM_MESSAGE_STATUS;
 };
 
 export interface GetMessageSuccessPayload {
@@ -61,6 +63,8 @@ export interface Conversation extends BaseEntity {
     avatar?: string;
   }[];
   lastMessage?: Message;
+  photos?: string[];
+  files?: string[];
 }
 
 export type ConversationResponse = ApiResponse<Conversation[]>;

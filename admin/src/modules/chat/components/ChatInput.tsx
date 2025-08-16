@@ -1,33 +1,22 @@
 import { Input, Upload } from "antd";
 import { PaperClipOutlined, SendOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 interface ChatInputProps {
-  onSendMessage: (content: string) => void;
-  clearInput?: boolean;
+  input: string;
+  setInput: (value: string) => void;
+  handleSendMessage: (text: string) => void;
 }
 export default function ChatInput({
-  onSendMessage,
-  clearInput,
+  input,
+  setInput,
+  handleSendMessage,
 }: ChatInputProps) {
   const [inputValue, setInputValue] = useState("");
 
-  useEffect(() => {
-    if (clearInput) {
-      setInputValue("");
-    }
-  }, [clearInput]);
-
   const handleSend = () => {
     if (inputValue.trim()) {
-      onSendMessage(inputValue);
+      handleSendMessage(inputValue);
       setInputValue("");
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
     }
   };
 
@@ -42,14 +31,15 @@ export default function ChatInput({
             <PaperClipOutlined style={{ fontSize: 22 }} />
           </button>
         </Upload>
-        <Input.TextArea
+        <Input
           placeholder="Nhập tin nhắn"
           className="rounded-lg resize-none !py-2 !px-3 flex-1"
           style={{ minHeight: 44, fontSize: 16 }}
-          rows={1}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSendMessage(input);
+          }}
         />
         <button
           type="button"

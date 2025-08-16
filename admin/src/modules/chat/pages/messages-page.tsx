@@ -4,16 +4,16 @@ import { Conversation } from "../types";
 import ChatSidebar from "../components/ChatSidebar";
 import ChatMain from "../components/ChatMain";
 import "./messages-page-module.scss";
-import { useChatWidget } from "../hooks/useChatWidget";
+import { useChatManager } from "../hooks/useChatManager";
 export default function Messages() {
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<
+    Conversation["_id"] | null
+  >(null);
   const [search, setSearch] = useState("");
   const [containerHeight, setContainerHeight] = useState("calc(100dvh - 65px)");
   const [containerChatMainHeight, setContainerChatMainHeight] = useState(
     "calc(100dvh - 64px)"
   );
-  const [loadingSidebar, setLoadingSidebar] = useState(true);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -31,26 +31,22 @@ export default function Messages() {
     return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
-  useEffect(() => {
-    const t = setTimeout(() => setLoadingSidebar(false), 1200);
-    return () => clearTimeout(t);
-  }, []);
-
   const {
-    selectedChat,
     conversations,
-    setSelectedChat,
+    loadingListConversations,
     user,
     users,
-    loadingListUsers,
     messages,
+    loadingListMessages,
     startNewConversation,
-  } = useChatWidget();
-  // console.log(conversations);
+  } = useChatManager({ conversationId: selectedConversation || "" });
 
+  if (!user || !users) {
+    return null;
+  }
   const renderSidebar = () => (
     <div className="h-full overflow-y-auto scrollbar-thin">
-      {loadingSidebar ? (
+      {loadingListConversations ? (
         <div className="p-4">
           {[...Array(conversations.length)].map((_, i) => (
             <div key={i} className="flex items-center gap-3 mb-4">
@@ -74,17 +70,26 @@ export default function Messages() {
           onSearch={setSearch}
           selectedConversation={selectedConversation}
           onStartNewConversation={startNewConversation}
+          currentUserId={user._id}
+          users={users}
         />
       )}
     </div>
   );
-
+  const selectedConversationObj = conversations.find(
+    (c) => c._id === selectedConversation
+  );
   // Render main chat area
   const renderChatMain = () =>
-    selectedConversation ? (
+    selectedConversation && selectedConversationObj ? (
       <div className="h-full overflow-y-auto">
         <ChatMain
-          conversation={selectedConversation}
+          conversation={selectedConversationObj}
+          selectedConversation={selectedConversation}
+          messages={messages}
+          loadingListMessages={loadingListMessages}
+          user={user}
+          users={users}
           onBack={() => setSelectedConversation(null)}
         />
       </div>

@@ -1,18 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { RootState, useAppSelector } from "@/store";
 import { chatActions } from "../store/chat-slice";
 import { customerActions } from "@/modules/customer-management/store/customer-slice";
+import { Conversation } from "../types";
 
-export function useChatWidget() {
+interface props {
+  conversationId: Conversation["_id"];
+}
+export function useChatManager({ conversationId }: props) {
   const dispatch = useDispatch();
-  const [selectedChat, setSelectedChat] = useState<"support" | "chat" | null>(
-    null
-  );
 
-  const { conversations, messages } = useSelector(
-    (state: RootState) => state.chat
-  );
+  const {
+    conversations,
+    loadingList: loadingListConversations,
+    messages,
+    loadingListMessage: loadingListMessages,
+  } = useSelector((state: RootState) => state.chat);
 
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const { users, loadingList: loadingListUsers } = useAppSelector(
@@ -21,7 +25,6 @@ export function useChatWidget() {
 
   const startNewConversation = (senderId: string) => {
     if (!isAuthenticated || !user) return;
-
     dispatch(
       chatActions.createConversation({
         senderId: user._id,
@@ -40,19 +43,15 @@ export function useChatWidget() {
   }, [conversations, messages]);
 
   useEffect(() => {
-    if (
-      conversations &&
-      Array.isArray(conversations) &&
-      conversations.length > 0
-    ) {
+    if (conversationId) {
       dispatch(
         chatActions.listMessageByConversation({
-          conversationId: conversations[0]._id,
+          conversationId: conversationId,
           queries: { page: 1, perPage: 1000 },
         })
       );
     }
-  }, [conversations]);
+  }, [conversationId]);
 
   useEffect(() => {
     if (!isAuthenticated || !user) return;
@@ -67,14 +66,14 @@ export function useChatWidget() {
   }, [users, dispatch]);
 
   return {
-    selectedChat,
     conversations,
+    loadingListConversations,
     isAuthenticated,
     user,
     users,
     loadingListUsers,
-    setSelectedChat,
     startNewConversation,
     messages,
+    loadingListMessages,
   };
 }

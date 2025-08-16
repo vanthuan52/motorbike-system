@@ -21,6 +21,7 @@ interface ChatState extends BaseApiState {
   conversations: Conversation[];
   selectedConversation: Conversation[] | null;
   messages: Message[];
+  loadingListMessage: boolean;
   error: string | null;
   pagination: ApiResponsePagination | undefined;
 }
@@ -30,6 +31,7 @@ const initialState: ChatState = {
   selectedConversation: null,
   messages: [],
   loadingList: false,
+  loadingListMessage: false,
   loadingSingle: false,
   create: {
     loading: false,
@@ -94,7 +96,7 @@ export const chatSlice = createSlice({
         queries?: MessagePaginationQuery;
       }>
     ) {
-      state.loadingList = true;
+      state.loadingListMessage = true;
       state.error = null;
       state.pagination = undefined;
     },
@@ -102,12 +104,12 @@ export const chatSlice = createSlice({
       state,
       action: PayloadAction<GetMessageSuccessPayload>
     ) {
-      state.loadingList = false;
+      state.loadingListMessage = false;
       state.messages = action.payload.list;
       state.pagination = action.payload.pagination;
     },
     listMessageByConversationFailure(state, action: PayloadAction<string>) {
-      state.loadingList = false;
+      state.loadingListMessage = false;
       state.error = action.payload;
       state.messages = [];
       state.pagination = undefined;

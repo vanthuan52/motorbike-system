@@ -39,10 +39,10 @@ export default function ChatMessages({
           <div className="text-center text-sm text-gray-500 my-4">{date}</div>
           {msgs.map((msg) => (
             <MessageItem
-              key={msg.id}
+              key={msg._id}
               message={msg}
               conversation={conversation}
-              isSelected={selectedMessageId === msg.id}
+              isSelected={selectedMessageId === msg._id}
               onClick={handleMessageClick}
               today={today}
             />

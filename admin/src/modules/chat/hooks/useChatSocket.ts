@@ -2,34 +2,34 @@ import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import dayjs from "dayjs";
 import { useDispatch } from "react-redux";
-import { debounce } from "@/utils/debounce.helper";
+import { User } from "@/modules/user/types";
 import {
   ENUM_CHAT_GW_EVENTS,
   ENUM_MESSAGE_STATUS,
-  Message,
   MessageSocket,
-} from "@/features/chat/types";
-import { chatActions } from "@/features/chat/store/chat-slice";
-import { User } from "@/features/user/types";
-
-export function useChatBox({
-  type,
+} from "../types";
+import { chatActions } from "../store/chat-slice";
+import { APP_CONFIG } from "@/constants/config";
+function debounce(fn: (...args: any[]) => void, wait = 300) {
+  let t: any;
+  return (...args: any[]) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+export function useChatSocket({
   conversationId,
   userId,
   users,
-  messageList,
 }: {
-  type?: "support" | "chat";
   conversationId?: string | null;
   userId?: string;
   users?: User[] | null;
-  messageList?: Message[] | null;
 }) {
   const dispatch = useDispatch();
   const [messages, setMessages] = useState<MessageSocket[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
   const [typingUserId, setTypingUserId] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
   const socketRef = useRef<Socket | null>(null);
@@ -37,26 +37,11 @@ export function useChatBox({
 
   const currentTime = dayjs().format("h:mm A");
 
-  // Filter messages
-  const filteredMessages =
-    type === "support"
-      ? messages.filter((msg) => msg.sender === "bot")
-      : messages;
-
-  const filteredMessageList =
-    type === "support"
-      ? (messageList || []).filter((msg) =>
-          typeof msg.sender === "string"
-            ? msg.sender === "bot"
-            : (msg.sender as any)?._id === "bot"
-        )
-      : messageList;
-
   // Socket setup
   useEffect(() => {
     if (!userId) return;
 
-    const url = process.env.NEXT_PUBLIC_SOCKET_URL || "/";
+    const url = APP_CONFIG.BASE_SOCKET_URL;
 
     const socket = io(url, {
       query: { userId },
@@ -113,7 +98,7 @@ export function useChatBox({
   // Scroll to bottom
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [filteredMessageList, isTyping]);
+  }, [messages, isTyping]);
 
   useEffect(() => {
     if (!socketRef.current || !conversationId || !userId) return;
@@ -128,15 +113,14 @@ export function useChatBox({
   // Mark as read
   useEffect(() => {
     const lastMsg =
-      filteredMessageList && filteredMessageList.length > 0
-        ? filteredMessageList[filteredMessageList.length - 1]
-        : null;
+      messages && messages.length > 0 ? messages[messages.length - 1] : null;
 
     if (
       lastMsg &&
       lastMsg.sender &&
       lastMsg.sender !== userId &&
-      lastMsg.status !== ENUM_MESSAGE_STATUS.READ
+      lastMsg.status !== ENUM_MESSAGE_STATUS.READ &&
+      lastMsg._id
     ) {
       dispatch(
         chatActions.messageMarkAsReadMessage({
@@ -145,7 +129,7 @@ export function useChatBox({
         })
       );
     }
-  }, [filteredMessageList, userId, dispatch]);
+  }, [messages, userId, dispatch]);
 
   // Typing
   const emitTyping = useRef(
@@ -192,10 +176,6 @@ export function useChatBox({
     }
   };
 
-  const handleEmojiClick = (emoji: any) => {
-    setInput((prev) => prev + emoji.emoji);
-  };
-
   const onInputChange = (value: string) => {
     setInput(value);
 
@@ -214,16 +194,11 @@ export function useChatBox({
     setInput,
     isTyping,
     setIsTyping,
-    showEmojiPicker,
-    setShowEmojiPicker,
     typingUserId,
     setTypingUserId,
     endRef,
     currentTime,
-    filteredMessages,
-    filteredMessageList,
     handleSendMessage,
-    handleEmojiClick,
     onInputChange,
   };
 }

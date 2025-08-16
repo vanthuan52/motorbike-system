@@ -29,6 +29,7 @@ function* handleCreateConversation(
       })
     );
     yield put(chatActions.createConversationSuccess());
+    yield put(chatActions.getConversation({}));
   } catch (error: any) {
     yield put(chatActions.createConversationFailure(error.message));
   }
