@@ -8,8 +8,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations(TRANSLATION_FILES.LOGIN_PAGE);
 
   return {
-    title: t("title"),
-    description: t("description"),
+    title: t("login.title"),
+    description: t("login.description"),
   };
 }
 export default function Page() {

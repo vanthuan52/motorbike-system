@@ -10,10 +10,7 @@ export default function BookingSuggest() {
 
   return (
     <section className="relative bg-blue-600 text-white py-20">
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
-        style={{ backgroundImage: `url('/images/cta-bg.jpg')` }}
-      ></div>
+      <div className="absolute inset-0 bg-cover bg-center opacity-20"></div>
       <div className="relative container mx-auto px-6 flex flex-col items-center text-center">
         <motion.h2
           className="text-2xl md:text-3xl font-bold mb-4"
