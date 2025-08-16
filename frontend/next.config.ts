@@ -22,6 +22,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/:locale(en|vi)/manifest.webmanifest",
+        destination: "/manifest.webmanifest",
+      },
+    ];
+  },
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"

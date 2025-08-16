@@ -125,8 +125,8 @@ Tính năng chat 1-1 cho phép hai người dùng trong hệ thống trao đổi
 
 - Database (e.g., PostgreSQL/MongoDB):
   - Users Table/Collection: Lưu trữ thông tin người dùng.
-  - Messages Table/Collection: Lưu trữ các tin nhắn (id, sender_id, receiver_id, conversation_id, content, timestamp, status).
-  - Conversations Table/Collection: Lưu trữ thông tin về các cuộc trò chuyện (id, participant_ids, last_message_id, unread_count).
+  - Messages Table/Collection: Lưu trữ các tin nhắn (id, senderId, receiverId, conversationId, content, timestamp, status).
+  - Conversations Table/Collection: Lưu trữ thông tin về các cuộc trò chuyện (id, participantIds, lastMessageId, unreadCount).
   - UserDeviceTokens Table/Collection: Lưu trữ device tokens cho mỗi người dùng.
 
 3. Các thành phần hạ tầng
