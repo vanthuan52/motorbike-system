@@ -19,9 +19,7 @@ const EmployeesPage = lazy(
 const EmployeeDetailsPage = lazy(
   () => import("@/modules/employees/pages/employees-detail-page")
 );
-const MessagesPage = lazy(
-  () => import("@/modules/messages/pages/messages-page")
-);
+const MessagesPage = lazy(() => import("@/modules/chat/pages/messages-page"));
 const VehicleCompanyPage = lazy(
   () => import("@/modules/vehicle-brand/pages/vehicle-brand-page")
 );
