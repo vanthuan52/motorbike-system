@@ -106,11 +106,15 @@ export class ChatService implements IChatService {
       name: u.name,
       email: u.email,
     }));
-
+    const lastMessage = conversation.lastMessage
+      ? await this.messageRepository.findOneById<MessageDoc>(
+          conversation.lastMessage,
+        )
+      : null;
     return {
       _id: conversation._id,
       participants,
-      lastMessage: conversation.lastMessage,
+      lastMessage: lastMessage,
       createdAt: conversation.createdAt,
       updatedAt: conversation.updatedAt,
     };
