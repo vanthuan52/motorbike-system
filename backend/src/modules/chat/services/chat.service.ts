@@ -24,12 +24,14 @@ import { ConversationGetResponseDto } from '../dtos/response/get-conversation-re
 import { IMessageEntity } from '../interfaces/chat.interface';
 import { MessageGetResponseDto } from '../dtos/response/message-response.dto';
 import { MessageSharedUpdateStatusRequestDto } from '../dtos/request/message-update-stauts.request.dto';
+import { UserService } from '@/modules/user/services/user.service';
 
 @Injectable()
 export class ChatService implements IChatService {
   constructor(
     private readonly messageRepository: MessageRepository,
     private readonly conversationRepository: ConversationRepository,
+    private readonly userService: UserService,
   ) {}
   async sendMessage(
     repository: ConversationDoc,
@@ -90,17 +92,28 @@ export class ChatService implements IChatService {
       conversation,
     );
   }
-  mapConversations(
+  async mapConversations(
     conversation: ConversationDoc,
     user: IUserDoc,
-  ): ConversationGetResponseDto {
-    return plainToInstance(ConversationGetResponseDto, {
+  ): Promise<any> {
+    const users = await this.userService.findAll({
+      _id: { $in: conversation.participants },
+    });
+
+    const participants = users.map((u) => ({
+      _id: u._id,
+      username: u.name,
+      name: u.name,
+      email: u.email,
+    }));
+
+    return {
       _id: conversation._id,
-      participants: conversation.participants,
+      participants,
       lastMessage: conversation.lastMessage,
       createdAt: conversation.createdAt,
       updatedAt: conversation.updatedAt,
-    });
+    };
   }
 
   async getConversationsByUser(user: IUserDoc): Promise<ConversationDoc[]> {

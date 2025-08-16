@@ -51,8 +51,8 @@ export class ConversationSharedController {
   ): Promise<IResponse<ConversationGetResponseDto[]>> {
     const conversations = await this.chatServices.getConversationsByUser(user);
 
-    const mapped = conversations.map((c) =>
-      this.chatServices.mapConversations(c, user),
+    const mapped = await Promise.all(
+      conversations.map((c) => this.chatServices.mapConversations(c, user)),
     );
 
     return { data: mapped };
