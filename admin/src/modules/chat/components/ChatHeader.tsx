@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { LeftOutlined } from "@ant-design/icons";
-import { Avatar } from "antd";
 import { MdOutlineSearch } from "react-icons/md";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { UserMessage } from "../types";
 
 interface ChatHeaderProps {
-  user: UserMessage;
+  user: {
+    _id: string;
+    name: string;
+    username: string;
+    email: string;
+  };
   onToggleMediaSidebar: () => void;
   onBack: () => void;
 }
@@ -18,7 +21,6 @@ export default function ChatHeader({
   onBack,
 }: ChatHeaderProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
   return (
     <div className="p-4 border-b border-gray-300 flex items-center justify-between bg-white relative min-h-20">
       {isSearchOpen ? (
@@ -46,12 +48,16 @@ export default function ChatHeader({
               size={32}
               className="cursor-pointer hover:bg-gray-100 rounded-lg p-2 transition-all"
             />
-            <Avatar src={user.avatar} size={40} />
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}`}
+              alt={user.name}
+              className="w-8 h-8 rounded-full"
+            />
             <div className="ml-3">
-              <Link to={`customers/customer-details?id=${user.id}`}>
+              <Link to={`customers/customer-details?id=${user._id}`}>
                 <h3 className="font-semibold">{user.name}</h3>
               </Link>
-              <p className="text-sm text-gray-500">{user.lastSeen}</p>
+              {/* <p className="text-sm text-gray-500">{user?.lastSeen}</p> */}
             </div>
           </div>
           <div className="flex items-center">

@@ -13,4 +13,6 @@ export const APP_CONFIG = {
   DEFAULT_LOCALE: import.meta.env.VITE_DEFAULT_LOCALE || "vi",
   ACCESS_TOKEN_EXPIRED: import.meta.env.VITE_ACCESS_TOKEN_EXPIRED || "3m",
   REFRESH_TOKEN_EXPIRED: import.meta.env.VITE_REFRESH_TOKEN_EXPIRED || "7d",
+  BASE_SOCKET_URL:
+    import.meta.env.VITE_BASE_SOCKET_URL || "http://localhost:5002",
 };

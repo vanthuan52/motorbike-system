@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "antd";
 import { Conversation } from "../types";
-import { mockConversations } from "../mocks/messages";
 import ChatSidebar from "../components/ChatSidebar";
 import ChatMain from "../components/ChatMain";
 import "./messages-page-module.scss";
+import { useChatManager } from "../hooks/useChatManager";
 export default function Messages() {
-  const [selectedConversation, setSelectedConversation] =
-    useState<Conversation | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<
+    Conversation["_id"] | null
+  >(null);
   const [search, setSearch] = useState("");
   const [containerHeight, setContainerHeight] = useState("calc(100dvh - 65px)");
   const [containerChatMainHeight, setContainerChatMainHeight] = useState(
     "calc(100dvh - 64px)"
   );
-  const [loadingSidebar, setLoadingSidebar] = useState(true);
-  const [conversations, setConversations] =
-    useState<Conversation[]>(mockConversations);
 
   useEffect(() => {
     const updateHeight = () => {
@@ -33,42 +31,22 @@ export default function Messages() {
     return () => window.removeEventListener("resize", updateHeight);
   }, []);
 
-  useEffect(() => {
-    const t = setTimeout(() => setLoadingSidebar(false), 1200);
-    return () => clearTimeout(t);
-  }, []);
+  const {
+    conversations,
+    loadingListConversations,
+    user,
+    users,
+    messages,
+    loadingListMessages,
+    startNewConversation,
+  } = useChatManager({ conversationId: selectedConversation || "" });
 
-  const startNewConversation = (userId: string) => {
-    const existingConversation = conversations.find(
-      (conv) => conv.user.id === userId
-    );
-    if (existingConversation) {
-      setSelectedConversation(existingConversation);
-      return;
-    }
-    const user = mockConversations.find(
-      (conv) => conv.user.id === userId
-    )?.user;
-    if (!user) {
-      console.error("User not found for ID:", userId);
-      return;
-    }
-    const newConversation: Conversation = {
-      id: `conv_${Date.now()}`,
-      user: { ...user },
-      lastMessage: "",
-      lastMessageTime: new Date().toLocaleTimeString(),
-      messages: [],
-      photos: [],
-      files: [],
-    };
-    setConversations((prev) => [newConversation, ...prev]);
-    setSelectedConversation(newConversation);
-  };
-
+  if (!user || !users) {
+    return null;
+  }
   const renderSidebar = () => (
     <div className="h-full overflow-y-auto scrollbar-thin">
-      {loadingSidebar ? (
+      {loadingListConversations ? (
         <div className="p-4">
           {[...Array(conversations.length)].map((_, i) => (
             <div key={i} className="flex items-center gap-3 mb-4">
@@ -92,17 +70,26 @@ export default function Messages() {
           onSearch={setSearch}
           selectedConversation={selectedConversation}
           onStartNewConversation={startNewConversation}
+          currentUserId={user._id}
+          users={users}
         />
       )}
     </div>
   );
-
+  const selectedConversationObj = conversations.find(
+    (c) => c._id === selectedConversation
+  );
   // Render main chat area
   const renderChatMain = () =>
-    selectedConversation ? (
+    selectedConversation && selectedConversationObj ? (
       <div className="h-full overflow-y-auto">
         <ChatMain
-          conversation={selectedConversation}
+          conversation={selectedConversationObj}
+          selectedConversation={selectedConversation}
+          messages={messages}
+          loadingListMessages={loadingListMessages}
+          user={user}
+          users={users}
           onBack={() => setSelectedConversation(null)}
         />
       </div>
