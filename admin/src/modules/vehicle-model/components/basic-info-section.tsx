@@ -66,20 +66,26 @@ const BasicInfoSection = ({
             />
           </Form.Item>
           <Form.Item
-            label="Năm sản xuất/phân phối"
-            name="yearStart"
-            rules={[{ required: false, message: "Năm sản xuất/phân phối" }]}
+            label="Đời xe"
+            name="modelYear"
+            rules={[{ required: true, message: "Đời xe" }]}
           >
-            <Input placeholder="Nhập năm" size="large" disabled={isDisabled} />
+            <Input
+              placeholder="Nhập đời xe"
+              size="large"
+              disabled={isDisabled}
+            />
           </Form.Item>
           <Form.Item
-            label="Năm ngừng sản xuất/phân phối"
-            name="yearEnd"
-            rules={[
-              { required: false, message: "Năm ngừng sản xuất/phân phối" },
-            ]}
+            label="Dung tích xi-lanh"
+            name="engineDisplacement"
+            rules={[{ required: true, message: "Dung tích xi-lanh" }]}
           >
-            <Input placeholder="Nhập năm" size="large" disabled={isDisabled} />
+            <Input
+              placeholder="Nhập dung tích"
+              size="large"
+              disabled={isDisabled}
+            />
           </Form.Item>
           <Form.Item
             label="Thứ tự"

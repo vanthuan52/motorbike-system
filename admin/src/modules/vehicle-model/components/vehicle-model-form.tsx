@@ -89,6 +89,8 @@ const VehicleModelForm = ({
   const handleSubmit = async (values: VehicleModel) => {
     const submitValues = {
       ...values,
+      engineDisplacement: Number(values.engineDisplacement),
+      modelYear: Number(values.modelYear),
       yearStart: values.yearStart ? Number(values.yearStart) : undefined,
       yearEnd: values.yearEnd ? Number(values.yearEnd) : undefined,
       photo:

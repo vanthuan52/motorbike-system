@@ -50,6 +50,16 @@ export class VehicleModelEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
+  })
+  engineDisplacement: number;
+
+  @DatabaseProp({
+    required: true,
+  })
+  modelYear: number;
+
+  @DatabaseProp({
+    required: true,
     default: ENUM_VEHICLE_MODEL_TYPE.UNKNOWN,
     index: true,
     type: String,

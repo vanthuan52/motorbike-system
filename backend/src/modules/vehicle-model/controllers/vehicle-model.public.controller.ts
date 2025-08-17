@@ -41,6 +41,7 @@ import {
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleModelDoc } from '../entities/vehicle-model.entity';
 import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
+import { OptionalParseIntPipe } from '@/app/pipes/optional-parse-int.pipe';
 
 @ApiTags('modules.public.vehicle-model')
 @Controller({
@@ -89,6 +90,7 @@ export class VehicleModelPublicController {
       VEHICLE_MODEL_DEFAULT_STATUS,
       ENUM_VEHICLE_MODEL_STATUS,
     )
+    status: Record<string, any>,
     @PaginationQueryFilterInEnum(
       'type',
       VEHICLE_MODEL_DEFAULT_TYPE,
@@ -101,9 +103,12 @@ export class VehicleModelPublicController {
       ENUM_VEHICLE_MODEL_FUEL_TYPE,
     )
     fuelType: Record<string, any>,
-    status: Record<string, any>,
     @Query('vehicleBrand', OptionalParseUUIDPipe)
-    vehicleBrandId: string,
+    vehicleBrandId?: string,
+    @Query('engineDisplacement', OptionalParseIntPipe)
+    engineDisplacement?: number,
+    @Query('modelYear', OptionalParseIntPipe)
+    modelYear?: number,
   ): Promise<IResponsePaging<VehicleModelListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
@@ -111,6 +116,13 @@ export class VehicleModelPublicController {
       ...type,
       ...fuelType,
     };
+
+    if (modelYear !== undefined) {
+      find['modelYear'] = modelYear;
+    }
+    if (engineDisplacement !== undefined) {
+      find['engineDisplacement'] = engineDisplacement;
+    }
 
     if (vehicleBrandId) {
       find['vehicleBrand._id'] = vehicleBrandId;

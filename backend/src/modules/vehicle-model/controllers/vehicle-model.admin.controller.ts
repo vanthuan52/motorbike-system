@@ -83,6 +83,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { VehicleModelParsePipe } from '../pipes/vehicle-model.parse.pipe';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
+import { OptionalParseIntPipe } from '@/app/pipes/optional-parse-int.pipe';
 
 @ApiTags('modules.admin.vehicle-model')
 @Controller({
@@ -131,7 +132,11 @@ export class VehicleModelAdminController {
     )
     fuelType: Record<string, any>,
     @Query('vehicleBrand', OptionalParseUUIDPipe)
-    vehicleBrandId: string,
+    vehicleBrandId?: string,
+    @Query('engineDisplacement', OptionalParseIntPipe)
+    engineDisplacement?: number,
+    @Query('modelYear', OptionalParseIntPipe)
+    modelYear?: number,
   ): Promise<IResponsePaging<VehicleModelListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
@@ -139,6 +144,13 @@ export class VehicleModelAdminController {
       ...type,
       ...fuelType,
     };
+
+    if (modelYear !== undefined) {
+      find['modelYear'] = modelYear;
+    }
+    if (engineDisplacement !== undefined) {
+      find['engineDisplacement'] = engineDisplacement;
+    }
 
     if (vehicleBrandId) {
       find['vehicleBrand._id'] = vehicleBrandId;

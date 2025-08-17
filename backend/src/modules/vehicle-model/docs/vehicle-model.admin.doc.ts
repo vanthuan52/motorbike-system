@@ -1,12 +1,14 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   VehicleModelDocParamsId,
-  VehicleModelDocQueryCategory,
+  VehicleModelDocQueryEngineDisplacement,
   VehicleModelDocQueryFuelType,
+  VehicleModelDocQueryModelYear,
   VehicleModelDocQueryOrderBy,
   VehicleModelDocQueryOrderDirection,
   VehicleModelDocQueryStatus,
   VehicleModelDocQueryType,
+  VehicleModelDocQueryVehicleBrand,
 } from '../constants/vehicle-model.doc.constant';
 import { VehicleModelGetResponseDto } from '../dtos/response/vehicle-model.get.response.dto';
 import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
@@ -32,12 +34,14 @@ export function VehicleModelAdminListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [
-        ...VehicleModelDocQueryCategory,
+        ...VehicleModelDocQueryVehicleBrand,
         ...VehicleModelDocQueryStatus,
         ...VehicleModelDocQueryType,
         ...VehicleModelDocQueryFuelType,
         ...VehicleModelDocQueryOrderBy,
         ...VehicleModelDocQueryOrderDirection,
+        ...VehicleModelDocQueryEngineDisplacement,
+        ...VehicleModelDocQueryModelYear,
       ],
     }),
     DocAuth({

@@ -62,6 +62,24 @@ export class VehicleModelCreateRequestDto {
   description?: string;
 
   @ApiProperty({
+    example: '125',
+    description: 'Dung tích xi lanh của xe (cc)',
+    required: true,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  engineDisplacement: number;
+
+  @ApiProperty({
+    example: '2023',
+    description: 'Năm ra mắt của dòng xe',
+    required: true,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  modelYear: number;
+
+  @ApiProperty({
     example: '0',
     description: 'Thứ tự sắp xếp khi hiển thị các dịch vụ',
     required: false,

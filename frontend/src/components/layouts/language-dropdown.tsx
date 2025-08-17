@@ -48,14 +48,15 @@ export default function LanguageDropdown({ currentLocale }: Props) {
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <Image
-          src={FLAGS[currentLocale]}
-          alt={currentLocale}
-          className="w-5 h-4 object-cover"
-          width={30}
-          height={20}
-          unoptimized
-        />
+        <div className="relative w-5 h-4">
+          <Image
+            src={FLAGS[currentLocale]}
+            alt={currentLocale}
+            className="object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 25vw"
+          />
+        </div>
         <span>{currentLocale.toUpperCase()}</span>
         <svg
           className="w-3 h-3 ml-1"
@@ -84,14 +85,15 @@ export default function LanguageDropdown({ currentLocale }: Props) {
                   : "text-gray-500"
               }`}
             >
-              <Image
-                src={FLAGS[lang]}
-                alt={lang}
-                className="w-5 h-5 rounded-full object-cover"
-                width={30}
-                height={20}
-                unoptimized
-              />
+              <div className="relative w-5 h-4">
+                <Image
+                  src={FLAGS[lang]}
+                  alt={lang}
+                  className="rounded-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
+                />
+              </div>
               <span>{lang.toUpperCase()}</span>
             </button>
           ))}

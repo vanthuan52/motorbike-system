@@ -27,6 +27,8 @@ export interface VehicleModel extends BaseEntity {
   fullName: string;
   slug: string;
   description?: string;
+  engineDisplacement: number;
+  modelYear: number;
   status: ENUM_VEHICLE_MODEL_STATUS;
   order?: string;
   vehicleBrand: VehicleBrand;

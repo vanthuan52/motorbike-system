@@ -178,6 +178,8 @@ export class VehicleModelService implements IVehicleModelService {
       fullName,
       slug,
       description,
+      engineDisplacement,
+      modelYear,
       order,
       status,
       type,
@@ -193,6 +195,8 @@ export class VehicleModelService implements IVehicleModelService {
     create.fullName = fullName;
     create.slug = slug.toLowerCase();
     create.description = description;
+    create.engineDisplacement = engineDisplacement;
+    create.modelYear = modelYear;
     create.order = order;
     create.vehicleBrand = vehicleBrand;
     create.status = status ? status : ENUM_VEHICLE_MODEL_STATUS.ACTIVE;
@@ -216,6 +220,8 @@ export class VehicleModelService implements IVehicleModelService {
       fullName,
       slug,
       description,
+      engineDisplacement,
+      modelYear,
       order,
       type,
       fuelType,
@@ -229,6 +235,9 @@ export class VehicleModelService implements IVehicleModelService {
     repository.fullName = fullName ?? repository.fullName;
     repository.slug = slug ?? repository.slug;
     repository.description = description ?? repository.description;
+    repository.engineDisplacement =
+      engineDisplacement ?? repository.engineDisplacement;
+    repository.modelYear = modelYear ?? repository.modelYear;
     repository.order = order ?? repository.order;
     repository.vehicleBrand = vehicleBrand ?? repository.vehicleBrand;
     repository.type = type ?? repository.type;

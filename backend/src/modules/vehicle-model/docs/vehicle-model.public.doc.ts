@@ -7,12 +7,14 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import {
   VehicleModelDocParamsSlug,
-  VehicleModelDocQueryCategory,
+  VehicleModelDocQueryEngineDisplacement,
   VehicleModelDocQueryFuelType,
+  VehicleModelDocQueryModelYear,
   VehicleModelDocQueryOrderBy,
   VehicleModelDocQueryOrderDirection,
   VehicleModelDocQueryStatus,
   VehicleModelDocQueryType,
+  VehicleModelDocQueryVehicleBrand,
 } from '../constants/vehicle-model.doc.constant';
 import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
 import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
@@ -38,12 +40,14 @@ export function VehicleModelPublicListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [
-        ...VehicleModelDocQueryCategory,
+        ...VehicleModelDocQueryVehicleBrand,
         ...VehicleModelDocQueryStatus,
         ...VehicleModelDocQueryType,
         ...VehicleModelDocQueryFuelType,
         ...VehicleModelDocQueryOrderBy,
         ...VehicleModelDocQueryOrderDirection,
+        ...VehicleModelDocQueryEngineDisplacement,
+        ...VehicleModelDocQueryModelYear,
       ],
     }),
     DocResponsePaging<VehicleModelListResponseDto>('vehicle-model.list', {
