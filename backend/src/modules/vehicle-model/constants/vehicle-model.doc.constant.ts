@@ -89,13 +89,35 @@ export const VehicleModelDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const VehicleModelDocQueryCategory: DocField[] = [
+export const VehicleModelDocQueryVehicleBrand: DocField[] = [
   {
-    name: 'serviceCategory',
+    name: 'vehicleBrand',
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: '',
-    description: faker.string.uuid(),
+    example: faker.string.uuid(),
+    description: 'vehicle brand id',
+  },
+];
+
+export const VehicleModelDocQueryEngineDisplacement: DocField[] = [
+  {
+    name: 'engineDisplacement',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '125',
+    description: 'Engine Displacement',
+  },
+];
+
+export const VehicleModelDocQueryModelYear: DocField[] = [
+  {
+    name: 'modelYear',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '2025',
+    description: 'Model year',
   },
 ];

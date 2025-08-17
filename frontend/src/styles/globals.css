@@ -42,6 +42,7 @@ li {
   /* UI */
 
   .input-class {
+    @apply px-2 py-2;
     @apply text-[16px] leading-[24px] placeholder:text-[16px] rounded-lg border border-gray-300 text-gray-900 placeholder:text-gray-500 transition-all duration-200 ease-in-out;
     @apply focus:border-1 focus:border-blue-500 focus:outline-none;
     @apply focus-visible:ring-1 focus-visible:ring-blue-200 focus-visible:outline-none;
