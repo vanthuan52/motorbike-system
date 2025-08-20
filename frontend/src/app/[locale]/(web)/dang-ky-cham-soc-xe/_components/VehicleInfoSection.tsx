@@ -39,7 +39,7 @@ export default function VehicleInfoSection({ form }: Props) {
           <Form.Item
             label={
               <span className="font-semibold text-base">
-                {t("form.vehicleModel")}
+                {t("vehicleModelModal.pickMotorbike")}
               </span>
             }
             name="vehicleModel"
