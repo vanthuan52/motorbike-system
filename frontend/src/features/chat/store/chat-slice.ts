@@ -23,11 +23,13 @@ interface ChatState extends BaseApiState {
   messages: Message[];
   error: string | null;
   pagination: ApiResponsePagination | undefined;
+  createdConversationId: Conversation["_id"] | null;
 }
 
 const initialState: ChatState = {
   conversations: [],
   selectedConversation: null,
+  createdConversationId: null,
   messages: [],
   loadingList: false,
   loadingSingle: false,
@@ -63,7 +65,7 @@ export const chatSlice = createSlice({
       state.create.success = false;
       state.error = null;
     },
-    createConversationSuccess(state) {
+    createConversationSuccess(state, action: PayloadAction<Conversation>) {
       state.create.loading = false;
       state.create.success = true;
     },
@@ -80,6 +82,7 @@ export const chatSlice = createSlice({
     getConversationSuccess(state, action: PayloadAction<Conversation[]>) {
       state.loadingSingle = false;
       state.selectedConversation = action.payload;
+      state.createdConversationId = action.payload[0]._id;
     },
     getConversationFailure(state, action: PayloadAction<string>) {
       state.loadingSingle = false;
@@ -90,7 +93,7 @@ export const chatSlice = createSlice({
     listMessageByConversation(
       state,
       action: PayloadAction<{
-        conversationId: string;
+        conversationId: Conversation["_id"];
         queries?: MessagePaginationQuery;
       }>
     ) {

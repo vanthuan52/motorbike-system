@@ -30,7 +30,9 @@ function* handleCreateConversation(
         message: response.message,
       })
     );
-    yield put(chatActions.createConversationSuccess());
+    console.log(response);
+
+    yield put(chatActions.createConversationSuccess(response.data!));
   } catch (error: any) {
     yield put(chatActions.createConversationFailure(error.message));
   }

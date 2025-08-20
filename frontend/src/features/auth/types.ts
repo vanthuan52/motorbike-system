@@ -13,6 +13,12 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
+
+export interface RegisterCredentials extends LoginCredentials {
+  name: string;
+  phone: string;
+  confirmPassword: string;
+}
 export interface AuthLoginResponseData {
   tokenType: "Bearer";
   roleType: RoleType;
@@ -21,9 +27,13 @@ export interface AuthLoginResponseData {
   refreshToken: string;
 }
 
+export interface AuthRegisterResponseData extends ApiResponse {}
+
 export interface AuthRefreshTokenResponseData extends AuthLoginResponseData {}
 
 export type AuthLoginResponse = ApiResponse<AuthLoginResponseData>;
+
+export type AuthRegisterResponse = ApiResponse<AuthRegisterResponseData>;
 export type AuthRefreshTokenResponse =
   ApiResponse<AuthRefreshTokenResponseData>;
 

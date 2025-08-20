@@ -58,7 +58,7 @@ export interface Conversation extends BaseEntity {
 }
 
 export type ConversationResponse = ApiResponse<Conversation[]>;
-export type ConversationCreateResponse = ApiResponse<Conversation["_id"]>;
+export type ConversationCreateResponse = ApiResponse<Conversation>;
 export interface ConversationGetResponse extends ApiResponse<Conversation[]> {}
 export type MessageResponse = ApiResponse<Message>;
 export type ListMessageResponse = ApiResponse<Message[]>;

@@ -100,7 +100,7 @@ export default function LoginPage() {
                 href="/register"
                 className="font-bold hover:transform hover:scale-105 duration-200"
               >
-                {t("register")}
+                {t("signUpButton")}
               </Link>
             </div>
           </div>

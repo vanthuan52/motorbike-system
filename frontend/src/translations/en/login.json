@@ -4,15 +4,28 @@
     "description": "Login to your account"
   },
   "login": {
-    "title": "Welcome",
-    "subtitle": "Welcome back",
+    "title": "Sign In",
+    "subtitle": "Please enter your information to continue",
     "emailLabel": "Email",
-    "emailPlaceholder": "example@gmail.com",
+    "emailPlaceholder": "Enter your email",
     "passwordLabel": "Password",
     "passwordPlaceholder": "Enter your password",
-    "submitButton": "Login",
-    "noAccount": "Don't have an account?",
-    "register": "Register"
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Enter your full name",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter your phone number",
+    "submitButton": "Submit",
+
+    "overlayLeftTitle": "Welcome Back!",
+    "overlayLeftDesc": "To keep connected with us, please log in with your personal info",
+    "signInButton": "Sign In",
+
+    "overlayRightTitle": "Hello, Friend!",
+    "overlayRightDesc": "Enter your personal details and start your journey with us",
+    "signUpButton": "Sign Up",
+    "noAccount": "No account yet?"
   },
   "authCard": {
     "title": "Motorbike Maintenance\nSystem",

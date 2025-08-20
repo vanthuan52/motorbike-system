@@ -1,9 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LoginCredentials } from "../types";
+import { LoginCredentials, RegisterCredentials } from "../types";
 import { UserProfile } from "@/features/user/types";
 
 interface AuthState {
   isAuthenticated: boolean;
+  registerCompleted: boolean;
   loading: boolean;
   error: string | null;
   user: UserProfile | null;
@@ -11,6 +12,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   isAuthenticated: false,
+  registerCompleted: false,
   loading: false,
   error: null,
   user: null,
@@ -36,15 +38,18 @@ export const authSlice = createSlice({
       state.error = action.payload;
     },
 
-    register: (state, action: PayloadAction<any>) => {
+    register: (state, action: PayloadAction<RegisterCredentials>) => {
+      state.registerCompleted = false;
       state.loading = true;
       state.error = null;
     },
     registerSuccess: (state) => {
+      state.registerCompleted = true;
       state.loading = false;
       state.error = null;
     },
     registerFailure: (state, action: PayloadAction<string>) => {
+      state.registerCompleted = false;
       state.loading = false;
       state.error = action.payload;
     },

@@ -4,15 +4,28 @@
     "description": "Đăng nhập vào tài khoản của bạn"
   },
   "login": {
-    "title": "Chào mừng",
-    "subtitle": "Rất vui được gặp lại bạn",
+    "title": "Đăng nhập",
+    "subtitle": "Vui lòng nhập thông tin",
     "emailLabel": "Email",
-    "emailPlaceholder": "example@gmail.com",
+    "emailPlaceholder": "Nhập email",
     "passwordLabel": "Mật khẩu",
-    "passwordPlaceholder": "Nhập mật khẩu của bạn",
-    "submitButton": "Đăng nhập",
-    "noAccount": "Chưa có tài khoản?",
-    "register": "Đăng ký"
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "confirmPasswordLabel": "Xác nhận mật khẩu",
+    "confirmPasswordPlaceholder": "Nhập lại mật khẩu",
+    "nameLabel": "Họ và tên",
+    "namePlaceholder": "Nhập họ tên",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại",
+    "submitButton": "Xác nhận",
+
+    "overlayLeftTitle": "Chào mừng trở lại!",
+    "overlayLeftDesc": "Để tiếp tục kết nối với chúng tôi, vui lòng đăng nhập bằng thông tin cá nhân",
+    "signInButton": "Đăng nhập",
+
+    "overlayRightTitle": "Xin chào, bạn mới!",
+    "overlayRightDesc": "Nhập thông tin cá nhân và bắt đầu hành trình cùng chúng tôi",
+    "signUpButton": "Đăng ký",
+    "noAccount": "Chưa có tài khoản?"
   },
   "authCard": {
     "title": "Hệ Thống Bảo Dưỡng\nXe Máy",
