@@ -1,15 +1,24 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { authActions } from "./auth-slice";
-import { LoginCredentials, UserAuthInfo } from "../types";
+import { LoginCredentials, RegisterCredentials } from "../types";
 import authService from "../auth.service";
 import userService from "@/features/user/user.service";
 import { UserProfile } from "@/features/user/types";
 import { clearTokens } from "@/utils/jwt.utils";
+import { notificationActions } from "@/features/notification/store/notification-slice";
 
 function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   try {
     yield call(authService.loginCredentials, action.payload);
+
+    yield put(
+      notificationActions.notify({
+        type: "success",
+        message: "Login successfully",
+      })
+    );
+
     yield put(authActions.loginCredentialsSuccess());
     yield put(authActions.getUserProfile());
   } catch (error: any) {
@@ -19,9 +28,16 @@ function* loginCredentialsHandler(action: PayloadAction<LoginCredentials>) {
   }
 }
 
-function* registerHandler(action: PayloadAction<any>) {
+function* registerHandler(action: PayloadAction<RegisterCredentials>) {
   try {
-    // Put something here
+    yield call(authService.register, action.payload);
+
+    yield put(
+      notificationActions.notify({
+        type: "success",
+        message: "Register successfully",
+      })
+    );
     yield put(authActions.registerSuccess());
   } catch (error: any) {
     yield put(authActions.registerFailure(error.message || "Register failed"));

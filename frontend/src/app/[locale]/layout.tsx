@@ -35,10 +35,12 @@ export default async function LocaleLayout(props: {
             <ReduxProvider>
               <AppInitializer />
               <NextIntlClientProvider locale={locale}>
-                <AppProvider>{children}</AppProvider>
+                <AppProvider>
+                  {children}
+                  <ChatWidget />
+                </AppProvider>
               </NextIntlClientProvider>
               <ToastProvider />
-              <ChatWidget />
             </ReduxProvider>
           </AntdRegistry>
         </ReactQueryProvider>
