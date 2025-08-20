@@ -25,7 +25,6 @@ export const useBookingForm = () => {
       .second(0)
       .toDate();
     console.log(values);
-
     dispatch(
       appointmentActions.createAppointment({
         appointment: {

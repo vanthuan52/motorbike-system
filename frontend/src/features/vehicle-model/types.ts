@@ -11,7 +11,7 @@ export enum ENUM_VEHICLE_MODEL_TYPE {
   UNKNOWN = "unknown",
   SCOOTER = "scooter",
   MANUAL = "manual",
-  SLUTCH = "slutch",
+  CLUTCH = "clutch",
   ELECTRIC = "electric",
 }
 
@@ -43,6 +43,10 @@ export interface VehicleModelPaginationQuery extends PaginationQuery {
   name?: string;
   status?: ENUM_VEHICLE_MODEL_STATUS;
   vehicleBrand?: string;
+  engineDisplacement?: number;
+  modelYear?: number;
+  fuelType?: ENUM_VEHICLE_MODEL_FUEL_TYPE;
+  type?: ENUM_VEHICLE_MODEL_TYPE;
 }
 
 export interface VehicleModelResponseData extends VehicleModel {}
