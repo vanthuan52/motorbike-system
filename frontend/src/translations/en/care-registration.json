@@ -20,7 +20,7 @@
 
     "vehicleBrand": "Vehicle Brand",
     "vehicleBrandRequired": "Please select a vehicle brand",
-    "vehicleBrandPlaceholder": "Select vehicle brand",
+    "pickMotorbike": "Select vehicle brand",
 
     "userVehicle": "Vehicle",
     "userVehicleRequired": "Please select your vehicle",
@@ -57,7 +57,7 @@
   },
   "vehicleModelModal": {
     "title": "Select vehicle",
-    "vehicleBrandPlaceholder": "Select vehicle brand",
+    "pickMotorbike": "Select vehicle",
     "filter": {
       "search": "Search by name",
       "displacement": "Displacement",

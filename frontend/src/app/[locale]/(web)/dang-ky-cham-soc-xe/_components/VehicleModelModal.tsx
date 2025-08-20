@@ -121,7 +121,7 @@ export default function VehicleModelModal({
 
       <div className="mb-4">
         <Select
-          placeholder={t("vehicleModelModal.vehicleBrandPlaceholder")}
+          placeholder={t("vehicleModelModal.pickMotorbike")}
           options={brands}
           onChange={(val) => setLocalSelectedBrand(val)}
           loading={loadingBrands}
@@ -243,8 +243,15 @@ export default function VehicleModelModal({
           </div>
         ) : paginatedModels.length === 0 ? (
           <Empty
-            description={t("vehicleModelModal.noModelFound")}
-            image={"/images/motorbike-not-found.png"}
+            description={""}
+            image={
+              <img
+                src="/images/motorbike-not-found.png"
+                alt="Motorbike not found"
+                className="mx-auto w-40 h-40 object-contain"
+              />
+            }
+            className="flex flex-col items-center justify-center py-10"
           />
         ) : (
           <Row gutter={[16, 16]}>

@@ -20,7 +20,7 @@
 
     "vehicleBrand": "Hãng xe",
     "vehicleBrandRequired": "Vui lòng chọn hãng xe",
-    "vehicleBrandPlaceholder": "Chọn hãng xe",
+    "pickMotorbike": "Chọn hãng xe",
 
     "userVehicle": "Xe của bạn",
     "userVehicleRequired": "Vui lòng chọn xe của bạn",
@@ -56,7 +56,7 @@
   },
   "vehicleModelModal": {
     "title": "Chọn mẫu xe",
-    "vehicleBrandPlaceholder": "Chọn hãng xe",
+    "pickMotorbike": "Chọn xe",
     "filter": {
       "search": "Tìm theo tên",
       "displacement": "Phân khối",
