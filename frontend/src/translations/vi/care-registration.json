@@ -54,6 +54,30 @@
     "notePlaceholder": "Nhập tình trạng xe hoặc yêu cầu cụ thể",
     "submitButton": "Đặt lịch"
   },
+  "vehicleModelModal": {
+    "title": "Chọn mẫu xe",
+    "vehicleBrandPlaceholder": "Chọn hãng xe",
+    "filter": {
+      "search": "Tìm theo tên",
+      "displacement": "Phân khối",
+      "year": "Đời xe",
+      "fuelType": "Loại nhiên liệu",
+      "type": "Loại xe",
+      "gasoline": "Xăng",
+      "hybrid": "Hybrid",
+      "electric": "Điện",
+      "unknown": "Không xác định",
+      "scooter": "Xe ga",
+      "manual": "Xe số",
+      "clutch": "Xe côn tay",
+      "electricBike": "Xe điện"
+    },
+    "noBrandSelected": "Vui lòng chọn hãng xe trước.",
+    "loading": "Đang tải danh sách mẫu xe...",
+    "noModelFound": "Không tìm thấy mẫu xe nào.",
+    "cancelButton": "Đóng",
+    "confirmButton": "Xác nhận"
+  },
   "pickupCost": {
     "title": "Thông Tin Chi Phí Nhận và Giao Xe",
     "free": "Miễn phí nhận và giao xe trong phạm vi 3km.",

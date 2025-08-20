@@ -55,6 +55,30 @@
 
     "submitButton": "Confirm Booking"
   },
+  "vehicleModelModal": {
+    "title": "Select vehicle",
+    "vehicleBrandPlaceholder": "Select vehicle brand",
+    "filter": {
+      "search": "Search by name",
+      "displacement": "Displacement",
+      "year": "Year",
+      "fuelType": "Fuel Type",
+      "type": "Type",
+      "gasoline": "Gasoline",
+      "hybrid": "Hybrid",
+      "electric": "Electric",
+      "unknown": "Unknown",
+      "scooter": "Scooter",
+      "manual": "Manual",
+      "clutch": "Clutch",
+      "electricBike": "Electric"
+    },
+    "noBrandSelected": "Please select a vehicle brand first.",
+    "loading": "Loading vehicle models...",
+    "noModelFound": "No vehicle models found.",
+    "cancelButton": "Close",
+    "confirmButton": "Confirm"
+  },
   "pickupCost": {
     "title": "Pickup and Delivery Cost Information",
     "free": "Free pickup and delivery within a 3km radius.",
