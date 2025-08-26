@@ -1,5 +1,6 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import SidebarItem from "./sidebar-item";
+import { useLocation } from "react-router-dom";
 
 export type SidebarMenuItem = {
   key: string;
@@ -15,12 +16,41 @@ interface Props {
   setSidebarCollapsed: (value: boolean) => void;
 }
 
+const OPEN_MENUS_KEY = "sidebarOpenMenus";
+
 export default function SidebarMenu({
   items,
   collapsed,
   setSidebarCollapsed,
 }: Props) {
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  useEffect(() => {
+    const stored = localStorage.getItem(OPEN_MENUS_KEY);
+    let initialOpenMenus: string[] = [];
+    if (stored) {
+      initialOpenMenus = JSON.parse(stored);
+    }
+
+    items.forEach((item) => {
+      if (
+        item.children &&
+        item.children.some((child) => child.href === pathname)
+      ) {
+        if (!initialOpenMenus.includes(item.key)) {
+          initialOpenMenus.push(item.key);
+        }
+      }
+    });
+
+    setOpenMenus(initialOpenMenus);
+  }, [pathname, items]);
+
+  useEffect(() => {
+    localStorage.setItem(OPEN_MENUS_KEY, JSON.stringify(openMenus));
+  }, [openMenus]);
 
   const toggleMenu = (key: string) => {
     setOpenMenus((prev) =>

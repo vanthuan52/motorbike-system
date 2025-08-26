@@ -1,14 +1,11 @@
-import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { HiOutlineChevronDown, HiOutlineChevronRight } from "react-icons/hi";
+import { useLocation, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { createPortal } from "react-dom";
 import clsx from "clsx";
-import { Tooltip } from "react-tooltip";
 import { SidebarMenuItem } from "./sidebar-menu";
-
-export type TableKeyValue = {
-  label: string;
-  value: string;
-};
+import { useSidebarActive } from "@/hooks/use-sidebar-active";
+import { useSidebarHover } from "@/hooks/use-sidebar-hover";
 
 interface Props {
   item: SidebarMenuItem;
@@ -23,72 +20,145 @@ export default function SidebarItem({
   collapsed,
   isOpen,
   toggleOpen,
-  setSidebarCollapsed,
 }: Props) {
-  const location = useLocation();
-  const pathname = location.pathname;
-  const hasChildren = !!item.children?.length;
+  const { pathname } = useLocation();
 
-  const isActive = item.href == pathname;
-  useEffect(() => {
-    if (pathname === "/messages") {
-      setSidebarCollapsed(true);
-    } else {
-      setSidebarCollapsed(false);
-    }
-  }, [pathname, setSidebarCollapsed]);
+  const { hasChildren, isActive, parentBgClass } = useSidebarActive(
+    item,
+    pathname
+  );
+
+  const {
+    triggerRef,
+    hovered,
+    menuPos,
+    setHovered,
+    handleMouseEnter,
+    handleMouseLeave,
+    openHoverMenu,
+  } = useSidebarHover<HTMLDivElement>(collapsed, hasChildren);
+
   return (
-    <>
+    <div
+      ref={triggerRef}
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div
         className={clsx(
           "flex items-center justify-between p-2 rounded-md cursor-pointer transition-all",
-          isActive ? "bg-gray-200" : "hover:bg-gray-100"
+          parentBgClass,
+          !parentBgClass && "hover:bg-[#c5d4ec]"
         )}
-        onClick={() => hasChildren && toggleOpen(item.key)}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleOpen(item.key);
+        }}
       >
         <Link
-          className="flex items-center gap-3"
-          to={item.href || ""}
-          data-tooltip-id={item.href}
-          data-tooltip-content={item.label}
+          className="flex items-center gap-1"
+          to={item.href || "#"}
+          onClick={(e) => {
+            if (collapsed && hasChildren) {
+              e.preventDefault();
+              openHoverMenu();
+            }
+          }}
         >
           <span className="text-xl font-medium">{item.icon}</span>
-          {!collapsed && (
-            <span className="text-sm font-medium">{item.label}</span>
-          )}
-        </Link>
-        <Tooltip
-          id={item.href}
-          style={{
-            zIndex: 3000,
-          }}
-        />
-        {!collapsed && hasChildren && (
-          <span className="text-xs">
-            {isOpen ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
+          <span
+            className={clsx(
+              isActive ? "font-semibold" : "font-medium",
+              "text-sm whitespace-nowrap transition-all duration-300 ease-in-out",
+              collapsed
+                ? "opacity-0 translate-x-[-8px] w-0 overflow-hidden"
+                : "opacity-100 translate-x-0 w-auto ml-2"
+            )}
+          >
+            {item.label}
           </span>
+        </Link>
+
+        {hasChildren && !collapsed && (
+          <button
+            type="button"
+            aria-expanded={isOpen}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleOpen(item.key);
+            }}
+            className="text-xs p-1 rounded hover:bg-transparent"
+          >
+            {isOpen ? <IoIosArrowDown /> : <IoIosArrowUp />}
+          </button>
         )}
       </div>
-      {hasChildren && isOpen && !collapsed && (
-        <div className="ml-6 mt-1 space-y-1">
-          {item.children!.map((child) => (
-            <Link
-              key={child.key}
-              to={child.href || ""}
-              className={clsx(
-                "flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 text-sm",
-                child.href === pathname && "bg-gray-200 font-semibold"
-              )}
-              data-tooltip-id={child.href}
-              data-tooltip-content={child.label}
+
+      <AnimatePresence>
+        {hasChildren && !collapsed && isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="ml-6 mt-1 space-y-1 overflow-hidden"
+          >
+            {item.children!.map((child) => (
+              <Link
+                key={child.key}
+                to={child.href || ""}
+                className={clsx(
+                  "flex items-center gap-2 px-2 py-2 rounded hover:bg-[#c5d4ec] text-sm",
+                  child.href === pathname && "bg-[#ECF3FE] font-semibold"
+                )}
+              >
+                {child.icon && (
+                  <span className="text-xl font-medium w-6 flex justify-center">
+                    {child.icon}
+                  </span>
+                )}
+                {child.label}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {collapsed && hasChildren && hovered && menuPos
+        ? createPortal(
+            <motion.div
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -6 }}
+              transition={{ duration: 0.12 }}
+              className="fixed z-[100000] bg-white shadow-lg rounded-md p-2 min-w-[160px]"
+              style={{ top: menuPos.top, left: menuPos.left }}
+              onMouseEnter={() => setHovered(true)}
+              onMouseLeave={() => setHovered(false)}
             >
-              {child.icon && <span className="text-lg">{child.icon}</span>}
-              {child.label}
-              <Tooltip id={child.href} />
-            </Link>
-          ))}
-        </div>
-      )}
-    </>
+              {item.children!.map((child) => (
+                <Link
+                  key={child.key}
+                  to={child.href || ""}
+                  onClick={() => setHovered(false)}
+                  className={clsx(
+                    "flex items-center gap-2 px-3 py-2 rounded hover:bg-[#c5d4ec] text-sm",
+                    child.href === pathname && "bg-[#ECF3FE] font-semibold"
+                  )}
+                >
+                  {child.icon && (
+                    <span className="text-xl w-6 flex justify-center">
+                      {child.icon}
+                    </span>
+                  )}
+                  <span>{child.label}</span>
+                </Link>
+              ))}
+            </motion.div>,
+            document.body
+          )
+        : null}
+    </div>
   );
 }
