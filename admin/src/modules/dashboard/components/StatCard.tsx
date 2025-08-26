@@ -1,5 +1,3 @@
-"use client";
-
 export default function StatCard({
   title,
   value,
@@ -10,8 +8,8 @@ export default function StatCard({
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="flex-1 bg-white">
-      <div className="h-full border border-[#E8E8E8] rounded-lg flex flex-col">
+    <div className="flex-1">
+      <div className="border bg-white border-[#E8E8E8] rounded-lg flex flex-col">
         <div className="p-4 flex flex-col items-left justify-start gap-4">
           {icon}
           <h5 className="text-xl font-bold text-black ">{title}</h5>

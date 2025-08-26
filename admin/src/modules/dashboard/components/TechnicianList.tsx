@@ -1,11 +1,10 @@
-"use client";
 import { SlidersVertical, User } from "lucide-react";
 
 const technicians = Array(8).fill("nguyenvana@gmail.com");
 
 export default function TechnicianList() {
   return (
-    <div className="h-full border border-[#E8E8E8] rounded-lg  flex flex-col bg-white">
+    <div className="max-h-[355px] overflow-y-scroll border border-[#E8E8E8] rounded-lg  flex flex-col bg-white">
       <div className="p-6">
         <span className="font-semibold mb-6 text-lg !p-0 !m-0">
           Kỹ thuật viên
