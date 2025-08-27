@@ -17,6 +17,11 @@ export enum ENUM_PAYMENT_STATUS {
   UNPAID = "unpaid",
 }
 
+export interface CareRecordCardProps {
+  record: CareRecord;
+  onView: () => void;
+  onDelete?: () => void;
+}
 export interface CareRecord extends BaseEntity {
   appointment: Appointments;
   userVehicle: UserVehicle;

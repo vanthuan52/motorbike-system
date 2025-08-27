@@ -168,6 +168,7 @@ export const useCareRecordTableColumns = ({
 
   return {
     columns,
+    vehicleModelMap,
     confirmModalProps: {
       isVisible: isConfirmModalVisible,
       title: "Xác nhận xóa cửa hàng",

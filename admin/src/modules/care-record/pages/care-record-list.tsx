@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "@/components/ui/table/table";
@@ -21,11 +21,15 @@ import {
   ENUM_PAYMENT_STATUS,
 } from "../types";
 import { useCareRecordTableColumns } from "../hooks/useCareRecordTableColumns";
+import { Button } from "antd";
+import CareRecordCard from "../components/care-record-card";
+import { AiOutlineTable } from "react-icons/ai";
+import { BiCard } from "react-icons/bi";
 
 export default function CareRecordList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [viewMode, setViewMode] = useState<"table" | "card">("table");
   const [queryParams, setQueryParams] = useQueryParams();
   const {
     page: pageParam,
@@ -44,12 +48,13 @@ export default function CareRecordList() {
 
   const debouncedSearchTerm = useDebounce(search ?? "", 500);
 
-  const { columns, confirmModalProps } = useCareRecordTableColumns({
-    currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
-    pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
-    search: debouncedSearchTerm,
-    mappedFilters: mappedFilters,
-  });
+  const { columns, vehicleModelMap, confirmModalProps } =
+    useCareRecordTableColumns({
+      currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
+      pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
+      search: debouncedSearchTerm,
+      mappedFilters: mappedFilters,
+    });
 
   const {
     careRecords: CareRecords,
@@ -172,21 +177,57 @@ export default function CareRecordList() {
             className="!h-10 w-40 xs:w-50"
             allowClear
           />
+
+          <div className="flex gap-2">
+            {viewMode === "table" ? (
+              <Button
+                type="default"
+                icon={<BiCard className="text-lg" />}
+                onClick={() => setViewMode("card")}
+                size="large"
+              />
+            ) : (
+              <Button
+                type="default"
+                icon={<AiOutlineTable className="text-lg" />}
+                onClick={() => setViewMode("table")}
+                size="large"
+              />
+            )}
+          </div>
         </div>
       </TableToolbar>
 
-      <Table
-        dataSource={CareRecords}
-        columns={columns}
-        rowKey="_id"
-        loading={loadingList}
-        pagination={{
-          current: pagination.page,
-          pageSize: pagination.perPage,
-          total: paginationState?.total ?? 0,
-          onChange: handlePageChange,
-        }}
-      />
+      <div className="px-4 pb-4">
+        {viewMode === "table" ? (
+          <Table
+            dataSource={CareRecords}
+            columns={columns}
+            rowKey="_id"
+            loading={loadingList}
+            pagination={{
+              current: pagination.page,
+              pageSize: pagination.perPage,
+              total: paginationState?.total ?? 0,
+              onChange: handlePageChange,
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mt-4">
+            {CareRecords.map((record) => (
+              <CareRecordCard
+                vehicleModelMap={vehicleModelMap}
+                record={record}
+                onView={() =>
+                  navigate(
+                    `${ROUTER_PATH.CARE_RECORD_DETAIL.replace(":id", record._id)}`
+                  )
+                }
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       <ConfirmModal {...confirmModalProps} />
     </div>
