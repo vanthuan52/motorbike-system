@@ -13,6 +13,16 @@ export interface UserVehicle extends BaseEntity {
   photo?: string;
 }
 
+export interface VehicleCardProps {
+  id: string;
+  photo?: string;
+  name: string;
+  licensePlate: string;
+  color?: string;
+  onView: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
 export interface UserVehiclePaginationQuery extends PaginationQuery {
   vehicleModel?: string;
 }

@@ -147,6 +147,7 @@ export const useUserVehicleTableColumns = ({
   );
   return {
     columns,
+    handleDeleteClick,
     confirmModalProps: {
       isVisible: isConfirmModalVisible,
       title: "Xác nhận xóa dịch vụ",

@@ -1,7 +1,7 @@
+import { Pagination, Spin, Empty } from "antd";
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import Table from "@/components/ui/table/table";
 import { RootState } from "@/store";
 import { UserVehicleActions } from "../store/user-vehicle-slice";
 import { ROUTER_PATH } from "@/constants/router-path";
@@ -14,8 +14,9 @@ import TableToolbar from "@/components/ui/table/table-toolbar";
 import SelectOption from "@/components/ui/ant-design/select-option";
 import { ConfirmModal } from "@/components/ui/modal/confirm-modal";
 import { UserVehiclePaginationQuery } from "../types";
-import { useUserVehicleTableColumns } from "../hooks/use-user-vehicle-table-columns";
 import { useUserVehicleOptions } from "../hooks/use-user-vehicle-option";
+import { useUserVehicleTableColumns } from "../hooks/use-user-vehicle-table-columns";
+import VehicleCard from "../components/vehicle-card";
 
 export default function UserVehicleList() {
   const navigate = useNavigate();
@@ -39,14 +40,12 @@ export default function UserVehicleList() {
     useFilters(restParams);
 
   const debouncedSearchTerm = useDebounce(search ?? "", 500);
-
-  const { columns, confirmModalProps } = useUserVehicleTableColumns({
+  const { handleDeleteClick, confirmModalProps } = useUserVehicleTableColumns({
     currentPage: pagination.page ?? DEFAULT_PAGINATION_QUERY.page,
     pageSize: pagination.perPage ?? DEFAULT_PAGINATION_QUERY.perPage,
     search: debouncedSearchTerm,
     mappedFilters: mappedFilters,
   });
-
   const {
     list: UserVehicles,
     loadingList,
@@ -65,7 +64,6 @@ export default function UserVehicleList() {
       } as UserVehiclePaginationQuery)
     );
   }, [
-    dispatch,
     dispatch,
     pagination,
     debouncedSearchTerm,
@@ -136,18 +134,48 @@ export default function UserVehicleList() {
         </div>
       </TableToolbar>
 
-      <Table
-        dataSource={UserVehicles}
-        columns={columns}
-        rowKey="_id"
-        loading={loadingList}
-        pagination={{
-          current: pagination.page,
-          pageSize: pagination.perPage,
-          total: paginationState?.total ?? 0,
-          onChange: handlePageChange,
-        }}
-      />
+      {loadingList ? (
+        <div className="flex justify-center items-center h-40">
+          <Spin size="large" />
+        </div>
+      ) : UserVehicles.length === 0 ? (
+        <Empty description="Không có dữ liệu" className="my-6" />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mt-4 p-4">
+            {UserVehicles.map((vehicle) => (
+              <VehicleCard
+                key={vehicle._id}
+                id={vehicle._id}
+                photo={vehicle.photo}
+                name={vehicle.vehicleModel?.name || ""}
+                licensePlate={vehicle.licensePlate}
+                color={vehicle.color}
+                onView={(id) =>
+                  navigate(
+                    `${ROUTER_PATH.USER_VEHICLE_DETAIL.replace(":id", id)}?edit=1`
+                  )
+                }
+                onDelete={(id) =>
+                  handleDeleteClick(
+                    UserVehicles.find((v) => v._id === id) || vehicle
+                  )
+                }
+              />
+            ))}
+          </div>
+
+          <div className="flex justify-center mt-6 pb-4">
+            <Pagination
+              current={pagination.page}
+              pageSize={pagination.perPage}
+              total={paginationState?.total ?? 0}
+              onChange={handlePageChange}
+              showSizeChanger
+            />
+          </div>
+        </>
+      )}
 
       <ConfirmModal {...confirmModalProps} />
     </div>
