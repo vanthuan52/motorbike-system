@@ -4,7 +4,7 @@ export const APP_CONFIG = {
   API_PROTOCOL: import.meta.env.VITE_API_PROTOCOL || "http",
   API_PREFIX: import.meta.env.VITE_API_PREFIX || "api",
   API_VERSION: import.meta.env.VITE_API_VERSION || "1",
-  API_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5001",
+  API_URL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5300",
   API_URL_PUBLIC: import.meta.env.VITE_API_BASE_URL_PUBLIC || "public",
   API_URL_SHARED: import.meta.env.VITE_API_BASE_URL_SHARED || "shared",
   API_URL_ADMIN: import.meta.env.VITE_API_BASE_URL_ADMIN || "admin",

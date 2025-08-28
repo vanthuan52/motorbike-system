@@ -27,7 +27,7 @@ const env = {
       NEXT_PUBLIC_API_PREFIX: process.env.NEXT_PUBLIC_API_PREFIX || "api",
       NEXT_PUBLIC_API_VERSION: process.env.NEXT_PUBLIC_API_VERSION || "1",
       NEXT_PUBLIC_API_URL:
-        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000",
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5300",
       NEXT_PUBLIC_API_URL_PUBLIC:
         process.env.NEXT_PUBLIC_API_BASE_URL_PUBLIC || "public",
       NEXT_PUBLIC_API_URL_SHARED:

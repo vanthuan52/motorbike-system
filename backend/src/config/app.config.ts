@@ -30,7 +30,7 @@ export default registerAs<AppConfig>('app', () => {
     },
     http: {
       host: process.env.HTTP_HOST ?? 'localhost',
-      port: process.env.HTTP_PORT ? parseInt(process.env.HTTP_PORT, 10) : 5000,
+      port: process.env.HTTP_PORT ? parseInt(process.env.HTTP_PORT, 10) : 5300,
     },
     jobEnable: process.env.JOB_ENABLE === 'true',
   } as AppConfig;
