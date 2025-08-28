@@ -42,7 +42,7 @@ const FeaturedServices = () => {
   ];
 
   return (
-    <section className="bg-white py-20 md:py-28">
+    <section className="bg-white pt-10 pb-4">
       <div className="container">
         <motion.h2
           className="text-3xl font-bold text-center text-gray-900 mb-12"
@@ -88,7 +88,7 @@ const FeaturedServices = () => {
           ))}
         </div>
 
-        <motion.h3
+        {/* <motion.h3
           className="text-2xl font-semibold text-center text-gray-800 mb-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -96,9 +96,9 @@ const FeaturedServices = () => {
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
         >
           {t("whyChooseUs")}
-        </motion.h3>
+        </motion.h3> */}
 
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+        {/* <div className="flex flex-col md:flex-row items-center justify-center gap-8">
           {reasons.map((reason, idx) => (
             <motion.div
               key={idx}
@@ -118,7 +118,7 @@ const FeaturedServices = () => {
               <p className="text-gray-700 font-medium">{reason.title}</p>
             </motion.div>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );

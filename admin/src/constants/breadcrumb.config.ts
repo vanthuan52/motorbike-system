@@ -29,4 +29,5 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   details: "Chi tiết",
   new: "Tạo mới",
   edit: "Chỉnh sửa",
+  "care-records": "Hồ sơ bảo dưỡng",
 };

@@ -25,11 +25,10 @@ const menuItems = [
     icon: <RxDashboard />,
     href: "",
     children: [
-      { key: "home", icon: <RxHome />, href: ROUTER_PATH.INDEX, label: "Home" },
       {
         key: "dashboard",
         icon: <RxDashboard />,
-        href: ROUTER_PATH.DASHBOARD,
+        href: ROUTER_PATH.INDEX,
         label: "Dashboard",
       },
       {

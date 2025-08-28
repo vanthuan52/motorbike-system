@@ -120,7 +120,7 @@ export default function AuthModal({
             isSignUp ? "translate-x-full opacity-100 z-10" : "opacity-0 z-0"
           } items-center justify-center`}
         >
-          <div className="m-4">
+          <div className="m-6 p-4">
             <Form {...formSignUp}>
               <h1 className="text-[24px] lg:text-[30px] font-medium mb-1">
                 {t("signUpButton")}
