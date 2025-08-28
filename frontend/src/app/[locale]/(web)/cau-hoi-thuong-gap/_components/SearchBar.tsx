@@ -20,7 +20,7 @@ export const SearchBar = ({ searchTerm, setSearchTerm }: SearchBarProps) => {
         prefix={<SearchOutlined />}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="max-w-md mx-auto block"
+        className="w-full mx-auto block"
         style={{ borderRadius: "8px" }}
       />
     </div>

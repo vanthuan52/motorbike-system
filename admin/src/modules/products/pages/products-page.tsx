@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, Popconfirm, Select, Tooltip } from "antd";
+import { Button, Input, Popconfirm, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
 import { Product } from "../types";
 import Table from "@/components/ui/table/table";
 import { mockProducts } from "../mocks/Products";
-import { mockDataTableVehiclePart } from "@/modules/vehicle-parts/mocks/vehicle-part-data";
 import { PageHeading } from "@/components/page-heading";
 import { ROUTER_PATH } from "@/constants/router-path";
 import { RootState } from "@/store";
@@ -40,9 +39,7 @@ export default function ProductsPage() {
   const handleDelete = (slug: string) => {
     dispatch(productsActions.deleteProductRequest(slug));
   };
-  const categoryMap = Object.fromEntries(
-    mockDataTableVehiclePart.map((item) => [item.id, item.name])
-  );
+
   const columns: ColumnsType<(typeof mockProducts)[0]> = [
     {
       title: "Mã SP",
@@ -90,15 +87,7 @@ export default function ProductsPage() {
       align: "center",
       render: (text) => <span>{text} sản phẩm</span>,
     },
-    {
-      title: "Danh mục",
-      dataIndex: "category_id",
-      key: "category_id",
-      width: 120,
-      render: (id) => (
-        <span className="text-gray-700">{categoryMap[id] || id}</span>
-      ),
-    },
+
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -181,21 +170,7 @@ export default function ProductsPage() {
             allowClear
             className="!h-10 sm:w-52"
           />
-          <Select
-            placeholder="Chọn danh mục"
-            value={payload.category_id}
-            onChange={(value) =>
-              setPayload({ ...payload, category_id: value, page: 1 })
-            }
-            allowClear
-            className="!h-10 sm:w-44"
-          >
-            {Object.entries(categoryMap).map(([id, name]) => (
-              <Select.Option key={id} value={id}>
-                {name}
-              </Select.Option>
-            ))}
-          </Select>
+
           <Button onClick={handleResetFilter} className="!h-10 sm:w-auto">
             Đặt lại
           </Button>

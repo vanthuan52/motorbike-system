@@ -4,12 +4,12 @@
     "description": "Learn more about our motorcycle maintenance and repair service center."
   },
   "aboutHeroSection": {
-    "heading": "About the Service Center",
-    "description": "With over <strong>10 years of experience</strong> in the motorcycle maintenance and repair industry, XYZ Service Center is committed to providing high-quality services and maximum customer satisfaction. We continuously strive to improve service quality and meet the increasing demands of our customers.",
+    "heading": "About Ant Motor",
+    "description": "With over <strong>10 years of experience</strong> in the motorcycle maintenance and repair industry, Ant Motor Service Center is committed to providing high-quality services and maximum customer satisfaction. We continuously strive to improve service quality and meet the increasing demands of our customers.",
     "missionTitle": "Our Mission",
     "missionDesc": "Our mission is to provide high-quality motorcycle maintenance and repair services, ensuring safety and absolute satisfaction for customers. We are committed to offering optimal and prompt solutions to keep your vehicle running smoothly.",
     "visionTitle": "Our Vision",
-    "visionDesc": "XYZ Service Center aims to become a trusted leading name in the motorcycle maintenance and repair industry, not only locally but nationwide. We aspire to raise service standards, constantly innovate and develop to serve our customers in the best possible way."
+    "visionDesc": "Ant Motor Service Center aims to become a trusted leading name in the motorcycle maintenance and repair industry, not only locally but nationwide. We aspire to raise service standards, constantly innovate and develop to serve our customers in the best possible way."
   },
   "awardsSection": {
     "heading": "Certifications & Awards",
@@ -72,13 +72,13 @@
     "heading": "Our History",
     "founding": {
       "title": "The Founding Story",
-      "content": "XYZ Maintenance Center was founded in 2013 by a group of passionate motorcycle engineers. Starting from a small garage with only 2 staff members, the center went through many challenges, from lack of equipment to building customer trust. Through dedication and the desire to elevate service standards, we gradually rose to become one of the most trusted maintenance centers in the region."
+      "content": "Ant Motor Service Center was founded in 2013 by a group of passionate motorcycle engineers. Starting from a small garage with only 2 staff members, the center went through many challenges, from lack of equipment to building customer trust. Through dedication and the desire to elevate service standards, we gradually rose to become one of the most trusted maintenance centers in the region."
     },
     "milestoneTitle": "Development Milestones",
     "milestones": [
       {
         "year": "2013",
-        "description": "Established the center at small scale in Binh Thanh District."
+        "description": "Established the center at small scale in Tan Phu District."
       },
       {
         "year": "2016",
@@ -110,7 +110,7 @@
   },
   "staffSection": {
     "heading": "Our Staff",
-    "description": "XYZ Center is proud to have a team of skilled, experienced, and dedicated technicians. Each member holds professional certifications and undergoes thorough training.",
+    "description": "Ant Motor Center is proud to have a team of skilled, experienced, and dedicated technicians. Each member holds professional certifications and undergoes thorough training.",
     "members": [
       {
         "name": "Nguyen Van A",

@@ -4,12 +4,12 @@ import { ROUTER_PATH } from "@/constants/router-path";
 import NotFoundPage from "@/pages/not-found-page";
 import AppLayout from "@/layout/app-layout";
 import LoginPage from "@/modules/auth/pages/login-page";
-import HomePage from "@/pages/home-page";
 import Dashboard from "@/modules/dashboard/pages/dashboard";
 import AuthLayout from "@/layout/auth-layout";
 import ProtectedRoute from "./protected-route";
 import { VehiclePartDetailPage } from "@/modules/vehicle-parts/pages/vehicle-part-detail-page";
 import VehicleTypes from "@/modules/vehicle-type/pages/vehicle-type-page";
+import ErrorPage from "@/components/error-page";
 
 const PostPage = lazy(() => import("@/modules/posts/pages/post-page"));
 
@@ -165,6 +165,7 @@ export const router = createBrowserRouter([
         <LoginPage />
       </AuthLayout>
     ),
+    errorElement: <ErrorPage />,
   },
   {
     path: ROUTER_PATH.INDEX,
@@ -173,13 +174,10 @@ export const router = createBrowserRouter([
         <AppLayout />
       </ProtectedRoute>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
-        element: <HomePage />,
-      },
-      {
-        path: ROUTER_PATH.DASHBOARD,
         element: <Dashboard />,
       },
       {

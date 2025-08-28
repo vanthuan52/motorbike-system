@@ -19,7 +19,7 @@ const NotFoundPage: React.FC = () => {
         </p>
         <Link
           to="/"
-          className="inline-block px-6 py-3 text-white bg-blue-600 hover:bg-blue-500 transition rounded-lg text-lg font-medium shadow-lg"
+          className="inline-block px-6 py-3 text-white bg-blue-600 hover:bg-blue-500 transition rounded-lg text-lg font-medium shadow-lg mt-6"
         >
           Quay lại trang chủ
         </Link>

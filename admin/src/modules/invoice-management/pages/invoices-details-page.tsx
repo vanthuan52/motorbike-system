@@ -15,7 +15,7 @@ export default function InvoicesDetailsPage() {
   const { id } = useParams();
   const invoice = mockInvoices.find((inv) => inv.id === id);
   const customer = mockDataTableManageCustomers.find(
-    (cus) => cus.id === invoice?.customer_id
+    (cus) => cus._id === invoice?.customer_id
   );
   if (!invoice) {
     return (

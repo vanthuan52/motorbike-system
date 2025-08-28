@@ -4,12 +4,12 @@
     "description": "Tìm hiểu thêm về trung tâm bảo trì và sửa chữa xe máy của chúng tôi."
   },
   "aboutHeroSection": {
-    "heading": "Về Trung Tâm Dịch Vụ",
-    "description": "Với hơn <strong>10 năm kinh nghiệm</strong> trong ngành bảo trì và sửa chữa xe máy, Trung Tâm Dịch Vụ XYZ cam kết mang đến dịch vụ chất lượng cao và sự hài lòng tối đa cho khách hàng. Chúng tôi không ngừng nỗ lực cải thiện chất lượng dịch vụ và đáp ứng nhu cầu ngày càng cao của khách hàng.",
+    "heading": "Về Ant Motor",
+    "description": "Với hơn <strong>10 năm kinh nghiệm</strong> trong ngành bảo trì và sửa chữa xe máy, Hệ thống Ant Motor cam kết mang đến dịch vụ chất lượng cao và sự hài lòng tối đa cho khách hàng. Chúng tôi không ngừng nỗ lực cải thiện chất lượng dịch vụ và đáp ứng nhu cầu ngày càng cao của khách hàng.",
     "missionTitle": "Sứ Mệnh Của Chúng Tôi",
     "missionDesc": "Sứ mệnh của chúng tôi là cung cấp dịch vụ bảo trì và sửa chữa xe máy chất lượng cao, đảm bảo an toàn và sự hài lòng tuyệt đối cho khách hàng. Chúng tôi cam kết mang lại giải pháp tối ưu và kịp thời để xe của bạn vận hành trơn tru.",
     "visionTitle": "Tầm Nhìn Của Chúng Tôi",
-    "visionDesc": "Trung Tâm Dịch Vụ XYZ hướng đến việc trở thành tên tuổi uy tín hàng đầu trong ngành bảo trì và sửa chữa xe máy, không chỉ tại địa phương mà còn trên toàn quốc. Chúng tôi mong muốn nâng cao tiêu chuẩn dịch vụ, không ngừng đổi mới và phát triển để phục vụ khách hàng một cách tốt nhất."
+    "visionDesc": "Hệ thống Ant Motor hướng đến việc trở thành tên tuổi uy tín hàng đầu trong ngành bảo trì và sửa chữa xe máy, không chỉ tại địa phương mà còn trên toàn quốc. Chúng tôi mong muốn nâng cao tiêu chuẩn dịch vụ, không ngừng đổi mới và phát triển để phục vụ khách hàng một cách tốt nhất."
   },
   "awardsSection": {
     "heading": "Chứng Nhận & Giải Thưởng",
@@ -76,13 +76,13 @@
     "heading": "Lịch Sử Phát Triển",
     "founding": {
       "title": "Câu Chuyện Thành Lập",
-      "content": "Trung Tâm Bảo Trì XYZ được thành lập vào năm 2013 bởi một nhóm kỹ sư xe máy đầy đam mê. Bắt đầu từ một gara nhỏ chỉ có 2 nhân viên, trung tâm đã trải qua nhiều khó khăn từ việc thiếu thiết bị đến việc xây dựng lòng tin với khách hàng. Nhờ sự tận tâm và mong muốn nâng tầm dịch vụ, chúng tôi đã từng bước phát triển và trở thành một trong những trung tâm bảo trì đáng tin cậy nhất trong khu vực."
+      "content": "Hệ thống Ant Motor được thành lập vào năm 2013 bởi một nhóm kỹ sư xe máy đầy đam mê. Bắt đầu từ một gara nhỏ chỉ có 2 nhân viên, trung tâm đã trải qua nhiều khó khăn từ việc thiếu thiết bị đến việc xây dựng lòng tin với khách hàng. Nhờ sự tận tâm và mong muốn nâng tầm dịch vụ, chúng tôi đã từng bước phát triển và trở thành một trong những trung tâm bảo trì đáng tin cậy nhất trong khu vực."
     },
     "milestoneTitle": "Các Cột Mốc Phát Triển",
     "milestones": [
       {
         "year": "2013",
-        "description": "Thành lập trung tâm với quy mô nhỏ tại Quận Bình Thạnh."
+        "description": "Thành lập trung tâm với quy mô nhỏ tại Quận Tân Phú."
       },
       {
         "year": "2016",
@@ -104,7 +104,7 @@
     "activities": [
       {
         "title": "Chương trình bảo trì miễn phí cho xe cấp cứu",
-        "description": "Trung tâm đã hỗ trợ tuyến đầu y tế trong thời kỳ đại dịch COVID-19."
+        "description": "Hệ thống đã hỗ trợ tuyến đầu y tế trong thời kỳ đại dịch COVID-19."
       },
       {
         "title": "Học bổng cho kỹ thuật viên trẻ",
@@ -114,7 +114,7 @@
   },
   "staffSection": {
     "heading": "Đội Ngũ Nhân Viên",
-    "description": "Trung tâm XYZ tự hào sở hữu đội ngũ kỹ thuật viên tay nghề cao, giàu kinh nghiệm và tận tâm. Mỗi thành viên đều có chứng chỉ chuyên môn và được đào tạo bài bản.",
+    "description": "Hệ thống Ant Motor tự hào sở hữu đội ngũ kỹ thuật viên tay nghề cao, giàu kinh nghiệm và tận tâm. Mỗi thành viên đều có chứng chỉ chuyên môn và được đào tạo bài bản.",
     "members": [
       {
         "name": "Nguyễn Văn A",
