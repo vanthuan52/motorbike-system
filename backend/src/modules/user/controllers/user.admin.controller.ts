@@ -24,6 +24,7 @@ import {
   UserAdminGetDoc,
   UserAdminListDoc,
   UserAdminListUserTypeUserDoc,
+  UserAdminPreCreateDoc,
   UserAdminUpdateDoc,
   UserAdminUpdateStatusDoc,
   UserTypeUserAdminCreateDoc,
@@ -85,6 +86,7 @@ import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator'
 import { UserNotSelfPipe } from '../pipes/user.not-self.pipe';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
 import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
+import { UserPreCreateRequestDto } from '../dtos/request/user.pre-create.request.dto';
 
 @ApiTags('modules.admin.user')
 @Controller({
@@ -241,7 +243,7 @@ export class UserAdminController {
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() { email, role, name }: UserCreateRequestDto,
+    @Body() { email, role, name, phone }: UserCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
     const promises: Promise<any>[] = [
       this.roleService.findOneById(role),
@@ -340,6 +342,72 @@ export class UserAdminController {
         {
           email,
           name,
+          role: checkRole._id,
+        },
+        password,
+        ENUM_USER_SIGN_UP_FROM.ADMIN,
+        { actionBy: createdBy } as IDatabaseCreateOptions,
+      );
+
+      return {
+        data: { _id: created._id },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  @UserAdminPreCreateDoc()
+  @Response('user.create')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Post('/pre-create')
+  async preRegisterUser(
+    @AuthJwtPayload('user') createdBy: string,
+    @Body() { phone, name, email }: UserPreCreateRequestDto,
+  ): Promise<IResponse<DatabaseIdResponseDto>> {
+    const promises: Promise<any>[] = [
+      this.roleService.findOneByType(ENUM_POLICY_ROLE_TYPE.USER),
+      this.userService.existByPhone(phone),
+    ];
+
+    const [checkRole, phoneExist] = await Promise.all(promises);
+
+    if (!checkRole) {
+      throw new NotFoundException({
+        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'role.error.notFound',
+      });
+    } else if (phoneExist) {
+      throw new ConflictException({
+        statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_EXIST,
+        message: 'user.error.phoneExist',
+      });
+    }
+
+    const passwordString = this.authService.createDefaultPassword();
+    const password: IAuthPassword = this.authService.createPassword(
+      passwordString,
+      {
+        temporary: true,
+      },
+    );
+
+    try {
+      const created = await this.userService.preCreate(
+        {
+          phone,
+          name,
+          email,
           role: checkRole._id,
         },
         password,

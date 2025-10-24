@@ -22,6 +22,7 @@ import {
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
 import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
+import { UserPreCreateRequestDto } from '../dtos/request/user.pre-create.request.dto';
 
 export function UserAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -102,6 +103,23 @@ export function UserTypeUserAdminCreateDoc(): MethodDecorator {
     DocRequest({
       bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
       dto: UserTypeUserCreateRequestDto,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<DatabaseIdResponseDto>('user.create', {
+      httpStatus: HttpStatus.CREATED,
+      dto: DatabaseIdResponseDto,
+    }),
+  );
+}
+
+export function UserAdminPreCreateDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'create a pre-user',
+    }),
+    DocRequest({
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserPreCreateRequestDto,
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse<DatabaseIdResponseDto>('user.create', {

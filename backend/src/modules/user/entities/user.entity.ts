@@ -15,7 +15,6 @@ export const UserTableName = 'users';
 export class UserEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
-    lowercase: true,
     trim: true,
     maxlength: 100,
   })

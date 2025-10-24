@@ -39,6 +39,7 @@ import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
 import { UserCensorResponseDto } from '../dtos/response/user.censor.response.dto';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
 import { RoleTableName } from '@/modules/role/entities/role.entity';
+import { UserPreCreateRequestDto } from '../dtos/request/user.pre-create.request.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -254,6 +255,23 @@ export class UserService implements IUserService {
     return this.userRepository.create<UserEntity>(create, options);
   }
 
+  async preCreate(
+    { name, phone, email, role }: UserPreCreateRequestDto,
+    { passwordExpired, passwordHash, salt, passwordCreated }: IAuthPassword,
+    signUpForm: ENUM_USER_SIGN_UP_FROM,
+    options?: IDatabaseCreateOptions,
+  ): Promise<UserDoc> {
+    const create: UserEntity = new UserEntity();
+    create.name = name;
+    create.phone = phone;
+    create.email = this.createTempEmail(phone);
+    create.role = role;
+    create.status = ENUM_USER_STATUS.ACTIVE;
+    create.password = passwordHash;
+
+    return this.userRepository.create<UserEntity>(create, options);
+  }
+
   async signUp(
     role: string,
     { email, name, phone }: AuthSignUpRequestDto,
@@ -284,6 +302,16 @@ export class UserService implements IUserService {
   ): Promise<boolean> {
     return this.userRepository.exists(
       DatabaseHelperQueryContain('email', email, { fullWord: true }),
+      options,
+    );
+  }
+
+  async existByPhone(
+    phone: string,
+    options?: IDatabaseExistsOptions,
+  ): Promise<boolean> {
+    return this.userRepository.exists(
+      DatabaseHelperQueryContain('phone', phone, { fullWord: true }),
       options,
     );
   }
@@ -393,6 +421,10 @@ export class UserService implements IUserService {
 
   async join(repository: UserDoc): Promise<IUserDoc> {
     return this.userRepository.join(repository, this.userRepository._join!);
+  }
+
+  createTempEmail(temp: string): string {
+    return `temp_${temp}@antmotor.vn`;
   }
 
   createRandomFilenamePhoto(
