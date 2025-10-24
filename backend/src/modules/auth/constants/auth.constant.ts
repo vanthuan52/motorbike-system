@@ -1,1 +1,1 @@
-export const DEFAULT_USER_PASSWORD = 'Password@123';
+export const DEFAULT_USER_PASSWORD = 'aaAA@123';
