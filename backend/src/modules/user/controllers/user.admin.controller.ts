@@ -66,7 +66,10 @@ import {
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { UserParsePipe } from '../pipes/user.parse.pipe';
+import {
+  UserParsePipe,
+  UserPhoneNumberParsePipe,
+} from '../pipes/user.parse.pipe';
 import { UserDoc } from '../entities/user.entity';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
 import {
@@ -87,6 +90,7 @@ import { UserNotSelfPipe } from '../pipes/user.not-self.pipe';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
 import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
 import { UserPreCreateRequestDto } from '../dtos/request/user.pre-create.request.dto';
+import { UserGetResponseDto } from '../dtos/response/user.get.response.dto';
 
 @ApiTags('modules.admin.user')
 @Controller({
@@ -227,6 +231,26 @@ export class UserAdminController {
     const userWithRole: IUserDoc = await this.userService.join(user);
     const mapped: UserProfileResponseDto =
       this.userService.mapProfile(userWithRole);
+
+    return { data: mapped };
+  }
+
+  @UserAdminGetDoc()
+  @Response('user.get')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/get/phone/:phone')
+  async getByPhone(
+    @Param('phone', RequestRequiredPipe, UserPhoneNumberParsePipe)
+    user: UserDoc,
+  ): Promise<IResponse<UserGetResponseDto>> {
+    const userWithRole: IUserDoc = await this.userService.join(user);
+    const mapped: UserGetResponseDto = this.userService.mapGet(userWithRole);
 
     return { data: mapped };
   }

@@ -37,3 +37,21 @@ export class UserActiveParsePipe implements PipeTransform {
     return user;
   }
 }
+
+@Injectable()
+export class UserPhoneNumberParsePipe implements PipeTransform {
+  constructor(private readonly userService: UserService) {}
+
+  async transform(value: any) {
+    const user: UserDoc | null = await this.userService.findOneByPhone(value);
+
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'user.error.notFound',
+      });
+    }
+
+    return user;
+  }
+}
