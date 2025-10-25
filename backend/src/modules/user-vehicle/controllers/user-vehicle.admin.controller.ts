@@ -141,6 +141,55 @@ export class UserVehicleAdminController {
     };
   }
 
+  @Get('/get/user/:userId')
+  @ResponsePaging('user-vehicle.list')
+  @PolicyAbilityProtected({
+    subject: ENUM_POLICY_SUBJECT.USER,
+    action: [ENUM_POLICY_ACTION.READ],
+  })
+  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  async getByUserId(
+    @Param('userId', RequestRequiredPipe) userId: string,
+    @PaginationQuery({
+      availableSearch: USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    { _search, _limit, _offset, _order }: PaginationListDto,
+  ): Promise<IResponsePaging<UserVehicleListResponseDto>> {
+    const userExists = await this.userService.findOneById(userId);
+    if (!userExists) {
+      throw new NotFoundException({
+        statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'user.error.notFound',
+      });
+    }
+
+    const find: Record<string, any> = {
+      ..._search,
+      user: userId,
+    };
+
+    const userVehicles: IUserVehicleEntity[] =
+      await this.userVehicleService.findAllWithVehicleModel(find, {
+        paging: { limit: _limit, offset: _offset },
+        order: _order,
+      });
+
+    const total: number =
+      await this.userVehicleService.getTotalWithVehicleModel(find);
+
+    const totalPage: number = this.paginationService.totalPage(total, _limit);
+
+    const mapped = this.userVehicleService.mapList(userVehicles);
+
+    return {
+      _pagination: { total, totalPage },
+      data: mapped,
+    };
+  }
+
   @UserVehicleAdminGetDoc()
   @Response('user-vehicle.get')
   @PolicyAbilityProtected({
