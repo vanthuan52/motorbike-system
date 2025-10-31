@@ -97,10 +97,6 @@ export class VehicleServiceAdminController {
 
   @VehicleServiceAdminListDoc()
   @ResponsePaging('vehicle-service.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -118,7 +114,7 @@ export class VehicleServiceAdminController {
     )
     status: Record<string, any>,
     @Query('serviceCategory', OptionalParseUUIDPipe)
-    serviceCategoryId: string,
+    serviceCategoryId?: string,
   ): Promise<IResponsePaging<VehicleServiceListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,

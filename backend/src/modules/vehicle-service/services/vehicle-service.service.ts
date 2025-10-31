@@ -157,20 +157,21 @@ export class VehicleServiceService implements IVehicleServiceService {
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
   ): Promise<IVehicleServiceEntity[]> {
-    return this.vehicleServiceRepository.findAll<IVehicleServiceEntity>(find, {
-      ...options,
-      join: true,
-    });
+    const pipeline: PipelineStage[] =
+      this.createRawQueryFindAllWithServiceCategory(find);
+    return this.vehicleServiceRepository.findAllAggregate<IVehicleServiceEntity>(
+      pipeline,
+      options,
+    );
   }
 
   async getTotalWithServiceCategory(
     find?: Record<string, any>,
     options?: IDatabaseAggregateOptions,
   ): Promise<number> {
-    return this.vehicleServiceRepository.getTotal(find, {
-      ...options,
-      join: true,
-    });
+    const pipeline: PipelineStage[] =
+      this.createRawQueryFindAllWithServiceCategory(find);
+    return this.vehicleServiceRepository.getTotalAggregate(pipeline, options);
   }
 
   async findOneById(

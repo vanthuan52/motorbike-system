@@ -26,6 +26,7 @@ import { ConversationSharedController } from '@/modules/chat/controllers/convers
 import { ChatModule } from '@/modules/chat/chat.module';
 import { MessageSharedController } from '@/modules/chat/controllers/message.shared.controller';
 import { RoleModule } from '@/modules/role/role.module';
+import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
 
 @Module({
   controllers: [
@@ -61,6 +62,7 @@ import { RoleModule } from '@/modules/role/role.module';
     UserVehicleModule,
     ChatModule,
     RoleModule,
+    VehicleModelModule,
   ],
 })
 export class RoutesSharedModule {}

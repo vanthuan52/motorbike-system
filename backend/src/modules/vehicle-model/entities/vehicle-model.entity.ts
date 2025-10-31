@@ -25,11 +25,11 @@ export class VehicleModelEntity extends DatabaseEntityBase {
   name: string;
 
   @DatabaseProp({
-    required: true,
+    required: false,
     trim: true,
     maxlength: 200,
   })
-  fullName: string;
+  fullName?: string;
 
   @DatabaseProp({
     required: true,
@@ -49,14 +49,14 @@ export class VehicleModelEntity extends DatabaseEntityBase {
   description?: string;
 
   @DatabaseProp({
-    required: true,
+    required: false,
   })
-  engineDisplacement: number;
+  engineDisplacement?: number;
 
   @DatabaseProp({
-    required: true,
+    required: false,
   })
-  modelYear: number;
+  modelYear?: number;
 
   @DatabaseProp({
     required: true,
