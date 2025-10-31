@@ -27,6 +27,11 @@ export class UserVehicleEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
+  })
+  modelYear?: number;
+
+  @DatabaseProp({
+    required: false,
     maxlength: 20,
   })
   color?: string;
@@ -37,7 +42,7 @@ export class UserVehicleEntity extends DatabaseEntityBase {
     trim: true,
     maxlength: 20,
   })
-  licensePlate: string;
+  licensePlateNumber: string;
 
   @DatabaseProp({
     required: false,

@@ -1,4 +1,4 @@
-import { applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
@@ -19,6 +19,9 @@ import {
 } from '../constants/user-vehicle.doc.constant';
 import { UserVehicleGetResponseDto } from '../dtos/response/user-vehicle.get.response.dto';
 import { UserVehicleGetFullResponseDto } from '../dtos/response/user-vehicle.full.response.dto';
+import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
+import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create.request.dto';
 
 export function UserVehicleSharedUploadPhotoDoc(): MethodDecorator {
   return applyDecorators(
@@ -97,6 +100,67 @@ export function UserVehicleSharedGetDoc(): MethodDecorator {
     }),
     DocRequest({
       params: UserVehicleDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<UserVehicleGetFullResponseDto>('user-vehicle.get', {
+      dto: UserVehicleGetFullResponseDto,
+    }),
+  );
+}
+
+export function UserVehicleSharedCreateDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'create a new user vehicle',
+    }),
+    DocRequest({
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserVehicleCreateRequestDto,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<DatabaseIdResponseDto>('user-vehicle.create', {
+      dto: DatabaseIdResponseDto,
+      statusCode: HttpStatus.CREATED,
+    }),
+  );
+}
+
+export function UserVehicleSharedUpdateDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'update a user vehicle',
+    }),
+    DocRequest({
+      params: UserVehicleDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: UserVehicleUpdateRequestDto,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('user-vehicle.update'),
+  );
+}
+
+export function UserVehicleSharedListByUserDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all vehicle of a user by id',
+    }),
+    DocRequest({
+      params: UserVehicleDocParamsId,
+      queries: [
+        ...UserVehicleDocQueryVehicleModel,
+        ...UserVehicleDocQueryOrderBy,
+        ...UserVehicleDocQueryOrderDirection,
+      ],
     }),
     DocAuth({
       jwtAccessToken: true,

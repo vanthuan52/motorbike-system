@@ -95,7 +95,6 @@ import { UserVehicleAdminController } from '@/modules/user-vehicle/controllers/u
     CareRecordChecklistModule,
     CareRecordMediaModule,
     CareRecordItemModule,
-    UserVehicleModule,
   ],
 })
 export class RoutesAdminModule {}

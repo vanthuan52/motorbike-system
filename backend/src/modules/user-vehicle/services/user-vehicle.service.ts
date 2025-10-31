@@ -114,7 +114,8 @@ export class UserVehicleService implements IUserVehicleService {
     {
       user,
       vehicleModel,
-      licensePlate,
+      modelYear,
+      licensePlateNumber,
       engineNumber,
       chassisNumber,
       color,
@@ -125,7 +126,8 @@ export class UserVehicleService implements IUserVehicleService {
     create.user = user;
     create.vehicleModel = vehicleModel;
     create.user = user;
-    create.licensePlate = licensePlate;
+    create.modelYear = modelYear;
+    create.licensePlateNumber = licensePlateNumber;
     create.engineNumber = engineNumber;
     create.chassisNumber = chassisNumber;
     create.color = color;
@@ -141,7 +143,8 @@ export class UserVehicleService implements IUserVehicleService {
     {
       user,
       vehicleModel,
-      licensePlate,
+      modelYear,
+      licensePlateNumber,
       engineNumber,
       chassisNumber,
       color,
@@ -150,7 +153,9 @@ export class UserVehicleService implements IUserVehicleService {
   ): Promise<UserVehicleDoc> {
     repository.user = user ?? repository.user;
     repository.vehicleModel = vehicleModel ?? repository.vehicleModel;
-    repository.licensePlate = licensePlate ?? repository.licensePlate;
+    repository.modelYear = modelYear;
+    repository.licensePlateNumber =
+      licensePlateNumber ?? repository.licensePlateNumber;
     repository.engineNumber = engineNumber ?? repository.engineNumber;
     repository.chassisNumber = chassisNumber ?? repository.chassisNumber;
     repository.color = color ?? repository.color;

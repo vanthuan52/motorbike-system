@@ -17,7 +17,7 @@ import {
 
 export class VehicleModelCreateRequestDto {
   @ApiProperty({
-    example: 'Wave Alpha 110',
+    example: 'Yamaha Exciter 155',
     description: 'Tên dòng xe',
     required: true,
     maxLength: 150,
@@ -28,15 +28,15 @@ export class VehicleModelCreateRequestDto {
   name: string;
 
   @ApiProperty({
-    example: 'Honda Wave Alpha 110 2019',
+    example: 'Yamaha Exciter 155',
     description: 'Tên dòng xe đầy đủ',
-    required: true,
+    required: false,
     maxLength: 200,
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(200)
-  fullName: string;
+  fullName?: string;
 
   @ApiProperty({
     example: 'honda-wave-alpha-110-2019',
@@ -64,20 +64,20 @@ export class VehicleModelCreateRequestDto {
   @ApiProperty({
     example: '125',
     description: 'Dung tích xi lanh của xe (cc)',
-    required: true,
+    required: false,
   })
   @IsNumber()
-  @IsNotEmpty()
-  engineDisplacement: number;
+  @IsOptional()
+  engineDisplacement?: number;
 
   @ApiProperty({
     example: '2023',
-    description: 'Năm ra mắt của dòng xe',
-    required: true,
+    description: 'Đời xe',
+    required: false,
   })
   @IsNumber()
-  @IsNotEmpty()
-  modelYear: number;
+  @IsOptional()
+  modelYear?: number;
 
   @ApiProperty({
     example: '0',

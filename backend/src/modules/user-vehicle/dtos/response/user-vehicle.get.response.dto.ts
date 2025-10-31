@@ -1,4 +1,8 @@
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import { Type } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
@@ -11,31 +15,38 @@ export class UserVehicleGetResponseDto extends DatabaseDto {
     example: '69FA-88888',
     maxLength: 20,
   })
-  lisencePlate: string;
+  lisencePlateNumber: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
+    example: '2021',
+    description: 'Đời xe',
+    required: false,
+  })
+  modelYear?: number;
+
+  @ApiPropertyOptional({
     example: 'Đỏ đen',
     description: 'Mùa xe',
     required: false,
     maxLength: 200,
   })
-  color: string;
+  color?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'SNIFHEUI47821748',
     description: 'Số máy',
     maxLength: 30,
     minLength: 1,
   })
-  engineNumber: string;
+  engineNumber?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'KKIFHEUI47821748',
     description: 'Số khung',
     maxLength: 30,
     minLength: 1,
   })
-  chassisNumber: string;
+  chassisNumber?: string;
 
   @ApiProperty({
     required: true,

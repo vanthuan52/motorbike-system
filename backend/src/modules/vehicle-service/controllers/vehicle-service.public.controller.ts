@@ -87,7 +87,7 @@ export class VehicleServicePublicController {
     )
     status: Record<string, any>,
     @Query('serviceCategory', OptionalParseUUIDPipe)
-    serviceCategoryId: string,
+    serviceCategoryId?: string,
   ): Promise<IResponsePaging<VehicleServiceListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,

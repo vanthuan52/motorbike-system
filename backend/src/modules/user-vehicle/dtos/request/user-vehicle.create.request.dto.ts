@@ -1,10 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   IsString,
   MaxLength,
   IsUUID,
   IsEmpty,
+  IsOptional,
+  IsNumber,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
 
@@ -17,34 +19,46 @@ export class UserVehicleCreateRequestDto {
   })
   @IsNotEmpty()
   @MaxLength(20)
-  licensePlate: string;
+  licensePlateNumber: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
+    example: '2021',
+    description: 'Đời xe',
+    required: false,
+  })
+  @IsOptional()
+  @IsNumber()
+  modelYear?: number;
+
+  @ApiPropertyOptional({
     example: 'Đỏ đen',
     description: 'Màu xe',
     required: false,
     maxLength: 20,
   })
+  @IsOptional()
   @MaxLength(20)
-  color: string;
+  color?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'GIHEHF5328473289',
     description: 'Số máy xe',
     required: false,
     maxLength: 20,
   })
+  @IsOptional()
   @MaxLength(20)
-  engineNumber: string;
+  engineNumber?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'TIkEHF5328473289',
     description: 'Số khung xe',
     required: false,
     maxLength: 20,
   })
+  @IsOptional()
   @MaxLength(20)
-  chassisNumber: string;
+  chassisNumber?: string;
 
   @ApiProperty({
     example: faker.string.uuid(),
