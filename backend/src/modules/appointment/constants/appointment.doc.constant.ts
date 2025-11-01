@@ -10,7 +10,7 @@ interface DocField {
   description?: string;
 }
 
-export const AppointmentsDocParamsId: DocField[] = [
+export const AppointmentDocParamsId: DocField[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +20,7 @@ export const AppointmentsDocParamsId: DocField[] = [
   },
 ];
 
-export const AppointmentsDocQueryStatus: DocField[] = [
+export const AppointmentDocQueryStatus: DocField[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -31,7 +31,7 @@ export const AppointmentsDocQueryStatus: DocField[] = [
   },
 ];
 
-export const AppointmentsDocQueryOrderBy: DocField[] = [
+export const AppointmentDocQueryOrderBy: DocField[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -42,7 +42,7 @@ export const AppointmentsDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const AppointmentsDocQueryOrderDirection: DocField[] = [
+export const AppointmentDocQueryOrderDirection: DocField[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,
@@ -53,7 +53,7 @@ export const AppointmentsDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const AppointmentsDocQueryVehicleService: DocField[] = [
+export const AppointmentDocQueryVehicleService: DocField[] = [
   {
     name: 'vehicleService',
     allowEmptyValue: true,

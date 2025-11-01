@@ -25,7 +25,7 @@ import { ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR } from '@/modules/vehicle-servic
 })
 export class AppointmentsPublicController {
   constructor(
-    private readonly appointmentsService: AppointmentService,
+    private readonly appointmentService: AppointmentService,
     private readonly vehicleModelService: VehicleModelService,
     private readonly vehileServiceService: VehicleServiceService,
     private readonly userVehicleService: UserVehicleService,
@@ -68,7 +68,7 @@ export class AppointmentsPublicController {
       }),
     );
     try {
-      const created = await this.appointmentsService.create(body);
+      const created = await this.appointmentService.createAppointment(body);
       return { data: created };
     } catch (err) {
       throw new InternalServerErrorException({

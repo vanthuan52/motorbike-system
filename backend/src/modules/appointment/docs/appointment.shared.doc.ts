@@ -20,10 +20,10 @@ import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 
-export function AppointmentAdminListDoc(): MethodDecorator {
+export function AppointmentSharedListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all maintenance schedules',
+      summary: 'get all appointments',
     }),
     DocRequest({
       queries: [
@@ -42,7 +42,7 @@ export function AppointmentAdminListDoc(): MethodDecorator {
   );
 }
 
-export function AppointmentAdminParamsIdDoc(): MethodDecorator {
+export function AppointmentSharedParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get maintenance schedule by id',
@@ -60,7 +60,7 @@ export function AppointmentAdminParamsIdDoc(): MethodDecorator {
   );
 }
 
-export function AppointmentAdminCreateDoc(): MethodDecorator {
+export function AppointmentSharedCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'create maintenance schedule',
@@ -80,7 +80,7 @@ export function AppointmentAdminCreateDoc(): MethodDecorator {
   );
 }
 
-export function AppointmentAdminUpdateDoc(): MethodDecorator {
+export function AppointmentSharedUpdateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update maintenance schedule',
@@ -98,7 +98,7 @@ export function AppointmentAdminUpdateDoc(): MethodDecorator {
   );
 }
 
-export function AppointmentAdminDeleteDoc(): MethodDecorator {
+export function AppointmentSharedDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'delete maintenance schedule',
@@ -114,7 +114,7 @@ export function AppointmentAdminDeleteDoc(): MethodDecorator {
   );
 }
 
-export function AppointmentAdminUpdateStatusDoc(): MethodDecorator {
+export function AppointmentSharedUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update status maintenance schedule by id',

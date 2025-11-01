@@ -13,24 +13,6 @@ import { ENUM_APPOINTMENT_STATUS } from '../../enums/appointment.enum';
 
 export class AppointmentCreateRequestDto {
   @ApiProperty({
-    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
-    description: 'ID người dùng',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  user?: string;
-
-  @ApiProperty({
-    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
-    description: 'ID xe của người dùng',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  userVehicle?: string;
-
-  @ApiProperty({
     example: 'Nguyễn Văn A',
     description: 'Tên khách hàng',
     maxLength: 200,
@@ -51,13 +33,30 @@ export class AppointmentCreateRequestDto {
   phone: string;
 
   @ApiProperty({
+    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
+    description: 'ID người dùng',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  user?: string;
+
+  @ApiProperty({
+    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
+    description: 'ID xe của người dùng',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  userVehicle?: string;
+
+  @ApiProperty({
     example: '61384a81-4425-4b33-84a5-691af292171c',
     description: 'ID model xe',
-    maxLength: 255,
+    required: false,
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(255)
   vehicleModel: string;
 
   @ApiProperty({
@@ -78,17 +77,9 @@ export class AppointmentCreateRequestDto {
     maxLength: 20,
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(20)
-  licensePlate: string;
-
-  @ApiProperty({
-    example: '2024-07-14T08:00:00.000Z',
-    description: 'Ngày đặt lịch (ISO date)',
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  appointmentDate: Date;
+  licensePlateNumber?: string;
 
   @ApiProperty({
     example: '123 Đường Lớn, Quận 1, TP.HCM',
@@ -102,6 +93,15 @@ export class AppointmentCreateRequestDto {
   address?: string;
 
   @ApiProperty({
+    example: ['Fix lỗi rè đầu đèn', 'Fix ABC'],
+    description: 'Danh sách yêu cầu của khách',
+    type: String,
+  })
+  @IsOptional()
+  @IsArray()
+  customerRequests: string[];
+
+  @ApiProperty({
     example: 'Xe bị rung đầu',
     description: 'Ghi chú',
     required: false,
@@ -109,8 +109,15 @@ export class AppointmentCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(500)
   note?: string;
+
+  @ApiProperty({
+    example: '2024-07-14T08:00:00.000Z',
+    description: 'Ngày đặt lịch (ISO date)',
+  })
+  @IsNotEmpty()
+  @IsDateString()
+  appointmentDate: Date;
 
   @ApiProperty({
     example: ENUM_APPOINTMENT_STATUS.PENDING,

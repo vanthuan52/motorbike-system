@@ -27,6 +27,7 @@ import { ChatModule } from '@/modules/chat/chat.module';
 import { MessageSharedController } from '@/modules/chat/controllers/message.shared.controller';
 import { RoleModule } from '@/modules/role/role.module';
 import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
+import { AppointmentSharedController } from '@/modules/appointment/controllers/appointment.shared.controller';
 
 @Module({
   controllers: [
@@ -41,6 +42,7 @@ import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module
     UserVehicleSharedController,
     MessageSharedController,
     ConversationSharedController,
+    AppointmentSharedController,
   ],
   providers: [],
   exports: [],

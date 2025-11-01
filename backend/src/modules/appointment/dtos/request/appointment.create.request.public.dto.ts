@@ -11,24 +11,6 @@ import {
 
 export class AppointmentCreateRequestPublicDto {
   @ApiProperty({
-    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
-    description: 'ID người dùng',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  user?: string;
-
-  @ApiProperty({
-    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
-    description: 'ID xe của người dùng',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  userVehicle?: string;
-
-  @ApiProperty({
     example: 'Nguyễn Văn A',
     description: 'Tên khách hàng',
     maxLength: 200,
@@ -49,13 +31,30 @@ export class AppointmentCreateRequestPublicDto {
   phone: string;
 
   @ApiProperty({
+    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
+    description: 'ID người dùng',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  user?: string;
+
+  @ApiProperty({
+    example: 'd426d0eb-e654-40c8-9fb7-6671b6cf1382',
+    description: 'ID xe của người dùng',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  userVehicle?: string;
+
+  @ApiProperty({
     example: '61384a81-4425-4b33-84a5-691af292171c',
     description: 'ID model xe',
     maxLength: 255,
   })
   @IsString()
   @IsNotEmpty()
-  @MaxLength(255)
   vehicleModel: string;
 
   @ApiProperty({
@@ -78,15 +77,7 @@ export class AppointmentCreateRequestPublicDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(20)
-  licensePlate: string;
-
-  @ApiProperty({
-    example: '2024-07-14T08:00:00.000Z',
-    description: 'Ngày đặt lịch (ISO date)',
-  })
-  @IsNotEmpty()
-  @IsDateString()
-  appointmentDate: Date;
+  licensePlateNumber: string;
 
   @ApiProperty({
     example: '123 Đường Lớn, Quận 1, TP.HCM',
@@ -109,4 +100,12 @@ export class AppointmentCreateRequestPublicDto {
   @IsString()
   @MaxLength(500)
   note?: string;
+
+  @ApiProperty({
+    example: '2024-07-14T08:00:00.000Z',
+    description: 'Ngày đặt lịch (ISO date)',
+  })
+  @IsNotEmpty()
+  @IsDateString()
+  appointmentDate: Date;
 }

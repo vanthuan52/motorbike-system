@@ -5,8 +5,9 @@ import {
   AppointmentEntity,
 } from '../entities/appointment.entity';
 import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
-import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 import { VehicleServiceEntity } from '@/modules/vehicle-service/entities/vehicle-service.entity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
+import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 
 export class AppointmentRepository extends DatabaseRepositoryBase<
   AppointmentEntity,
@@ -19,6 +20,14 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
     model: VehicleServiceEntity.name,
   };
 
+  // readonly _joinUser: PopulateOptions = {
+  //   path: 'user',
+  //   localField: 'user',
+  //   foreignField: '_id',
+  //   model: UserEntity.name,
+  //   justOne: true,
+  // };
+
   readonly _joinVehicleModel: PopulateOptions = {
     path: 'vehicleModel',
     localField: 'vehicleModel',
@@ -28,18 +37,24 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
   };
 
   readonly _joinActive: PopulateOptions[] = [
-    {
-      path: 'vehicleModel',
-      localField: 'vehicleModel',
-      foreignField: '_id',
-      model: VehicleModelEntity.name,
-      justOne: true,
-    },
+    // {
+    //   path: 'user',
+    //   localField: 'user',
+    //   foreignField: '_id',
+    //   model: UserEntity.name,
+    //   justOne: true,
+    // },
     {
       path: 'vehicleServices',
       localField: 'vehicleServices',
       foreignField: '_id',
       model: VehicleServiceEntity.name,
+    },
+    {
+      path: 'vehicleModel',
+      localField: 'vehicleModel',
+      foreignField: '_id',
+      model: VehicleModelEntity.name,
     },
   ];
 
@@ -54,6 +69,13 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
         foreignField: '_id',
         model: VehicleServiceEntity.name,
       },
+      // {
+      //   path: 'user',
+      //   localField: 'user',
+      //   foreignField: '_id',
+      //   model: UserEntity.name,
+      //   justOne: true,
+      // },
       {
         path: 'vehicleModel',
         localField: 'vehicleModel',

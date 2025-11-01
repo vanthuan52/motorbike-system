@@ -34,7 +34,7 @@ export class AppointmentGetResponseDto extends DatabaseDto {
   vehicleServices: string[];
 
   @ApiProperty({ example: '59A1-12345', description: 'Biển số xe' })
-  licensePlate: string;
+  licensePlateNumber: string;
 
   @ApiProperty({
     example: '2024-07-14T08:00:00.000Z',
@@ -48,6 +48,13 @@ export class AppointmentGetResponseDto extends DatabaseDto {
     required: false,
   })
   address?: string;
+
+  @ApiProperty({
+    example: ['Fix lỗi rè đầu đèn', 'Fix ABC'],
+    description: 'Danh sách yêu cầu của khách',
+    required: false,
+  })
+  customerRequests?: string[];
 
   @ApiProperty({
     example: 'Xe bị rung đầu',
