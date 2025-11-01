@@ -32,6 +32,7 @@ import { HelperStringService } from '@/common/helper/services/helper.string.serv
 import { VehicleServiceTableName } from '@/modules/vehicle-service/entities/vehicle-service.entity';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 import { AppointmentGetResponseDto } from '../dtos/response/appointment.get.response.dto';
+import { AppointmentCreateRequestPublicDto } from '../dtos/request/appointment.create.request.public.dto';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -147,6 +148,39 @@ export class AppointmentService implements IAppointmentService {
     return this.appointmentRepository.getTotal(find, options);
   }
 
+  // Created by a user
+  async createAppointment(
+    {
+      name,
+      phone,
+      vehicleModel,
+      vehicleServices,
+      licensePlateNumber,
+      appointmentDate,
+      address,
+      note,
+    }: AppointmentCreateRequestPublicDto,
+    options?: IDatabaseCreateOptions,
+  ): Promise<AppointmentDoc> {
+    const create: AppointmentEntity = new AppointmentEntity();
+
+    create.name = name;
+    create.phone = phone;
+    create.vehicleModel = vehicleModel;
+    create.vehicleServices = vehicleServices;
+    create.licensePlateNumber = licensePlateNumber;
+    create.appointmentDate = new Date(appointmentDate);
+    create.address = address;
+    create.note = note ?? '';
+    create.status = ENUM_APPOINTMENT_STATUS.PENDING;
+
+    return this.appointmentRepository.create<AppointmentEntity>(
+      create,
+      options,
+    );
+  }
+
+  // Not created by a user
   async create(
     {
       user,
@@ -155,8 +189,9 @@ export class AppointmentService implements IAppointmentService {
       phone,
       vehicleModel,
       vehicleServices,
-      licensePlate,
+      licensePlateNumber,
       appointmentDate,
+      customerRequests,
       address,
       note,
       status,
@@ -171,7 +206,8 @@ export class AppointmentService implements IAppointmentService {
     create.phone = phone;
     create.vehicleModel = vehicleModel;
     create.vehicleServices = vehicleServices;
-    create.licensePlate = licensePlate;
+    create.licensePlateNumber = licensePlateNumber;
+    create.customerRequests = customerRequests;
     create.appointmentDate = new Date(appointmentDate);
     create.address = address;
     create.note = note ?? '';
@@ -192,7 +228,8 @@ export class AppointmentService implements IAppointmentService {
       phone,
       vehicleModel,
       vehicleServices,
-      licensePlate,
+      licensePlateNumber,
+      customerRequests,
       appointmentDate,
       address,
       note,
@@ -206,7 +243,10 @@ export class AppointmentService implements IAppointmentService {
     repository.phone = phone ?? repository.phone;
     repository.vehicleModel = vehicleModel ?? repository.vehicleModel;
     repository.vehicleServices = vehicleServices ?? repository.vehicleServices;
-    repository.licensePlate = licensePlate ?? repository.licensePlate;
+    repository.licensePlateNumber =
+      licensePlateNumber ?? repository.licensePlateNumber;
+    repository.customerRequests =
+      customerRequests ?? repository.customerRequests;
     repository.appointmentDate =
       appointmentDate !== undefined
         ? new Date(appointmentDate)

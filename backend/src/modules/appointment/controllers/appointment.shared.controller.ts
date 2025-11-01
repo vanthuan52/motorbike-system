@@ -15,14 +15,7 @@ import { AppointmentService } from '../services/appointment.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { UserService } from '@/modules/user/services/user.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
-import {
-  AppointmentAdminCreateDoc,
-  AppointmentAdminDeleteDoc,
-  AppointmentAdminListDoc,
-  AppointmentAdminParamsIdDoc,
-  AppointmentAdminUpdateDoc,
-  AppointmentAdminUpdateStatusDoc,
-} from '../docs/appointment.admin.doc';
+
 import {
   Response,
   ResponsePaging,
@@ -79,13 +72,21 @@ import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '@/modules/user-vehicle/enum
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 import { ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR } from '@/modules/vehicle-service/enums/vehicle-service.status-code.enum';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
+import {
+  AppointmentSharedCreateDoc,
+  AppointmentSharedDeleteDoc,
+  AppointmentSharedListDoc,
+  AppointmentSharedParamsIdDoc,
+  AppointmentSharedUpdateDoc,
+  AppointmentSharedUpdateStatusDoc,
+} from '../docs/appointment.shared.doc';
 
-@ApiTags('modules.admin.appointment')
+@ApiTags('modules.shared.appointment')
 @Controller({
   version: '1',
   path: '/appointment',
 })
-export class AppointmentAdminController {
+export class AppointmentSharedController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly paginationService: PaginationService,
@@ -95,13 +96,13 @@ export class AppointmentAdminController {
     private readonly userVehicleService: UserVehicleService,
   ) {}
 
-  @AppointmentAdminListDoc()
+  @AppointmentSharedListDoc()
   @ResponsePaging('appointment.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -147,7 +148,7 @@ export class AppointmentAdminController {
     };
   }
 
-  @AppointmentAdminParamsIdDoc()
+  @AppointmentSharedParamsIdDoc()
   @Response('appointment.getById')
   @PolicyAbilityProtected({
     subject: ENUM_POLICY_SUBJECT.USER,
@@ -169,13 +170,13 @@ export class AppointmentAdminController {
     return { data: mapped };
   }
 
-  @AppointmentAdminCreateDoc()
+  @AppointmentSharedCreateDoc()
   @Response('appointment.create')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -232,13 +233,13 @@ export class AppointmentAdminController {
     }
   }
 
-  @AppointmentAdminUpdateDoc()
+  @AppointmentSharedUpdateDoc()
   @Response('appointment.update')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -308,13 +309,13 @@ export class AppointmentAdminController {
     }
   }
 
-  @AppointmentAdminUpdateStatusDoc()
+  @AppointmentSharedUpdateStatusDoc()
   @Response('appointment.updateStatus')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -346,13 +347,13 @@ export class AppointmentAdminController {
     }
   }
 
-  @AppointmentAdminDeleteDoc()
+  @AppointmentSharedDeleteDoc()
   @Response('appointment.delete')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

@@ -16,22 +16,6 @@ export const AppointmentTableName = 'appointments';
 @DatabaseEntity({ collection: AppointmentTableName })
 export class AppointmentEntity extends DatabaseEntityBase {
   @DatabaseProp({
-    required: false,
-    ref: () => UserEntity.name,
-    index: true,
-    maxlength: 255,
-  })
-  user?: string;
-
-  @DatabaseProp({
-    required: false,
-    ref: () => UserVehicleEntity.name,
-    index: true,
-    maxlength: 255,
-  })
-  userVehicle?: string;
-
-  @DatabaseProp({
     required: true,
     trim: true,
     maxlength: 200,
@@ -47,34 +31,40 @@ export class AppointmentEntity extends DatabaseEntityBase {
   phone: string;
 
   @DatabaseProp({
+    required: false,
+    ref: () => UserEntity.name,
+    index: true,
+    maxlength: 255,
+  })
+  user?: string;
+
+  @DatabaseProp({
+    required: false,
+    ref: () => UserVehicleEntity.name,
+    index: true,
+  })
+  userVehicle?: string;
+
+  @DatabaseProp({
     required: true,
     ref: () => VehicleModelEntity.name,
     index: true,
-    maxlength: 255,
   })
   vehicleModel: string;
 
   @DatabaseProp({
-    required: true,
+    required: false,
     ref: () => VehicleServiceEntity.name,
-    index: true,
-    trim: true,
     type: [String],
+    default: [],
   })
   vehicleServices: string[];
 
   @DatabaseProp({
-    required: true,
-    trim: true,
+    required: false,
     maxlength: 20,
   })
-  licensePlate: string;
-
-  @DatabaseProp({
-    required: true,
-    trim: true,
-  })
-  appointmentDate: Date;
+  licensePlateNumber?: string;
 
   @DatabaseProp({
     required: false,
@@ -85,10 +75,21 @@ export class AppointmentEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
+    type: [String],
+  })
+  customerRequests?: string[];
+
+  @DatabaseProp({
+    required: false,
     trim: true,
     maxlength: 500,
   })
-  note: string;
+  note?: string;
+
+  @DatabaseProp({
+    required: true,
+  })
+  appointmentDate: Date;
 
   @DatabaseProp({
     required: true,
