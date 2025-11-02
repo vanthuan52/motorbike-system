@@ -93,7 +93,7 @@ import {
   CareRecordUpdateStatusRequestDto,
 } from '../dtos/request/care-record.update-status.request.dto';
 
-@ApiTags('modules.Shared.care-record')
+@ApiTags('modules.shared.care-record')
 @Controller({
   version: '1',
   path: '/care-record',
@@ -110,11 +110,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedListDoc()
   @ResponsePaging('care-record.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -187,11 +187,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedParamsIdDoc()
   @Response('care-record.get')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -209,11 +209,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedCreateDoc()
   @Response('care-record.create')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -255,11 +255,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedUpdateDoc()
   @Response('care-record.update')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -284,11 +284,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedUpdateStatusDoc()
   @Response('care-record.updateStatus')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -322,11 +322,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedUpdatePaymentStatusDoc()
   @Response('care-record.updatePaymentStatus')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/paymentStatus')
@@ -364,11 +364,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedUpdateTechnicianDoc()
   @Response('care-record.updateTechnician')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/technician')
@@ -406,11 +406,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedDeleteDoc()
   @Response('care-record.delete')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
@@ -434,11 +434,11 @@ export class CareRecordSharedController {
 
   @CareRecordSharedCreateChecklistDoc()
   @Response('care-record.createChecklist')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create/:id/checklist')

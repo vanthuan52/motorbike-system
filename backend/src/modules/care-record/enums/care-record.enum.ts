@@ -1,7 +1,7 @@
 export enum ENUM_CARE_RECORD_STATUS {
   PENDING = 'pending',
   IN_PROGRESS = 'in_progress',
-  DONE = 'done',
+  COMPLETED = 'completed',
   CANCEL = 'cancel',
 }
 
