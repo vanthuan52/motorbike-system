@@ -8,6 +8,7 @@ import {
   IsDate,
   IsBoolean,
   IsIn,
+  IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ENUM_PAYMENT_STATUS } from '../../enums/care-record.enum';
@@ -30,6 +31,15 @@ export class CareRecordCreateRequestDto {
   @IsNotEmpty()
   @IsUUID()
   userVehicle: string;
+
+  @ApiProperty({
+    example: 'Yamaha Exciter 155',
+    description: 'Tên model xe',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  vehicleModelName?: string;
 
   @ApiProperty({
     example: faker.string.uuid(),

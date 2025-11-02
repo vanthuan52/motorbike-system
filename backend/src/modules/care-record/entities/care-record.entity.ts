@@ -36,6 +36,13 @@ export class CareRecordEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
+    trim: true,
+    maxlength: 255,
+  })
+  vehicleModelName?: string;
+
+  @DatabaseProp({
+    required: false,
     ref: () => UserEntity.name,
   })
   technician?: string;
@@ -48,9 +55,15 @@ export class CareRecordEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
+    default: false,
+  })
+  isInitialConditionRecorded: boolean;
+
+  @DatabaseProp({
+    required: false,
     default: () => new Date(),
   })
-  receivedAt: Date;
+  receivedAt?: Date;
 
   @DatabaseProp({
     required: true,
@@ -68,7 +81,6 @@ export class CareRecordEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
-    default: () => new Date(),
   })
   handoverTime: Date;
 

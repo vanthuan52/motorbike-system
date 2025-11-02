@@ -110,6 +110,7 @@ export class CareRecordService implements ICareRecordService {
     {
       appointment,
       userVehicle,
+      vehicleModelName,
       technician,
       store,
       confirmedByOwner,
@@ -119,6 +120,7 @@ export class CareRecordService implements ICareRecordService {
     const create: CareRecordEntity = new CareRecordEntity();
     create.appointment = appointment;
     create.userVehicle = userVehicle;
+    create.vehicleModelName = vehicleModelName;
     create.technician = technician;
     create.store = store;
     create.confirmedByOwner = confirmedByOwner ? confirmedByOwner : false;
