@@ -28,6 +28,8 @@ import { MessageSharedController } from '@/modules/chat/controllers/message.shar
 import { RoleModule } from '@/modules/role/role.module';
 import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
 import { AppointmentSharedController } from '@/modules/appointment/controllers/appointment.shared.controller';
+import { CareRecordConditionModule } from '@/modules/care-record-condition/care-record-condition.module';
+import { CareRecordConditionSharedController } from '@/modules/care-record-condition/controllers/care-record-condition.shared.controller';
 
 @Module({
   controllers: [
@@ -43,6 +45,7 @@ import { AppointmentSharedController } from '@/modules/appointment/controllers/a
     MessageSharedController,
     ConversationSharedController,
     AppointmentSharedController,
+    CareRecordConditionSharedController,
   ],
   providers: [],
   exports: [],
@@ -58,6 +61,7 @@ import { AppointmentSharedController } from '@/modules/appointment/controllers/a
     VehicleServiceModule,
     PartModule,
     CareRecordModule,
+    CareRecordConditionModule,
     CareRecordChecklistModule,
     CareRecordMediaModule,
     CareRecordItemModule,
