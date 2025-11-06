@@ -43,6 +43,8 @@ import { CareRecordMediaAdminController } from '@/modules/care-record-media/cont
 import { CareRecordItemAdminController } from '@/modules/care-record-item/controllers/care-record-item.admin.controller';
 import { CareRecordItemModule } from '@/modules/care-record-item/care-record-item.module';
 import { UserVehicleAdminController } from '@/modules/user-vehicle/controllers/user-vehicle.admin.controller';
+import { CareRecordConditionAdminController } from '@/modules/care-record-condition/controllers/care-record-condition.admin.controller';
+import { CareRecordConditionModule } from '@/modules/care-record-condition/care-record-condition.module';
 
 @Module({
   controllers: [
@@ -69,6 +71,7 @@ import { UserVehicleAdminController } from '@/modules/user-vehicle/controllers/u
     CareRecordMediaAdminController,
     CareRecordItemAdminController,
     UserVehicleAdminController,
+    CareRecordConditionAdminController,
   ],
   providers: [],
   exports: [],
@@ -92,6 +95,7 @@ import { UserVehicleAdminController } from '@/modules/user-vehicle/controllers/u
     AppointmentModule,
     UserVehicleModule,
     CareRecordModule,
+    CareRecordConditionModule,
     CareRecordChecklistModule,
     CareRecordMediaModule,
     CareRecordItemModule,
