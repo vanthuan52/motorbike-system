@@ -35,7 +35,7 @@ const BasicInfoSection = ({ mode, onStatusChange }: BasicInfoSectionProps) => {
             <Form.Item label="Thông tin xe" name="vehicleModel">
               <Input size="large" readOnly className="!text-red-500" />
             </Form.Item>
-            <Form.Item name="licensePlate">
+            <Form.Item name="licensePlateNumber">
               <Input size="large" readOnly className="!text-red-500" />
             </Form.Item>
           </div>

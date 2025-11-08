@@ -108,9 +108,13 @@ export default function AppointmentsList() {
   };
   const statusOptions: SelectOptionItem[] = [
     { value: ENUM_APPOINTMENTS_STATUS.PENDING, label: "Đang chờ" },
-    { value: ENUM_APPOINTMENTS_STATUS.UPCOMING, label: "Sắp tới" },
-    { value: ENUM_APPOINTMENTS_STATUS.DONE, label: "Đã tiếp nhận" },
+    { value: ENUM_APPOINTMENTS_STATUS.SCHEDULED, label: "Đã lên lịch" },
+    { value: ENUM_APPOINTMENTS_STATUS.IN_PROGRESS, label: "Đang thực hiện" },
+    { value: ENUM_APPOINTMENTS_STATUS.COMPLETED, label: "Hoàn thành" },
+    { value: ENUM_APPOINTMENTS_STATUS.CANCELED, label: "Đã hủy" },
+    { value: ENUM_APPOINTMENTS_STATUS.MISSED, label: "Bỏ lỡ" },
   ];
+
   return (
     <div className="bg-white rounded-lg shadow-md">
       <TableToolbar

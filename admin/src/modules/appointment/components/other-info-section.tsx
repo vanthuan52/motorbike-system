@@ -73,7 +73,7 @@ const OtherInfoSection = ({
 
         <Form.Item
           label="Biển số xe"
-          name="licensePlate"
+          name="licensePlateNumber"
           rules={[{ required: true, message: "Vui lòng nhập biển số xe" }]}
         >
           <Input

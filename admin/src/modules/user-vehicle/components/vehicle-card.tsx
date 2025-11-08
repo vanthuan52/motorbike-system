@@ -6,7 +6,7 @@ export default function VehicleCard({
   id,
   photo,
   name,
-  licensePlate,
+  licensePlateNumber,
   color,
   onView,
   onDelete,
@@ -16,7 +16,7 @@ export default function VehicleCard({
       hoverable
       cover={
         <img
-          alt={licensePlate}
+          alt={licensePlateNumber}
           src={photo || "/images/image-holder-icon.png"}
           className="h-40 object-cover"
         />
@@ -40,7 +40,7 @@ export default function VehicleCard({
         title={<span className="font-semibold">{name}</span>}
         description={
           <div className="text-gray-600 text-sm">
-            <p>Biển số: {licensePlate}</p>
+            <p>Biển số: {licensePlateNumber}</p>
             {color && <Tag color="blue">{color}</Tag>}
           </div>
         }

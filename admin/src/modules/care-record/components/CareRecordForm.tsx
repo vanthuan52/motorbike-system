@@ -49,7 +49,7 @@ const CareRecordForm = ({
           typeof careRecord.appointment?.vehicleModel === "string"
             ? vehicleModelMap[careRecord.appointment?.vehicleModel]
             : careRecord.appointment?.vehicleModel?._id,
-        licensePlate: careRecord.appointment?.licensePlate || "",
+        licensePlateNumber: careRecord.appointment?.licensePlateNumber || "",
         technician: careRecord.technician?.name || "",
       });
     } else {

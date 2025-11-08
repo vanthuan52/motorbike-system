@@ -149,7 +149,7 @@ export default function UserVehicleList() {
                 id={vehicle._id}
                 photo={vehicle.photo}
                 name={vehicle.vehicleModel?.name || ""}
-                licensePlate={vehicle.licensePlate}
+                licensePlateNumber={vehicle.licensePlateNumber}
                 color={vehicle.color}
                 onView={(id) =>
                   navigate(

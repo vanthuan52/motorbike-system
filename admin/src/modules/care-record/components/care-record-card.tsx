@@ -29,7 +29,7 @@ export default function CareRecordCard({
       hoverable
       cover={
         <img
-          alt={userVehicle.licensePlate}
+          alt={userVehicle.licensePlateNumber}
           src={userVehicle.photo || "/images/image-holder-icon.png"}
           className="h-40 object-cover rounded-t-xl"
         />
@@ -58,7 +58,7 @@ export default function CareRecordCard({
             </p>
             <p>
               <span className="font-medium text-gray-700">Biển số:</span>{" "}
-              {userVehicle.licensePlate || "-"}
+              {userVehicle.licensePlateNumber || "-"}
             </p>
             <p>
               <span className="font-medium text-gray-700">Màu xe:</span>{" "}
