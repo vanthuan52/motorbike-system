@@ -7,7 +7,7 @@ export interface UserVehicle extends BaseEntity {
   user: User;
   vehicleModel: VehicleModel;
   color?: string;
-  licensePlate: string;
+  licensePlateNumber: string;
   engineNumber?: string;
   chassisNumber?: string;
   photo?: string;
@@ -17,7 +17,7 @@ export interface VehicleCardProps {
   id: string;
   photo?: string;
   name: string;
-  licensePlate: string;
+  licensePlateNumber: string;
   color?: string;
   onView: (id: string) => void;
   onDelete: (id: string) => void;

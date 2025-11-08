@@ -115,14 +115,17 @@ export const useAppointmentsTableColumns = ({
         title: "Trạng thái",
         dataIndex: "status",
         key: "status",
-        render: (status: ENUM_APPOINTMENTS_STATUS) =>
-          status === "pending"
-            ? "Đang chờ"
-            : status === "upcoming"
-              ? "Sắp tới"
-              : status === "done"
-                ? "Đã tiếp nhận"
-                : "Không rõ",
+        render: (status: ENUM_APPOINTMENTS_STATUS) => {
+          const statusText: Record<ENUM_APPOINTMENTS_STATUS, string> = {
+            [ENUM_APPOINTMENTS_STATUS.PENDING]: "Đang chờ",
+            [ENUM_APPOINTMENTS_STATUS.SCHEDULED]: "Đã lên lịch",
+            [ENUM_APPOINTMENTS_STATUS.IN_PROGRESS]: "Đang thực hiện",
+            [ENUM_APPOINTMENTS_STATUS.COMPLETED]: "Hoàn thành",
+            [ENUM_APPOINTMENTS_STATUS.CANCELED]: "Đã hủy",
+            [ENUM_APPOINTMENTS_STATUS.MISSED]: "Bỏ lỡ",
+          };
+          return statusText[status] || "Không rõ";
+        },
       },
       {
         title: "Hành động",

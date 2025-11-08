@@ -9,8 +9,11 @@ type BasicInfoSectionProps = {
 
 const statusOptions = [
   { label: "Đang chờ", value: ENUM_APPOINTMENTS_STATUS.PENDING },
-  { label: "Sắp tới", value: ENUM_APPOINTMENTS_STATUS.UPCOMING },
-  { label: "Đã tiếp nhận", value: ENUM_APPOINTMENTS_STATUS.DONE },
+  { label: "Đã lên lịch", value: ENUM_APPOINTMENTS_STATUS.SCHEDULED },
+  { label: "Đang thực hiện", value: ENUM_APPOINTMENTS_STATUS.IN_PROGRESS },
+  { label: "Hoàn thành", value: ENUM_APPOINTMENTS_STATUS.COMPLETED },
+  { label: "Đã hủy", value: ENUM_APPOINTMENTS_STATUS.CANCELED },
+  { label: "Bỏ lỡ", value: ENUM_APPOINTMENTS_STATUS.MISSED },
 ];
 
 const BasicInfoSection = ({ mode, onStatusChange }: BasicInfoSectionProps) => {

@@ -95,7 +95,7 @@ export const useCareRecordTableColumns = ({
         ),
       },
       {
-        title: "Tên xe",
+        title: "Tên xea",
         dataIndex: ["appointment", "vehicleModel"],
         key: "vehicleModel",
         render: (vehicleModelId: string) => (

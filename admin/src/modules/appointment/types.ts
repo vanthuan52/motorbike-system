@@ -6,10 +6,12 @@ import { VehicleBrand } from "../vehicle-brand/types";
 
 export enum ENUM_APPOINTMENTS_STATUS {
   PENDING = "pending",
-  UPCOMING = "upcoming",
-  DONE = "done",
+  SCHEDULED = "scheduled",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+  CANCELED = "canceled",
+  MISSED = "missed",
 }
-
 export interface Appointments extends BaseEntity {
   user?: string;
   userVehicle?: string[];
@@ -17,7 +19,7 @@ export interface Appointments extends BaseEntity {
   phone: string;
   vehicleModel: string | VehicleModel;
   vehicleServices: ServiceCategory[];
-  licensePlate: string;
+  licensePlateNumber: string;
   appointmentDate: Date;
   address?: string;
   note?: string;

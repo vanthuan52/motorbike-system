@@ -55,7 +55,7 @@ const BasicInfoSection = ({
               allowClear
             />
           </Form.Item>
-          <Form.Item label="Biển số xe" name="licensePlate">
+          <Form.Item label="Biển số xe" name="licensePlateNumber">
             <Input
               placeholder="Nhập biển số xe"
               size="large"
