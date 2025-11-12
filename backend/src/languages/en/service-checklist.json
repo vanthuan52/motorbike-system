@@ -1,5 +1,5 @@
 {
-  "list": "Service categories list retrieved successfully.",
+  "list": "Service checklist list retrieved successfully.",
   "get": "Service checklist details fetched successfully.",
   "create": "New Service checklist created successfully.",
   "update": "Service checklist updated successfully.",

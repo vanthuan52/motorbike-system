@@ -1,11 +1,12 @@
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
-import { ENUM_SERVICE_CHECKLIST_AREA } from '../enums/service-checklist.enum';
 import {
   DatabaseEntity,
   DatabaseProp,
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
+import { CareAreaEntity } from '@/modules/care-area/entities/care-area.entity';
+import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export const ServiceChecklistTableName = 'service_checklists';
 
@@ -22,6 +23,7 @@ export class ServiceChecklistEntity extends DatabaseEntityBase {
     required: true,
     trim: true,
     maxlength: 300,
+    unique: true,
   })
   code: string;
 
@@ -41,11 +43,18 @@ export class ServiceChecklistEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
+    ref: () => CareAreaEntity.name,
     index: true,
-    type: String,
-    enum: ENUM_SERVICE_CHECKLIST_AREA,
   })
-  area: ENUM_SERVICE_CHECKLIST_AREA;
+  careArea: string;
+
+  @DatabaseProp({
+    required: false,
+    type: [String],
+    enum: Object.values(ENUM_VEHICLE_MODEL_TYPE),
+    default: [],
+  })
+  vehicleType?: ENUM_VEHICLE_MODEL_TYPE[];
 }
 
 export const ServiceChecklistSchema = DatabaseSchema(ServiceChecklistEntity);

@@ -6,6 +6,7 @@ import {
   Put,
   Delete,
   Param,
+  Query,
   NotFoundException,
   InternalServerErrorException,
   HttpException,
@@ -52,11 +53,10 @@ import {
   ENUM_POLICY_SUBJECT,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  SERVICE_CHECKLIST_DEFAULT_AREA,
   SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   SERVICE_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
 } from '../constants/service-checklist.list.constant';
-import { ENUM_SERVICE_CHECKLIST_AREA } from '../enums/service-checklist.enum';
+import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 @ApiTags('modules.admin.service-checklist')
 @Controller({
@@ -71,10 +71,6 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminListDoc()
   @ResponsePaging('service-checklist.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -85,17 +81,16 @@ export class ServiceChecklistAdminController {
       availableOrderBy: SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'area',
-      SERVICE_CHECKLIST_DEFAULT_AREA,
-      ENUM_SERVICE_CHECKLIST_AREA,
-    )
-    area: Record<string, any>,
+    @Query('vehicleType') vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
   ): Promise<IResponsePaging<ServiceChecklistListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
-      ...area,
     };
+
+    // Filter by vehicle type if provided
+    if (vehicleType) {
+      find.vehicleType = { $in: [vehicleType] };
+    }
 
     const serviceChecklists = await this.serviceChecklistService.findAll(find, {
       paging: {
@@ -122,10 +117,6 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminParamsIdDoc()
   @Response('service-checklist.get')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -145,10 +136,6 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminCreateDoc()
   @Response('service-checklist.create')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -171,10 +158,6 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminUpdateDoc()
   @Response('service-checklist.update')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -204,10 +187,6 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminDeleteDoc()
   @Response('service-checklist.delete')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()

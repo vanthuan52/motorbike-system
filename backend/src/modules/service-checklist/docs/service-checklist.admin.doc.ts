@@ -2,7 +2,6 @@ import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import {
   ServiceChecklistDocParamsId,
-  ServiceChecklistDocQueryArea,
   ServiceChecklistDocQueryOrderBy,
   ServiceChecklistDocQueryOrderDirection,
 } from '../constants/service-checklist.doc.constant';
@@ -24,12 +23,20 @@ export function ServiceChecklistAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get all service checklist',
+      description: 'Get all service checklists with optional vehicle type filtering.',
     }),
     DocRequest({
       queries: [
-        ...ServiceChecklistDocQueryArea,
         ...ServiceChecklistDocQueryOrderBy,
         ...ServiceChecklistDocQueryOrderDirection,
+        {
+          name: 'vehicleType',
+          allowEmptyValue: true,
+          required: false,
+          type: 'string',
+          enum: ['scooter', 'manual_or_clutch', 'manual', 'clutch', 'electric', 'unknown'],
+          description: 'Filter service checklists by vehicle type (xe tay ga: scooter, xe số/côn: manual_or_clutch)',
+        },
       ],
     }),
     DocAuth({

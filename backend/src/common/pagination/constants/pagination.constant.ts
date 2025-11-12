@@ -2,7 +2,7 @@ import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '../enums/pagination.enum';
 
 //! Pagination default variable
 export const PAGINATION_DEFAULT_PER_PAGE = 20;
-export const PAGINATION_DEFAULT_MAX_PER_PAGE = 100;
+export const PAGINATION_DEFAULT_MAX_PER_PAGE = 300;
 
 export const PAGINATION_DEFAULT_PAGE = 1;
 export const PAGINATION_DEFAULT_MAX_PAGE = 20;

@@ -9,7 +9,7 @@ interface DocField {
   description?: string;
 }
 
-export const ServiceChecklistDocParamsId: DocField[] = [
+export const CareAreaDocParamsId: DocField[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -19,17 +19,7 @@ export const ServiceChecklistDocParamsId: DocField[] = [
   },
 ];
 
-export const ServiceChecklistDocParamsCode: DocField[] = [
-  {
-    name: 'code',
-    allowEmptyValue: false,
-    required: true,
-    type: 'string',
-    example: faker.internet.url(),
-  },
-];
-
-export const ServiceChecklistDocQueryOrderBy: DocField[] = [
+export const CareAreaDocQueryOrderBy: DocField[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -40,7 +30,7 @@ export const ServiceChecklistDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const ServiceChecklistDocQueryOrderDirection: DocField[] = [
+export const CareAreaDocQueryOrderDirection: DocField[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,

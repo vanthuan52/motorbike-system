@@ -5,8 +5,12 @@ import {
   IsString,
   MaxLength,
   IsIn,
+  IsUUID,
+  IsArray,
+  ArrayUnique,
 } from 'class-validator';
-import { ENUM_SERVICE_CHECKLIST_AREA } from '../../enums/service-checklist.enum';
+import { faker } from '@faker-js/faker';
+import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export class ServiceChecklistCreateRequestDto {
   @ApiProperty({
@@ -52,13 +56,24 @@ export class ServiceChecklistCreateRequestDto {
   @IsString()
   order?: string;
 
-  @IsOptional()
-  @IsIn(Object.values(ENUM_SERVICE_CHECKLIST_AREA))
   @ApiProperty({
-    example: ENUM_SERVICE_CHECKLIST_AREA.BRAKE,
-    description: 'Công việc này sẽ thực hiện trên bộ phận nào của xe',
+    example: faker.string.uuid(),
     required: true,
-    enum: ENUM_SERVICE_CHECKLIST_AREA,
   })
-  area?: ENUM_SERVICE_CHECKLIST_AREA;
+  @IsNotEmpty()
+  @IsUUID()
+  careArea: string;
+
+  @ApiProperty({
+    description: 'Danh sách các loại xe mà công việc này áp dụng.',
+    required: false,
+    enum: ENUM_VEHICLE_MODEL_TYPE,
+    isArray: true,
+    default: [], // Mặc định là mảng rỗng (diễn giải là áp dụng cho tất cả hoặc không có giới hạn)
+  })
+  @IsOptional()
+  @IsArray()
+  @ArrayUnique()
+  @IsIn(Object.values(ENUM_VEHICLE_MODEL_TYPE), { each: true })
+  vehicleType?: ENUM_VEHICLE_MODEL_TYPE[];
 }

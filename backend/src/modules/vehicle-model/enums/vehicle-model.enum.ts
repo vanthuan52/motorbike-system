@@ -4,16 +4,17 @@ export enum ENUM_VEHICLE_MODEL_STATUS {
 }
 
 export enum ENUM_VEHICLE_MODEL_TYPE {
-  UNKNOWN = 'unknown',
-  SCOOTER = 'scooter',
-  MANUAL = 'manual',
-  CLUTCH = 'clutch',
-  ELECTRIC = 'electric',
+  UNKNOWN = 'unknown', // Không xác định
+  SCOOTER = 'scooter', // Xe tay ga
+  MANUAL_OR_CLUTCH = 'manual_or_clutch', // Xe số/xe côn
+  MANUAL = 'manual', // Xe số
+  CLUTCH = 'clutch', // Xe côn
+  ELECTRIC = 'electric', // Xe điện
 }
 
 export enum ENUM_VEHICLE_MODEL_FUEL_TYPE {
-  UNKNOWN = 'unknown',
-  GASOLINE = 'gasoline',
-  HYBRID = 'hybrid',
-  ELECTRIC = 'electric',
+  UNKNOWN = 'unknown', // Không xác định
+  GASOLINE = 'gasoline', // Xăng
+  HYBRID = 'hybrid', // Hybrid
+  ELECTRIC = 'electric', // Điện
 }

@@ -18,6 +18,8 @@ import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module
 import { MigrationPartSeed } from './seeds/migration.part.seed';
 import { ServiceChecklistModule } from '@/modules/service-checklist/service-checklist.module';
 import { MigrationServiceChecklistSeed } from './seeds/migration.service-checklist.seed';
+import { CareAreaModule } from '@/modules/care-area/care-area.module';
+import { MigrationCareAreaSeed } from './seeds/migration.care-area.seed';
 
 // TODO: Change With Commander
 @Module({
@@ -33,6 +35,7 @@ import { MigrationServiceChecklistSeed } from './seeds/migration.service-checkli
     PartModule,
     VehicleBrandModule,
     ServiceChecklistModule,
+    CareAreaModule,
   ],
   providers: [
     MigrationRoleSeed,
@@ -43,6 +46,7 @@ import { MigrationServiceChecklistSeed } from './seeds/migration.service-checkli
     MigrationVehicleBrandSeed,
     MigrationPartSeed,
     MigrationServiceChecklistSeed,
+    MigrationCareAreaSeed,
   ],
   exports: [],
 })
