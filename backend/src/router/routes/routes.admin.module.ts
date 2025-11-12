@@ -45,6 +45,8 @@ import { CareRecordItemModule } from '@/modules/care-record-item/care-record-ite
 import { UserVehicleAdminController } from '@/modules/user-vehicle/controllers/user-vehicle.admin.controller';
 import { CareRecordConditionAdminController } from '@/modules/care-record-condition/controllers/care-record-condition.admin.controller';
 import { CareRecordConditionModule } from '@/modules/care-record-condition/care-record-condition.module';
+import { CareAreaAdminController } from '@/modules/care-area/controllers/care-area.admin.controller';
+import { CareAreaModule } from '@/modules/care-area/care-area.module';
 
 @Module({
   controllers: [
@@ -72,6 +74,7 @@ import { CareRecordConditionModule } from '@/modules/care-record-condition/care-
     CareRecordItemAdminController,
     UserVehicleAdminController,
     CareRecordConditionAdminController,
+    CareAreaAdminController,
   ],
   providers: [],
   exports: [],
@@ -99,6 +102,7 @@ import { CareRecordConditionModule } from '@/modules/care-record-condition/care-
     CareRecordChecklistModule,
     CareRecordMediaModule,
     CareRecordItemModule,
+    CareAreaModule,
   ],
 })
 export class RoutesAdminModule {}

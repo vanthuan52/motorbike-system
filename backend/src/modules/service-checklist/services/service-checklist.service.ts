@@ -18,7 +18,6 @@ import {
 } from '@/common/database/interfaces/database.interface';
 import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
-import { ENUM_SERVICE_CHECKLIST_AREA } from '../enums/service-checklist.enum';
 import { ServiceChecklistGetResponseDto } from '../dtos/response/service-checklist.get.response.dto';
 import { ServiceChecklistListResponseDto } from '../dtos/response/service-checklist.list.response.dto';
 import { IServiceChecklistEntity } from '../interfaces/service-checklist.interface';
@@ -33,19 +32,19 @@ export class ServiceChecklistService implements IServiceChecklistService {
     name: string,
     options?: IDatabaseExistsOptions,
   ): Promise<boolean> {
-    const ServiceChecklist = await this.serviceChecklistRepository.findOne(
+    const serviceChecklist = await this.serviceChecklistRepository.findOne(
       { name },
       options,
     );
-    return !!ServiceChecklist;
+    return !!serviceChecklist;
   }
 
   mapList(
-    ServiceChecklist: ServiceChecklistDoc[] | IServiceChecklistEntity[],
+    serviceChecklist: ServiceChecklistDoc[] | IServiceChecklistEntity[],
   ): ServiceChecklistListResponseDto[] {
     return plainToInstance(
       ServiceChecklistListResponseDto,
-      ServiceChecklist.map(
+      serviceChecklist.map(
         (p: ServiceChecklistDoc | IServiceChecklistEntity) =>
           typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
       ),
@@ -53,13 +52,13 @@ export class ServiceChecklistService implements IServiceChecklistService {
   }
 
   mapGet(
-    ServiceChecklist: ServiceChecklistDoc | IServiceChecklistEntity,
+    serviceChecklist: ServiceChecklistDoc | IServiceChecklistEntity,
   ): ServiceChecklistGetResponseDto {
     return plainToInstance(
       ServiceChecklistGetResponseDto,
-      typeof (ServiceChecklist as any).toObject === 'function'
-        ? (ServiceChecklist as any).toObject()
-        : ServiceChecklist,
+      typeof (serviceChecklist as any).toObject === 'function'
+        ? (serviceChecklist as any).toObject()
+        : serviceChecklist,
     );
   }
 
@@ -106,7 +105,13 @@ export class ServiceChecklistService implements IServiceChecklistService {
   }
 
   async create(
-    { name, code, description, order, area }: ServiceChecklistCreateRequestDto,
+    {
+      name,
+      code,
+      description,
+      order,
+      careArea,
+    }: ServiceChecklistCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<ServiceChecklistDoc> {
     const create: ServiceChecklistEntity = new ServiceChecklistEntity();
@@ -114,7 +119,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
     create.code = code;
     create.description = description;
     create.order = order;
-    create.area = area as ENUM_SERVICE_CHECKLIST_AREA;
+    create.careArea = careArea;
 
     return this.serviceChecklistRepository.create<ServiceChecklistEntity>(
       create,
@@ -124,14 +129,20 @@ export class ServiceChecklistService implements IServiceChecklistService {
 
   async update(
     repository: ServiceChecklistDoc,
-    { name, description, code, order, area }: ServiceChecklistUpdateRequestDto,
+    {
+      name,
+      description,
+      code,
+      order,
+      careArea,
+    }: ServiceChecklistUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<ServiceChecklistDoc> {
     repository.name = name ?? repository.name;
     repository.code = code ?? repository.code;
     repository.description = description ?? repository.description;
     repository.order = order ?? repository.order;
-    repository.area = (area as ENUM_SERVICE_CHECKLIST_AREA) ?? repository.area;
+    repository.careArea = careArea ?? repository.careArea;
     return this.serviceChecklistRepository.save(repository, options);
   }
 
@@ -164,23 +175,27 @@ export class ServiceChecklistService implements IServiceChecklistService {
     data: ServiceChecklistCreateRequestDto[],
     options?: IDatabaseCreateManyOptions,
   ): Promise<boolean> {
-    const create: ServiceChecklistEntity[] = data.map(
-      ({ name, description, code, order, area }) => {
-        const entity: ServiceChecklistEntity = new ServiceChecklistEntity();
-        entity.name = name;
-        entity.code = code;
-        entity.description = description;
-        entity.order = order;
-        entity.area = area as ENUM_SERVICE_CHECKLIST_AREA;
+    const create = data.map((item) => {
+      const doc: any = {
+        name: item.name,
+        code: item.code,
+        description: item.description,
+        order: item.order,
+        careArea: item.careArea,
+        vehicleType: item.vehicleType || [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deleted: false,
+        __v: 0,
+      };
 
-        return entity;
-      },
-    ) as ServiceChecklistEntity[];
+      return doc;
+    });
 
-    await this.serviceChecklistRepository.createMany<ServiceChecklistEntity>(
-      create,
-      options,
-    );
+    // Use insertMany directly to ensure vehicleType is preserved
+    await this.serviceChecklistRepository['_repository'].insertMany(create, {
+      ordered: false,
+    });
 
     return true;
   }

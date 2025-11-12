@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ENUM_SERVICE_CHECKLIST_AREA } from '../../enums/service-checklist.enum';
+
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
+import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export class ServiceChecklistGetResponseDto extends DatabaseDto {
   @ApiProperty({ example: 'Bánh xe/lốp sau' })
@@ -20,9 +21,15 @@ export class ServiceChecklistGetResponseDto extends DatabaseDto {
   order?: string;
 
   @ApiProperty({
+    example: 'uuid',
     required: true,
-    example: ENUM_SERVICE_CHECKLIST_AREA.ENGINE,
-    enum: () => ENUM_SERVICE_CHECKLIST_AREA,
   })
-  area: ENUM_SERVICE_CHECKLIST_AREA;
+  careArea: string;
+
+  @ApiProperty({
+    example: [],
+    description: 'Danh sách các loại xe mà công việc này áp dụng.',
+    required: false,
+  })
+  vehicleType?: ENUM_VEHICLE_MODEL_TYPE[];
 }
