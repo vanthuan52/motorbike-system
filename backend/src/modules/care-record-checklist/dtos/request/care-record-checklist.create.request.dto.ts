@@ -8,26 +8,38 @@ import {
   IsIn,
   IsString,
 } from 'class-validator';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../../enums/care-record-checklist.enum';
+import {
+  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+} from '../../enums/care-record-checklist.enum';
 
 export class CareRecordChecklistCreateRequestDto {
   @ApiProperty({
     example: faker.string.uuid(),
-    description: 'ID đơn chăm sóc',
+    description: 'ID Care Record Service',
     required: true,
   })
   @IsNotEmpty()
   @IsUUID()
-  careRecord: string;
+  careRecordService: string;
 
   @ApiProperty({
     example: faker.string.uuid(),
     description: 'ID công việc',
-    required: true,
+    required: false,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsUUID()
-  serviceChecklist: string;
+  serviceChecklist?: string;
+
+  @ApiProperty({
+    example: 'Tên công việc',
+    description: 'Tên công việc (tùy chọn)',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  name?: string;
 
   @ApiProperty({
     example: 'Some notes',
@@ -45,18 +57,29 @@ export class CareRecordChecklistCreateRequestDto {
   })
   @IsOptional()
   @IsNumber()
-  wearPercentage: number;
+  wearPercentage?: number;
 
   @IsOptional()
   @IsIn(Object.values(ENUM_CARE_RECORD_CHECKLIST_STATUS))
   @ApiProperty({
-    example: ENUM_CARE_RECORD_CHECKLIST_STATUS.UNCHECKED,
+    example: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
     description: 'Trạng thái của mục công việc',
     required: false,
     enum: ENUM_CARE_RECORD_CHECKLIST_STATUS,
-    default: ENUM_CARE_RECORD_CHECKLIST_STATUS.UNCHECKED,
+    default: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
   })
   status?: ENUM_CARE_RECORD_CHECKLIST_STATUS;
+
+  @IsOptional()
+  @IsIn(Object.values(ENUM_CARE_RECORD_CHECKLIST_RESULT))
+  @ApiProperty({
+    example: ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED,
+    description: 'Kết quả của mục công việc',
+    required: false,
+    enum: ENUM_CARE_RECORD_CHECKLIST_RESULT,
+    default: ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED,
+  })
+  result?: ENUM_CARE_RECORD_CHECKLIST_RESULT;
 
   @ApiProperty({
     example: faker.image.url(),

@@ -29,10 +29,13 @@ import { CareRecordServiceGetResponseDto } from '../dtos/response/care-record-se
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
 import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
+import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/care-record-service.with-checklists.response.dto';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import { ENUM_CARE_RECORD_SERVICE_STATUS } from '../enums/care-record-service.enum';
 import { UserVehicleRepository } from '@/modules/user-vehicle/repository/user-vehicle.repository';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
+import { CareRecordChecklistService } from '@/modules/care-record-checklist/services/care-record-checklist.service';
+import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '@/common/pagination/enums/pagination.enum';
 
 @Injectable()
 export class CareRecordServiceService implements ICareRecordServiceService {
@@ -41,6 +44,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
     private readonly careRecordServiceRepository: CareRecordServiceRepository,
     private readonly configService: ConfigService,
     private readonly helperStringService: HelperStringService,
+    private readonly careRecordChecklistService: CareRecordChecklistService,
   ) {}
 
   async findAll(
@@ -71,6 +75,31 @@ export class CareRecordServiceService implements ICareRecordServiceService {
         join: true,
       },
     );
+  }
+
+  async findAllWithChecklists(
+    find?: Record<string, any>,
+    options?: IDatabaseFindAllOptions,
+  ): Promise<CareRecordServiceWithChecklistsResponseDto[]> {
+    const careRecordServices = await this.findAll(find, options);
+
+    const result: CareRecordServiceWithChecklistsResponseDto[] = [];
+
+    for (const careRecordService of careRecordServices) {
+      const checklistFind: Record<string, any> = {
+        careRecordService: careRecordService._id,
+      };
+
+      const checklists = await this.careRecordChecklistService.findAll(
+        checklistFind,
+        { order: { createdAt: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC } },
+      );
+
+      const mapped = this.mapWithChecklists(careRecordService, checklists);
+      result.push(mapped);
+    }
+
+    return result;
   }
 
   async getTotalWithPopulate(
@@ -225,5 +254,21 @@ export class CareRecordServiceService implements ICareRecordServiceService {
         ? (careRecordService as any).toObject()
         : careRecordService,
     );
+  }
+
+  mapWithChecklists(
+    careRecordService: CareRecordServiceDoc,
+    checklists: any[],
+  ): CareRecordServiceWithChecklistsResponseDto {
+    const serviceData = typeof (careRecordService as any).toObject === 'function'
+      ? (careRecordService as any).toObject()
+      : careRecordService;
+
+    const mappedChecklists = this.careRecordChecklistService.mapList(checklists);
+
+    return plainToInstance(CareRecordServiceWithChecklistsResponseDto, {
+      ...serviceData,
+      checklists: mappedChecklists,
+    });
   }
 }

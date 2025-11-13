@@ -20,6 +20,7 @@ import {
 import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
 import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
+import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/care-record-service.with-checklists.response.dto';
 
 export function CareRecordServiceSharedListDoc(): MethodDecorator {
   return applyDecorators(
@@ -156,5 +157,29 @@ export function CareRecordServiceSharedUpdateStatusDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('care-record-service.updateStatus'),
+  );
+}
+
+export function CareRecordServiceSharedListWithChecklistsDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all care record services with their checklists',
+    }),
+    DocRequest({
+      queries: [
+        ...CareRecordServiceDocQueryCareRecord,
+        ...CareRecordServiceDocQueryStatus,
+      ],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<CareRecordServiceWithChecklistsResponseDto>(
+      'care-record-service.listWithChecklists',
+      {
+        dto: CareRecordServiceWithChecklistsResponseDto,
+      },
+    ),
   );
 }

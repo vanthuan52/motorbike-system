@@ -5,7 +5,7 @@ import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../../enums/care-record-check
 export class CareRecordChecklistUpdateStatusRequestDto {
   @ApiProperty({
     required: true,
-    example: ENUM_CARE_RECORD_CHECKLIST_STATUS.UNCHECKED,
+    example: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
     enum: ENUM_CARE_RECORD_CHECKLIST_STATUS,
   })
   @IsEnum(ENUM_CARE_RECORD_CHECKLIST_STATUS)

@@ -2,19 +2,20 @@ import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CareRecordChecklistGetResponseDto } from './care-record-checklist.get.response.dto';
 import { ServiceChecklistGetResponseDto } from '@/modules/service-checklist/dtos/response/service-checklist.get.response.dto';
-import { CareRecordGetResponseDto } from '@/modules/care-record/dtos/response/care-record.get.response.dto';
+import { CareRecordServiceGetResponseDto } from '@/modules/care-record-service/dtos/response/care-record-service.get.response.dto';
+import { PartGetResponseDto } from '@/modules/part/dtos/response/part.get.response.dto';
 
 export class CareRecordChecklistGetFullResponseDto extends OmitType(
   CareRecordChecklistGetResponseDto,
-  ['careRecord', 'serviceChecklist'] as const,
+  ['careRecordService', 'serviceChecklist', 'parts'] as const,
 ) {
   @ApiProperty({
     required: false,
-    type: CareRecordGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(CareRecordGetResponseDto) }],
+    type: CareRecordServiceGetResponseDto,
+    oneOf: [{ $ref: getSchemaPath(CareRecordServiceGetResponseDto) }],
   })
-  @Type(() => CareRecordGetResponseDto)
-  careRecord: CareRecordGetResponseDto;
+  @Type(() => CareRecordServiceGetResponseDto)
+  careRecordService: CareRecordServiceGetResponseDto;
 
   @ApiProperty({
     required: true,
@@ -23,4 +24,12 @@ export class CareRecordChecklistGetFullResponseDto extends OmitType(
   })
   @Type(() => ServiceChecklistGetResponseDto)
   serviceChecklist: ServiceChecklistGetResponseDto;
+
+  @ApiProperty({
+    required: true,
+    type: PartGetResponseDto,
+    oneOf: [{ $ref: getSchemaPath(PartGetResponseDto) }],
+  })
+  @Type(() => PartGetResponseDto)
+  parts: PartGetResponseDto[];
 }

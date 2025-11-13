@@ -43,6 +43,7 @@ import {
   CareRecordChecklistSharedListDoc,
   CareRecordChecklistSharedParamsIdDoc,
   CareRecordChecklistSharedUpdateDoc,
+  CareRecordChecklistSharedUpdateResultDoc,
   CareRecordChecklistSharedUpdateStatusDoc,
 } from '../docs/care-record-checklist.shared.doc';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
@@ -65,6 +66,7 @@ import {
 import {
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
+  CARE_RECORD_CHECKLIST_DEFAULT_RESULT,
   CARE_RECORD_CHECKLIST_DEFAULT_STATUS,
 } from '../constants/care-record-checklist.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -72,12 +74,17 @@ import { CareRecordChecklistParsePipe } from '../pipes/care-record-checklist.par
 import { CareRecordChecklistDoc } from '../entities/care-record-checklist.entity';
 import { ICareRecordChecklistDoc } from '../interfaces/care-record-checklist.interface';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../enums/care-record-checklist.enum';
+import {
+  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+} from '../enums/care-record-checklist.enum';
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
 import { CareRecordService } from '@/modules/care-record/services/care-record.service';
 import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
 import { ENUM_CARE_RECORD_STATUS_CODE_ERROR } from '@/modules/care-record/enums/care-record.status-code.enum';
 import { ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR } from '@/modules/service-checklist/enums/service-checklist.status-code.enum';
+import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
+import { CareRecordServiceService } from '@/modules/care-record-service/services/care-record-service.service';
 
 @ApiTags('modules.shared.care-record-checklist')
 @Controller({
@@ -89,7 +96,7 @@ export class CareRecordChecklistSharedController {
     CareRecordChecklistSharedController.name,
   );
   constructor(
-    private readonly careRecordService: CareRecordService,
+    private readonly careRecordServiceService: CareRecordServiceService,
     private readonly serviceChecklistService: ServiceChecklistService,
     private readonly careRecordChecklistService: CareRecordChecklistService,
     private readonly paginationService: PaginationService,
@@ -97,11 +104,11 @@ export class CareRecordChecklistSharedController {
 
   @CareRecordChecklistSharedListDoc()
   @ResponsePaging('care-record-checklist.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -117,16 +124,23 @@ export class CareRecordChecklistSharedController {
       ENUM_CARE_RECORD_CHECKLIST_STATUS,
     )
     status: Record<string, any>,
-    @Query('careRecord', OptionalParseUUIDPipe)
-    careRecordId: string,
+    @PaginationQueryFilterInEnum(
+      'result',
+      CARE_RECORD_CHECKLIST_DEFAULT_RESULT,
+      ENUM_CARE_RECORD_CHECKLIST_RESULT,
+    )
+    result: Record<string, any>,
+    @Query('careRecordService', OptionalParseUUIDPipe)
+    careRecordServiceId: string,
   ): Promise<IResponsePaging<CareRecordChecklistListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
+      ...result,
     };
 
-    if (careRecordId) {
-      find['careRecord._id'] = careRecordId;
+    if (careRecordServiceId) {
+      find['careRecordService._id'] = careRecordServiceId;
     }
 
     const careRecordChecklists =
@@ -157,11 +171,11 @@ export class CareRecordChecklistSharedController {
 
   @CareRecordChecklistSharedParamsIdDoc()
   @Response('care-record-checklist.get')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -179,11 +193,11 @@ export class CareRecordChecklistSharedController {
 
   @CareRecordChecklistSharedCreateDoc()
   @Response('care-record-checklist.create')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -191,29 +205,35 @@ export class CareRecordChecklistSharedController {
     @AuthJwtPayload('user') createdBy: string,
     @Body() body: CareRecordChecklistCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
-    const promises: Promise<any>[] = [
-      this.careRecordService.findOneById(body.careRecord),
-      this.serviceChecklistService.findOneById(body.serviceChecklist),
-    ];
-    const [checkCareRecord, checkServiceChecklist] =
-      await Promise.all(promises);
+    if (body.serviceChecklist) {
+      const checkServiceChecklist =
+        await this.serviceChecklistService.findOneById(body.serviceChecklist);
+      if (!checkServiceChecklist) {
+        throw new NotFoundException({
+          statusCode: ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR.NOT_FOUND,
+          message: 'service-checklist.error.notFound',
+        });
+      }
+    }
+
+    const checkCareRecord = await this.careRecordServiceService.findOneById(
+      body.careRecordService,
+    );
 
     if (!checkCareRecord) {
       throw new NotFoundException({
         statusCode: ENUM_CARE_RECORD_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'care-record.error.notFound',
       });
-    } else if (!checkServiceChecklist) {
-      throw new NotFoundException({
-        statusCode: ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'service-checklist.error.notFound',
-      });
     }
 
     try {
-      const created = await this.careRecordChecklistService.create(body, {
-        actionBy: createdBy,
-      } as IDatabaseCreateOptions);
+      const created = await this.careRecordChecklistService.create(
+        { ...body, name: 'Unknown' },
+        {
+          actionBy: createdBy,
+        } as IDatabaseCreateOptions,
+      );
       return { data: { _id: created._id } };
     } catch (err: unknown) {
       throw new InternalServerErrorException({
@@ -226,22 +246,22 @@ export class CareRecordChecklistSharedController {
 
   @CareRecordChecklistSharedUpdateDoc()
   @Response('care-record-checklist.update')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, CareRecordChecklistParsePipe)
-    CareRecordChecklist: CareRecordChecklistDoc,
+    careRecordChecklist: CareRecordChecklistDoc,
     @AuthJwtPayload('user') updatedBy: string,
     @Body() body: CareRecordChecklistUpdateRequestDto,
   ): Promise<void> {
     try {
-      await this.careRecordChecklistService.update(CareRecordChecklist, body, {
+      await this.careRecordChecklistService.update(careRecordChecklist, body, {
         actionBy: updatedBy,
       });
     } catch (err: unknown) {
@@ -255,11 +275,11 @@ export class CareRecordChecklistSharedController {
 
   @CareRecordChecklistSharedUpdateStatusDoc()
   @Response('care-record-checklist.updateStatus')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -295,13 +315,55 @@ export class CareRecordChecklistSharedController {
     }
   }
 
+  @CareRecordChecklistSharedUpdateResultDoc()
+  @Response('care-record-checklist.updateResultStatus')
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Patch('/update/:id/result')
+  async updateResult(
+    @Param('id', RequestRequiredPipe, CareRecordChecklistParsePipe)
+    careRecordChecklist: CareRecordChecklistDoc,
+    @AuthJwtPayload('user') updatedBy: string,
+    @Body() { result }: CareRecordChecklistUpdateResultRequestDto,
+  ): Promise<IResponse<void>> {
+    try {
+      await this.careRecordChecklistService.updateResult(
+        careRecordChecklist,
+        { result },
+        {
+          actionBy: updatedBy,
+        } as IDatabaseSaveOptions,
+      );
+      return {
+        _metadata: {
+          customProperty: {
+            messageProperties: {
+              result: result.toLowerCase(),
+            },
+          },
+        },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'care-record-checklist.error.updateResultStatusFailed',
+        _error: err,
+      });
+    }
+  }
+
   @CareRecordChecklistSharedDeleteDoc()
   @Response('care-record-checklist.delete')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
@@ -310,7 +372,7 @@ export class CareRecordChecklistSharedController {
     careRecordChecklist: CareRecordChecklistDoc,
   ): Promise<IResponse<void>> {
     try {
-      await this.careRecordChecklistService.softDelete(
+      await this.careRecordChecklistService.delete(
         careRecordChecklist,
         {} as IDatabaseDeleteOptions,
       );

@@ -27,6 +27,7 @@ import {
 } from '@/common/response/interfaces/response.interface';
 import { CareRecordServiceListResponseDto } from '../dtos/response/care-record-service.list.response.dto';
 import { CareRecordServiceGetResponseDto } from '../dtos/response/care-record-service.get.response.dto';
+import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/care-record-service.with-checklists.response.dto';
 import {
   IDatabaseCreateOptions,
   IDatabaseDeleteOptions,
@@ -41,6 +42,7 @@ import {
   CareRecordServiceSharedCreateDoc,
   CareRecordServiceSharedDeleteDoc,
   CareRecordServiceSharedListDoc,
+  CareRecordServiceSharedListWithChecklistsDoc,
   CareRecordServiceSharedParamsIdDoc,
   CareRecordServiceSharedUpdateDoc,
   CareRecordServiceSharedUpdateStatusDoc,
@@ -112,15 +114,15 @@ export class CareRecordServiceSharedController {
     )
     status: Record<string, any>,
     @Query('careRecord', OptionalParseUUIDPipe)
-    careRecordId: string,
+    careRecord?: string,
   ): Promise<IResponsePaging<CareRecordServiceListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
     };
 
-    if (careRecordId) {
-      find['careRecord._id'] = careRecordId;
+    if (careRecord) {
+      find['careRecord'] = careRecord; //careAreaId
     }
 
     const careRecordServices =
@@ -145,6 +147,61 @@ export class CareRecordServiceSharedController {
         totalPage,
       },
       data: mapped,
+    };
+  }
+
+  @CareRecordServiceSharedListWithChecklistsDoc()
+  @ResponsePaging('care-record-service.listWithChecklists')
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/list/checklists')
+  async listWithChecklists(
+    @PaginationQuery({
+      availableSearch: CARE_RECORD_SERVICE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: CARE_RECORD_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    { _search, _limit, _offset, _order }: PaginationListDto,
+    @PaginationQueryFilterInEnum(
+      'status',
+      CARE_RECORD_SERVICE_DEFAULT_STATUS,
+      ENUM_CARE_RECORD_SERVICE_STATUS,
+    )
+    status: Record<string, any>,
+    @Query('careRecord', OptionalParseUUIDPipe)
+    careRecordId: string,
+  ): Promise<IResponsePaging<CareRecordServiceWithChecklistsResponseDto>> {
+    const find: Record<string, any> = {
+      ..._search,
+      ...status,
+    };
+
+    if (careRecordId) {
+      find['careRecord'] = careRecordId;
+    }
+
+    const careRecordServicesWithChecklists =
+      await this.careRecordServiceService.findAllWithChecklists(find, {
+        paging: {
+          limit: _limit,
+          offset: _offset,
+        },
+        order: _order,
+      });
+
+    const total: number = await this.careRecordServiceService.getTotal(find);
+    const totalPage: number = this.paginationService.totalPage(total, _limit);
+
+    return {
+      _pagination: {
+        total,
+        totalPage,
+      },
+      data: careRecordServicesWithChecklists,
     };
   }
 

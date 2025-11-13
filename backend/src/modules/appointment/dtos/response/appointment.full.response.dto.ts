@@ -31,5 +31,5 @@ export class AppointmentGetFullResponseDto extends OmitType(
     oneOf: [{ $ref: getSchemaPath(VehicleModelGetResponseDto) }],
   })
   @Type(() => VehicleModelGetResponseDto)
-  vehicleModel: VehicleModelGetResponseDto;
+  vehicleModel: VehicleModelGetResponseDto[];
 }
