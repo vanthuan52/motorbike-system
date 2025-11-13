@@ -57,7 +57,7 @@ export class CareRecordItemEntity extends DatabaseEntityBase {
     required: false,
     ref: () => PartEntity.name,
   })
-  part: string;
+  part?: string;
 
   @DatabaseProp({
     required: true,
