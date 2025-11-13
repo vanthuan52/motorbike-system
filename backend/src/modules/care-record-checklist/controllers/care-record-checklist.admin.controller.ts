@@ -46,6 +46,7 @@ import {
   CareRecordChecklistAdminUpdateStatusDoc,
   CareRecordChecklistAdminUpdateWearPercentageDoc,
   CareRecordChecklistAdminUpdateNoteDoc,
+  CareRecordChecklistAdminUpdateResultDoc,
 } from '../docs/care-record-checklist.admin.doc';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
 import { ENUM_CARE_RECORD_CHECKLIST_STATUS_CODE_ERROR } from '../enums/care-record-checklist.status-code.enum';
@@ -67,6 +68,7 @@ import {
 import {
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
+  CARE_RECORD_CHECKLIST_DEFAULT_RESULT,
   CARE_RECORD_CHECKLIST_DEFAULT_STATUS,
 } from '../constants/care-record-checklist.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -74,12 +76,17 @@ import { CareRecordChecklistParsePipe } from '../pipes/care-record-checklist.par
 import { CareRecordChecklistDoc } from '../entities/care-record-checklist.entity';
 import { ICareRecordChecklistDoc } from '../interfaces/care-record-checklist.interface';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../enums/care-record-checklist.enum';
+import {
+  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+} from '../enums/care-record-checklist.enum';
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
-import { CareRecordService } from '@/modules/care-record/services/care-record.service';
 import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
 import { ENUM_CARE_RECORD_STATUS_CODE_ERROR } from '@/modules/care-record/enums/care-record.status-code.enum';
 import { ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR } from '@/modules/service-checklist/enums/service-checklist.status-code.enum';
+import { CareRecordServiceService } from '@/modules/care-record-service/services/care-record-service.service';
+import { PartService } from '@/modules/part/services/part.services';
+import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 
 @ApiTags('modules.admin.care-record-checklist')
 @Controller({
@@ -89,18 +96,15 @@ import { ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR } from '@/modules/service-chec
 export class CareRecordChecklistAdminController {
   private readonly logger = new Logger(CareRecordChecklistAdminController.name);
   constructor(
-    private readonly careRecordService: CareRecordService,
+    private readonly careRecordServiceService: CareRecordServiceService,
     private readonly serviceChecklistService: ServiceChecklistService,
     private readonly careRecordChecklistService: CareRecordChecklistService,
+    private readonly partService: PartService,
     private readonly paginationService: PaginationService,
   ) {}
 
   @CareRecordChecklistAdminListDoc()
   @ResponsePaging('care-record-checklist.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -117,16 +121,23 @@ export class CareRecordChecklistAdminController {
       ENUM_CARE_RECORD_CHECKLIST_STATUS,
     )
     status: Record<string, any>,
-    @Query('careRecord', OptionalParseUUIDPipe)
-    careRecordId: string,
+    @PaginationQueryFilterInEnum(
+      'result',
+      CARE_RECORD_CHECKLIST_DEFAULT_RESULT,
+      ENUM_CARE_RECORD_CHECKLIST_RESULT,
+    )
+    result: Record<string, any>,
+    @Query('careRecordService', OptionalParseUUIDPipe)
+    careRecordServiceId: string,
   ): Promise<IResponsePaging<CareRecordChecklistListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
       ...status,
+      ...result,
     };
 
-    if (careRecordId) {
-      find['careRecord'] = careRecordId;
+    if (careRecordServiceId) {
+      find['careRecordService._id'] = careRecordServiceId;
     }
 
     const careRecordChecklists =
@@ -157,10 +168,6 @@ export class CareRecordChecklistAdminController {
 
   @CareRecordChecklistAdminParamsIdDoc()
   @Response('care-record-checklist.get')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -179,10 +186,6 @@ export class CareRecordChecklistAdminController {
 
   @CareRecordChecklistAdminCreateDoc()
   @Response('care-record-checklist.create')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -192,7 +195,7 @@ export class CareRecordChecklistAdminController {
     @Body() body: CareRecordChecklistCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
     const promises: Promise<any>[] = [
-      this.careRecordService.findOneById(body.careRecord),
+      this.careRecordServiceService.findOneById(body.careRecordService),
       this.serviceChecklistService.findOneById(body.serviceChecklist),
     ];
     const [checkCareRecord, checkServiceChecklist] =
@@ -211,9 +214,12 @@ export class CareRecordChecklistAdminController {
     }
 
     try {
-      const created = await this.careRecordChecklistService.create(body, {
-        actionBy: createdBy,
-      } as IDatabaseCreateOptions);
+      const created = await this.careRecordChecklistService.create(
+        { ...body, name: checkServiceChecklist.name },
+        {
+          actionBy: createdBy,
+        } as IDatabaseCreateOptions,
+      );
       return { data: { _id: created._id } };
     } catch (err: unknown) {
       throw new InternalServerErrorException({
@@ -226,22 +232,18 @@ export class CareRecordChecklistAdminController {
 
   @CareRecordChecklistAdminUpdateDoc()
   @Response('care-record-checklist.update')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, CareRecordChecklistParsePipe)
-    CareRecordChecklist: CareRecordChecklistDoc,
+    careRecordChecklist: CareRecordChecklistDoc,
     @AuthJwtPayload('user') updatedBy: string,
     @Body() body: CareRecordChecklistUpdateRequestDto,
   ): Promise<void> {
     try {
-      await this.careRecordChecklistService.update(CareRecordChecklist, body, {
+      await this.careRecordChecklistService.update(careRecordChecklist, body, {
         actionBy: updatedBy,
       });
     } catch (err: unknown) {
@@ -255,10 +257,6 @@ export class CareRecordChecklistAdminController {
 
   @CareRecordChecklistAdminUpdateStatusDoc()
   @Response('care-record-checklist.updateStatus')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -295,12 +293,50 @@ export class CareRecordChecklistAdminController {
     }
   }
 
+  @CareRecordChecklistAdminUpdateResultDoc()
+  @Response('care-record-checklist.updateResultStatus')
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Patch('/update/:id/result')
+  async updateResult(
+    @Param('id', RequestRequiredPipe, CareRecordChecklistParsePipe)
+    careRecordChecklist: CareRecordChecklistDoc,
+    @AuthJwtPayload('user') updatedBy: string,
+    @Body() { result }: CareRecordChecklistUpdateResultRequestDto,
+  ): Promise<IResponse<void>> {
+    try {
+      await this.careRecordChecklistService.updateResult(
+        careRecordChecklist,
+        { result },
+        {
+          actionBy: updatedBy,
+        } as IDatabaseSaveOptions,
+      );
+      return {
+        _metadata: {
+          customProperty: {
+            messageProperties: {
+              result: result.toLowerCase(),
+            },
+          },
+        },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'care-record-checklist.error.updateResultStatusFailed',
+        _error: err,
+      });
+    }
+  }
+
   @CareRecordChecklistAdminDeleteDoc()
   @Response('care-record-checklist.delete')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -310,7 +346,7 @@ export class CareRecordChecklistAdminController {
     careRecordChecklist: CareRecordChecklistDoc,
   ): Promise<IResponse<void>> {
     try {
-      await this.careRecordChecklistService.softDelete(
+      await this.careRecordChecklistService.delete(
         careRecordChecklist,
         {} as IDatabaseDeleteOptions,
       );

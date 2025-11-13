@@ -80,6 +80,9 @@ import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicl
 import { CareRecordServiceService } from '@/modules/care-record-service/services/care-record-service.service';
 import { ENUM_CARE_RECORD_SERVICE_TYPE } from '@/modules/care-record-service/enums/care-record-service.enum';
 import { CareRecordServiceCreateRequestDto } from '@/modules/care-record-service/dtos/request/care-record-service.create.request.dto';
+import { CareRecordChecklistService } from '@/modules/care-record-checklist/services/care-record-checklist.service';
+import { CareRecordChecklistCreateRequestDto } from '@/modules/care-record-checklist/dtos/request/care-record-checklist.create.request.dto';
+import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 import {
   ENUM_CARE_RECORD_STATUS,
@@ -110,6 +113,8 @@ export class CareRecordSharedController {
     private readonly careRecordService: CareRecordService,
     private readonly careRecordServiceService: CareRecordServiceService,
     private readonly vehicleServiceService: VehicleServiceService,
+    private readonly careRecordChecklistService: CareRecordChecklistService,
+    private readonly serviceChecklistService: ServiceChecklistService,
     private readonly paginationService: PaginationService,
   ) {}
 
@@ -558,6 +563,90 @@ export class CareRecordSharedController {
     if (allServiceDtos.length > 0) {
       await this.careRecordServiceService.createMany(
         allServiceDtos,
+        createOptions,
+      );
+
+      // Create care-record-checklists for services with vehicleService
+      await this.createCareRecordChecklists(
+        appointment,
+        careRecordId,
+        createdBy,
+      );
+    }
+  }
+
+  /**
+   * Auto create care-record-checklists for each care-record-service
+   *
+   * PERFORMANCE NOTE: This creates many database operations
+   * - For each vehicleService: fetch checklistItems + create multiple checklists
+   * - Could be optimized with batch operations or async queue in the future
+   */
+  private async createCareRecordChecklists(
+    appointment: any,
+    careRecordId: string,
+    createdBy: string,
+  ): Promise<void> {
+    const createOptions: IDatabaseCreateOptions = { actionBy: createdBy };
+    const allChecklistDtos: CareRecordChecklistCreateRequestDto[] = [];
+
+    // Get all care-record-services for this care-record
+    const careRecordServices = await this.careRecordServiceService.findAll({
+      careRecord: careRecordId,
+    });
+
+    for (const careRecordService of careRecordServices) {
+      if (
+        careRecordService.type === ENUM_CARE_RECORD_SERVICE_TYPE.SERVICE &&
+        careRecordService.vehicleService
+      ) {
+        // Handle vehicleService checklists
+        const vehicleService = await this.vehicleServiceService.findOneById(
+          careRecordService.vehicleService,
+          { join: true },
+        );
+
+        if (vehicleService) {
+          if (vehicleService.checklistItems && vehicleService.checklistItems.length > 0) {
+            // Create checklists from checklistItems templates
+            const serviceChecklistDtos = vehicleService.checklistItems.map(
+              (serviceChecklist: any) => ({
+                careRecordService: careRecordService._id,
+                serviceChecklist: serviceChecklist._id || serviceChecklist,
+                name: serviceChecklist.name || `${careRecordService.name}`,
+                wearPercentage: 100,
+              }),
+            );
+            allChecklistDtos.push(...serviceChecklistDtos);
+          } else {
+            // Create single checklist with vehicleService name when no checklistItems
+            const vehicleServiceChecklistDto: CareRecordChecklistCreateRequestDto = {
+              careRecordService: careRecordService._id,
+              name: vehicleService.name, // Use vehicleService name
+              wearPercentage: 100,
+            };
+            allChecklistDtos.push(vehicleServiceChecklistDto);
+          }
+        }
+      } else if (
+        careRecordService.type ===
+        ENUM_CARE_RECORD_SERVICE_TYPE.CUSTOMER_REQUEST
+      ) {
+        // Handle customerRequest checklists
+        const customerRequestChecklistDto: CareRecordChecklistCreateRequestDto =
+          {
+            careRecordService: careRecordService._id,
+            name: careRecordService.name, // customerRequest value
+            wearPercentage: 100,
+          };
+        allChecklistDtos.push(customerRequestChecklistDto);
+      }
+    }
+
+    // Batch create all checklists
+    if (allChecklistDtos.length > 0) {
+      await this.careRecordChecklistService.createMany(
+        allChecklistDtos,
         createOptions,
       );
     }

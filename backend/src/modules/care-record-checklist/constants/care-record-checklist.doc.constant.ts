@@ -1,5 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../enums/care-record-checklist.enum';
+import {
+  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+} from '../enums/care-record-checklist.enum';
 
 interface DocField {
   name: string;
@@ -31,9 +34,20 @@ export const CareRecordChecklistDocQueryStatus: DocField[] = [
   },
 ];
 
-export const CareRecordChecklistDocQueryCareRecord: DocField[] = [
+export const CareRecordChecklistDocQueryResult: DocField[] = [
   {
-    name: 'careRecord',
+    name: 'result',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: Object.values(ENUM_CARE_RECORD_CHECKLIST_RESULT).join(','),
+    description: 'one value',
+  },
+];
+
+export const CareRecordChecklistDocQueryCareRecordService: DocField[] = [
+  {
+    name: 'careRecordService',
     allowEmptyValue: true,
     required: false,
     type: 'string',

@@ -7,25 +7,33 @@ import {
 } from '../entities/care-record-checklist.entity';
 import { CareRecordEntity } from '@/modules/care-record/entities/care-record.entity';
 import { ServiceChecklistEntity } from '@/modules/service-checklist/entities/service-checklist.entity';
+import { CareRecordServiceEntity } from '@/modules/care-record-service/entities/care-record-service.entity';
+import { PartEntity } from '@/modules/part/entities/part.entity';
 
 export class CareRecordChecklistRepository extends DatabaseRepositoryBase<
   CareRecordChecklistEntity,
   CareRecordChecklistDoc
 > {
   readonly _joinActive: PopulateOptions[] = [
-    {
-      path: 'careRecord',
-      localField: 'careRecord',
-      foreignField: '_id',
-      model: CareRecordEntity.name,
-      justOne: true,
-    },
+    // {
+    //   path: 'careRecordService',
+    //   localField: 'careRecordService',
+    //   foreignField: '_id',
+    //   model: CareRecordServiceEntity.name,
+    //   justOne: true,
+    // },
     {
       path: 'serviceChecklist',
       localField: 'serviceChecklist',
       foreignField: '_id',
       model: ServiceChecklistEntity.name,
       justOne: true,
+    },
+    {
+      path: 'parts',
+      localField: 'parts',
+      foreignField: '_id',
+      model: PartEntity.name,
     },
   ];
 
@@ -34,19 +42,25 @@ export class CareRecordChecklistRepository extends DatabaseRepositoryBase<
     private readonly careRecordChecklistModel: Model<CareRecordChecklistEntity>,
   ) {
     super(careRecordChecklistModel, [
-      {
-        path: 'careRecord',
-        localField: 'careRecord',
-        foreignField: '_id',
-        model: CareRecordEntity.name,
-        justOne: true,
-      },
+      // {
+      //   path: 'careRecordService',
+      //   localField: 'careRecordService',
+      //   foreignField: '_id',
+      //   model: CareRecordServiceEntity.name,
+      //   justOne: true,
+      // },
       {
         path: 'serviceChecklist',
         localField: 'serviceChecklist',
         foreignField: '_id',
         model: ServiceChecklistEntity.name,
         justOne: true,
+      },
+      {
+        path: 'parts',
+        localField: 'parts',
+        foreignField: '_id',
+        model: PartEntity.name,
       },
     ]);
   }

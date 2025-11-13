@@ -30,11 +30,15 @@ import { CareRecordChecklistCreateRequestDto } from '../dtos/request/care-record
 import { CareRecordChecklistUpdateRequestDto } from '../dtos/request/care-record-checklist.update.request.dto';
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
 import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../enums/care-record-checklist.enum';
+import {
+  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+} from '../enums/care-record-checklist.enum';
 import { UserVehicleRepository } from '@/modules/user-vehicle/repository/user-vehicle.repository';
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
 import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-record-checklist.update-note.request.dto';
 import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/request/care-record-checklist.update-wear-percentage.request.dto';
+import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 
 @Injectable()
 export class CareRecordChecklistService implements ICareRecordChecklistService {
@@ -116,18 +120,21 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
 
   async create(
     {
-      careRecord,
+      careRecordService,
       serviceChecklist,
+      name,
       wearPercentage,
     }: CareRecordChecklistCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<CareRecordChecklistDoc> {
     const create: CareRecordChecklistEntity = new CareRecordChecklistEntity();
 
-    create.careRecord = careRecord;
+    create.careRecordService = careRecordService;
     create.serviceChecklist = serviceChecklist;
+    create.name = name;
     create.wearPercentage = wearPercentage;
-    create.status = ENUM_CARE_RECORD_CHECKLIST_STATUS.UNCHECKED;
+    create.result = ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED;
+    create.status = ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING;
 
     return this.careRecordChecklistRepository.create<CareRecordChecklistEntity>(
       create,
@@ -135,15 +142,47 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     );
   }
 
+  async createMany(
+    dtos: CareRecordChecklistCreateRequestDto[],
+    options?: IDatabaseCreateOptions,
+  ): Promise<boolean> {
+    const entities = dtos.map(dto => {
+      const create: CareRecordChecklistEntity = new CareRecordChecklistEntity();
+      create.careRecordService = dto.careRecordService;
+      create.serviceChecklist = dto.serviceChecklist;
+      create.name = dto.name;
+      create.wearPercentage = dto.wearPercentage;
+      create.result = ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED;
+      create.status = ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING;
+      return create;
+    });
+
+    await this.careRecordChecklistRepository.createMany<CareRecordChecklistEntity>(
+      entities,
+      options,
+    );
+    
+    return true;
+  }
+
   async update(
     repository: CareRecordChecklistDoc,
-    { status, note, wearPercentage }: CareRecordChecklistUpdateRequestDto,
+    {
+      status,
+      result,
+      note,
+      wearPercentage,
+      parts,
+    }: CareRecordChecklistUpdateRequestDto,
     options?: IDatabaseSaveOptions,
   ): Promise<CareRecordChecklistDoc> {
     repository.status =
       (status as ENUM_CARE_RECORD_CHECKLIST_STATUS) ?? repository.status;
+    repository.result =
+      (result as ENUM_CARE_RECORD_CHECKLIST_RESULT) ?? repository.result;
     repository.note = note ?? repository.note;
     repository.wearPercentage = wearPercentage ?? repository.wearPercentage;
+    repository.parts = parts ?? repository.parts;
 
     return this.careRecordChecklistRepository.save(repository, options);
   }
@@ -154,6 +193,16 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     options?: IDatabaseSaveOptions,
   ): Promise<CareRecordChecklistDoc> {
     repository.status = status;
+
+    return this.careRecordChecklistRepository.save(repository, options);
+  }
+
+  async updateResult(
+    repository: CareRecordChecklistDoc,
+    { result }: CareRecordChecklistUpdateResultRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CareRecordChecklistDoc> {
+    repository.result = result;
 
     return this.careRecordChecklistRepository.save(repository, options);
   }

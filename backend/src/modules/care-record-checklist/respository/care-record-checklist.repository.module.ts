@@ -7,10 +7,8 @@ import {
   CareRecordChecklistSchema,
 } from '../entities/care-record-checklist.entity';
 
-CareRecordChecklistSchema.index({ careRecord: 1 });
 CareRecordChecklistSchema.index({ serviceChecklist: 1 });
-CareRecordChecklistSchema.index({ wearPercentage: 1 });
-CareRecordChecklistSchema.index({ status: 1 });
+CareRecordChecklistSchema.index({ result: 1 });
 @Module({
   providers: [CareRecordChecklistRepository],
   exports: [CareRecordChecklistRepository],

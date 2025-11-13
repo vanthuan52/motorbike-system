@@ -39,6 +39,7 @@ import {
 } from '../constants/service-checklist.list.constant';
 import { ServiceChecklistAdminParamsIdDoc } from '../docs/service-checklist.admin.doc';
 import { ServiceChecklistGetResponseDto } from '../dtos/response/service-checklist.get.response.dto';
+import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 
 @ApiTags('modules.shared.service-checklist')
 @Controller({
@@ -68,11 +69,17 @@ export class ServiceChecklistSharedController {
       availableOrderBy: SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
     })
     { _search, _limit, _offset, _order }: PaginationListDto,
+    @Query('careArea', OptionalParseUUIDPipe)
+    careAreaId?: string,
     @Query('vehicleType') vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
   ): Promise<IResponsePaging<ServiceChecklistListResponseDto>> {
     const find: Record<string, any> = {
       ..._search,
     };
+
+    if (careAreaId) {
+      find['careArea'] = careAreaId;
+    }
 
     // Filter by vehicle type if provided
     if (vehicleType) {

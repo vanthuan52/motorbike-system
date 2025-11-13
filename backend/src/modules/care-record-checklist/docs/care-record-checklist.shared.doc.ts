@@ -6,7 +6,7 @@ import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record
 import { CareRecordChecklistUpdateRequestDto } from '../dtos/request/care-record-checklist.update.request.dto';
 import {
   CareRecordChecklistDocParamsId,
-  CareRecordChecklistDocQueryCareRecord,
+  CareRecordChecklistDocQueryCareRecordService,
   CareRecordChecklistDocQueryStatus,
 } from '../constants/care-record-checklist.doc.constant';
 import {
@@ -22,6 +22,7 @@ import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-rec
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
 import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/request/care-record-checklist.update-wear-percentage.request.dto';
 import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-record-checklist.update-note.request.dto';
+import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 
 export function CareRecordChecklistSharedListDoc(): MethodDecorator {
   return applyDecorators(
@@ -30,7 +31,7 @@ export function CareRecordChecklistSharedListDoc(): MethodDecorator {
     }),
     DocRequest({
       queries: [
-        ...CareRecordChecklistDocQueryCareRecord,
+        ...CareRecordChecklistDocQueryCareRecordService,
         ...CareRecordChecklistDocQueryStatus,
       ],
     }),
@@ -161,6 +162,24 @@ export function CareRecordChecklistSharedUpdateStatusDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('care-record-checklist.updateStatus'),
+  );
+}
+
+export function CareRecordChecklistSharedUpdateResultDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'update result status of a care record checklist',
+    }),
+    DocRequest({
+      params: CareRecordChecklistDocParamsId,
+      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      dto: CareRecordChecklistUpdateResultRequestDto,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('care-record-checklist.updateResultStatus'),
   );
 }
 

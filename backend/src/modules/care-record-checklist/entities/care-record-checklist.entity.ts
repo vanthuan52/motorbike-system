@@ -5,9 +5,14 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS } from '../enums/care-record-checklist.enum';
+import {
+  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+} from '../enums/care-record-checklist.enum';
 
 import { ServiceChecklistEntity } from '@/modules/service-checklist/entities/service-checklist.entity';
+import { CareRecordServiceEntity } from '@/modules/care-record-service/entities/care-record-service.entity';
+import { PartEntity } from '@/modules/part/entities/part.entity';
 
 export const CareRecordChecklistTableName = 'care_record_checklist';
 
@@ -17,19 +22,34 @@ export const CareRecordChecklistTableName = 'care_record_checklist';
 export class CareRecordChecklistEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
-    ref: () => CareRecordChecklistEntity.name,
+    ref: () => CareRecordServiceEntity.name,
   })
-  careRecord: string;
+  careRecordService: string;
 
   @DatabaseProp({
-    required: true,
+    required: false,
     ref: () => ServiceChecklistEntity.name,
   })
-  serviceChecklist: string;
+  serviceChecklist?: string;
+
+  @DatabaseProp({
+    required: false,
+    maxlength: 500,
+  })
+  name?: string;
 
   @DatabaseProp({
     required: true,
-    default: ENUM_CARE_RECORD_CHECKLIST_STATUS.UNCHECKED,
+    default: ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED,
+    index: true,
+    type: String,
+    enum: ENUM_CARE_RECORD_CHECKLIST_RESULT,
+  })
+  result: ENUM_CARE_RECORD_CHECKLIST_RESULT;
+
+  @DatabaseProp({
+    required: true,
+    default: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
     index: true,
     type: String,
     enum: ENUM_CARE_RECORD_CHECKLIST_STATUS,
@@ -46,7 +66,7 @@ export class CareRecordChecklistEntity extends DatabaseEntityBase {
     required: false,
     default: 100,
   })
-  wearPercentage: number;
+  wearPercentage?: number;
 
   @DatabaseProp({
     required: false,
@@ -57,6 +77,14 @@ export class CareRecordChecklistEntity extends DatabaseEntityBase {
     required: false,
   })
   imageAfter: string;
+
+  @DatabaseProp({
+    required: false,
+    ref: () => PartEntity.name,
+    type: [String],
+    default: [],
+  })
+  parts: string[]; // Danh sách phụ tùng đề xuất thay thế
 }
 
 export const CareRecordChecklistSchema = DatabaseSchema(
