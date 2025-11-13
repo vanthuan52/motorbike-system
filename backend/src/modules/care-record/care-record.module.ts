@@ -3,12 +3,16 @@ import { CareRecordRepositoryModule } from './respository/care-record.repository
 import { CareRecordService } from './services/care-record.service';
 import { UserVehicleRepositoryModule } from '../user-vehicle/repository/user-vehicle.repository.module';
 import { AppointmentRepositoryModule } from '../appointment/repository/appointment.repository.module';
+import { CareRecordServiceModule } from '../care-record-service/care-record-service.module';
+import { VehicleServiceRepositoryModule } from '../vehicle-service/repository/vehicle-service.repository.module';
 
 @Module({
   imports: [
     CareRecordRepositoryModule,
     AppointmentRepositoryModule,
     UserVehicleRepositoryModule,
+    CareRecordServiceModule,
+    VehicleServiceRepositoryModule,
   ],
   controllers: [],
   providers: [CareRecordService],

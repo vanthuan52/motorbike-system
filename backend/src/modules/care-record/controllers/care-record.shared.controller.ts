@@ -77,6 +77,9 @@ import { CareRecordDoc } from '../entities/care-record.entity';
 import { ICareRecordDoc } from '../interfaces/care-record.interface';
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
+import { CareRecordServiceService } from '@/modules/care-record-service/services/care-record-service.service';
+import { ENUM_CARE_RECORD_SERVICE_TYPE } from '@/modules/care-record-service/enums/care-record-service.enum';
+import { CareRecordServiceCreateRequestDto } from '@/modules/care-record-service/dtos/request/care-record-service.create.request.dto';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 import {
   ENUM_CARE_RECORD_STATUS,
@@ -105,6 +108,8 @@ export class CareRecordSharedController {
     private readonly userService: UserService,
     private readonly userVehicleService: UserVehicleService,
     private readonly careRecordService: CareRecordService,
+    private readonly careRecordServiceService: CareRecordServiceService,
+    private readonly vehicleServiceService: VehicleServiceService,
     private readonly paginationService: PaginationService,
   ) {}
 
@@ -243,6 +248,14 @@ export class CareRecordSharedController {
       const created = await this.careRecordService.create(body, {
         actionBy: createdBy,
       } as IDatabaseCreateOptions);
+
+      // Auto create care-record-services from appointment
+      await this.createCareRecordServices(
+        checkAppointment,
+        created._id,
+        createdBy,
+      );
+
       return { data: { _id: created._id } };
     } catch (err: unknown) {
       throw new InternalServerErrorException({
@@ -468,6 +481,14 @@ export class CareRecordSharedController {
       const created = await this.careRecordService.create(body, {
         actionBy: createdBy,
       } as IDatabaseCreateOptions);
+
+      // Tự động tạo care-record-services từ appointment
+      await this.createCareRecordServices(
+        checkAppointment,
+        created._id,
+        createdBy,
+      );
+
       return { data: { _id: created._id } };
     } catch (err: unknown) {
       throw new InternalServerErrorException({
@@ -475,6 +496,70 @@ export class CareRecordSharedController {
         message: 'http.serverError.internalServerError',
         _error: err,
       });
+    }
+  }
+
+  /**
+   * Auto create care-record-services from appointment
+   *
+   * Using batch operations
+   * Future improvements:
+   * 1. Use Redis Queue (Bull/BullMQ) for async processing
+   * 2. Return care-record immediately, process services in background
+   * 3. Add retry mechanism for failed service creations
+   */
+  private async createCareRecordServices(
+    appointment: any,
+    careRecordId: string,
+    createdBy: string,
+  ): Promise<void> {
+    const createOptions: IDatabaseCreateOptions = { actionBy: createdBy };
+    const allServiceDtos: CareRecordServiceCreateRequestDto[] = [];
+
+    // Prepare customer request DTOs
+    if (
+      appointment.customerRequests &&
+      appointment.customerRequests.length > 0
+    ) {
+      const customerRequestDtos = appointment.customerRequests.map(
+        (request: string) => ({
+          careRecord: careRecordId,
+          name: request,
+          type: ENUM_CARE_RECORD_SERVICE_TYPE.CUSTOMER_REQUEST,
+        }),
+      );
+
+      allServiceDtos.push(...customerRequestDtos);
+    }
+
+    // Batch fetch vehicleServices, then prepare DTOs
+    if (appointment.vehicleServices && appointment.vehicleServices.length > 0) {
+      // Batch fetch all vehicle services at once
+      const vehicleServices = await Promise.all(
+        appointment.vehicleServices.map((id: string) =>
+          this.vehicleServiceService.findOneById(id),
+        ),
+      );
+
+      // Prepare DTOs for valid services
+      const vehicleServiceDtos = vehicleServices
+        .filter((service) => service !== null || service !== undefined)
+        .map((service) => ({
+          careRecord: careRecordId,
+          name: service.name,
+          vehicleService: service._id,
+          type: ENUM_CARE_RECORD_SERVICE_TYPE.SERVICE,
+        }));
+
+      allServiceDtos.push(...vehicleServiceDtos);
+    }
+
+    // Single batch insert for all services
+    if (allServiceDtos.length > 0) {
+      await this.careRecordServiceService.createMany(
+        allServiceDtos,
+        createOptions,
+      );
     }
   }
 }

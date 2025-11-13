@@ -32,6 +32,8 @@ import { CareRecordConditionModule } from '@/modules/care-record-condition/care-
 import { CareRecordConditionSharedController } from '@/modules/care-record-condition/controllers/care-record-condition.shared.controller';
 import { CareAreaModule } from '@/modules/care-area/care-area.module';
 import { CareAreaSharedController } from '@/modules/care-area/controllers/care-area.shared.controller';
+import { CareRecordServiceSharedController } from '@/modules/care-record-service/controllers/care-record-service.shared.controller';
+import { CareRecordServiceModule } from '@/modules/care-record-service/care-record-service.module';
 
 @Module({
   controllers: [
@@ -49,6 +51,7 @@ import { CareAreaSharedController } from '@/modules/care-area/controllers/care-a
     AppointmentSharedController,
     CareRecordConditionSharedController,
     CareAreaSharedController,
+    CareRecordServiceSharedController,
   ],
   providers: [],
   exports: [],
@@ -73,6 +76,7 @@ import { CareAreaSharedController } from '@/modules/care-area/controllers/care-a
     RoleModule,
     VehicleModelModule,
     CareAreaModule,
+    CareRecordServiceModule,
   ],
 })
 export class RoutesSharedModule {}
