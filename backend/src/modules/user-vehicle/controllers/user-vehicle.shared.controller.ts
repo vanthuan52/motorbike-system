@@ -144,6 +144,7 @@ export class UserVehicleSharedController {
     ENUM_POLICY_ROLE_TYPE.ADMIN,
     ENUM_POLICY_ROLE_TYPE.MANAGER,
     ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+    ENUM_POLICY_ROLE_TYPE.USER,
   )
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -193,6 +194,7 @@ export class UserVehicleSharedController {
     ENUM_POLICY_ROLE_TYPE.ADMIN,
     ENUM_POLICY_ROLE_TYPE.MANAGER,
     ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+    ENUM_POLICY_ROLE_TYPE.USER,
   )
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -214,6 +216,7 @@ export class UserVehicleSharedController {
     ENUM_POLICY_ROLE_TYPE.ADMIN,
     ENUM_POLICY_ROLE_TYPE.MANAGER,
     ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+    ENUM_POLICY_ROLE_TYPE.USER,
   )
   @UserProtected()
   @AuthJwtAccessProtected()

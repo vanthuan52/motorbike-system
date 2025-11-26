@@ -14,7 +14,6 @@ export class CareRecordChecklistUpdateRequestDto extends PartialType(
     type: String,
   })
   @IsOptional()
-  @IsAlpha()
   @IsUUID('4', { each: true })
   parts: string[];
 }
