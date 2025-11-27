@@ -108,10 +108,6 @@ export class UserAdminController {
 
   @UserAdminListDoc()
   @ResponsePaging('user.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
   @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -135,7 +131,7 @@ export class UserAdminController {
       ...role,
     };
 
-    const users: UserDoc[] = await this.userService.findAll(find, {
+    const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
       paging: {
         limit: _limit,
         offset: _offset,
@@ -143,7 +139,7 @@ export class UserAdminController {
       order: _order,
     });
 
-    const total: number = await this.userService.getTotal(find);
+    const total: number = await this.userService.getTotalWithRole(find);
 
     const totalPage: number = this.paginationService.totalPage(total, _limit);
 
