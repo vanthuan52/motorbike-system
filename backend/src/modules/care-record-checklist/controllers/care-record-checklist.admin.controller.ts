@@ -87,6 +87,7 @@ import { ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR } from '@/modules/service-chec
 import { CareRecordServiceService } from '@/modules/care-record-service/services/care-record-service.service';
 import { PartService } from '@/modules/part/services/part.services';
 import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
+import { ServiceChecklistDoc } from '@/modules/service-checklist/entities/service-checklist.entity';
 
 @ApiTags('modules.admin.care-record-checklist')
 @Controller({
@@ -194,28 +195,33 @@ export class CareRecordChecklistAdminController {
     @AuthJwtPayload('user') createdBy: string,
     @Body() body: CareRecordChecklistCreateRequestDto,
   ): Promise<IResponse<DatabaseIdResponseDto>> {
-    const promises: Promise<any>[] = [
-      this.careRecordServiceService.findOneById(body.careRecordService),
-      this.serviceChecklistService.findOneById(body.serviceChecklist),
-    ];
-    const [checkCareRecord, checkServiceChecklist] =
-      await Promise.all(promises);
+    let checkServiceChecklist: ServiceChecklistDoc | null = null;
+    if (body.serviceChecklist) {
+      checkServiceChecklist = await this.serviceChecklistService.findOneById(
+        body.serviceChecklist,
+      );
+      if (!checkServiceChecklist) {
+        throw new NotFoundException({
+          statusCode: ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR.NOT_FOUND,
+          message: 'service-checklist.error.notFound',
+        });
+      }
+    }
+
+    const checkCareRecord = this.careRecordServiceService.findOneById(
+      body.careRecordService,
+    );
 
     if (!checkCareRecord) {
       throw new NotFoundException({
         statusCode: ENUM_CARE_RECORD_STATUS_CODE_ERROR.NOT_FOUND,
         message: 'care-record.error.notFound',
       });
-    } else if (!checkServiceChecklist) {
-      throw new NotFoundException({
-        statusCode: ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'service-checklist.error.notFound',
-      });
     }
 
     try {
       const created = await this.careRecordChecklistService.create(
-        { ...body, name: checkServiceChecklist.name },
+        { ...body, name: checkServiceChecklist?.name },
         {
           actionBy: createdBy,
         } as IDatabaseCreateOptions,
