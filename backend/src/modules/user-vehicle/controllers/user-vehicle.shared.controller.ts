@@ -7,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,6 +17,7 @@ import {
   UserVehicleSharedGetDoc,
   UserVehicleSharedCreateDoc,
   UserVehicleSharedListByUserDoc,
+  UserVehicleSharedUpdateDoc,
 } from '../docs/user-vehicle.shared.doc';
 import {
   IResponse,
@@ -44,7 +46,10 @@ import {
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.interface';
+import {
+  IDatabaseCreateOptions,
+  IDatabaseSaveOptions,
+} from '@/common/database/interfaces/database.interface';
 import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
 import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '../enums/user-vehicle.status-code.enum';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
@@ -71,6 +76,7 @@ import {
 } from '../interfaces/user-vehicle.interface';
 import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create.request.dto';
 import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
 
 @ApiTags('module.shared.user-vehicle')
 @Controller({
@@ -250,6 +256,47 @@ export class UserVehicleSharedController {
         actionBy: createdBy,
       } as IDatabaseCreateOptions);
       return { data: { _id: created._id } };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  @UserVehicleSharedUpdateDoc()
+  @Response('user-vehicle.update')
+  @PolicyRoleProtected(
+    ENUM_POLICY_ROLE_TYPE.ADMIN,
+    ENUM_POLICY_ROLE_TYPE.MANAGER,
+    ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
+  )
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Put('/update/:id')
+  async update(
+    @Param('id', RequestRequiredPipe, UserVehicleParsePipe)
+    userVehicle: UserVehicleDoc,
+    @AuthJwtPayload('user') updatedBy: string,
+    @Body() body: UserVehicleUpdateRequestDto,
+  ): Promise<void> {
+    if (body.vehicleModel) {
+      const checkVehicleModel = await this.vehicleModelService.findOneById(
+        body.vehicleModel,
+      );
+
+      if (!checkVehicleModel) {
+        throw new NotFoundException({
+          statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+          message: 'user-vehicle.error.notFound',
+        });
+      }
+    }
+    try {
+      await this.userVehicleService.update(userVehicle, body, {
+        actionBy: updatedBy,
+      } as IDatabaseSaveOptions);
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
