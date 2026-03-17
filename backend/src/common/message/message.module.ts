@@ -1,11 +1,14 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { HeaderResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
-
 import * as path from 'path';
+import { HeaderResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
+import { ConfigService } from '@nestjs/config';
 import { MessageService } from './services/message.service';
-import { ENUM_MESSAGE_LANGUAGE } from './enums/message.enum';
+import { EnumMessageLanguage } from './enums/message.enum';
 
+/**
+ * Global dynamic module providing internationalization services.
+ * Configures I18n module with JSON loader, header resolver, and exports MessageService globally.
+ */
 @Global()
 @Module({})
 export class MessageModule {
@@ -20,11 +23,10 @@ export class MessageModule {
           inject: [ConfigService],
           resolvers: [new HeaderResolver(['x-custom-lang'])],
           useFactory: (configService: ConfigService) => ({
-            fallbackLanguage:
-              configService
-                .get<string[]>('message.availableLanguage')
-                ?.join(',') ?? ENUM_MESSAGE_LANGUAGE.VI,
-            fallbacks: Object.values(ENUM_MESSAGE_LANGUAGE).reduce(
+            fallbackLanguage: configService
+              .get<string[]>('message.availableLanguage')
+              .join(','),
+            fallbacks: Object.values(EnumMessageLanguage).reduce(
               (a, v) => ({ ...a, [`${v}-*`]: v }),
               {},
             ),

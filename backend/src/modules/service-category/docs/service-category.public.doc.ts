@@ -1,7 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
-  DocAuth,
   DocRequest,
   DocResponse,
   DocResponsePaging,
@@ -13,7 +12,7 @@ import {
   ServiceCategoryDocQueryStatus,
 } from '../constants/service-category.doc.constant';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
-import { ServiceCategoryGetResponseDto } from '../dtos/response/service-category.get.response.dto';
+import { ServiceCategoryDto } from '../dtos/service-category.dto';
 
 export function ServiceCategoryPublicGetOneDoc(): MethodDecorator {
   return applyDecorators(
@@ -23,8 +22,8 @@ export function ServiceCategoryPublicGetOneDoc(): MethodDecorator {
     DocRequest({
       params: ServiceCategoryDocParamsSlug,
     }),
-    DocResponse<ServiceCategoryGetResponseDto>('service-category.get', {
-      dto: ServiceCategoryGetResponseDto,
+    DocResponse<ServiceCategoryDto>('service-category.get', {
+      dto: ServiceCategoryDto,
     }),
   );
 }

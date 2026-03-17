@@ -1,4 +1,3 @@
-import validateConfig from '@/common/utils/validate-config';
 import { registerAs } from '@nestjs/config';
 
 export type HelperConfig = {

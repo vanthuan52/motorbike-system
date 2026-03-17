@@ -1,28 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CareAreaRepository } from '../repository/care-area.repository';
 import { ICareAreaService } from '../interfaces/care-area.service.interface';
-import { CareAreaDoc, CareAreaEntity } from '../entities/care-area.entity';
 import {
   IDatabaseCreateManyOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseDeleteOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
-import { CareAreaGetResponseDto } from '../dtos/response/care-area.get.response.dto';
-import { CareAreaListResponseDto } from '../dtos/response/care-area.list.response.dto';
-import { CareAreaWithServiceChecklistResponseDto } from '../dtos/response/care-area.with-service-checklist.response.dto';
-import { ICareAreaEntity } from '../interfaces/care-area.interface';
-import { plainToInstance } from 'class-transformer';
 import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '@/common/pagination/enums/pagination.enum';
+import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { ENUM_CARE_AREA_STATUS_CODE_ERROR } from '../enums/care-area.status-code.enum';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseHelperQueryContain } from '@/common/database/decorators/database.decorator';
+import { CareAreaDoc, CareAreaEntity } from '../entities/care-area.entity';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class CareAreaService implements ICareAreaService {
@@ -30,149 +28,171 @@ export class CareAreaService implements ICareAreaService {
     private readonly careAreaRepository: CareAreaRepository,
     private readonly serviceChecklistService: ServiceChecklistService,
   ) {}
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const careArea = await this.careAreaRepository.findOne({ name }, options);
-    return !!careArea;
+
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareAreaDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
+
+    const [careAreas, total] = await Promise.all([
+      this.careAreaRepository.findAll<CareAreaDoc>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.careAreaRepository.getTotal(find),
+    ]);
+
+    return {
+      data: careAreas,
+      total,
+    };
   }
 
-  mapList(
-    careArea: CareAreaDoc[] | ICareAreaEntity[],
-  ): CareAreaListResponseDto[] {
-    return plainToInstance(
-      CareAreaListResponseDto,
-      careArea.map((p: CareAreaDoc | ICareAreaEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
+  async getListCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareAreaDoc[]; total?: number }> {
+    const find: Record<string, any> = { ...where, ...filters };
+
+    if (cursor && cursorField) {
+      find[cursorField] = { $gt: cursor };
+    }
+
+    const [data, count] = await Promise.all([
+      this.careAreaRepository.findAllCursor(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
+        },
+      }),
+      includeCount
+        ? this.careAreaRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
+
+    return { data, total: count };
   }
 
-  mapGet(careArea: CareAreaDoc | ICareAreaEntity): CareAreaGetResponseDto {
-    return plainToInstance(
-      CareAreaGetResponseDto,
-      typeof (careArea as any).toObject === 'function'
-        ? (careArea as any).toObject()
-        : careArea,
-    );
-  }
-
-  mapWithServiceChecklist(
-    careArea: CareAreaDoc | ICareAreaEntity,
-    serviceChecklists: any[],
-  ): CareAreaWithServiceChecklistResponseDto {
-    const careAreaData =
-      typeof (careArea as any).toObject === 'function'
-        ? (careArea as any).toObject()
-        : careArea;
-
-    return plainToInstance(CareAreaWithServiceChecklistResponseDto, {
-      ...careAreaData,
-      serviceChecklists:
-        this.serviceChecklistService.mapList(serviceChecklists),
-    });
-  }
-
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareAreaDoc[]> {
-    return this.careAreaRepository.findAll<CareAreaDoc>(find, options);
-  }
-
-  async findOneById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareAreaDoc | null> {
-    return this.careAreaRepository.findOneById<CareAreaDoc>(_id, options);
-  }
-  async join(repository: CareAreaDoc): Promise<CareAreaDoc> {
-    return this.careAreaRepository.join(
-      repository,
-      this.careAreaRepository._join!,
-    );
-  }
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareAreaDoc | null> {
-    return this.careAreaRepository.findOne<CareAreaDoc>(find, options);
-  }
-
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.careAreaRepository.getTotal(find, options);
-  }
-
-  async findAllWithServiceChecklists(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
+  async getListOffsetWithServiceChecklists(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
     vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
-  ): Promise<CareAreaWithServiceChecklistResponseDto[]> {
-    const careAreas = await this.findAll(find, options);
+  ): Promise<{
+    data: CareAreaDoc[];
+    total: number;
+    checklistMap: Map<string, any[]>;
+  }> {
+    const find: Record<string, any> = {
+      ...where,
+    };
 
-    const result: CareAreaWithServiceChecklistResponseDto[] = [];
+    const careAreas = await this.careAreaRepository.findAll<CareAreaDoc>(find, {
+      paging: { limit, offset: skip },
+      order: { order: EnumPaginationOrderDirectionType.asc },
+    });
+
+    const checklistMap = new Map<string, any[]>();
 
     for (const careArea of careAreas) {
       const serviceChecklistFind: Record<string, any> = {
         careArea: careArea._id,
       };
 
-      // Filter by vehicle type if provided
       if (vehicleType) {
         serviceChecklistFind.vehicleType = { $in: [vehicleType] };
       }
 
-      const serviceChecklists = await this.serviceChecklistService.findAll(
-        serviceChecklistFind,
-        { order: { order: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC } },
-      );
+      const { data: serviceChecklists } =
+        await this.serviceChecklistService.getListOffset({
+          limit: 1000,
+          skip: 0,
+          where: serviceChecklistFind,
+          orderBy: { order: EnumPaginationOrderDirectionType.asc },
+          include: undefined,
+        });
 
-      const mapped = this.mapWithServiceChecklist(careArea, serviceChecklists);
-      result.push(mapped);
+      checklistMap.set(
+        careArea._id.toString(),
+        serviceChecklists as unknown as any[],
+      );
     }
 
-    return result;
+    const total = await this.careAreaRepository.getTotal(find);
+
+    return {
+      data: careAreas,
+      total,
+      checklistMap,
+    };
+  }
+
+  async findOneById(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareAreaDoc> {
+    const careArea = await this.findOneByIdOrFail(id, options);
+    return careArea;
+  }
+
+  async findOne(
+    find: Record<string, any>,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareAreaDoc> {
+    const careArea = await this.careAreaRepository.findOne<CareAreaDoc>(
+      find,
+      options,
+    );
+    return careArea;
   }
 
   async create(
     { name, description, order }: CareAreaCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareAreaDoc> {
+  ): Promise<DatabaseIdDto> {
     const create: CareAreaEntity = new CareAreaEntity();
     create.name = name;
     create.description = description;
     create.order = order;
 
-    return this.careAreaRepository.create<CareAreaEntity>(create, options);
+    const created = await this.careAreaRepository.create<CareAreaEntity>(
+      create,
+      options,
+    );
+
+    return { _id: created._id };
   }
 
   async update(
-    repository: CareAreaDoc,
+    id: string,
     { name, description, order }: CareAreaUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareAreaDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
     repository.name = name ?? repository.name;
     repository.description = description ?? repository.description;
     repository.order = order ?? repository.order;
-    return this.careAreaRepository.save(repository, options);
+    await this.careAreaRepository.save(repository, options);
   }
 
-  async softDelete(
-    repository: CareAreaDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareAreaDoc> {
-    return this.careAreaRepository.softDelete(repository, options);
+  async softDelete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.careAreaRepository.softDelete(repository, options);
   }
 
-  async delete(
-    repository: CareAreaDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<CareAreaDoc> {
-    return this.careAreaRepository.delete({ _id: repository._id }, options);
+  async delete(id: string, options?: IDatabaseDeleteOptions): Promise<void> {
+    await this.careAreaRepository.delete({ _id: id }, options);
   }
 
   async deleteMany(
@@ -198,7 +218,6 @@ export class CareAreaService implements ICareAreaService {
         __v: 0,
       };
 
-      // If _id is provided, use it (for seeding with predefined IDs)
       if ('_id' in item && (item as any)._id) {
         doc._id = (item as any)._id;
       }
@@ -206,11 +225,39 @@ export class CareAreaService implements ICareAreaService {
       return doc;
     });
 
-    // Use insertMany directly to bypass entity creation and UUID generation
     await this.careAreaRepository['_repository'].insertMany(create, {
       ordered: false,
     });
 
     return true;
+  }
+
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareAreaDoc> {
+    const careArea = await this.careAreaRepository.findOneById<CareAreaDoc>(
+      id,
+      options,
+    );
+    if (!careArea) {
+      throw new NotFoundException({
+        statusCode: ENUM_CARE_AREA_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'care-area.error.notFound',
+      });
+    }
+    return careArea;
+  }
+
+  async existByName(
+    name: string,
+    options?: IDatabaseExistsOptions,
+  ): Promise<boolean> {
+    const exist = await this.careAreaRepository.exists(
+      DatabaseHelperQueryContain('name', name, { fullWord: true }),
+      options,
+    );
+
+    return exist;
   }
 }

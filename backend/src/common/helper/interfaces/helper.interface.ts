@@ -1,19 +1,14 @@
-import { ENUM_HELPER_DATE_DAY_OF } from '../enums/helper.enum';
+import { EnumHelperDateDayOf } from '@/common/helper/enums/helper.enum';
 
-export interface IHelperStringPasswordOptions {
+export interface IHelperPasswordOptions {
   length: number;
 }
 
 export interface IHelperDateCreateOptions {
-  dayOf?: ENUM_HELPER_DATE_DAY_OF;
+  dayOf?: EnumHelperDateDayOf;
 }
 
 export interface IHelperEmailValidation {
-  validated: boolean;
-  messagePath?: string;
-}
-
-export interface IHelperPhoneValidation {
   validated: boolean;
   messagePath?: string;
 }

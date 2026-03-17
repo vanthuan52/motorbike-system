@@ -1,26 +1,34 @@
 import { faker } from '@faker-js/faker';
 import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  IntersectionType,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 import { ApiKeyUpdateRequestDto } from './api-key.update.request.dto';
 import { ApiKeyUpdateDateRequestDto } from './api-key.update-date.request.dto';
-import { ENUM_API_KEY_TYPE } from '../../enums/api-key.enum';
+import { EnumApiKeyType } from '../../enums/api-key.enum';
 
 export class ApiKeyCreateRequestDto extends IntersectionType(
   ApiKeyUpdateRequestDto,
   PartialType(ApiKeyUpdateDateRequestDto),
 ) {
   @ApiProperty({
-    description: 'Api key name',
-    example: ENUM_API_KEY_TYPE.DEFAULT,
+    description: 'Api Key name',
+    example: EnumApiKeyType.default,
     required: true,
-    enum: ENUM_API_KEY_TYPE,
+    enum: EnumApiKeyType,
   })
   @IsNotEmpty()
-  @IsEnum(ENUM_API_KEY_TYPE)
-  type: ENUM_API_KEY_TYPE;
+  @IsEnum(EnumApiKeyType)
+  type: EnumApiKeyType;
 }
 
-export class ApiKeyCreateRawRequestDto extends ApiKeyCreateRequestDto {
+export class ApiKeyCreateRawRequestDto extends OmitType(
+  ApiKeyCreateRequestDto,
+  ['startDate', 'endDate'] as const,
+) {
   @ApiProperty({
     name: 'key',
     example: faker.string.alphanumeric(10),
@@ -33,7 +41,7 @@ export class ApiKeyCreateRawRequestDto extends ApiKeyCreateRequestDto {
 
   @ApiProperty({
     name: 'secret',
-    example: faker.string.alpha(20),
+    example: faker.string.alphanumeric(20),
     required: true,
   })
   @IsNotEmpty()

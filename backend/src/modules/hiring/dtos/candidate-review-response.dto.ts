@@ -1,0 +1,23 @@
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CandidateReviewResponseDto {
+  @ApiProperty({ type: String })
+  _id: string;
+
+  @ApiProperty({ type: String })
+  user: string;
+
+  @ApiProperty({ type: String })
+  candidate: string;
+
+  @ApiProperty({ type: String })
+  feedback: string;
+
+  @ApiProperty({
+    example: new Date(),
+    description: 'Ngày tạo',
+    type: String,
+    format: 'date-time',
+  })
+  createdAt: Date;
+}

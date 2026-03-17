@@ -1,15 +1,7 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const ServiceChecklistDocParamsId: DocField[] = [
+export const ServiceChecklistDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -19,7 +11,7 @@ export const ServiceChecklistDocParamsId: DocField[] = [
   },
 ];
 
-export const ServiceChecklistDocParamsCode: DocField[] = [
+export const ServiceChecklistDocParamsCode: ApiParamOptions[] = [
   {
     name: 'code',
     allowEmptyValue: false,
@@ -29,7 +21,7 @@ export const ServiceChecklistDocParamsCode: DocField[] = [
   },
 ];
 
-export const ServiceChecklistDocQueryOrderBy: DocField[] = [
+export const ServiceChecklistDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -40,7 +32,7 @@ export const ServiceChecklistDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const ServiceChecklistDocQueryOrderDirection: DocField[] = [
+export const ServiceChecklistDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,

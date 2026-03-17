@@ -1,35 +1,36 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { AppointmentGetResponseDto } from './appointment.get.response.dto';
-import { VehicleModelGetResponseDto } from '@/modules/vehicle-model/dtos/response/vehicle-model.get.response.dto';
-import { UserVehicleGetResponseDto } from '@/modules/user-vehicle/dtos/response/user-vehicle.get.response.dto';
-import { VehicleServiceGetResponseDto } from '@/modules/vehicle-service/dtos/response/vehicle-service.get.response.dto';
+import { AppointmentDto } from '../appointment.dto';
+import { VehicleModelDto } from '@/modules/vehicle-model/dtos/vehicle-model.dto';
+import { UserVehicleDto } from '@/modules/user-vehicle/dtos/user-vehicle.dto';
+import { VehicleServiceDto } from '@/modules/vehicle-service/dtos/vehicle-service.dto';
 
-export class AppointmentGetFullResponseDto extends OmitType(
-  AppointmentGetResponseDto,
-  ['userVehicle', 'vehicleModel', 'vehicleServices'] as const,
-) {
+export class AppointmentGetFullResponseDto extends OmitType(AppointmentDto, [
+  'userVehicle',
+  'vehicleModel',
+  'vehicleServices',
+] as const) {
   @ApiProperty({
     required: true,
-    type: UserVehicleGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(UserVehicleGetResponseDto) }],
+    type: UserVehicleDto,
+    oneOf: [{ $ref: getSchemaPath(UserVehicleDto) }],
   })
-  @Type(() => UserVehicleGetResponseDto)
-  userVehicle: UserVehicleGetResponseDto;
-
-  @ApiProperty({
-    required: true,
-    type: VehicleServiceGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(VehicleServiceGetResponseDto) }],
-  })
-  @Type(() => VehicleServiceGetResponseDto)
-  vehicleServices: VehicleServiceGetResponseDto;
+  @Type(() => UserVehicleDto)
+  userVehicle: UserVehicleDto;
 
   @ApiProperty({
     required: true,
-    type: VehicleModelGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(VehicleModelGetResponseDto) }],
+    type: VehicleServiceDto,
+    oneOf: [{ $ref: getSchemaPath(VehicleServiceDto) }],
   })
-  @Type(() => VehicleModelGetResponseDto)
-  vehicleModel: VehicleModelGetResponseDto[];
+  @Type(() => VehicleServiceDto)
+  vehicleServices: VehicleServiceDto;
+
+  @ApiProperty({
+    required: true,
+    type: VehicleModelDto,
+    oneOf: [{ $ref: getSchemaPath(VehicleModelDto) }],
+  })
+  @Type(() => VehicleModelDto)
+  vehicleModel: VehicleModelDto[];
 }

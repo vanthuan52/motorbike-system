@@ -1,9 +1,9 @@
 import { ApiHideProperty, OmitType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ServiceCategoryGetResponseDto } from './service-category.get.response.dto';
+import { ServiceCategoryDto } from '../service-category.dto';
 
 export class ServiceCategoryShortResponseDto extends OmitType(
-  ServiceCategoryGetResponseDto,
+  ServiceCategoryDto,
   ['createdAt', 'updatedAt'],
 ) {
   @ApiHideProperty()

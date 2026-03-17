@@ -2,28 +2,39 @@ import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
+  IDatabaseDeleteOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { ServicePriceDoc } from '../entities/service-price.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
-import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
-import { ServicePriceGetResponseDto } from '../dtos/response/service-price.get.response.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { IServicePriceEntity } from './service-price.interface';
-import { ServicePriceGetFullResponseDto } from '../dtos/response/service-price.full.response.dto';
+import { ServicePriceDoc } from '../entities/service-price.entity';
+import {
+  IModelServicePrice,
+  IServicePriceDoc,
+  IServicePriceEntity,
+} from './service-price.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export interface IServicePriceService {
   findAll(
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,
   ): Promise<ServicePriceDoc[]>;
+
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: ServicePriceDoc[]; total: number }>;
+
+  getTotal(
+    find?: Record<string, any>,
+    options?: IDatabaseGetTotalOptions,
+  ): Promise<number>;
 
   findAllWithVehicleServiceAndVehicleModel(
     find?: Record<string, any>,
@@ -36,30 +47,29 @@ export interface IServicePriceService {
   ): Promise<number>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<ServicePriceDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<ServicePriceDoc>;
+
+  join(repository: ServicePriceDoc): Promise<IServicePriceDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<ServicePriceDoc | null>;
-
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  ): Promise<ServicePriceDoc>;
 
   create(
     payload: ServicePriceCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<ServicePriceDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: ServicePriceDoc,
+    id: string,
     payload: ServicePriceUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<ServicePriceDoc>;
+  ): Promise<void>;
+
+  delete(id: string, options?: IDatabaseDeleteOptions): Promise<void>;
 
   softDelete(
     repository: ServicePriceDoc,
@@ -71,11 +81,15 @@ export interface IServicePriceService {
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
 
-  mapList(data: ServicePriceDoc[]): ServicePriceListResponseDto[];
+  getLatestServicePrices(): Promise<IModelServicePrice[]>;
 
-  mapGet(data: ServicePriceDoc): ServicePriceGetResponseDto;
+  getLatestPricesForService(
+    find: Record<string, any>,
+    options?: IDatabaseFindAllAggregateOptions,
+  ): Promise<IModelServicePrice[]>;
 
-  mapGetPopulate(
-    ServicePrice: ServicePriceDoc | IServicePriceEntity,
-  ): ServicePriceGetFullResponseDto;
+  getTotalLatestPricesForService(
+    find: Record<string, any>,
+    options?: IDatabaseAggregateOptions,
+  ): Promise<number>;
 }

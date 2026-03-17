@@ -1,12 +1,12 @@
+import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
   DocResponse,
 } from '@/common/doc/decorators/doc.decorator';
-import { applyDecorators } from '@nestjs/common';
-import { HealthAwsResponseDto } from '../dtos/response/health.aws.response.dto';
-import { HealthDatabaseResponseDto } from '../dtos/response/health.database.response.dto';
-import { HealthInstanceResponseDto } from '../dtos/response/health.instance.response.dto';
+import { HealthAwsResponseDto } from '@/modules/health/dtos/response/health.aws.response.dto';
+import { HealthDatabaseResponseDto } from '@/modules/health/dtos/response/health.database.response.dto';
+import { HealthInstanceResponseDto } from '@/modules/health/dtos/response/health.instance.response.dto';
 
 export function HealthSystemCheckAwsDoc(): MethodDecorator {
   return applyDecorators(
@@ -14,7 +14,7 @@ export function HealthSystemCheckAwsDoc(): MethodDecorator {
       summary: 'health check api for aws',
     }),
     DocAuth({
-      xApiKey: false,
+      xApiKey: true,
     }),
     DocResponse<HealthAwsResponseDto>('health.checkAws', {
       dto: HealthAwsResponseDto,
@@ -28,7 +28,7 @@ export function HealthSystemCheckDatabaseDoc(): MethodDecorator {
       summary: 'health check api for database',
     }),
     DocAuth({
-      xApiKey: false,
+      xApiKey: true,
     }),
     DocResponse<HealthDatabaseResponseDto>('health.checkDatabase', {
       dto: HealthDatabaseResponseDto,
@@ -42,7 +42,7 @@ export function HealthSystemCheckInstanceDoc(): MethodDecorator {
       summary: 'health check api for instance',
     }),
     DocAuth({
-      xApiKey: false,
+      xApiKey: true,
     }),
     DocResponse<HealthInstanceResponseDto>('health.checkInstance', {
       dto: HealthInstanceResponseDto,

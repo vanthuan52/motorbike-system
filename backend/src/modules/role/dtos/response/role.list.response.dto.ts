@@ -1,9 +1,9 @@
 import { ApiHideProperty, ApiProperty, OmitType } from '@nestjs/swagger';
 import { Exclude, Transform } from 'class-transformer';
-import { RoleGetResponseDto } from './role.get.response.dto';
+import { RoleDto } from '../role.dto';
 
-export class RoleListResponseDto extends OmitType(RoleGetResponseDto, [
-  'permissions',
+export class RoleListResponseDto extends OmitType(RoleDto, [
+  'abilities',
   'description',
 ] as const) {
   @ApiHideProperty()
@@ -15,5 +15,5 @@ export class RoleListResponseDto extends OmitType(RoleGetResponseDto, [
     required: true,
   })
   @Transform(({ value }) => value.length)
-  permissions: number;
+  abilities: number;
 }

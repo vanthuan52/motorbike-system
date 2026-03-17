@@ -5,7 +5,7 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { UserEntity } from '@/modules/user/entities/user.entity';
 import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 
@@ -62,9 +62,9 @@ export class UserVehicleEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
-    schema: AwsS3Schema,
+    schema: AwsS3Dto,
   })
-  photo?: AwsS3Entity;
+  photo?: AwsS3Dto;
 }
 
 export const UserVehicleSchema = DatabaseSchema(UserVehicleEntity);

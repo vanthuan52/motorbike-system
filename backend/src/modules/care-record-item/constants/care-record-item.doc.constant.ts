@@ -1,15 +1,7 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const CareRecordItemDocParamsId: DocField[] = [
+export const CareRecordItemDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -19,7 +11,7 @@ export const CareRecordItemDocParamsId: DocField[] = [
   },
 ];
 
-export const CareRecordItemDocQueryCareRecord: DocField[] = [
+export const CareRecordItemDocQueryCareRecord: ApiParamOptions[] = [
   {
     name: 'careRecord',
     allowEmptyValue: true,

@@ -1,73 +1,65 @@
 import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
+  IDatabaseSoftDeleteOptions,
+  IDatabaseUpdateOptions,
 } from '@/common/database/interfaces/database.interface';
-
-import { PartTypeDoc, PartTypeEntity } from '../entities/part-type.entity';
 import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
 import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
-import { PartTypeGetResponseDto } from '../dtos/response/part-type.get.response.dto';
-import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
+import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
+import {
+  IPaginationIn,
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { PartTypeDoc } from '../entities/part-type.entity';
 
 export interface IPartTypeService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<PartTypeDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: PartTypeDoc[]; total: number }>;
 
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<PartTypeDoc[]>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: PartTypeDoc[]; total?: number }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<PartTypeDoc | null>;
-
-  findOne(
-    find: Record<string, any>,
+    partTypeId: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<PartTypeDoc | null>;
+  ): Promise<PartTypeDoc>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  findOneBySlug(slug: string): Promise<PartTypeDoc>;
 
   create(
     payload: PartTypeCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<PartTypeDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: PartTypeDoc,
+    partTypeId: string,
     payload: PartTypeUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartTypeDoc>;
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  updateStatus(
+    partTypeId: string,
+    payload: PartTypeUpdateStatusRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  delete(partTypeId: string, options?: IDatabaseUpdateOptions): Promise<void>;
 
   softDelete(
-    repository: PartTypeDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartTypeDoc>;
+    partTypeId: string,
+    options?: IDatabaseSoftDeleteOptions,
+  ): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  createSlug(name: string): string;
-
-  mapList(data: PartTypeDoc[]): PartTypeListResponseDto[];
-  mapGet(data: PartTypeDoc): PartTypeGetResponseDto;
 }

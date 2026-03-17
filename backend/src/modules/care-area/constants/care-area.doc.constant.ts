@@ -1,15 +1,7 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const CareAreaDocParamsId: DocField[] = [
+export const CareAreaDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -19,7 +11,7 @@ export const CareAreaDocParamsId: DocField[] = [
   },
 ];
 
-export const CareAreaDocQueryOrderBy: DocField[] = [
+export const CareAreaDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -30,7 +22,7 @@ export const CareAreaDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const CareAreaDocQueryOrderDirection: DocField[] = [
+export const CareAreaDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,

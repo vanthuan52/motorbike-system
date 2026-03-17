@@ -1,25 +1,25 @@
-import { PipelineStage } from 'mongoose';
 import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseDeleteOptions,
-  IDatabaseExistsOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { UserVehicleDoc } from '../entities/user-vehicle.entity';
 import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create.request.dto';
 import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
-import { UserVehicleGetResponseDto } from '../dtos/response/user-vehicle.get.response.dto';
 import { UserVehicleListResponseDto } from '../dtos/response/user-vehicle.list.response.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { UserVehicleUploadPhotoRequestDto } from '../dtos/request/user-vehicle.upload-photo.request.dto';
 import { IUserVehicleDoc, IUserVehicleEntity } from './user-vehicle.interface';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import { UserVehicleDto } from '../dtos/user-vehicle.dto';
 
 export interface IUserVehicleService {
   findAll(
@@ -27,10 +27,20 @@ export interface IUserVehicleService {
     options?: IDatabaseFindAllOptions,
   ): Promise<UserVehicleDoc[]>;
 
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: UserVehicleDoc[]; total: number }>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: UserVehicleDoc[]; total?: number }>;
+
   findAllWithVehicleModel(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IUserVehicleEntity[]>;
+  ): Promise<UserVehicleDoc[]>;
 
   getTotalWithVehicleModel(
     find?: Record<string, any>,
@@ -38,19 +48,19 @@ export interface IUserVehicleService {
   ): Promise<number>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<UserVehicleDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<UserVehicleDoc>;
 
   findOneWithVehicleModelById(
     _id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<IUserVehicleDoc | null>;
+  ): Promise<UserVehicleDoc | null>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<UserVehicleDoc | null>;
+  ): Promise<UserVehicleDoc>;
 
   getTotal(
     find?: Record<string, any>,
@@ -63,15 +73,12 @@ export interface IUserVehicleService {
   ): Promise<UserVehicleDoc>;
 
   update(
-    repository: UserVehicleDoc,
+    id: string,
     payload: UserVehicleUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<UserVehicleDoc>;
+  ): Promise<void>;
 
-  delete(
-    repository: UserVehicleDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<boolean>;
+  delete(id: string, options?: IDatabaseDeleteOptions): Promise<boolean>;
 
   softDelete(
     repository: UserVehicleDoc,
@@ -93,7 +100,4 @@ export interface IUserVehicleService {
     user: string,
     { mime }: UserVehicleUploadPhotoRequestDto,
   ): string;
-
-  mapList(data: UserVehicleDoc[]): UserVehicleListResponseDto[];
-  mapGet(data: UserVehicleDoc): UserVehicleGetResponseDto;
 }

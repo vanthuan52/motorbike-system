@@ -1,29 +1,80 @@
 import { registerAs } from '@nestjs/config';
 import ms from 'ms';
+import { Algorithm } from 'jsonwebtoken';
 
-export default registerAs('auth', (): Record<string, any> => {
+export interface IConfigAuth {
+  jwt: {
+    accessToken: {
+      jwksUri: string;
+      kid: string;
+      algorithm: Algorithm;
+      privateKey: string;
+      publicKey: string;
+      expirationTimeInSeconds: number;
+    };
+    refreshToken: {
+      jwksUri: string;
+      kid: string;
+      algorithm: Algorithm;
+      privateKey: string;
+      publicKey: string;
+      expirationTimeInSeconds: number;
+    };
+    audience: string;
+    issuer: string;
+    header: string;
+    prefix: string;
+  };
+  password: {
+    attempt: boolean;
+    maxAttempt: number;
+    saltLength: number;
+    expiredInSeconds: number;
+    expiredTemporaryInSeconds: number;
+    periodInSeconds: number;
+  };
+  apple: {
+    header: string;
+    prefix: string;
+    clientId?: string;
+    signInClientId?: string;
+  };
+  google: {
+    header: string;
+    prefix: string;
+    clientId?: string;
+    clientSecret?: string;
+  };
+  xApiKey: {
+    header: string;
+    cachePrefixKey: string;
+  };
+}
+
+export default registerAs('auth', (): IConfigAuth => {
   return {
     jwt: {
       accessToken: {
+        jwksUri: process.env.AUTH_JWT_ACCESS_TOKEN_JWKS_URI,
         kid: process.env.AUTH_JWT_ACCESS_TOKEN_KID,
-        privateKeyPath: process.env.AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY_PATH,
-        publicKeyPath: process.env.AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY_PATH,
-        expirationTime:
+        algorithm: 'ES256',
+        privateKey: process.env.AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY,
+        publicKey: process.env.AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY,
+        expirationTimeInSeconds:
           ms(process.env.AUTH_JWT_ACCESS_TOKEN_EXPIRED as ms.StringValue) /
           1000,
       },
 
       refreshToken: {
+        jwksUri: process.env.AUTH_JWT_REFRESH_TOKEN_JWKS_URI,
         kid: process.env.AUTH_JWT_REFRESH_TOKEN_KID,
-        privateKeyPath: process.env.AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY_PATH,
-        publicKeyPath: process.env.AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY_PATH,
-        expirationTime:
+        algorithm: 'ES512',
+        privateKey: process.env.AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY,
+        publicKey: process.env.AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY,
+        expirationTimeInSeconds:
           ms(process.env.AUTH_JWT_REFRESH_TOKEN_EXPIRED as ms.StringValue) /
           1000,
       },
-
-      algorithm: 'ES512',
-      jwksUri: process.env.AUTH_JWT_JWKS_URI,
 
       audience: process.env.AUTH_JWT_AUDIENCE,
       issuer: process.env.AUTH_JWT_ISSUER,
@@ -35,9 +86,9 @@ export default registerAs('auth', (): Record<string, any> => {
       attempt: true,
       maxAttempt: 5,
       saltLength: 8,
-      expiredIn: ms('182d') / 1000, // 0.5 years
-      expiredInTemporary: ms('3d') / 1000, // 3 days
-      period: ms('90d') / 1000, // 3 months
+      expiredInSeconds: ms('182d') / 1000,
+      expiredTemporaryInSeconds: ms('3d') / 1000,
+      periodInSeconds: ms('90d') / 1000,
     },
 
     apple: {
@@ -54,6 +105,7 @@ export default registerAs('auth', (): Record<string, any> => {
     },
     xApiKey: {
       header: 'x-api-key',
+      cachePrefixKey: 'ApiKey',
     },
   };
 });

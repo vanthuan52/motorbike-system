@@ -6,7 +6,7 @@ import {
   ServiceCategoryDocQueryOrderDirection,
   ServiceCategoryDocQueryStatus,
 } from '../constants/service-category.doc.constant';
-import { ServiceCategoryGetResponseDto } from '../dtos/response/service-category.get.response.dto';
+import { ServiceCategoryDto } from '../dtos/service-category.dto';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
 import {
   Doc,
@@ -16,7 +16,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { ServiceCategoryCreateRequestDto } from '../dtos/request/service-category.create.request.dto';
 import { ServiceCategoryUpdateRequestDto } from '../dtos/request/service-category.update.request.dto';
 import { ServiceCategoryUpdateStatusRequestDto } from '../dtos/request/service-category.update-status.request.dto';
@@ -49,15 +49,15 @@ export function ServiceCategoryAdminCreateDoc(): MethodDecorator {
       summary: 'create a new service category',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServiceCategoryCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServiceCategoryGetResponseDto>('service-category.create', {
-      dto: ServiceCategoryGetResponseDto,
+    DocResponse<ServiceCategoryDto>('service-category.create', {
+      dto: ServiceCategoryDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -70,7 +70,7 @@ export function ServiceCategoryAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: ServiceCategoryDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServiceCategoryUpdateRequestDto,
     }),
     DocAuth({
@@ -104,7 +104,7 @@ export function ServiceCategoryAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: ServiceCategoryDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServiceCategoryUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -127,8 +127,8 @@ export function ServiceCategoryAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServiceCategoryGetResponseDto>('service-category.getById', {
-      dto: ServiceCategoryGetResponseDto,
+    DocResponse<ServiceCategoryDto>('service-category.getById', {
+      dto: ServiceCategoryDto,
     }),
   );
 }

@@ -1,86 +1,59 @@
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CareRecordItemDoc } from '../entities/care-record-item.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
-import { CareRecordItemListResponseDto } from '../dtos/response/care-record-item.list.response.dto';
-import { CareRecordItemGetResponseDto } from '../dtos/response/care-record-item.get.response.dto';
-import { ICareRecordItemEntity } from './care-record-item.interface';
-import { CareRecordItemGetFullResponseDto } from '../dtos/response/care-record-item.full.response.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
+import { CareRecordItemDoc } from '../entities/care-record-item.entity';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 
 export interface ICareRecordItemService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordItemDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordItemDoc[]; total: number }>;
 
-  findAllWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICareRecordItemEntity[]>;
-
-  getTotalWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordItemDoc[]; total?: number }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CareRecordItemDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordItemDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordItemDoc | null>;
-
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  ): Promise<CareRecordItemDoc>;
 
   create(
     payload: CareRecordItemCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordItemDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: CareRecordItemDoc,
+    id: string,
     payload: CareRecordItemUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordItemDoc>;
+  ): Promise<void>;
 
   updateApproval(
-    repository: CareRecordItemDoc,
-    { approvedByOwner }: CareRecordItemUpdateApprovalRequestDto,
+    id: string,
+    payload: CareRecordItemUpdateApprovalRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordItemDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: CareRecordItemDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordItemDoc>;
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-
-  mapList(data: CareRecordItemDoc[]): CareRecordItemListResponseDto[];
-
-  mapGet(data: CareRecordItemDoc): CareRecordItemGetResponseDto;
-
-  mapGetPopulate(
-    CareRecordItem: CareRecordItemDoc | ICareRecordItemEntity,
-  ): CareRecordItemGetFullResponseDto;
 }

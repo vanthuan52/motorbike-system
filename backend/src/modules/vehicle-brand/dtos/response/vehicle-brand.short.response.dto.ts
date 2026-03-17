@@ -1,11 +1,11 @@
 import { ApiHideProperty, OmitType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { VehicleBrandGetResponseDto } from './vehicle-brand.get.response.dto';
+import { VehicleBrandDto } from '../vehicle-brand.dto';
 
-export class VehicleBrandShortResponseDto extends OmitType(
-  VehicleBrandGetResponseDto,
-  ['createdAt', 'updatedAt'],
-) {
+export class VehicleBrandShortResponseDto extends OmitType(VehicleBrandDto, [
+  'createdAt',
+  'updatedAt',
+]) {
   @ApiHideProperty()
   @Exclude()
   createdAt: Date;

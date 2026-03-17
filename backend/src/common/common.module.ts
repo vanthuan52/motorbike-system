@@ -1,14 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CacheModule, CacheOptions } from '@nestjs/cache-manager';
-import { LoggerModule as PinoLoggerModule } from 'nestjs-pino';
+import { LoggerModule } from 'nestjs-pino';
 import { PaginationModule } from './pagination/pagination.module';
 import { PolicyModule } from '@/modules/policy/policy.module';
 import { HelperModule } from './helper/helper.module';
 import { MessageModule } from './message/message.module';
-import { LoggerOptionService } from './logger/services/logger.option.service';
-import { LoggerOptionModule } from './logger/logger.option.module';
 import { DatabaseOptionService } from './database/services/database.options.service';
 import { DATABASE_CONNECTION_NAME } from './database/constants/database.constant';
 import {
@@ -18,6 +15,17 @@ import {
 import configs from 'src/config';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { RequestModule } from './request/request.module';
+import { RedisCacheModule } from './redis/redis.module';
+import { CacheMainModule } from '@/common/cache/cache.module';
+import { QueueRegisterModule } from '@/queues/queue.register.module';
+import { FileModule } from './file/file.module';
+import { SessionModule } from '@/modules/session/session.module';
+import { RoleModule } from '@/modules/role/role.module';
+
+/**
+ * Common module that provides shared functionality across the application.
+ * Configures global services including configuration, caching, logging, database, authentication, and pagination.
+ */
 
 @Module({
   controllers: [],
@@ -27,7 +35,7 @@ import { RequestModule } from './request/request.module';
       isGlobal: true,
       load: configs,
       cache: true,
-      envFilePath: `.env`,
+      envFilePath: [`.env`, `.env.${process.env.NODE_ENV || 'development'}`],
       expandVariables: false,
     }),
     MongooseModule.forRootAsync({
@@ -37,32 +45,22 @@ import { RequestModule } from './request/request.module';
       useFactory: (databaseService: DatabaseOptionService) =>
         databaseService.createOptions(),
     }),
-    CacheModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: async (
-        configService: ConfigService,
-      ): Promise<CacheOptions> => ({
-        max: configService.get<number>('redis.cached.max'),
-        ttl: configService.get<number>('redis.cached.ttl'),
-        stores: [],
-      }),
-      inject: [ConfigService],
-    }),
-    PinoLoggerModule.forRootAsync({
-      imports: [LoggerOptionModule],
-      inject: [LoggerOptionService],
-      useFactory: async (loggerOptionService: LoggerOptionService) => {
-        return loggerOptionService.createOptions();
-      },
-    }),
-    MessageModule.forRoot(),
-    HelperModule.forRoot(),
-    RequestModule.forRoot(),
-    PolicyModule.forRoot(),
-    AuthModule.forRoot(),
     DatabaseModule.forRoot(),
-    PaginationModule.forRoot(),
+    MessageModule.forRoot(),
+    LoggerModule.forRoot(),
+    RedisCacheModule.forRoot(),
+    CacheMainModule.forRoot(),
+    QueueRegisterModule.forRoot(),
+    RequestModule.forRoot(),
+
+    HelperModule,
+    PaginationModule,
+    FileModule,
+
+    PolicyModule,
+    AuthModule,
+    RoleModule,
+    SessionModule,
   ],
 })
 export class CommonModule {}

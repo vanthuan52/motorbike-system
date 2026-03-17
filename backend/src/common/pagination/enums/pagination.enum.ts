@@ -1,14 +1,14 @@
-export enum ENUM_PAGINATION_ORDER_DIRECTION_TYPE {
-  ASC = 'asc',
-  DESC = 'desc',
+export enum EnumPaginationFilterDateBetweenType {
+  start = 'start',
+  end = 'end',
 }
 
-export enum ENUM_PAGINATION_FILTER_CASE_OPTIONS {
-  UPPERCASE = 'UPPERCASE',
-  LOWERCASE = 'LOWERCASE',
+export enum EnumPaginationOrderDirectionType {
+  asc = 'asc',
+  desc = 'desc',
 }
 
-export enum ENUM_PAGINATION_FILTER_DATE_TIME_OPTIONS {
-  START_OF_DAY = 'START_OF_DAY',
-  END_OF_DAY = 'END_OF_DAY',
+export enum EnumPaginationType {
+  offset = 'offset',
+  cursor = 'cursor',
 }

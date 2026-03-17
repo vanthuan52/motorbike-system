@@ -1,105 +1,87 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Document } from 'mongoose';
-import { plainToInstance } from 'class-transformer';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { IApiKeyService } from '../interfaces/api-key.service.interface';
-import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { HelperHashService } from '@/common/helper/services/helper.hash.service';
-import { HelperDateService } from '@/common/helper/services/helper.date.service';
-import { DatabaseService } from '@/common/database/services/database.service';
+import { HelperService } from '@/common/helper/services/helper.service';
 import {
   IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
-  IDatabaseUpdateManyOptions,
 } from '@/common/database/interfaces/database.interface';
 import { ApiKeyDoc, ApiKeyEntity } from '../entities/api-key.entity';
 import { ApiKeyRepository } from '../repositpory/api-key.repository';
-import {
-  ApiKeyCreateRawRequestDto,
-  ApiKeyCreateRequestDto,
-} from '../dtos/request/api-key.create.request.dto';
-import { ApiKeyCreateResponseDto } from '../dtos/response/api-key.create.dto';
-import { ENUM_HELPER_DATE_DAY_OF } from '@/common/helper/enums/helper.enum';
+import { ApiKeyCreateRequestDto } from '../dtos/request/api-key.create.request.dto';
+import { ApiKeyCreateResponseDto } from '../dtos/response/api-key.create.response.dto';
+import { EnumHelperDateDayOf } from '@/common/helper/enums/helper.enum';
 import { ApiKeyUpdateRequestDto } from '../dtos/request/api-key.update.request.dto';
 import { ApiKeyUpdateDateRequestDto } from '../dtos/request/api-key.update-date.request.dto';
-import { ApiKeyResetResponseDto } from '../dtos/response/api-key.reset.dto';
-import { ApiKeyListResponseDto } from '../dtos/response/api-key.list.response.dto';
-import { ApiKeyGetResponseDto } from '../dtos/response/api-key.get.response.dto';
+import { EnumApiKeyStatusCodeError } from '../enums/api-key.status-code.enum';
+import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import { ApiKeyUtil } from '../utils/api-key.util';
+import { EnumApiKeyType } from '../enums/api-key.enum';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { ApiKeyDto } from '../dtos/api-key.dto';
+import { ApiKeyUpdateStatusRequestDto } from '../dtos/request/api-key.update-status.request.dto';
 
 @Injectable()
 export class ApiKeyService implements IApiKeyService {
-  private readonly env: string;
-
   constructor(
-    private readonly helperStringService: HelperStringService,
-    private readonly configService: ConfigService,
-    private readonly helperHashService: HelperHashService,
-    private readonly helperDateService: HelperDateService,
+    private readonly helperService: HelperService,
     private readonly apiKeyRepository: ApiKeyRepository,
-    private readonly databaseService: DatabaseService,
-  ) {
-    this.env = this.configService.get<string>('app.env')!;
-  }
+    private readonly apiKeyUtil: ApiKeyUtil,
+  ) {}
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<ApiKeyDoc[]> {
-    return this.apiKeyRepository.findAll(find, options);
-  }
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<IResponsePagingReturn<ApiKeyDto>> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
 
-  async findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<ApiKeyDoc | null> {
-    return this.apiKeyRepository.findOneById(_id, options);
-  }
+    const [apiKeys, total] = await Promise.all([
+      this.apiKeyRepository.findAll(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.apiKeyRepository.getTotal(find),
+    ]);
 
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseOptions,
-  ): Promise<ApiKeyDoc | null> {
-    return this.apiKeyRepository.findOne(find, options);
-  }
+    const mapped = this.apiKeyUtil.mapList(apiKeys);
+    const totalPage = Math.ceil(total / limit);
+    const page = Math.floor(skip / limit) + 1;
+    const hasNext = page < totalPage;
+    const hasPrevious = page > 1;
 
-  async findOneByKey(
-    key: string,
-    options?: IDatabaseOptions,
-  ): Promise<ApiKeyDoc | null> {
-    return this.apiKeyRepository.findOne<ApiKeyDoc>({ key }, options);
-  }
-
-  async findOneByActiveKey(
-    key: string,
-    options?: IDatabaseOptions,
-  ): Promise<ApiKeyDoc | null> {
-    return this.apiKeyRepository.findOne<ApiKeyDoc>(
-      {
-        key,
-        isActive: true,
-      },
-      options,
-    );
-  }
-
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.apiKeyRepository.getTotal(find, options);
+    return {
+      type: EnumPaginationType.offset,
+      count: total,
+      perPage: limit,
+      page,
+      totalPage,
+      hasNext,
+      hasPrevious,
+      nextPage: hasNext ? page + 1 : undefined,
+      previousPage: hasPrevious ? page - 1 : undefined,
+      data: mapped,
+    };
   }
 
   async create(
     { name, type, startDate, endDate }: ApiKeyCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<ApiKeyCreateResponseDto> {
-    const key = await this.createKey();
-    const secret = await this.createSecret();
-    const hash: string = await this.createHashApiKey(key, secret);
+  ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
+    const { key, secret, hash } = this.apiKeyUtil.generateCredential();
 
     const data: ApiKeyEntity = new ApiKeyEntity();
     data.name = name;
@@ -109,41 +91,11 @@ export class ApiKeyService implements IApiKeyService {
     data.type = type;
 
     if (startDate && endDate) {
-      data.startDate = this.helperDateService.create(startDate, {
-        dayOf: ENUM_HELPER_DATE_DAY_OF.START,
+      data.startDate = this.helperService.dateCreate(startDate, {
+        dayOf: EnumHelperDateDayOf.start,
       });
-      data.endDate = this.helperDateService.create(endDate, {
-        dayOf: ENUM_HELPER_DATE_DAY_OF.END,
-      });
-    }
-
-    const created: ApiKeyDoc = await this.apiKeyRepository.create<ApiKeyEntity>(
-      data,
-      options,
-    );
-
-    return { _id: created._id, key: created.key, secret };
-  }
-
-  async createRaw(
-    { name, key, type, secret, startDate, endDate }: ApiKeyCreateRawRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<ApiKeyCreateResponseDto> {
-    const hash: string = await this.createHashApiKey(key, secret);
-
-    const data: ApiKeyEntity = new ApiKeyEntity();
-    data.name = name;
-    data.key = key;
-    data.hash = hash;
-    data.isActive = true;
-    data.type = type;
-
-    if (startDate && endDate) {
-      data.startDate = this.helperDateService.create(startDate, {
-        dayOf: ENUM_HELPER_DATE_DAY_OF.START,
-      });
-      data.endDate = this.helperDateService.create(endDate, {
-        dayOf: ENUM_HELPER_DATE_DAY_OF.END,
+      data.endDate = this.helperService.dateCreate(endDate, {
+        dayOf: EnumHelperDateDayOf.end,
       });
     }
 
@@ -152,132 +104,216 @@ export class ApiKeyService implements IApiKeyService {
       options,
     );
 
-    return { _id: created._id, key: created.key, secret };
+    return {
+      data: this.apiKeyUtil.mapCreate(created, secret),
+    };
   }
 
-  async active(
-    repository: ApiKeyDoc,
+  async updateStatus(
+    apiKeyId: string,
+    data: ApiKeyUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<ApiKeyDoc> {
-    repository.isActive = true;
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    const today = this.helperService.dateCreate();
+    const apiKey: ApiKeyDoc = await this.apiKeyRepository.findOneById(apiKeyId);
+    if (!apiKey) {
+      throw new NotFoundException({
+        statusCode: EnumApiKeyStatusCodeError.notFound,
+        message: 'apiKey.error.notFound',
+      });
+    } else if (this.apiKeyUtil.isExpired(apiKey, today)) {
+      throw new BadRequestException({
+        statusCode: EnumApiKeyStatusCodeError.expired,
+        message: 'apiKey.error.expired',
+      });
+    }
 
-    return this.apiKeyRepository.save(repository, options);
-  }
+    apiKey.isActive = data.isActive;
+    apiKey.updatedAt = today;
 
-  async inactive(
-    repository: ApiKeyDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<ApiKeyDoc> {
-    repository.isActive = false;
-
-    return this.apiKeyRepository.save(repository, options);
+    const updated = await this.apiKeyRepository.save(apiKey, options);
+    return {
+      data: this.apiKeyUtil.mapOne(updated),
+    };
   }
 
   async update(
-    repository: ApiKeyDoc,
+    apiKeyId: string,
     { name }: ApiKeyUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<ApiKeyDoc> {
-    repository.name = name;
-    return this.apiKeyRepository.save(repository, options);
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    const apiKey: ApiKeyDoc = await this.apiKeyRepository.findOneById(apiKeyId);
+    this.validateApiKey(apiKey, true);
+
+    apiKey.name = name;
+    const [updated, _] = await Promise.all([
+      this.apiKeyRepository.save(apiKey, options),
+      this.apiKeyUtil.deleteCacheByKey(apiKey.key),
+    ]);
+
+    return {
+      data: this.apiKeyUtil.mapOne(updated),
+    };
   }
 
   async updateDate(
-    repository: ApiKeyDoc,
+    apiKeyId: string,
     { startDate, endDate }: ApiKeyUpdateDateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<ApiKeyDoc> {
-    repository.startDate = this.helperDateService.create(startDate, {
-      dayOf: ENUM_HELPER_DATE_DAY_OF.START,
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    const apiKey: ApiKeyDoc = await this.apiKeyRepository.findOneById(apiKeyId);
+    this.validateApiKey(apiKey, true);
+
+    apiKey.startDate = this.helperService.dateCreate(startDate, {
+      dayOf: EnumHelperDateDayOf.start,
     });
-    repository.endDate = this.helperDateService.create(endDate, {
-      dayOf: ENUM_HELPER_DATE_DAY_OF.END,
+    apiKey.endDate = this.helperService.dateCreate(endDate, {
+      dayOf: EnumHelperDateDayOf.end,
     });
 
-    return this.apiKeyRepository.save(repository, options);
+    const [updated] = await Promise.all([
+      this.apiKeyRepository.save(apiKey, options),
+      this.apiKeyUtil.deleteCacheByKey(apiKey.key),
+    ]);
+
+    return {
+      data: this.apiKeyUtil.mapOne(updated),
+    };
   }
 
   async reset(
-    repository: ApiKeyDoc,
+    apiKeyId: string,
     options?: IDatabaseSaveOptions,
-  ): Promise<ApiKeyResetResponseDto> {
-    const secret: string = await this.createSecret();
-    const hash: string = await this.createHashApiKey(repository.key, secret);
+  ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
+    const apiKey: ApiKeyDoc = await this.apiKeyRepository.findOneById(apiKeyId);
+    this.validateApiKey(apiKey, true);
 
-    repository.hash = hash;
+    const secret: string = this.apiKeyUtil.createSecret();
+    const hash: string = this.apiKeyUtil.createHash(apiKey.key, secret);
 
-    const updated = await this.apiKeyRepository.save(repository, options);
+    apiKey.hash = hash;
+    const [updated] = await Promise.all([
+      this.apiKeyRepository.save(apiKey, options),
+      this.apiKeyUtil.deleteCacheByKey(apiKey.key),
+    ]);
 
-    return { _id: updated._id, key: updated.key, secret };
+    return {
+      data: this.apiKeyUtil.mapCreate(updated, secret),
+    };
   }
 
   async delete(
-    repository: ApiKeyDoc,
+    apiKeyId: string,
     options?: IDatabaseSaveOptions,
-  ): Promise<ApiKeyDoc> {
-    return this.apiKeyRepository.softDelete(repository, options);
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    const apiKey: ApiKeyDoc = await this.apiKeyRepository.findOneById(apiKeyId);
+    if (!apiKey) {
+      throw new NotFoundException({
+        statusCode: EnumApiKeyStatusCodeError.notFound,
+        message: 'apiKey.error.notFound',
+      });
+    }
+
+    const [deleted] = await Promise.all([
+      this.apiKeyRepository.delete({ _id: apiKeyId }, options),
+      this.apiKeyUtil.deleteCacheByKey(apiKey.key),
+    ]);
+
+    return {
+      data: this.apiKeyUtil.mapOne(deleted),
+    };
   }
 
-  async validateHashApiKey(
-    hashFromRequest: string,
-    hash: string,
-  ): Promise<boolean> {
-    return this.helperHashService.sha256Compare(hashFromRequest, hash);
+  async findOneActiveByKeyAndCache(key: string): Promise<ApiKeyDoc | null> {
+    const cached = await this.apiKeyUtil.getCacheByKey(key);
+    if (cached) {
+      return cached;
+    }
+
+    const apiKey = await this.apiKeyRepository.findOneByKey(key);
+    if (apiKey) {
+      await this.apiKeyUtil.setCacheByKey(key, apiKey);
+    }
+
+    return apiKey;
   }
 
-  async createKey(): Promise<string> {
-    const random: string = this.helperStringService.random(25);
-    return `${this.env}_${random}`;
+  async validateXApiKeyGuard(request: IRequestApp): Promise<ApiKeyEntity> {
+    const xApiKeyHeader: string = this.apiKeyUtil
+      .extractKeyFromRequest(request)
+      ?.trim();
+    if (!xApiKeyHeader) {
+      throw new UnauthorizedException({
+        statusCode: EnumApiKeyStatusCodeError.xApiKeyRequired,
+        message: 'apiKey.error.xApiKey.required',
+      });
+    }
+
+    const xApiKey: string[] = xApiKeyHeader.split(':');
+    if (xApiKey.length !== 2 || !xApiKey[0]?.trim() || !xApiKey[1]?.trim()) {
+      throw new UnauthorizedException({
+        statusCode: EnumApiKeyStatusCodeError.xApiKeyInvalid,
+        message: 'apiKey.error.xApiKey.invalid',
+      });
+    }
+
+    const [key, secret] = xApiKey;
+    const today = this.helperService.dateCreate();
+    const apiKey: ApiKeyEntity = await this.findOneActiveByKeyAndCache(key);
+
+    if (!apiKey) {
+      throw new ForbiddenException({
+        statusCode: EnumApiKeyStatusCodeError.xApiKeyNotFound,
+        message: 'apiKey.error.xApiKey.notFound',
+      });
+    } else if (
+      !this.apiKeyUtil.validateCredential(key, secret, apiKey) ||
+      !this.apiKeyUtil.isValid(apiKey, today)
+    ) {
+      throw new UnauthorizedException({
+        statusCode: EnumApiKeyStatusCodeError.xApiKeyInvalid,
+        message: 'apiKey.error.xApiKey.invalid',
+      });
+    }
+
+    return apiKey;
   }
 
-  async createSecret(): Promise<string> {
-    return this.helperStringService.random(35);
-  }
+  validateXApiKeyTypeGuard(
+    request: IRequestApp,
+    apiKeyTypes: EnumApiKeyType[],
+  ): boolean {
+    if (apiKeyTypes.length === 0) {
+      throw new InternalServerErrorException({
+        statusCode: EnumApiKeyStatusCodeError.xApiKeyPredefinedNotFound,
+        message: 'apiKey.error.xApiKey.predefinedNotFound',
+      });
+    }
 
-  async createHashApiKey(key: string, secret: string): Promise<string> {
-    return this.helperHashService.sha256(`${key}:${secret}`);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.apiKeyRepository.deleteMany(find, options);
+    const { __apiKey } = request;
+    if (!this.apiKeyUtil.validateType(__apiKey, apiKeyTypes)) {
+      throw new ForbiddenException({
+        statusCode: EnumApiKeyStatusCodeError.xApiKeyForbidden,
+        message: 'apiKey.error.xApiKey.forbidden',
+      });
+    }
 
     return true;
   }
 
-  async inactiveManyByEndDate(
-    options?: IDatabaseUpdateManyOptions,
-  ): Promise<boolean> {
-    const today = this.helperDateService.create();
-    await this.apiKeyRepository.updateMany(
-      {
-        ...this.databaseService.filterLte('endDate', today),
-        isActive: true,
-      },
-      {
-        isActive: false,
-      },
-      options,
-    );
+  validateApiKey(apiKey: ApiKeyDoc, includeActive: boolean = false): void {
+    if (!apiKey) {
+      throw new NotFoundException({
+        statusCode: EnumApiKeyStatusCodeError.notFound,
+        message: 'apiKey.error.notFound',
+      });
+    } else if (includeActive && !this.apiKeyUtil.isActive(apiKey)) {
+      throw new BadRequestException({
+        statusCode: EnumApiKeyStatusCodeError.inactive,
+        message: 'apiKey.error.inactive',
+      });
+    }
 
-    return true;
-  }
-
-  mapList(apiKeys: ApiKeyDoc[] | ApiKeyEntity[]): ApiKeyListResponseDto[] {
-    return plainToInstance(
-      ApiKeyListResponseDto,
-      apiKeys.map((e: ApiKeyDoc | ApiKeyEntity) =>
-        e instanceof Document ? e.toObject() : e,
-      ),
-    );
-  }
-
-  mapGet(apiKey: ApiKeyDoc | ApiKeyEntity): ApiKeyGetResponseDto {
-    return plainToInstance(
-      ApiKeyGetResponseDto,
-      apiKey instanceof Document ? apiKey.toObject() : apiKey,
-    );
+    return;
   }
 }

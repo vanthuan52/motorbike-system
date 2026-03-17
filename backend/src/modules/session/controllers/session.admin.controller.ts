@@ -1,116 +1,129 @@
-import { PaginationService } from '@/common/pagination/services/pagination.service';
-import {
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SessionService } from '../services/session.service';
+import { ResponsePaging } from '@/common/response/decorators/response.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
+import {
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
+import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import {
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import { RequestUserAgentDto } from '@/common/request/dtos/request.user-agent.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { SessionDefaultAvailableOrderBy } from '../constants/session.list.constant';
+import { SessionListResponseDto } from '../dtos/response/session.list.response.dto';
 import {
   SessionAdminListDoc,
   SessionAdminRevokeDoc,
 } from '../docs/session.admin.doc';
-import {
-  Response,
-  ResponsePaging,
-} from '@/common/response/decorators/response.decorator';
-import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
-import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
-} from '@/modules/policy/enums/policy.enum';
-import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { UserParsePipe } from '@/modules/user/pipes/user.parse.pipe';
-import { UserDoc } from '@/modules/user/entities/user.entity';
-import { PaginationQuery } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { IResponsePaging } from '@/common/response/interfaces/response.interface';
-import { SessionListResponseDto } from '../dtos/response/session.list.response.dto';
-import { SessionDoc } from '../entities/session.entity';
-import { UserNotSelfPipe } from '@/modules/user/pipes/user.not-self.pipe';
-import { SessionActiveParsePipe } from '../pipes/session.parse.pipe';
-import { ENUM_SESSION_STATUS_CODE_ERROR } from '../enums/session.status-code.enum';
+import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
+import { SessionUtil } from '../utils/session.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
-@ApiTags('modules.admin.session')
+@ApiTags('modules.admin.user.session')
 @Controller({
   version: '1',
-  path: '/session/:user',
+  path: '/user/:userId/session',
 })
 export class SessionAdminController {
   constructor(
-    private readonly paginationService: PaginationService,
     private readonly sessionService: SessionService,
+    private readonly sessionUtil: SessionUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @SessionAdminListDoc()
   @ResponsePaging('session.list')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.SESSION,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected(
+    {
+      subject: EnumPolicySubject.user,
+      action: [EnumPolicyAction.read],
+    },
+    {
+      subject: EnumPolicySubject.session,
+      action: [EnumPolicyAction.read],
+    },
+  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ApiKeyProtected()
   @Get('/list')
   async list(
-    @Param('user', RequestRequiredPipe, UserParsePipe) user: UserDoc,
-    @PaginationQuery() { _search, _limit, _offset, _order }: PaginationListDto,
-  ): Promise<IResponsePaging<SessionListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-    };
-
-    const sessions: SessionDoc[] = await this.sessionService.findAllByUser(
-      user._id,
-      find,
-      {
-        paging: {
-          limit: _limit,
-          offset: _offset,
-        },
-        order: _order,
-      },
+    @Query('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    userId: string,
+    @PaginationOffsetQuery({
+      availableOrderBy: SessionDefaultAvailableOrderBy,
+    })
+    pagination: IPaginationQueryOffsetParams,
+    @Query('status') status?: string[],
+  ): Promise<IResponsePagingReturn<SessionListResponseDto>> {
+    const filterStatus = status ? { status: { $in: status } } : {};
+    const { data, total } = await this.sessionService.getListOffset(
+      userId,
+      pagination,
+      filterStatus,
     );
-    const total: number = await this.sessionService.getTotalByUser(
-      user._id,
-      find,
-    );
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
+    const mappedData = this.sessionUtil.mapList(data);
 
-    const mapped = this.sessionService.mapList(sessions);
-
-    return {
-      _pagination: { total, totalPage },
-      data: mapped,
-    };
+    return this.paginationUtil.formatOffset(mappedData, total, pagination);
   }
 
   @SessionAdminRevokeDoc()
-  @Response('session.revoke')
+  @ResponsePaging('session.revoke')
+  @PolicyAbilityProtected(
+    {
+      subject: EnumPolicySubject.user,
+      action: [EnumPolicyAction.read],
+    },
+    {
+      subject: EnumPolicySubject.session,
+      action: [EnumPolicyAction.read, EnumPolicyAction.delete],
+    },
+  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Delete('/revoke/:session')
+  @ApiKeyProtected()
+  @Delete('/revoke/:sessionId')
   async revoke(
-    @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
-    user: UserDoc,
-    @Param('session', RequestRequiredPipe, SessionActiveParsePipe)
-    session: SessionDoc,
-  ): Promise<void> {
-    if (user._id !== session.user) {
-      throw new NotFoundException({
-        statusCode: ENUM_SESSION_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'session.error.notFound',
-      });
-    }
+    @Param('sessionId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    sessionId: string,
+    @Query('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    userId: string,
+    @AuthJwtPayload('userId') revokeBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: RequestUserAgentDto,
+  ): Promise<IResponseReturn<void>> {
+    const requestLog: IRequestLog = {
+      ipAddress,
+      userAgent,
+    };
+    await this.sessionService.revokeByAdmin(
+      userId,
+      sessionId,
+      requestLog,
+      revokeBy,
+    );
 
-    await this.sessionService.updateRevoke(session);
+    return {};
   }
 }

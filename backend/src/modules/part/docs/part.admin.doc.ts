@@ -1,7 +1,8 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
-import { PartGetResponseDto } from '../dtos/response/part.get.response.dto';
+import { PartDto } from '../dtos/part.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
 import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
@@ -21,7 +22,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto';
 
 export function PartAdminListDoc(): MethodDecorator {
@@ -54,15 +55,15 @@ export function PartAdminCreateDoc(): MethodDecorator {
       summary: 'create a new part',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: PartCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<PartGetResponseDto>('part.create', {
-      dto: PartGetResponseDto,
+    DocResponse<DatabaseIdDto>('part.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -75,7 +76,7 @@ export function PartAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: PartDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: PartUpdateRequestDto,
     }),
     DocAuth({
@@ -109,7 +110,7 @@ export function PartAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: PartDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: PartUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -132,8 +133,8 @@ export function PartAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<PartGetResponseDto>('part.getById', {
-      dto: PartGetResponseDto,
+    DocResponse<PartDto>('part.getById', {
+      dto: PartDto,
     }),
   );
 }

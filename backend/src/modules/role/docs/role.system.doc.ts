@@ -1,11 +1,18 @@
+import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
+  DocAuth,
   DocRequest,
+  DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { applyDecorators } from '@nestjs/common';
-import { RoleDocQueryType } from '../constants/role.doc.constant';
-import { RoleShortResponseDto } from '../dtos/response/role.short.response.dto';
+import {
+  RoleDocParamsId,
+  RoleDocQueryList,
+} from '../constants/role.doc.constant';
+import { RoleListResponseDto } from '../dtos/response/role.list.response.dto';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { RoleAbilitiesResponseDto } from '../dtos/response/role.abilities.response.dto';
 
 export function RoleSystemListDoc(): MethodDecorator {
   return applyDecorators(
@@ -13,10 +20,31 @@ export function RoleSystemListDoc(): MethodDecorator {
       summary: 'get all of roles',
     }),
     DocRequest({
-      queries: RoleDocQueryType,
+      queries: RoleDocQueryList,
     }),
-    DocResponsePaging<RoleShortResponseDto>('role.list', {
-      dto: RoleShortResponseDto,
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocResponsePaging<RoleListResponseDto>('role.list', {
+      dto: RoleListResponseDto,
+      type: EnumPaginationType.cursor,
+    }),
+  );
+}
+
+export function RoleSystemGetAbilitiesDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get detail a role',
+    }),
+    DocRequest({
+      params: RoleDocParamsId,
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocResponse<RoleAbilitiesResponseDto>('role.getAbilities', {
+      dto: RoleAbilitiesResponseDto,
     }),
   );
 }

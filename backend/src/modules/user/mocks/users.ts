@@ -1,4 +1,4 @@
-import { ENUM_USER_STATUS } from '../enums/user.enum';
+import { EnumUserStatus } from '../enums/user.enum';
 
 export const mockUsers: any[] = [
   {
@@ -7,7 +7,7 @@ export const mockUsers: any[] = [
     email: 'john@example.com',
     password: 'hashedpassword',
     role: 'USER',
-    status: ENUM_USER_STATUS.ACTIVE,
+    status: EnumUserStatus.active,
     createdAt: new Date(),
     updatedAt: new Date(),
   },

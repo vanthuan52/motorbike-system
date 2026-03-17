@@ -1,32 +1,36 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PartTypeService } from '../services/part-type.services';
+import { PartTypeUtil } from '../utils/part-type.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   PartTypePublicListDoc,
   PartTypePublicGetOneDoc,
 } from '../docs/part-type.public.doc';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { PartTypeGetResponseDto } from '../dtos/response/part-type.get.response.dto';
+import { PartTypeDto } from '../dtos/part-type.dto';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  PaginationQuery,
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { ENUM_PART_TYPE_STATUS } from '../enums/part-type.enum';
-import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
-  VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
-  VEHICLE_BRAND_DEFAULT_STATUS,
-} from '@/modules/vehicle-brand/constants/vehicle-brand.list.constant';
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
+import {
+  PART_TYPE_DEFAULT_AVAILABLE_ORDER_BY,
+  PART_TYPE_DEFAULT_AVAILABLE_SEARCH,
+  PART_TYPE_DEFAULT_STATUS,
+} from '../constants/part-type.list.constant';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 
 @ApiTags('modules.public.part-type')
 @Controller({
@@ -36,22 +40,18 @@ import {
 export class PartTypePublicController {
   constructor(
     private readonly partTypeService: PartTypeService,
-    private readonly paginationService: PaginationService,
+    private readonly partTypeUtil: PartTypeUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @PartTypePublicGetOneDoc()
   @Response('part-type.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug') slug: string,
-  ): Promise<IResponse<PartTypeGetResponseDto>> {
-    const partType = await this.partTypeService.findBySlug(slug);
-    if (!partType) {
-      throw new NotFoundException({
-        message: 'part-type.error.notFound',
-      });
-    }
-    const mapped = this.partTypeService.mapGet(partType);
+    @Param('slug', RequestRequiredPipe) slug: string,
+  ): Promise<IResponseReturn<PartTypeDto>> {
+    const partType = await this.partTypeService.findOneBySlug(slug);
+    const mapped = this.partTypeUtil.mapOne(partType);
     return { data: mapped };
   }
 
@@ -59,42 +59,19 @@ export class PartTypePublicController {
   @ResponsePaging('part-type.list')
   @Get('/list')
   async list(
-    @PaginationQuery({
-      availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
+    @PaginationOffsetQuery({
+      availableSearch: PART_TYPE_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: PART_TYPE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      VEHICLE_BRAND_DEFAULT_STATUS,
-      ENUM_PART_TYPE_STATUS,
-    )
-    status: Record<string, any>,
-  ): Promise<IResponsePaging<PartTypeListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-      ...status,
-    };
-
-    const partTypes = await this.partTypeService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
-
-    const total: number = await this.partTypeService.getTotal(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.partTypeService.mapList(partTypes);
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    pagination: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
+    status: Record<string, IPaginationIn>,
+  ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
+    const { data, total } = await this.partTypeService.getListOffset(
+      pagination,
+      status,
+    );
+    const mapped = this.partTypeUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 }

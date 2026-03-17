@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { v4 as uuidV4 } from 'uuid';
+import { v7 as uuidV7 } from 'uuid';
 
-export const DatabaseDefaultUUID = uuidV4;
+export const DatabaseDefaultUUID = uuidV7;
 
 export const DatabaseDefaultObjectId = () => new Types.ObjectId();

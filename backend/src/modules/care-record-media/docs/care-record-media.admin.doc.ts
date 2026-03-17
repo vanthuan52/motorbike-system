@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
-import { CareRecordMediaGetResponseDto } from '../dtos/response/care-record-media.get.response.dto';
+import { CareRecordMediaDto } from '../dtos/care-record-media.dto';
 import { CareRecordMediaListResponseDto } from '../dtos/response/care-record-media.list.response.dto';
 import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-media.update.request.dto';
 import {
@@ -16,7 +16,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareRecordMediaGetFullResponseDto } from '../dtos/response/care-record-media.full.response.dto';
 
 export function CareRecordMediaAdminListDoc(): MethodDecorator {
@@ -46,15 +46,15 @@ export function CareRecordMediaAdminCreateDoc(): MethodDecorator {
       summary: 'create a new care record media',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordMediaCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordMediaGetResponseDto>('care-record-media.create', {
-      dto: CareRecordMediaGetResponseDto,
+    DocResponse<CareRecordMediaDto>('care-record-media.create', {
+      dto: CareRecordMediaDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -67,7 +67,7 @@ export function CareRecordMediaAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: CareRecordMediaDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordMediaUpdateRequestDto,
     }),
     DocAuth({
@@ -106,8 +106,8 @@ export function CareRecordMediaAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordMediaGetResponseDto>('care-record-media.getById', {
-      dto: CareRecordMediaGetResponseDto,
+    DocResponse<CareRecordMediaDto>('care-record-media.getById', {
+      dto: CareRecordMediaDto,
     }),
   );
 }

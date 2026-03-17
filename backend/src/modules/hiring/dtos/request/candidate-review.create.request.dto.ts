@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID, MaxLength } from 'class-validator';
 
-export class CandidateReviewAdminCreateRequestDto {
+export class CandidateReviewCreateRequestDto {
   @ApiProperty({
     example: 'd8c8fca1-4a00-4c1d-b60a-9fd2b4c31212',
     description: 'User ID',

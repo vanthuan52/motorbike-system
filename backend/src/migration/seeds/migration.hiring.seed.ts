@@ -1,9 +1,9 @@
 import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-import { HiringService } from '@/modules/hiring/services/hiring.services';
-import { CandidateService } from '@/modules/hiring/services/candidate.services';
-import { CandidateReviewService } from '@/modules/hiring/services/candidate-review.services';
+import { HiringService } from '@/modules/hiring/services/hiring.service';
+import { CandidateService } from '@/modules/hiring/services/candidate.service';
+import { CandidateReviewService } from '@/modules/hiring/services/candidate-review.service';
 import {
   ENUM_HIRING_STATUS,
   ENUM_HIRING_TYPE,

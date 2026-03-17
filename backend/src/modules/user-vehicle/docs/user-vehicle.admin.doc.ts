@@ -5,7 +5,7 @@ import {
   UserVehicleDocQueryOrderBy,
   UserVehicleDocQueryOrderDirection,
 } from '../constants/user-vehicle.doc.constant';
-import { UserVehicleGetResponseDto } from '../dtos/response/user-vehicle.get.response.dto';
+import { UserVehicleDto } from '../dtos/user-vehicle.dto';
 import { UserVehicleListResponseDto } from '../dtos/response/user-vehicle.list.response.dto';
 import {
   Doc,
@@ -15,10 +15,10 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create.request.dto';
 import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { UserVehicleGetFullResponseDto } from '../dtos/response/user-vehicle.full.response.dto';
 
 export function UserVehicleAdminListDoc(): MethodDecorator {
@@ -49,15 +49,15 @@ export function UserVehicleAdminCreateDoc(): MethodDecorator {
       summary: 'create a new user vehicle',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: UserVehicleCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('user-vehicle.create', {
-      dto: DatabaseIdResponseDto,
+    DocResponse<DatabaseIdDto>('user-vehicle.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -70,7 +70,7 @@ export function UserVehicleAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: UserVehicleDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: UserVehicleUpdateRequestDto,
     }),
     DocAuth({
@@ -109,8 +109,8 @@ export function UserVehicleAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<UserVehicleGetResponseDto>('user-vehicle.getById', {
-      dto: UserVehicleGetResponseDto,
+    DocResponse<UserVehicleDto>('user-vehicle.getById', {
+      dto: UserVehicleDto,
     }),
   );
 }
@@ -122,6 +122,29 @@ export function UserVehicleAdminGetDoc(): MethodDecorator {
     }),
     DocRequest({
       params: UserVehicleDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<UserVehicleGetFullResponseDto>('user-vehicle.get', {
+      dto: UserVehicleGetFullResponseDto,
+    }),
+  );
+}
+
+export function UserVehicleAdminListByUserDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all vehicle of a user by id',
+    }),
+    DocRequest({
+      params: UserVehicleDocParamsId,
+      queries: [
+        ...UserVehicleDocQueryVehicleModel,
+        ...UserVehicleDocQueryOrderBy,
+        ...UserVehicleDocQueryOrderDirection,
+      ],
     }),
     DocAuth({
       jwtAccessToken: true,

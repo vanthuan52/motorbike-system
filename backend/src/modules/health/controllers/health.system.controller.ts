@@ -8,10 +8,7 @@ import {
   MemoryHealthIndicator,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
-import {
-  HealthAwsS3PrivateBucketIndicator,
-  HealthAwsS3PublicBucketIndicator,
-} from '../indicators/health.aws-s3.indicator';
+import { HealthAwsS3BucketIndicator } from '../indicators/health.aws-s3.indicator';
 import { InjectDatabaseConnection } from '@/common/database/decorators/database.decorator';
 import {
   HealthSystemCheckAwsDoc,
@@ -20,10 +17,12 @@ import {
 } from '../docs/health.system.doc';
 import { Response } from '@/common/response/decorators/response.decorator';
 import { ApiKeySystemProtected } from '@/modules/api-key/decorators/api-key.decorator';
-import { IResponse } from '@/common/response/interfaces/response.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { HealthAwsResponseDto } from '../dtos/response/health.aws.response.dto';
 import { HealthDatabaseResponseDto } from '../dtos/response/health.database.response.dto';
 import { HealthInstanceResponseDto } from '../dtos/response/health.instance.response.dto';
+import { HealthRedisIndicator } from '../indicators/health.redis.indicator';
+import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 
 @ApiTags('modules.system.health')
 @Controller({
@@ -36,36 +35,47 @@ export class HealthSystemController {
     private readonly health: HealthCheckService,
     private readonly memoryHealthIndicator: MemoryHealthIndicator,
     private readonly diskHealthIndicator: DiskHealthIndicator,
+    private readonly awsS3BucketIndicator: HealthAwsS3BucketIndicator,
     private readonly mongooseIndicator: MongooseHealthIndicator,
-    private readonly awsS3PublicBucketIndicator: HealthAwsS3PublicBucketIndicator,
-    private readonly awsS3PrivateBucketIndicator: HealthAwsS3PrivateBucketIndicator,
+    private readonly redisIndicator: HealthRedisIndicator,
   ) {}
 
   @HealthSystemCheckAwsDoc()
   @Response('health.checkAws')
   @HealthCheck()
-  //@ApiKeySystemProtected()
+  @ApiKeySystemProtected()
   @Get('/aws')
-  async checkAws(): Promise<IResponse<HealthAwsResponseDto>> {
+  async checkAws(): Promise<IResponseReturn<HealthAwsResponseDto>> {
     const data = await this.health.check([
-      () => this.awsS3PublicBucketIndicator.isHealthy('s3PublicBucket'),
-      () => this.awsS3PrivateBucketIndicator.isHealthy('s3PrivateBucket'),
+      () =>
+        this.awsS3BucketIndicator.isHealthy(
+          's3PublicBucket',
+          EnumAwsS3Accessibility.public,
+        ),
+      () =>
+        this.awsS3BucketIndicator.isHealthy(
+          's3PrivateBucket',
+          EnumAwsS3Accessibility.private,
+        ),
     ]);
 
-    return { data };
+    return {
+      data,
+    };
   }
 
   @HealthSystemCheckDatabaseDoc()
   @Response('health.checkDatabase')
   @HealthCheck()
-  //@ApiKeySystemProtected()
+  @ApiKeySystemProtected()
   @Get('/database')
-  async checkDatabase(): Promise<IResponse<HealthDatabaseResponseDto>> {
+  async checkDatabase(): Promise<IResponseReturn<HealthDatabaseResponseDto>> {
     const data = await this.health.check([
       () =>
         this.mongooseIndicator.pingCheck('database', {
           connection: this.databaseConnection,
         }),
+      () => this.redisIndicator.isHealthy('redis'),
     ]);
     return {
       data,
@@ -75,9 +85,9 @@ export class HealthSystemController {
   @HealthSystemCheckInstanceDoc()
   @Response('health.checkInstance')
   @HealthCheck()
-  //@ApiKeySystemProtected()
+  @ApiKeySystemProtected()
   @Get('/instance')
-  async checkInstance(): Promise<IResponse<HealthInstanceResponseDto>> {
+  async checkInstance(): Promise<IResponseReturn<HealthInstanceResponseDto>> {
     const data = await this.health.check([
       () => this.memoryHealthIndicator.checkRSS('memoryRss', 300 * 1024 * 1024),
       () =>

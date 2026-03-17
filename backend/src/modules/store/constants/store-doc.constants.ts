@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { ENUM_STORE_STATUS } from '../enums/store.enum';
+import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const StoreDocParamsId: DocField[] = [
+export const StoreDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const StoreDocParamsId: DocField[] = [
   },
 ];
 
-export const StoreDocParamsSlug: DocField[] = [
+export const StoreDocParamsSlug: ApiParamOptions[] = [
   {
     name: 'slug',
     allowEmptyValue: false,
@@ -30,7 +22,18 @@ export const StoreDocParamsSlug: DocField[] = [
   },
 ];
 
-export const StoreDocQueryStatus: DocField[] = [
+export const StoreDocQueryStatus: ApiParamOptions[] = [
+  {
+    name: 'status',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: Object.values(ENUM_STORE_STATUS).join(','),
+    description: "value with ',' delimiter",
+  },
+];
+
+export const StoreDocQueryList: ApiQueryOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,

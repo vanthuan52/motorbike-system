@@ -2,14 +2,15 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ServicePriceService } from '../services/service-price.services';
 import { ServicePricePublicListDoc } from '../docs/service-price.public.doc';
-import { IResponsePaging } from '@/common/response/interfaces/response.interface';
+import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { ResponsePaging } from '@/common/response/decorators/response.decorator';
-import { PaginationQuery } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
+import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY } from '../constants/service-price.list.constant';
-import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
+import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { ServicePriceUtil } from '../utils/service-price.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.service-price')
 @Controller({
@@ -19,61 +20,39 @@ import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 export class ServicePricePublicController {
   constructor(
     private readonly servicePriceService: ServicePriceService,
-    private readonly paginationService: PaginationService,
+    private readonly servicePriceUtil: ServicePriceUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @ServicePricePublicListDoc()
   @ResponsePaging('service-price.list')
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @Query('vehicleService', OptionalParseUUIDPipe)
+    pagination: IPaginationQueryOffsetParams,
+    @Query('vehicleService', RequestOptionalParseUUIDPipe)
     vehicleServiceId: string,
-    @Query('vehicleModel', OptionalParseUUIDPipe)
+    @Query('vehicleModel', RequestOptionalParseUUIDPipe)
     vehicleModelId: string,
-  ): Promise<IResponsePaging<ServicePriceListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-    };
+  ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
+    const filters: Record<string, any> = {};
 
     if (vehicleServiceId) {
-      find['vehicleService'] = vehicleServiceId;
+      filters['vehicleService'] = vehicleServiceId;
     }
 
     if (vehicleModelId) {
-      find['vehicleModel'] = vehicleModelId;
+      filters['vehicleModel'] = vehicleModelId;
     }
 
-    const servicePrices =
-      await this.servicePriceService.findAllWithVehicleServiceAndVehicleModel(
-        find,
-        {
-          paging: {
-            limit: _limit,
-            offset: _offset,
-          },
-          order: _order,
-        },
-      );
-
-    const total: number =
-      await this.servicePriceService.getTotalWithVehicleServiceAndVehicleModel(
-        find,
-      );
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.servicePriceService.mapList(servicePrices);
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    const { data, total } = await this.servicePriceService.getListOffset(
+      pagination,
+      filters,
+    );
+    const mapped = this.servicePriceUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 }

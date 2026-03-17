@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
 import { ENUM_PART_STATUS } from '../enums/part.enum';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const PartDocParamsId: DocField[] = [
+export const PartDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const PartDocParamsId: DocField[] = [
   },
 ];
 
-export const PartDocParamsSlug: DocField[] = [
+export const PartDocParamsSlug: ApiParamOptions[] = [
   {
     name: 'slug',
     allowEmptyValue: false,
@@ -30,7 +22,7 @@ export const PartDocParamsSlug: DocField[] = [
   },
 ];
 
-export const PartDocQueryStatus: DocField[] = [
+export const PartDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -41,7 +33,7 @@ export const PartDocQueryStatus: DocField[] = [
   },
 ];
 
-export const PartDocQueryOrderBy: DocField[] = [
+export const PartDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -52,7 +44,7 @@ export const PartDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const PartDocQueryOrderDirection: DocField[] = [
+export const PartDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,
@@ -63,7 +55,7 @@ export const PartDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const PartDocQueryPartType: DocField[] = [
+export const PartDocQueryPartType: ApiParamOptions[] = [
   {
     name: 'partType',
     allowEmptyValue: true,
@@ -74,9 +66,36 @@ export const PartDocQueryPartType: DocField[] = [
   },
 ];
 
-export const PartDocQueryVehicleBrand: DocField[] = [
+export const PartDocQueryVehicleBrand: ApiParamOptions[] = [
   {
     name: 'vehicleBrand',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '',
+    description: faker.string.uuid(),
+  },
+];
+
+export const PartDocQueryList: ApiQueryOptions[] = [
+  {
+    name: 'status',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: Object.values(ENUM_PART_STATUS).join(','),
+    description: "value with ',' delimiter",
+  },
+  {
+    name: 'vehicleBrand',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: '',
+    description: faker.string.uuid(),
+  },
+  {
+    name: 'partType',
     allowEmptyValue: true,
     required: false,
     type: 'string',

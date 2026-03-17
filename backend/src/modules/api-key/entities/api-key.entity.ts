@@ -4,7 +4,7 @@ import {
   DatabaseProp,
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
-import { ENUM_API_KEY_TYPE } from '../enums/api-key.enum';
+import { EnumApiKeyType } from '../enums/api-key.enum';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 
 export const ApiKeyTableName = 'api_keys';
@@ -15,12 +15,12 @@ export const ApiKeyTableName = 'api_keys';
 export class ApiKeyEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: true,
-    enum: ENUM_API_KEY_TYPE,
+    enum: EnumApiKeyType,
     type: String,
     index: true,
     trim: true,
   })
-  type: ENUM_API_KEY_TYPE;
+  type: EnumApiKeyType;
 
   @DatabaseProp({
     required: true,

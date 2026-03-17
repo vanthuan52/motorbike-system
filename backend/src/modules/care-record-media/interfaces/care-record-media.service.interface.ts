@@ -1,79 +1,46 @@
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CareRecordMediaDoc } from '../entities/care-record-media.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
 import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-media.update.request.dto';
-import { CareRecordMediaListResponseDto } from '../dtos/response/care-record-media.list.response.dto';
-import { CareRecordMediaGetResponseDto } from '../dtos/response/care-record-media.get.response.dto';
-import { ICareRecordMediaEntity } from './care-record-media.interface';
-import { CareRecordMediaGetFullResponseDto } from '../dtos/response/care-record-media.full.response.dto';
+import { CareRecordMediaDoc } from '../entities/care-record-media.entity';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export interface ICareRecordMediaService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordMediaDoc[]>;
-
-  findAllWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICareRecordMediaEntity[]>;
-
-  getTotalWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordMediaDoc[]; total: number }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CareRecordMediaDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordMediaDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordMediaDoc | null>;
-
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  ): Promise<CareRecordMediaDoc>;
 
   create(
     payload: CareRecordMediaCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordMediaDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: CareRecordMediaDoc,
+    id: string,
     payload: CareRecordMediaUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordMediaDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: CareRecordMediaDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordMediaDoc>;
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-
-  mapList(data: CareRecordMediaDoc[]): CareRecordMediaListResponseDto[];
-
-  mapGet(data: CareRecordMediaDoc): CareRecordMediaGetResponseDto;
-
-  mapGetPopulate(
-    CareRecordMedia: CareRecordMediaDoc | ICareRecordMediaEntity,
-  ): CareRecordMediaGetFullResponseDto;
 }

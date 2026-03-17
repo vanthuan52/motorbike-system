@@ -1,27 +1,18 @@
-import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
-import { IPolicyAbility } from '../interfaces/policy.interface';
-import { PolicyAbilityGuard } from '../guards/policy.ability.guard';
-import {
-  POLICY_ABILITY_META_KEY,
-  POLICY_ROLE_META_KEY,
-} from '../constants/policy.constant';
-import { ENUM_POLICY_ROLE_TYPE } from '../enums/policy.enum';
-import { PolicyRoleGuard } from '../guards/policy.role.guard';
+import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
+import { PolicyRequiredAbilityMetaKey } from '@/modules/policy/constants/policy.constant';
+import { PolicyAbilityGuard } from '@/modules/policy/guards/policy.ability.guard';
+import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
 
+/**
+ * Method decorator that applies policy ability-based protection guards
+ * @param {...RoleAbilityRequestDto[]} requiredAbilities - List of policy abilities required for access
+ * @returns {MethodDecorator} Combined decorators for policy ability validation
+ */
 export function PolicyAbilityProtected(
-  ...handlers: IPolicyAbility[]
+  ...requiredAbilities: RoleAbilityRequestDto[]
 ): MethodDecorator {
   return applyDecorators(
     UseGuards(PolicyAbilityGuard),
-    SetMetadata(POLICY_ABILITY_META_KEY, handlers),
-  );
-}
-
-export function PolicyRoleProtected(
-  ...roles: ENUM_POLICY_ROLE_TYPE[]
-): MethodDecorator {
-  return applyDecorators(
-    UseGuards(PolicyRoleGuard),
-    SetMetadata(POLICY_ROLE_META_KEY, roles),
+    SetMetadata(PolicyRequiredAbilityMetaKey, requiredAbilities),
   );
 }

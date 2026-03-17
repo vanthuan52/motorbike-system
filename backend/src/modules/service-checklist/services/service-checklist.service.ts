@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ServiceChecklistRepository } from '../repository/service-checklist.repository';
 import { IServiceChecklistService } from '../interfaces/service-checklist.service.interface';
 import {
@@ -9,25 +9,23 @@ import {
   IDatabaseCreateManyOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
-import { ServiceChecklistGetResponseDto } from '../dtos/response/service-checklist.get.response.dto';
-import { ServiceChecklistListResponseDto } from '../dtos/response/service-checklist.list.response.dto';
-import { IServiceChecklistEntity } from '../interfaces/service-checklist.interface';
-import { plainToInstance } from 'class-transformer';
+import { ServiceChecklistUtil } from '../utils/service-checklist.util';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR } from '../enums/service-checklist.status-code.enum';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 @Injectable()
 export class ServiceChecklistService implements IServiceChecklistService {
   constructor(
     private readonly serviceChecklistRepository: ServiceChecklistRepository,
   ) {}
+
   async existByName(
     name: string,
     options?: IDatabaseExistsOptions,
@@ -39,69 +37,47 @@ export class ServiceChecklistService implements IServiceChecklistService {
     return !!serviceChecklist;
   }
 
-  mapList(
-    serviceChecklist: ServiceChecklistDoc[] | IServiceChecklistEntity[],
-  ): ServiceChecklistListResponseDto[] {
-    return plainToInstance(
-      ServiceChecklistListResponseDto,
-      serviceChecklist.map(
-        (p: ServiceChecklistDoc | IServiceChecklistEntity) =>
-          typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: ServiceChecklistDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
 
-  mapGet(
-    serviceChecklist: ServiceChecklistDoc | IServiceChecklistEntity,
-  ): ServiceChecklistGetResponseDto {
-    return plainToInstance(
-      ServiceChecklistGetResponseDto,
-      typeof (serviceChecklist as any).toObject === 'function'
-        ? (serviceChecklist as any).toObject()
-        : serviceChecklist,
-    );
-  }
+    const [serviceChecklists, total] = await Promise.all([
+      this.serviceChecklistRepository.findAll<ServiceChecklistDoc>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.serviceChecklistRepository.getTotal(find),
+    ]);
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<ServiceChecklistDoc[]> {
-    return this.serviceChecklistRepository.findAll<ServiceChecklistDoc>(
-      find,
-      options,
-    );
+    return {
+      data: serviceChecklists,
+      total,
+    };
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceChecklistDoc | null> {
-    return this.serviceChecklistRepository.findOneById<ServiceChecklistDoc>(
-      _id,
-      options,
-    );
+  ): Promise<ServiceChecklistDoc> {
+    const serviceChecklist = await this.findOneByIdOrFail(id, options);
+    return serviceChecklist;
   }
-  async join(repository: ServiceChecklistDoc): Promise<ServiceChecklistDoc> {
-    return this.serviceChecklistRepository.join(
-      repository,
-      this.serviceChecklistRepository._join!,
-    );
-  }
+
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceChecklistDoc | null> {
-    return this.serviceChecklistRepository.findOne<ServiceChecklistDoc>(
-      find,
-      options,
-    );
-  }
-
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.serviceChecklistRepository.getTotal(find, options);
+  ): Promise<ServiceChecklistDoc> {
+    const serviceChecklist =
+      await this.serviceChecklistRepository.findOne<ServiceChecklistDoc>(
+        find,
+        options,
+      );
+    return serviceChecklist;
   }
 
   async create(
@@ -113,7 +89,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       careArea,
     }: ServiceChecklistCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<ServiceChecklistDoc> {
+  ): Promise<DatabaseIdDto> {
     const create: ServiceChecklistEntity = new ServiceChecklistEntity();
     create.name = name;
     create.code = code;
@@ -121,14 +97,17 @@ export class ServiceChecklistService implements IServiceChecklistService {
     create.order = order;
     create.careArea = careArea;
 
-    return this.serviceChecklistRepository.create<ServiceChecklistEntity>(
-      create,
-      options,
-    );
+    const created =
+      await this.serviceChecklistRepository.create<ServiceChecklistEntity>(
+        create,
+        options,
+      );
+
+    return { _id: created._id };
   }
 
   async update(
-    repository: ServiceChecklistDoc,
+    id: string,
     {
       name,
       description,
@@ -137,30 +116,20 @@ export class ServiceChecklistService implements IServiceChecklistService {
       careArea,
     }: ServiceChecklistUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<ServiceChecklistDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
     repository.name = name ?? repository.name;
     repository.code = code ?? repository.code;
     repository.description = description ?? repository.description;
     repository.order = order ?? repository.order;
     repository.careArea = careArea ?? repository.careArea;
-    return this.serviceChecklistRepository.save(repository, options);
+
+    await this.serviceChecklistRepository.save(repository, options);
   }
 
-  async softDelete(
-    repository: ServiceChecklistDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<ServiceChecklistDoc> {
-    return this.serviceChecklistRepository.softDelete(repository, options);
-  }
-
-  async delete(
-    repository: ServiceChecklistDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<ServiceChecklistDoc> {
-    return this.serviceChecklistRepository.delete(
-      { _id: repository._id },
-      options,
-    );
+  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.serviceChecklistRepository.softDelete(repository, options);
   }
 
   async deleteMany(
@@ -188,15 +157,31 @@ export class ServiceChecklistService implements IServiceChecklistService {
         deleted: false,
         __v: 0,
       };
-
       return doc;
     });
 
-    // Use insertMany directly to ensure vehicleType is preserved
     await this.serviceChecklistRepository['_repository'].insertMany(create, {
       ordered: false,
     });
 
     return true;
+  }
+
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<ServiceChecklistDoc> {
+    const serviceChecklist =
+      await this.serviceChecklistRepository.findOneById<ServiceChecklistDoc>(
+        id,
+        options,
+      );
+    if (!serviceChecklist) {
+      throw new NotFoundException({
+        statusCode: ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'service-checklist.error.notFound',
+      });
+    }
+    return serviceChecklist;
   }
 }

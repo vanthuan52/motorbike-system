@@ -1,39 +1,45 @@
 import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseOptions,
+  IDatabaseFindOneOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CareRecordConditionDoc } from '../entities/care-record-condition.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
-import { CareRecordConditionGetResponseDto } from '../dtos/response/care-record-condition.get.response.dto';
+import { CareRecordConditionDoc } from '../entities/care-record-condition.entity';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export interface ICareRecordConditionService {
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordConditionDoc[]; total: number }>;
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CareRecordConditionDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordConditionDoc>;
+
+  findOne(
+    find: Record<string, any>,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordConditionDoc>;
 
   create(
     payload: CareRecordConditionCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordConditionDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: CareRecordConditionDoc,
+    id: string,
     payload: CareRecordConditionUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordConditionDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: CareRecordConditionDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordConditionDoc>;
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-  mapGet(data: CareRecordConditionDoc): CareRecordConditionGetResponseDto;
 }

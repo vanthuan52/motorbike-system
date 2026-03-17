@@ -1,11 +1,11 @@
-export enum ENUM_NODE_ENVIRONMENT {
-  PRODUCTION = 'production',
-  MIGRATION = 'migration',
-  STAGING = 'staging',
-  DEVELOPMENT = 'development',
-  LOCAL = 'local',
+export enum EnumAppEnvironment {
+  production = 'production',
+  migration = 'migration',
+  staging = 'staging',
+  development = 'development',
+  local = 'local',
 }
 
-export enum ENUM_APP_TIMEZONE {
+export enum EnumAppTimezone {
   ASIA_HO_CHI_MINH = 'Asia/Ho_Chi_Minh',
 }

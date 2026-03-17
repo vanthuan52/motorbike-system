@@ -1,35 +1,35 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CareRecordChecklistGetResponseDto } from './care-record-checklist.get.response.dto';
-import { ServiceChecklistGetResponseDto } from '@/modules/service-checklist/dtos/response/service-checklist.get.response.dto';
-import { CareRecordServiceGetResponseDto } from '@/modules/care-record-service/dtos/response/care-record-service.get.response.dto';
-import { PartGetResponseDto } from '@/modules/part/dtos/response/part.get.response.dto';
+import { ServiceChecklistDto } from '@/modules/service-checklist/dtos/service-checklist.dto';
+import { CareRecordServiceDto } from '@/modules/care-record-service/dtos/care-record-service.dto';
+import { PartDto } from '@/modules/part/dtos/part.dto';
+import { CareRecordChecklistDto } from '../care-record-checklist.dto';
 
 export class CareRecordChecklistGetFullResponseDto extends OmitType(
-  CareRecordChecklistGetResponseDto,
+  CareRecordChecklistDto,
   ['careRecordService', 'serviceChecklist', 'parts'] as const,
 ) {
   @ApiProperty({
     required: false,
-    type: CareRecordServiceGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(CareRecordServiceGetResponseDto) }],
+    type: CareRecordServiceDto,
+    oneOf: [{ $ref: getSchemaPath(CareRecordServiceDto) }],
   })
-  @Type(() => CareRecordServiceGetResponseDto)
-  careRecordService: CareRecordServiceGetResponseDto;
+  @Type(() => CareRecordServiceDto)
+  careRecordService: CareRecordServiceDto;
 
   @ApiProperty({
     required: true,
-    type: ServiceChecklistGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(ServiceChecklistGetResponseDto) }],
+    type: ServiceChecklistDto,
+    oneOf: [{ $ref: getSchemaPath(ServiceChecklistDto) }],
   })
-  @Type(() => ServiceChecklistGetResponseDto)
-  serviceChecklist: ServiceChecklistGetResponseDto;
+  @Type(() => ServiceChecklistDto)
+  serviceChecklist: ServiceChecklistDto;
 
   @ApiProperty({
     required: true,
-    type: PartGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(PartGetResponseDto) }],
+    type: PartDto,
+    oneOf: [{ $ref: getSchemaPath(PartDto) }],
   })
-  @Type(() => PartGetResponseDto)
-  parts: PartGetResponseDto[];
+  @Type(() => PartDto)
+  parts: PartDto[];
 }

@@ -79,20 +79,20 @@ export class CareRecordItemEntity extends DatabaseEntityBase {
     required: false,
     ref: () => UserEntity.name,
   })
-  technician: string;
+  technician?: string;
 
   @DatabaseProp({
     required: false,
     type: Boolean,
     default: false,
   })
-  approvedByOwner: boolean;
+  approvedByOwner?: boolean;
 
   @DatabaseProp({
     required: false,
     maxlength: 500,
   })
-  note: string;
+  note?: string;
 }
 
 export const CareRecordItemSchema = DatabaseSchema(CareRecordItemEntity);

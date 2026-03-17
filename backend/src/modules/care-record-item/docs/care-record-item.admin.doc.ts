@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
-import { CareRecordItemGetResponseDto } from '../dtos/response/care-record-item.get.response.dto';
+import { CareRecordItemDto } from '../dtos/care-record-item.dto';
 import { CareRecordItemListResponseDto } from '../dtos/response/care-record-item.list.response.dto';
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
 import {
@@ -16,9 +16,10 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareRecordItemGetFullResponseDto } from '../dtos/response/care-record-item.full.response.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export function CareRecordItemAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -38,34 +39,34 @@ export function CareRecordItemAdminListDoc(): MethodDecorator {
   );
 }
 
-export function CareRecordItemAdminCreateDoc(): MethodDecorator {
+export function CareRecordItemCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'create a new care record item',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordItemCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordItemGetResponseDto>('care-record-item.create', {
-      dto: CareRecordItemGetResponseDto,
+    DocResponse<DatabaseIdDto>('care-record-item.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
 }
 
-export function CareRecordItemAdminUpdateDoc(): MethodDecorator {
+export function CareRecordItemUpdateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update a care record item',
     }),
     DocRequest({
       params: CareRecordItemDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordItemUpdateRequestDto,
     }),
     DocAuth({
@@ -76,7 +77,7 @@ export function CareRecordItemAdminUpdateDoc(): MethodDecorator {
   );
 }
 
-export function CareRecordItemAdminDeleteDoc(): MethodDecorator {
+export function CareRecordItemDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'delete a care record item',
@@ -92,7 +93,7 @@ export function CareRecordItemAdminDeleteDoc(): MethodDecorator {
   );
 }
 
-export function CareRecordItemAdminParamsIdDoc(): MethodDecorator {
+export function CareRecordItemParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get a care record item by id',
@@ -104,13 +105,13 @@ export function CareRecordItemAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordItemGetResponseDto>('care-record-item.getById', {
-      dto: CareRecordItemGetResponseDto,
+    DocResponse<CareRecordItemDto>('care-record-item.getById', {
+      dto: CareRecordItemDto,
     }),
   );
 }
 
-export function CareRecordItemAdminGetDoc(): MethodDecorator {
+export function CareRecordItemGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get detail a care record checklist',
@@ -128,14 +129,14 @@ export function CareRecordItemAdminGetDoc(): MethodDecorator {
   );
 }
 
-export function CareRecordItemAdminUpdateApprovalDoc(): MethodDecorator {
+export function CareRecordItemUpdateApprovalDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update status of a care record checklist',
     }),
     DocRequest({
       params: CareRecordItemDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordItemUpdateApprovalRequestDto,
     }),
     DocAuth({

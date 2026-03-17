@@ -6,15 +6,15 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { StoreGetResponseDto } from '../dtos/response/store.get.response.dto';
 import {
   StoreDocParamsId,
-  StoreDocQueryStatus,
+  StoreDocQueryList,
 } from '../constants/store-doc.constants';
 import { applyDecorators } from '@nestjs/common';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
+import { StoreDto } from '../dtos/store.dto';
 
-export function StoreUserGetDoc(): MethodDecorator {
+export function StorePublicGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get detail a store',
@@ -26,19 +26,19 @@ export function StoreUserGetDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<StoreGetResponseDto>('store.getById', {
-      dto: StoreGetResponseDto,
+    DocResponse<StoreDto>('store.getById', {
+      dto: StoreDto,
     }),
   );
 }
 
-export function StoreUserListDoc(): MethodDecorator {
+export function StorePublicListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get all stores',
     }),
     DocRequest({
-      queries: [...StoreDocQueryStatus],
+      queries: StoreDocQueryList,
     }),
     DocAuth({
       jwtAccessToken: true,

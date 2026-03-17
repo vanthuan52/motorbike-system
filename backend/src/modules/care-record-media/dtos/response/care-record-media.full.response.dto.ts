@@ -1,17 +1,17 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CareRecordMediaGetResponseDto } from './care-record-media.get.response.dto';
-import { CareRecordGetResponseDto } from '@/modules/care-record/dtos/response/care-record.get.response.dto';
+import { CareRecordMediaDto } from '../care-record-media.dto';
+import { CareRecordDto } from '@/modules/care-record/dtos/care-record.dto';
 
 export class CareRecordMediaGetFullResponseDto extends OmitType(
-  CareRecordMediaGetResponseDto,
+  CareRecordMediaDto,
   ['careRecord'] as const,
 ) {
   @ApiProperty({
     required: false,
-    type: CareRecordGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(CareRecordGetResponseDto) }],
+    type: CareRecordDto,
+    oneOf: [{ $ref: getSchemaPath(CareRecordDto) }],
   })
-  @Type(() => CareRecordGetResponseDto)
-  careRecord: CareRecordGetResponseDto;
+  @Type(() => CareRecordDto)
+  careRecord: CareRecordDto;
 }

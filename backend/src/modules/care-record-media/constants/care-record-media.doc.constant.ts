@@ -1,17 +1,9 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 import { ENUM_CARE_RECORD_MEDIA_STAGE } from '../enums/care-record-media.enum';
-import { ENUM_FILE_MIME } from '@/common/file/enums/file.enum';
+import { EnumFileExtension } from '@/common/file/enums/file.enum';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const CareRecordMediaDocParamsId: DocField[] = [
+export const CareRecordMediaDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -21,7 +13,7 @@ export const CareRecordMediaDocParamsId: DocField[] = [
   },
 ];
 
-export const CareRecordMediaDocQueryStage: DocField[] = [
+export const CareRecordMediaDocQueryStage: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -32,18 +24,18 @@ export const CareRecordMediaDocQueryStage: DocField[] = [
   },
 ];
 
-export const CareRecordMediaDocQueryType: DocField[] = [
+export const CareRecordMediaDocQueryType: ApiParamOptions[] = [
   {
     name: 'type',
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_FILE_MIME).join(','),
+    example: Object.values(EnumFileExtension).join(','),
     description: 'one value',
   },
 ];
 
-export const CareRecordMediaDocQueryCareRecord: DocField[] = [
+export const CareRecordMediaDocQueryCareRecord: ApiParamOptions[] = [
   {
     name: 'careRecord',
     allowEmptyValue: true,

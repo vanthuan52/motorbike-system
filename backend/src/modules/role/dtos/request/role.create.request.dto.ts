@@ -1,24 +1,16 @@
 import { faker } from '@faker-js/faker';
+import { ApiProperty } from '@nestjs/swagger';
 import {
-  ApiProperty,
-  IntersectionType,
-  OmitType,
-  PickType,
-} from '@nestjs/swagger';
-import {
-  IsEnum,
+  IsAlphanumeric,
   IsNotEmpty,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { RoleUpdateRequestDto } from './role.update.request.dto';
-import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
+import { RoleUpdateRequestDto } from '../request/role.update.request.dto';
+import { Transform } from 'class-transformer';
 
-export class RoleCreateRequestDto extends IntersectionType(
-  OmitType(RoleUpdateRequestDto, ['description'] as const),
-  PickType(RoleUpdateRequestDto, ['description'] as const),
-) {
+export class RoleCreateRequestDto extends RoleUpdateRequestDto {
   @ApiProperty({
     description: 'Name of role',
     example: faker.person.jobTitle(),
@@ -26,17 +18,9 @@ export class RoleCreateRequestDto extends IntersectionType(
   })
   @IsString()
   @IsNotEmpty()
+  @IsAlphanumeric()
   @MinLength(3)
   @MaxLength(30)
-  name: string;
-
-  @ApiProperty({
-    description: 'Representative for role type',
-    example: ENUM_POLICY_ROLE_TYPE.ADMIN,
-    required: true,
-    enum: ENUM_POLICY_ROLE_TYPE,
-  })
-  @IsEnum(ENUM_POLICY_ROLE_TYPE)
-  @IsNotEmpty()
-  type: ENUM_POLICY_ROLE_TYPE;
+  @Transform(({ value }) => value.toLowerCase().trim())
+  name: Lowercase<string>;
 }

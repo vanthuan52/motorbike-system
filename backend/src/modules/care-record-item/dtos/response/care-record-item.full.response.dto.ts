@@ -1,26 +1,26 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CareRecordItemGetResponseDto } from './care-record-item.get.response.dto';
-import { CareRecordGetResponseDto } from '@/modules/care-record/dtos/response/care-record.get.response.dto';
-import { PartGetResponseDto } from '@/modules/part/dtos/response/part.get.response.dto';
+import { CareRecordItemDto } from '../care-record-item.dto';
+import { CareRecordDto } from '@/modules/care-record/dtos/care-record.dto';
+import { PartDto } from '@/modules/part/dtos/part.dto';
 
 export class CareRecordItemGetFullResponseDto extends OmitType(
-  CareRecordItemGetResponseDto,
+  CareRecordItemDto,
   ['careRecord', 'part'] as const,
 ) {
   @ApiProperty({
     required: false,
-    type: CareRecordGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(CareRecordGetResponseDto) }],
+    type: CareRecordDto,
+    oneOf: [{ $ref: getSchemaPath(CareRecordDto) }],
   })
-  @Type(() => CareRecordGetResponseDto)
-  careRecord: CareRecordGetResponseDto;
+  @Type(() => CareRecordDto)
+  careRecord: CareRecordDto;
 
   @ApiProperty({
     required: true,
-    type: PartGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(PartGetResponseDto) }],
+    type: PartDto,
+    oneOf: [{ $ref: getSchemaPath(PartDto) }],
   })
-  @Type(() => PartGetResponseDto)
-  part: PartGetResponseDto;
+  @Type(() => PartDto)
+  part: PartDto;
 }

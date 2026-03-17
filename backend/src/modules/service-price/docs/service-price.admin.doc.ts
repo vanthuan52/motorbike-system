@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
-import { ServicePriceGetResponseDto } from '../dtos/response/service-price.get.response.dto';
+import { ServicePriceDto } from '../dtos/service-price.dto';
 import {
   ModelServicePriceListResponseDto,
   ServicePriceListResponseDto,
@@ -25,7 +25,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { ServicePriceGetFullResponseDto } from '../dtos/response/service-price.full.response.dto';
 
 export function ServicePriceAdminListDoc(): MethodDecorator {
@@ -58,15 +58,15 @@ export function ServicePriceAdminCreateDoc(): MethodDecorator {
       summary: 'create a new ServicePrice',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServicePriceCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServicePriceGetResponseDto>('service-price.create', {
-      dto: ServicePriceGetResponseDto,
+    DocResponse<ServicePriceDto>('service-price.create', {
+      dto: ServicePriceDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -79,7 +79,7 @@ export function ServicePriceAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: ServicePriceDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServicePriceUpdateRequestDto,
     }),
     DocAuth({
@@ -118,8 +118,8 @@ export function ServicePriceAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServicePriceGetResponseDto>('service-price.getById', {
-      dto: ServicePriceGetResponseDto,
+    DocResponse<ServicePriceDto>('service-price.getById', {
+      dto: ServicePriceDto,
     }),
   );
 }

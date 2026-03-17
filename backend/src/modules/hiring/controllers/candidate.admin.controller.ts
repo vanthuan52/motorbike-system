@@ -9,43 +9,44 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
   CandidateAdminListDoc,
   CandidateAdminParamsIdDoc,
-  CandidateUpdateStatusDoc,
+  CandidateAdminUpdateStatusDoc,
 } from '../docs/candidate.admin.doc';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
-import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import {
-  PaginationQuery,
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { ENUM_CANDIDATE_STATUS } from '../enums/candidate.enum';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { CandidateListResponseDto } from '../dtos/response/candidate.list.response.dto';
+import { CandidateResponseDto } from '../dtos/candidate-response.dto';
 import { CandidateDoc } from '../entities/candidate.entity';
-import { CandidateService } from '../services/candidate.services';
-import { CandidateGetResponseDto } from '../dtos/response/candidate.get.response.dto';
+import { CandidateService } from '../services/candidate.service';
 import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.interface';
 import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.update-status.request.dto';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { CandidateUtil } from '../utils/candidate.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -55,42 +56,39 @@ import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.updat
 export class CandidateAdminController {
   constructor(
     private readonly candidateService: CandidateService,
-    private readonly paginationService: PaginationService,
+    private readonly candidateUtil: CandidateUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @CandidateAdminListDoc()
   @ResponsePaging('candidate.list')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: ['name', 'status'],
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      [
-        ENUM_CANDIDATE_STATUS.HIRED,
-        ENUM_CANDIDATE_STATUS.INTERVIEW_SCHEDULED,
-        ENUM_CANDIDATE_STATUS.NEW,
-        ENUM_CANDIDATE_STATUS.REJECTED,
-        ENUM_CANDIDATE_STATUS.REVIEWED,
-      ],
-      ENUM_CANDIDATE_STATUS,
-    )
-    status: Record<string, any>,
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', [
+      ENUM_CANDIDATE_STATUS.HIRED,
+      ENUM_CANDIDATE_STATUS.INTERVIEW_SCHEDULED,
+      ENUM_CANDIDATE_STATUS.NEW,
+      ENUM_CANDIDATE_STATUS.REJECTED,
+      ENUM_CANDIDATE_STATUS.REVIEWED,
+    ])
+    status: Record<string, IPaginationIn>,
     @Query('hiring') hiring: string,
     @Query('appliedAtFrom') appliedAtFrom: string,
     @Query('appliedAtTo') appliedAtTo: string,
-  ): Promise<IResponsePaging<CandidateListResponseDto>> {
+  ): Promise<IResponsePagingReturn<CandidateResponseDto>> {
     const find: Record<string, any> = {
-      ..._search,
+      ...where,
       ...status,
     };
     if (hiring) {
@@ -106,68 +104,69 @@ export class CandidateAdminController {
     } else if (appliedAtTo) {
       find.appliedAt = { $lte: new Date(appliedAtTo) };
     }
-    const candidate: CandidateDoc[] = await this.candidateService.findAll(
-      find,
-      {
-        paging: {
-          limit: _limit,
-          offset: _offset,
-        },
-        order: _order,
-      },
-    );
 
-    const total: number = await this.candidateService.getTotal(find);
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
+    // Manual pagination using findAll and getTotal because Service doesn't have getListOffset yet used in other modules.
+    // However, I should probably stick to what Service provides if I don't want to change Service extensively to standard getListOffset.
+    // Given the task is about standardizing Service return type (Raw Data), using findAll and getTotal separately is fine as they return raw data.
 
-    const mapped = this.candidateService.mapList(candidate);
+    // Ideally I should refactor Service to have getListOffset if I want to be consistent with others, but let's see.
+    // The previous modules (CareRecord) had getListOffset.
+    // Hiring Service has findAll.
+    // I will use findAll and getTotal here, and use PaginationUtil to format.
 
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    const [candidates, total] = await Promise.all([
+      this.candidateService.findAll(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.candidateService.getTotal(find),
+    ]);
+
+    const mapped = this.candidateUtil.mapList(candidates);
+
+    return this.paginationUtil.formatOffset(mapped, total, {
+      limit,
+      skip,
+    });
   }
 
   @CandidateAdminParamsIdDoc()
   @Response('candidate.get')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
     @Param('id') id: string,
-  ): Promise<IResponse<CandidateGetResponseDto>> {
+  ): Promise<IResponseReturn<CandidateResponseDto>> {
     const candidate = await this.candidateService.findOneById(id);
     if (!candidate) {
       throw new NotFoundException({
         message: 'candidate.error.notFound',
       });
     }
-    const mapped = this.candidateService.mapGet(candidate);
+    const mapped = this.candidateUtil.mapOne(candidate);
     return { data: mapped };
   }
 
-  @CandidateUpdateStatusDoc()
+  @CandidateAdminUpdateStatusDoc()
   @Response('candidate.updateStatus')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
     @Body() { status }: CandidateUpdateStatusRequestDto,
-  ): Promise<IResponse<void>> {
+  ): Promise<IResponseReturn<void>> {
     const candidate = await this.candidateService.findOneById(id);
     if (!candidate) {
       throw new NotFoundException({
@@ -181,11 +180,9 @@ export class CandidateAdminController {
         {} as IDatabaseSaveOptions,
       );
       return {
-        _metadata: {
-          customProperty: {
-            messageProperties: {
-              status: status.toLowerCase(),
-            },
+        metadata: {
+          messageProperties: {
+            status: status.toLowerCase(),
           },
         },
       };

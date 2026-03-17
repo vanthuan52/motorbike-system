@@ -1,33 +1,67 @@
+import { ApiHideProperty, OmitType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import {
-  ApiHideProperty,
-  ApiProperty,
-  getSchemaPath,
-  OmitType,
-} from '@nestjs/swagger';
-import { Exclude, Type } from 'class-transformer';
-import { UserGetResponseDto } from './user.get.response.dto';
-import { UserUpdateMobileNumberRequestDto } from '../request/user.update-mobile-number.request.dto';
-import { ENUM_USER_GENDER } from '../../enums/user.enum';
-import { UserProfileResponseDto } from './user.profile.response.dto';
+  EnumUserGender,
+  EnumUserLoginFrom,
+  EnumUserSignUpFrom,
+  EnumUserSignUpWith,
+} from '../../enums/user.enum';
+import { UserDto } from '../user.dto';
 
-export class UserListResponseDto extends OmitType(UserGetResponseDto, [
-  'phone',
+export class UserListResponseDto extends OmitType(UserDto, [
+  'passwordExpired',
+  'passwordCreated',
+  'passwordAttempt',
+  'signUpDate',
+  'signUpFrom',
+  'signUpWith',
   'gender',
-  'role',
+  'lastLoginAt',
+  'lastIPAddress',
+  'lastLoginFrom',
+  'lastLoginWith',
 ] as const) {
-  @ApiProperty({
-    required: true,
-    type: UserProfileResponseDto,
-    oneOf: [{ $ref: getSchemaPath(UserProfileResponseDto) }],
-  })
-  @Type(() => UserProfileResponseDto)
-  role: UserProfileResponseDto;
+  @ApiHideProperty()
+  @Exclude()
+  passwordExpired?: Date;
 
   @ApiHideProperty()
   @Exclude()
-  phone?: UserUpdateMobileNumberRequestDto;
+  passwordCreated?: Date;
 
   @ApiHideProperty()
   @Exclude()
-  gender?: ENUM_USER_GENDER;
+  passwordAttempt?: number;
+
+  @ApiHideProperty()
+  @Exclude()
+  signUpDate: Date;
+
+  @ApiHideProperty()
+  @Exclude()
+  signUpFrom: EnumUserSignUpFrom;
+
+  @ApiHideProperty()
+  @Exclude()
+  signUpWith: EnumUserSignUpWith;
+
+  @ApiHideProperty()
+  @Exclude()
+  gender?: EnumUserGender;
+
+  @ApiHideProperty()
+  @Exclude()
+  lastLoginAt?: Date;
+
+  @ApiHideProperty()
+  @Exclude()
+  lastIPAddress?: string;
+
+  @ApiHideProperty()
+  @Exclude()
+  lastLoginFrom?: EnumUserLoginFrom;
+
+  @ApiHideProperty()
+  @Exclude()
+  lastLoginWith?: EnumUserSignUpWith;
 }

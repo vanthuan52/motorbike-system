@@ -1,13 +1,15 @@
+import { applyDecorators } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
+  DocGuard,
   DocRequest,
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { applyDecorators } from '@nestjs/common';
-import { SessionListResponseDto } from '../dtos/response/session.list.response.dto';
-import { SessionDocParamsId } from '../constants/session.doc.constant';
+import { SessionListResponseDto } from '@/modules/session/dtos/response/session.list.response.dto';
+import { SessionDocParamsId } from '@/modules/session/constants/session.doc.constant';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
 
 export function SessionSharedListDoc(): MethodDecorator {
   return applyDecorators(
@@ -18,8 +20,10 @@ export function SessionSharedListDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
+    DocGuard({}),
     DocResponsePaging<SessionListResponseDto>('session.list', {
       dto: SessionListResponseDto,
+      type: EnumPaginationType.cursor,
     }),
   );
 }
@@ -36,6 +40,7 @@ export function SessionSharedRevokeDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
+    DocGuard({}),
     DocResponse('session.revoke'),
   );
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ENUM_PART_TYPE_STATUS } from '../../enums/part-type.enum';
+import { EnumPartTypeStatus } from '../../enums/part-type.enum';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 
 export class PartTypeGetResponseDto extends DatabaseDto {
@@ -21,10 +21,10 @@ export class PartTypeGetResponseDto extends DatabaseDto {
 
   @ApiProperty({
     required: true,
-    example: ENUM_PART_TYPE_STATUS.ACTIVE,
-    enum: () => ENUM_PART_TYPE_STATUS,
+    example: EnumPartTypeStatus.active,
+    enum: () => EnumPartTypeStatus,
   })
-  status: ENUM_PART_TYPE_STATUS;
+  status: EnumPartTypeStatus;
 
   @ApiProperty({ required: false })
   photo?: string;

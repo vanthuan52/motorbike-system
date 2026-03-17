@@ -1,35 +1,15 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
-import { HelperArrayService } from './services/helper.array.service';
-import { HelperStringService } from './services/helper.string.service';
-import { HelperDateService } from './services/helper.date.service';
-import { HelperEncryptionService } from './services/helper.encryption.service';
-import { HelperHashService } from './services/helper.hash.service';
-import { HelperNumberService } from './services/helper.number.service';
+import { Global, Module } from '@nestjs/common';
+import { HelperService } from './services/helper.service';
 
+/**
+ * Global module providing helper utility services.
+ * Exports HelperService globally for use throughout the application.
+ */
 @Global()
-@Module({})
-export class HelperModule {
-  static forRoot(): DynamicModule {
-    return {
-      module: HelperModule,
-      providers: [
-        HelperArrayService,
-        HelperStringService,
-        HelperDateService,
-        HelperEncryptionService,
-        HelperHashService,
-        HelperNumberService,
-      ],
-      exports: [
-        HelperArrayService,
-        HelperStringService,
-        HelperDateService,
-        HelperEncryptionService,
-        HelperHashService,
-        HelperNumberService,
-      ],
-      controllers: [],
-      imports: [],
-    };
-  }
-}
+@Module({
+  providers: [HelperService],
+  exports: [HelperService],
+  controllers: [],
+  imports: [],
+})
+export class HelperModule {}

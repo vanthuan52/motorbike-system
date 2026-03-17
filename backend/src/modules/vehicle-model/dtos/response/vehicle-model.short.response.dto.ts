@@ -5,11 +5,11 @@ import {
   ENUM_VEHICLE_MODEL_STATUS,
   ENUM_VEHICLE_MODEL_TYPE,
 } from '../../enums/vehicle-model.enum';
-import { AwsS3ResponseDto } from '@/modules/aws/dtos/response/aws.s3-response.dto';
-import { VehicleModelListResponseDto } from './vehicle-model.list.response.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { VehicleModelGetFullResponseDto } from './vehicle-model.full.response.dto';
 
 export class VehicleModelShortResponseDto extends OmitType(
-  VehicleModelListResponseDto,
+  VehicleModelGetFullResponseDto,
   [
     'vehicleBrand',
     'status',
@@ -38,7 +38,7 @@ export class VehicleModelShortResponseDto extends OmitType(
 
   @ApiHideProperty()
   @Exclude()
-  photo?: AwsS3ResponseDto;
+  photo?: AwsS3Dto;
 
   @ApiHideProperty()
   @Exclude()

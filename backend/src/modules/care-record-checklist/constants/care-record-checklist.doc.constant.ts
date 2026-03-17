@@ -3,17 +3,9 @@ import {
   ENUM_CARE_RECORD_CHECKLIST_RESULT,
   ENUM_CARE_RECORD_CHECKLIST_STATUS,
 } from '../enums/care-record-checklist.enum';
+import { ApiParamOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const CareRecordChecklistDocParamsId: DocField[] = [
+export const CareRecordChecklistDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -23,7 +15,7 @@ export const CareRecordChecklistDocParamsId: DocField[] = [
   },
 ];
 
-export const CareRecordChecklistDocQueryStatus: DocField[] = [
+export const CareRecordChecklistDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -34,7 +26,7 @@ export const CareRecordChecklistDocQueryStatus: DocField[] = [
   },
 ];
 
-export const CareRecordChecklistDocQueryResult: DocField[] = [
+export const CareRecordChecklistDocQueryResult: ApiParamOptions[] = [
   {
     name: 'result',
     allowEmptyValue: true,
@@ -45,7 +37,7 @@ export const CareRecordChecklistDocQueryResult: DocField[] = [
   },
 ];
 
-export const CareRecordChecklistDocQueryCareRecordService: DocField[] = [
+export const CareRecordChecklistDocQueryCareRecordService: ApiParamOptions[] = [
   {
     name: 'careRecordService',
     allowEmptyValue: true,

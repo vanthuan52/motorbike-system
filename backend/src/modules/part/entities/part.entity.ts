@@ -6,9 +6,9 @@ import {
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 import { ENUM_PART_STATUS } from '../enums/part.enum';
-import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
 import { PartTypeEntity } from '@/modules/part-type/entities/part-type.entity';
 import { VehicleBrandEntity } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 
 export const PartTableName = 'parts';
 
@@ -65,12 +65,6 @@ export class PartEntity extends DatabaseEntityBase {
     index: true,
   })
   vehicleBrand: string;
-
-  @DatabaseProp({
-    required: false,
-    schema: AwsS3Schema,
-  })
-  photo?: AwsS3Entity;
 }
 
 export const PartSchema = DatabaseSchema(PartEntity);

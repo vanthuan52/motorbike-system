@@ -1,16 +1,24 @@
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from '../enums/pagination.enum';
+/**
+ * Default number of items per page for pagination.
+ */
+export const PaginationDefaultPerPage = 20;
 
-//! Pagination default variable
-export const PAGINATION_DEFAULT_PER_PAGE = 20;
-export const PAGINATION_DEFAULT_MAX_PER_PAGE = 300;
+/**
+ * Maximum allowed number of items per page for pagination.
+ */
+export const PaginationDefaultMaxPerPage = 100;
 
-export const PAGINATION_DEFAULT_PAGE = 1;
-export const PAGINATION_DEFAULT_MAX_PAGE = 20;
+/**
+ * Maximum allowed page number for pagination.
+ */
+export const PaginationDefaultMaxPage = 20;
 
-export const PAGINATION_DEFAULT_ORDER_BY = 'createdAt';
-export const PAGINATION_DEFAULT_ORDER_DIRECTION: ENUM_PAGINATION_ORDER_DIRECTION_TYPE =
-  ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC;
+/**
+ * Default field used for cursor-based pagination.
+ */
+export const PaginationDefaultCursorField = '_id';
 
-export const PAGINATION_DEFAULT_AVAILABLE_ORDER_BY: string[] = ['createdAt'];
-export const PAGINATION_DEFAULT_AVAILABLE_ORDER_DIRECTION: ENUM_PAGINATION_ORDER_DIRECTION_TYPE[] =
-  Object.values(ENUM_PAGINATION_ORDER_DIRECTION_TYPE);
+/**
+ * Maximum allowed length for cursor string.
+ */
+export const PaginationMaxCursorLength = 256;

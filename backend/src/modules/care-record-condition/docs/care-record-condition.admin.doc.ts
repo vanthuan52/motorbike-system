@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
-import { CareRecordConditionGetResponseDto } from '../dtos/response/care-record-condition.get.response.dto';
+import { CareRecordConditionDto } from '../dtos/care-record-condition.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
 import { CareRecordConditionDocParamsId } from '../constants/care-record-condition.doc.constant';
 import {
@@ -10,9 +10,8 @@ import {
   DocGuard,
   DocRequest,
   DocResponse,
-  DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareRecordConditionGetFullResponseDto } from '../dtos/response/care-record-condition.full.response.dto';
 
 export function CareRecordConditionAdminCreateDoc(): MethodDecorator {
@@ -21,20 +20,17 @@ export function CareRecordConditionAdminCreateDoc(): MethodDecorator {
       summary: 'create a new care record condition',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordConditionCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordConditionGetResponseDto>(
-      'care-record-condition.create',
-      {
-        dto: CareRecordConditionGetResponseDto,
-        statusCode: HttpStatus.CREATED,
-      },
-    ),
+    DocResponse<CareRecordConditionDto>('care-record-condition.create', {
+      dto: CareRecordConditionDto,
+      statusCode: HttpStatus.CREATED,
+    }),
   );
 }
 
@@ -45,7 +41,7 @@ export function CareRecordConditionAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: CareRecordConditionDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordConditionUpdateRequestDto,
     }),
     DocAuth({
@@ -84,12 +80,9 @@ export function CareRecordConditionAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordConditionGetResponseDto>(
-      'care-record-condition.getById',
-      {
-        dto: CareRecordConditionGetResponseDto,
-      },
-    ),
+    DocResponse<CareRecordConditionDto>('care-record-condition.getById', {
+      dto: CareRecordConditionDto,
+    }),
   );
 }
 

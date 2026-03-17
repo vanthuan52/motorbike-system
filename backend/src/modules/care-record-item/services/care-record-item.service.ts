@@ -1,16 +1,8 @@
-import { plainToInstance } from 'class-transformer';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import _ from 'lodash';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { ICareRecordItemService } from '../interfaces/care-record-item.service.interface';
@@ -19,89 +11,102 @@ import {
   CareRecordItemDoc,
   CareRecordItemEntity,
 } from '../entities/care-record-item.entity';
-import {
-  ICareRecordItemDoc,
-  ICareRecordItemEntity,
-} from '../interfaces/care-record-item.interface';
-import { CareRecordItemListResponseDto } from '../dtos/response/care-record-item.list.response.dto';
-import { CareRecordItemGetResponseDto } from '../dtos/response/care-record-item.get.response.dto';
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
-import { CareRecordItemGetFullResponseDto } from '../dtos/response/care-record-item.full.response.dto';
-import { HelperStringService } from '@/common/helper/services/helper.string.service';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { ENUM_CARE_RECORD_ITEM_STATUS_CODE_ERROR } from '../enums/care-record-item.status-code.enum';
 
 @Injectable()
 export class CareRecordItemService implements ICareRecordItemService {
-  private readonly uploadPath: string;
   constructor(
     private readonly careRecordItemRepository: CareRecordItemRepository,
-    private readonly configService: ConfigService,
-    private readonly helperStringService: HelperStringService,
   ) {}
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordItemDoc[]> {
-    return this.careRecordItemRepository.findAll<CareRecordItemDoc>(
-      find,
-      options,
-    );
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordItemDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
+
+    const [careRecordItems, total] = await Promise.all([
+      this.careRecordItemRepository.findAll(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+        join: true,
+      }),
+      this.careRecordItemRepository.getTotal(find),
+    ]);
+
+    return {
+      data: careRecordItems,
+      total,
+    };
   }
 
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.careRecordItemRepository.getTotal(find, options);
-  }
+  async getListCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordItemDoc[]; total?: number }> {
+    const find: Record<string, any> = { ...where, ...filters };
 
-  async findAllWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICareRecordItemEntity[]> {
-    return this.careRecordItemRepository.findAll<ICareRecordItemEntity>(find, {
-      ...options,
-      join: true,
-    });
-  }
+    if (cursor && cursorField) {
+      find[cursorField] = { $gt: cursor };
+    }
 
-  async getTotalWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number> {
-    return this.careRecordItemRepository.getTotal(find, {
-      ...options,
-      join: true,
-    });
+    const [data, count] = await Promise.all([
+      this.careRecordItemRepository.findAllCursor(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
+        },
+        join: true,
+      }),
+      includeCount
+        ? this.careRecordItemRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
+
+    return { data, total: count };
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordItemDoc | null> {
-    return this.careRecordItemRepository.findOneById<CareRecordItemDoc>(
-      _id,
-      options,
-    );
-  }
-
-  async join(repository: CareRecordItemDoc): Promise<ICareRecordItemDoc> {
-    return this.careRecordItemRepository.join(
-      repository,
-      this.careRecordItemRepository._join!,
-    );
+  ): Promise<CareRecordItemDoc> {
+    const careRecordItem = await this.findOneByIdOrFail(id, {
+      ...options,
+      join: true,
+    });
+    return careRecordItem;
   }
 
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordItemDoc | null> {
-    return this.careRecordItemRepository.findOne<CareRecordItemDoc>(
-      find,
-      options,
-    );
+  ): Promise<CareRecordItemDoc> {
+    const careRecordItem =
+      await this.careRecordItemRepository.findOne<CareRecordItemDoc>(
+        find,
+        options,
+      );
+    return careRecordItem;
   }
 
   async create(
@@ -119,7 +124,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       note,
     }: CareRecordItemCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordItemDoc> {
+  ): Promise<DatabaseIdDto> {
     const create: CareRecordItemEntity = new CareRecordItemEntity();
 
     create.careRecord = careRecord;
@@ -129,20 +134,22 @@ export class CareRecordItemService implements ICareRecordItemService {
     create.name = name;
     create.quantity = quantity;
     create.unitPrice = unitPrice;
-    create.itemType = itemType;
     create.part = part;
     create.technician = technician;
     create.approvedByOwner = approvedByOwner ?? false;
     create.note = note ?? '';
 
-    return this.careRecordItemRepository.create<CareRecordItemEntity>(
-      create,
-      options,
-    );
+    const created =
+      await this.careRecordItemRepository.create<CareRecordItemEntity>(
+        create,
+        options,
+      );
+
+    return { _id: created._id };
   }
 
   async update(
-    repository: CareRecordItemDoc,
+    id: string,
     {
       vehicleService,
       source,
@@ -156,7 +163,8 @@ export class CareRecordItemService implements ICareRecordItemService {
       note,
     }: CareRecordItemUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordItemDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
     repository.vehicleService = vehicleService ?? repository.vehicleService;
     repository.source = source ?? repository.source;
     repository.itemType = itemType ?? repository.itemType;
@@ -165,40 +173,26 @@ export class CareRecordItemService implements ICareRecordItemService {
     repository.quantity = quantity ?? repository.quantity;
     repository.unitPrice = unitPrice ?? repository.unitPrice;
     repository.technician = technician ?? repository.technician;
-    repository.quantity = quantity ?? repository.quantity;
-    repository.unitPrice = unitPrice ?? repository.unitPrice;
-    repository.unitPrice = unitPrice ?? repository.unitPrice;
     repository.approvedByOwner = approvedByOwner ?? repository.approvedByOwner;
     repository.note = note ?? repository.note;
 
-    return this.careRecordItemRepository.save(repository, options);
+    await this.careRecordItemRepository.save(repository, options);
   }
 
   async updateApproval(
-    repository: CareRecordItemDoc,
+    id: string,
     { approvedByOwner }: CareRecordItemUpdateApprovalRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordItemDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
     repository.approvedByOwner = approvedByOwner;
 
-    return this.careRecordItemRepository.save(repository, options);
+    await this.careRecordItemRepository.save(repository, options);
   }
 
-  async delete(
-    repository: CareRecordItemDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<CareRecordItemDoc> {
-    return this.careRecordItemRepository.delete(
-      { _id: repository._id },
-      options,
-    );
-  }
-
-  async softDelete(
-    repository: CareRecordItemDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordItemDoc> {
-    return this.careRecordItemRepository.softDelete(repository, options);
+  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.careRecordItemRepository.softDelete(repository, options);
   }
 
   async deleteMany(
@@ -209,36 +203,21 @@ export class CareRecordItemService implements ICareRecordItemService {
     return true;
   }
 
-  mapList(
-    CareRecordItem: CareRecordItemDoc[] | ICareRecordItemEntity[],
-  ): CareRecordItemListResponseDto[] {
-    return plainToInstance(
-      CareRecordItemListResponseDto,
-      CareRecordItem.map((p: CareRecordItemDoc | ICareRecordItemEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-
-  mapGet(
-    CareRecordItem: CareRecordItemDoc | ICareRecordItemEntity,
-  ): CareRecordItemGetResponseDto {
-    return plainToInstance(
-      CareRecordItemGetResponseDto,
-      typeof (CareRecordItem as any).toObject === 'function'
-        ? (CareRecordItem as any).toObject()
-        : CareRecordItem,
-    );
-  }
-
-  mapGetPopulate(
-    CareRecordItem: CareRecordItemDoc | ICareRecordItemEntity,
-  ): CareRecordItemGetFullResponseDto {
-    return plainToInstance(
-      CareRecordItemGetFullResponseDto,
-      typeof (CareRecordItem as any).toObject === 'function'
-        ? (CareRecordItem as any).toObject()
-        : CareRecordItem,
-    );
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordItemDoc> {
+    const careRecordItem =
+      await this.careRecordItemRepository.findOneById<CareRecordItemDoc>(
+        id,
+        options,
+      );
+    if (!careRecordItem) {
+      throw new NotFoundException({
+        statusCode: ENUM_CARE_RECORD_ITEM_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'care-record-item.error.notFound',
+      });
+    }
+    return careRecordItem;
   }
 }

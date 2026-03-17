@@ -1,19 +1,11 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 import {
   ENUM_CARE_RECORD_STATUS,
   ENUM_PAYMENT_STATUS,
 } from '../enums/care-record.enum';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const CareRecordDocParamsId: DocField[] = [
+export const CareRecordDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -23,7 +15,7 @@ export const CareRecordDocParamsId: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryStatus: DocField[] = [
+export const CareRecordDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -34,7 +26,7 @@ export const CareRecordDocQueryStatus: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryPaymentStatus: DocField[] = [
+export const CareRecordDocQueryPaymentStatus: ApiParamOptions[] = [
   {
     name: 'paymentStatus',
     allowEmptyValue: true,
@@ -45,7 +37,7 @@ export const CareRecordDocQueryPaymentStatus: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryOrderBy: DocField[] = [
+export const CareRecordDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -56,7 +48,7 @@ export const CareRecordDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryOrderDirection: DocField[] = [
+export const CareRecordDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,
@@ -67,7 +59,7 @@ export const CareRecordDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryTechnician: DocField[] = [
+export const CareRecordDocQueryTechnician: ApiParamOptions[] = [
   {
     name: 'technician',
     allowEmptyValue: true,
@@ -78,7 +70,7 @@ export const CareRecordDocQueryTechnician: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryUserVehicle: DocField[] = [
+export const CareRecordDocQueryUserVehicle: ApiParamOptions[] = [
   {
     name: 'userVehicle',
     allowEmptyValue: true,
@@ -89,7 +81,7 @@ export const CareRecordDocQueryUserVehicle: DocField[] = [
   },
 ];
 
-export const CareRecordDocQueryAppointment: DocField[] = [
+export const CareRecordDocQueryAppointment: ApiParamOptions[] = [
   {
     name: 'appointment',
     allowEmptyValue: true,

@@ -4,29 +4,15 @@ import {
   DatabaseProp,
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
-import { ENUM_SESSION_STATUS } from '../enums/session.enum';
+import { EnumSessionStatus } from '../enums/session.enum';
 import { UserEntity } from '@/modules/user/entities/user.entity';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
+import { SessionUserAgentEntity } from './session.user-agent.entity';
 
 export const SessionTableName = 'sessions';
 
 @DatabaseEntity({ collection: SessionTableName })
 export class SessionEntity extends DatabaseEntityBase {
-  @DatabaseProp({
-    required: true,
-    index: true,
-    type: String,
-    enum: ENUM_SESSION_STATUS,
-    default: ENUM_SESSION_STATUS.ACTIVE,
-  })
-  status: ENUM_SESSION_STATUS;
-
-  @DatabaseProp({
-    required: false,
-    type: Date,
-  })
-  revokeAt?: Date;
-
   @DatabaseProp({
     required: true,
     index: true,
@@ -37,6 +23,12 @@ export class SessionEntity extends DatabaseEntityBase {
   user: string;
 
   @DatabaseProp({
+    required: false,
+    type: String,
+  })
+  jti?: string;
+
+  @DatabaseProp({
     required: true,
     trim: true,
     type: String,
@@ -44,39 +36,60 @@ export class SessionEntity extends DatabaseEntityBase {
   ip: string;
 
   @DatabaseProp({
-    required: true,
-    trim: true,
-    type: String,
+    required: false,
+    type: SessionUserAgentEntity,
+    _id: false,
   })
-  hostname: string;
+  userAgent?: SessionUserAgentEntity;
 
   @DatabaseProp({
     required: true,
-    trim: true,
-    type: String,
+    type: Date,
   })
-  protocol: string;
+  expiredAt: Date;
+
+  @DatabaseProp({
+    required: false,
+    type: Date,
+  })
+  revokeAt?: Date;
 
   @DatabaseProp({
     required: true,
-    trim: true,
+    index: true,
     type: String,
+    enum: EnumSessionStatus,
+    default: EnumSessionStatus.active,
   })
-  originalUrl: string;
+  status: EnumSessionStatus;
 
+  // Optional
   @DatabaseProp({
-    required: true,
-    trim: true,
+    required: false,
     type: String,
   })
-  method: string;
+  hostname?: string;
 
   @DatabaseProp({
     required: false,
     trim: true,
     type: String,
   })
-  userAgent?: string;
+  protocol?: string;
+
+  @DatabaseProp({
+    required: false,
+    trim: true,
+    type: String,
+  })
+  originalUrl?: string;
+
+  @DatabaseProp({
+    required: false,
+    trim: true,
+    type: String,
+  })
+  method?: string;
 
   @DatabaseProp({
     required: false,
@@ -98,12 +111,6 @@ export class SessionEntity extends DatabaseEntityBase {
     type: String,
   })
   xForwardedPorto?: string;
-
-  @DatabaseProp({
-    required: true,
-    type: Date,
-  })
-  expiredAt: Date;
 }
 
 export const SessionSchema = DatabaseSchema(SessionEntity);

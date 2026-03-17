@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
 import { PartTypeService } from '@/modules/part-type/services/part-type.services';
 import { MessageService } from '@/common/message/services/message.service';
-import { ENUM_PART_TYPE_STATUS } from '@/modules/part-type/enums/part-type.enum';
+import { EnumPartTypeStatus } from '@/modules/part-type/enums/part-type.enum';
 
 @Injectable()
 export class MigrationPartTypeSeed {
@@ -15,7 +15,7 @@ export class MigrationPartTypeSeed {
     command: 'seed:part-type',
     describe: 'Seed initial part types',
   })
-    async createMany(): Promise<void> {
+  async createMany(): Promise<void> {
     const partTypes = [
       {
         name: 'Lọc gió',
@@ -42,7 +42,7 @@ export class MigrationPartTypeSeed {
       if (!exist) {
         await this.partTypeService.create({
           ...partType,
-          status: ENUM_PART_TYPE_STATUS.ACTIVE,
+          status: EnumPartTypeStatus.active,
         });
       }
     }

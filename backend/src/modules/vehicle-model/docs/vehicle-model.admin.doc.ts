@@ -10,7 +10,7 @@ import {
   VehicleModelDocQueryType,
   VehicleModelDocQueryVehicleBrand,
 } from '../constants/vehicle-model.doc.constant';
-import { VehicleModelGetResponseDto } from '../dtos/response/vehicle-model.get.response.dto';
+import { VehicleModelDto } from '../dtos/vehicle-model.dto';
 import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
 import {
   Doc,
@@ -20,11 +20,11 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { VehicleModelCreateRequestDto } from '../dtos/request/vehicle-model.create.request.dto';
 import { VehicleModelUpdateRequestDto } from '../dtos/request/vehicle-model.update.request.dto';
 import { VehicleModelUpdateStatusRequestDto } from '../dtos/request/vehicle-model.update-status.request.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
 
 export function VehicleModelAdminListDoc(): MethodDecorator {
@@ -60,15 +60,15 @@ export function VehicleModelAdminCreateDoc(): MethodDecorator {
       summary: 'create a new vehicle model',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleModelCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('vehicle-model.create', {
-      dto: DatabaseIdResponseDto,
+    DocResponse<DatabaseIdDto>('vehicle-model.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -81,7 +81,7 @@ export function VehicleModelAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: VehicleModelDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleModelUpdateRequestDto,
     }),
     DocAuth({
@@ -115,7 +115,7 @@ export function VehicleModelAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: VehicleModelDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleModelUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -138,8 +138,8 @@ export function VehicleModelAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<VehicleModelGetResponseDto>('vehicle-model.getById', {
-      dto: VehicleModelGetResponseDto,
+    DocResponse<VehicleModelDto>('vehicle-model.getById', {
+      dto: VehicleModelDto,
     }),
   );
 }

@@ -10,62 +10,54 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiKeyService } from '../services/api-key.service';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
-import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { ApiKeyProtected } from '../decorators/api-key.decorator';
 import {
-  PaginationQuery,
-  PaginationQueryFilterInBoolean,
+  PaginationOffsetQuery,
+  PaginationQueryFilterEqualBoolean,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  API_KEY_DEFAULT_AVAILABLE_SEARCH,
-  API_KEY_DEFAULT_IS_ACTIVE,
-  API_KEY_DEFAULT_TYPE,
-} from '../constants/api-key.list.constant';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { ENUM_API_KEY_TYPE } from '../enums/api-key.enum';
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+  IPaginationEqual,
+} from '@/common/pagination/interfaces/pagination.interface';
 import {
-  IResponse,
-  IResponsePaging,
+  ApiKeyDefaultAvailableSearch,
+  ApiKeyDefaultType,
+} from '../constants/api-key.list.constant';
+import {
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { ApiKeyListResponseDto } from '../dtos/response/api-key.list.response.dto';
-import { ApiKeyDoc } from '../entities/api-key.entity';
+import { ApiKeyDto } from '../dtos/api-key.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { ApiKeyGetResponseDto } from '../dtos/response/api-key.get.response.dto';
-import { ApiKeyParsePipe } from '../pipes/api-key.parse.pipe';
 import { ApiKeyCreateRequestDto } from '../dtos/request/api-key.create.request.dto';
-import { ApiKeyCreateResponseDto } from '../dtos/response/api-key.create.dto';
-import { ApiKeyResetResponseDto } from '../dtos/response/api-key.reset.dto';
 import { ApiKeyUpdateRequestDto } from '../dtos/request/api-key.update.request.dto';
-import { ApiKeyIsActivePipe } from '../pipes/api-key.is-active.pipe';
-import { ApiKeyNotExpiredPipe } from '../pipes/api-key.expired.pipe';
 import { ApiKeyUpdateDateRequestDto } from '../dtos/request/api-key.update-date.request.dto';
 import {
-  ApiKeyAdminActiveDoc,
   ApiKeyAdminCreateDoc,
   ApiKeyAdminDeleteDoc,
-  ApiKeyAdminGetDoc,
-  ApiKeyAdminInactiveDoc,
   ApiKeyAdminListDoc,
   ApiKeyAdminResetDoc,
   ApiKeyAdminUpdateDateDoc,
   ApiKeyAdminUpdateDoc,
 } from '../docs/api-key.admin.doc';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { ApiKeyCreateResponseDto } from '../dtos/response/api-key.create.response.dto';
+import { ApiKeyUpdateStatusRequestDto } from '../dtos/request/api-key.update-status.request.dto';
+import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
 
 @ApiTags('modules.admin.apiKey')
 @Controller({
@@ -73,230 +65,139 @@ import {
   path: '/api-key',
 })
 export class ApiKeyAdminController {
-  constructor(
-    private readonly apiKeyService: ApiKeyService,
-    private readonly paginationService: PaginationService,
-  ) {}
+  constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @ApiKeyAdminListDoc()
   @ResponsePaging('apiKey.list')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
   @Get('/list')
   async list(
-    @PaginationQuery({
-      availableSearch: API_KEY_DEFAULT_AVAILABLE_SEARCH,
+    @PaginationOffsetQuery({
+      availableSearch: ApiKeyDefaultAvailableSearch,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInBoolean('isActive', API_KEY_DEFAULT_IS_ACTIVE)
-    isActive: Record<string, any>,
-    @PaginationQueryFilterInEnum(
-      'type',
-      API_KEY_DEFAULT_TYPE,
-      ENUM_API_KEY_TYPE,
-    )
-    type: Record<string, any>,
-  ): Promise<IResponsePaging<ApiKeyListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
+    pagination: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterEqualBoolean('isActive')
+    isActive: Record<string, IPaginationEqual>,
+    @PaginationQueryFilterInEnum('type', ApiKeyDefaultType)
+    type: Record<string, IPaginationIn>,
+  ): Promise<IResponsePagingReturn<ApiKeyDto>> {
+    return this.apiKeyService.getListOffset(pagination, {
       ...isActive,
       ...type,
-    };
-
-    const apiKeys: ApiKeyDoc[] = await this.apiKeyService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
     });
-
-    const total: number = await this.apiKeyService.getTotal(find);
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-    const mapped = this.apiKeyService.mapList(apiKeys);
-
-    return {
-      _pagination: { totalPage, total },
-      data: mapped,
-    };
-  }
-
-  @ApiKeyAdminGetDoc()
-  @Response('apiKey.get')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @Get('/get/:apiKey')
-  async get(
-    @Param('apiKey', RequestRequiredPipe, ApiKeyParsePipe) apiKey: ApiKeyDoc,
-  ): Promise<IResponse<ApiKeyGetResponseDto>> {
-    const mapped = this.apiKeyService.mapGet(apiKey);
-
-    return { data: mapped };
   }
 
   @ApiKeyAdminCreateDoc()
   @Response('apiKey.create')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read, EnumPolicyAction.create],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
   @Post('/create')
   async create(
     @Body() body: ApiKeyCreateRequestDto,
-  ): Promise<IResponse<ApiKeyCreateResponseDto>> {
-    const created: ApiKeyCreateResponseDto =
-      await this.apiKeyService.create(body);
-
-    return {
-      data: created,
-    };
+  ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
+    return this.apiKeyService.create(body);
   }
 
   @ApiKeyAdminResetDoc()
   @Response('apiKey.reset')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
-  @Patch('/update/:apiKey/reset')
+  @Patch('/update/:apiKeyId/reset')
   async reset(
-    @Param('apiKey', RequestRequiredPipe, ApiKeyParsePipe) apiKey: ApiKeyDoc,
-  ): Promise<IResponse<ApiKeyResetResponseDto>> {
-    const updated: ApiKeyResetResponseDto =
-      await this.apiKeyService.reset(apiKey);
-
-    return {
-      data: updated,
-    };
+    @Param('apiKeyId', RequestRequiredPipe) apiKeyId: string,
+  ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
+    return this.apiKeyService.reset(apiKeyId);
   }
 
   @ApiKeyAdminUpdateDoc()
   @Response('apiKey.update')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
-  @Put('/update/:apiKey')
+  @Put('/update/:apiKeyId')
   async update(
     @Body() body: ApiKeyUpdateRequestDto,
-    @Param('apiKey', RequestRequiredPipe, ApiKeyParsePipe) apikey: ApiKeyDoc,
-  ): Promise<void> {
-    await this.apiKeyService.update(apikey, body);
-
-    return;
-  }
-
-  @ApiKeyAdminInactiveDoc()
-  @Response('apiKey.inactive')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @ApiKeyProtected()
-  @Patch('/update/:apiKey/inactive')
-  async inactive(
-    @Param(
-      'apiKey',
-      RequestRequiredPipe,
-      ApiKeyParsePipe,
-      new ApiKeyIsActivePipe([true]),
-      ApiKeyNotExpiredPipe,
-    )
-    apiKey: ApiKeyDoc,
-  ): Promise<void> {
-    await this.apiKeyService.inactive(apiKey);
-
-    return;
-  }
-
-  @ApiKeyAdminActiveDoc()
-  @Response('apiKey.active')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @ApiKeyProtected()
-  @Patch('/update/:apiKey/active')
-  async active(
-    @Param(
-      'apiKey',
-      RequestRequiredPipe,
-      ApiKeyParsePipe,
-      new ApiKeyIsActivePipe([false]),
-      ApiKeyNotExpiredPipe,
-    )
-    apiKey: ApiKeyDoc,
-  ): Promise<void> {
-    await this.apiKeyService.active(apiKey);
-
-    return;
+    @Param('apiKeyId', RequestRequiredPipe) apiKeyId: string,
+  ): Promise<IResponseReturn<void>> {
+    await this.apiKeyService.update(apiKeyId, body);
+    return {};
   }
 
   @ApiKeyAdminUpdateDateDoc()
   @Response('apiKey.updateDate')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
-  @Put('/update/:apiKey/date')
+  @Put('/update/:apiKeyId/date')
   async updateDate(
     @Body() body: ApiKeyUpdateDateRequestDto,
-    @Param('apiKey', RequestRequiredPipe, ApiKeyParsePipe) apiKey: ApiKeyDoc,
-  ): Promise<void> {
-    await this.apiKeyService.updateDate(apiKey, body);
+    @Param('apiKeyId', RequestRequiredPipe) apiKeyId: string,
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    return this.apiKeyService.updateDate(apiKeyId, body);
+  }
 
-    return;
+  @ApiKeyAdminUpdateDateDoc()
+  @Response('apiKey.updateDate')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
+  })
+  @RoleProtected(EnumRoleType.admin)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ApiKeyProtected()
+  @Put('/update/:apiKeyId/status')
+  async updateStatus(
+    @Body() body: ApiKeyUpdateStatusRequestDto,
+    @Param('apiKeyId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    apiKeyId: string,
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    return this.apiKeyService.updateStatus(apiKeyId, body);
   }
 
   @ApiKeyAdminDeleteDoc()
   @Response('apiKey.delete')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.API_KEY,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.DELETE],
+    subject: EnumPolicySubject.apiKey,
+    action: [EnumPolicyAction.read, EnumPolicyAction.delete],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
-  @Delete('/delete/:apiKey')
+  @Delete('/delete/:apiKeyId')
   async delete(
-    @Param('apiKey', RequestRequiredPipe, ApiKeyParsePipe) apiKey: ApiKeyDoc,
-  ): Promise<void> {
-    await this.apiKeyService.delete(apiKey);
-
-    return;
+    @Param('apiKeyId', RequestRequiredPipe) apiKeyId: string,
+  ): Promise<IResponseReturn<ApiKeyDto>> {
+    return this.apiKeyService.delete(apiKeyId);
   }
 }

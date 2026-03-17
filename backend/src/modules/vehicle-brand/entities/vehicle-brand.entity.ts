@@ -6,7 +6,7 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 
 export const VehicleBrandTableName = 'vehicle_brands';
 
@@ -59,9 +59,9 @@ export class VehicleBrandEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
-    schema: AwsS3Schema,
+    schema: AwsS3Dto,
   })
-  photo?: AwsS3Entity;
+  photo?: AwsS3Dto;
 }
 
 export const VehicleBrandSchema = DatabaseSchema(VehicleBrandEntity);

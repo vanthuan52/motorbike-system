@@ -1,10 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { StoreGetResponseDto } from './store.get.response.dto';
+import { OmitType } from '@nestjs/swagger';
+import { StoreDto } from '../store.dto';
 
-export class StoreListResponseDto {
-  @ApiProperty({ type: [StoreGetResponseDto] })
-  items: StoreGetResponseDto[];
-
-  @ApiProperty()
-  total: number;
-}
+export class StoreListResponseDto extends OmitType(StoreDto, [
+  'createdAt',
+  'updatedAt',
+] as const) {}

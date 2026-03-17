@@ -1,10 +1,10 @@
 import { ApiHideProperty, OmitType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { AwsS3ResponseDto } from '@/modules/aws/dtos/response/aws.s3-response.dto';
-import { UserVehicleListResponseDto } from './user-vehicle.list.response.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { UserVehicleGetFullResponseDto } from './user-vehicle.full.response.dto';
 
 export class UserVehicleShortResponseDto extends OmitType(
-  UserVehicleListResponseDto,
+  UserVehicleGetFullResponseDto,
   ['vehicleModel', 'user', 'photo', 'createdAt', 'updatedAt'],
 ) {
   @ApiHideProperty()
@@ -17,7 +17,7 @@ export class UserVehicleShortResponseDto extends OmitType(
 
   @ApiHideProperty()
   @Exclude()
-  photo?: AwsS3ResponseDto;
+  photo?: AwsS3Dto;
 
   @ApiHideProperty()
   @Exclude()

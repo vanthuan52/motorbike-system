@@ -1,4 +1,4 @@
-export enum ENUM_API_KEY_TYPE {
-  SYSTEM = 'SYSTEM',
-  DEFAULT = 'DEFAULT',
+export enum EnumApiKeyType {
+  system = 'system',
+  default = 'default',
 }

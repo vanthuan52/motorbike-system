@@ -1,61 +1,156 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
-  IsInt,
-  Min,
-  IsNumber,
-  IsString,
-  IsNotEmpty,
-  MinLength,
   IsEnum,
+  IsIP,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
   IsOptional,
+  IsString,
+  Matches,
+  Min,
+  MinLength,
 } from 'class-validator';
-import { ENUM_NODE_ENVIRONMENT, ENUM_APP_TIMEZONE } from '../enums/app.enum';
-import { ENUM_MESSAGE_LANGUAGE } from '@/common/message/enums/message.enum';
+import { EnumAppEnvironment } from '@/app/enums/app.enum';
+import { EnumMessageLanguage } from '@/common/message/enums/message.enum';
+import { EnumRequestTimezone } from '@/common/request/enums/request.enum';
+import { EnumLoggerLevel } from '@/common/logger/enums/logger.enum';
 
+/**
+ * Data Transfer Object for application environment configuration.
+ *
+ * Provides validation structure for all main environment variables required by the application.
+ */
 export class AppEnvDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(1)
-  @IsEnum(ENUM_NODE_ENVIRONMENT)
-  NODE_ENV: ENUM_NODE_ENVIRONMENT;
-
+  /**
+   * The name of the application
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   APP_NAME: string;
 
+  /**
+   * The environment the application is running in
+   */
   @IsString()
   @IsNotEmpty()
-  @IsEnum(ENUM_APP_TIMEZONE)
-  APP_TIMEZONE: ENUM_APP_TIMEZONE;
+  @IsEnum(EnumAppEnvironment)
+  APP_ENV: EnumAppEnvironment;
 
+  /**
+   * The default language for the application
+   */
   @IsString()
   @IsNotEmpty()
-  @IsEnum(ENUM_MESSAGE_LANGUAGE)
-  APP_LANGUAGE: ENUM_MESSAGE_LANGUAGE;
+  @IsEnum(EnumMessageLanguage)
+  APP_LANGUAGE: EnumMessageLanguage;
 
+  /**
+   * The default timezone for the application
+   */
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(EnumRequestTimezone)
+  APP_TIMEZONE: EnumRequestTimezone;
+
+  /**
+   * The name of the home/organization
+   */
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
+  HOME_NAME: string;
+
+  /**
+   * The home/organization URL
+   */
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  HOME_URL: string;
+
+  /**
+   * The HTTP host/IP address for the server
+   */
+  @IsNotEmpty()
+  @IsString()
+  @IsIP('4')
   HTTP_HOST: string;
 
+  /**
+   * The HTTP port number for the server
+   */
   @IsNumber({
     allowInfinity: false,
     allowNaN: false,
     maxDecimalPlaces: 0,
   })
   @IsInt()
-  @Min(1)
   @IsNotEmpty()
   @Type(() => Number)
   HTTP_PORT: number;
 
+  /**
+   * Whether logging is enabled
+   */
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  LOGGER_ENABLE: boolean;
+
+  /**
+   * The logging level
+   */
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(EnumLoggerLevel)
+  LOGGER_LEVEL: EnumLoggerLevel;
+
+  /**
+   * Whether to write logs to file
+   */
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  LOGGER_INTO_FILE: boolean;
+
+  /**
+   * Whether to format logs in a prettier way
+   */
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  LOGGER_PRETTIER: boolean;
+
+  /**
+   * Whether to enable automatic logging features
+   */
+  @IsBoolean()
+  @IsNotEmpty()
+  @Type(() => Boolean)
+  LOGGER_AUTO: boolean;
+
+  /**
+   * CORS origin configuration for the middleware
+   */
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  MIDDLEWARE_CORS_ORIGIN: string;
+
+  /**
+   * Whether URL versioning is enabled for the API
+   */
   @IsBoolean()
   @IsNotEmpty()
   @Type(() => Boolean)
   URL_VERSIONING_ENABLE: boolean;
 
+  /**
+   * The version number for URL versioning
+   */
   @IsNumber({
     allowInfinity: false,
     allowNaN: false,
@@ -67,224 +162,234 @@ export class AppEnvDto {
   @Type(() => Number)
   URL_VERSION: number;
 
-  @IsString()
+  /**
+   * Database connection URL/string
+   */
   @IsNotEmpty()
-  @MinLength(1)
-  GLOBAL_PREFIX: string;
-
   @IsString()
-  @IsNotEmpty()
-  @MinLength(1)
-  MIDDLEWARE_CORS_ORIGIN: string;
+  DATABASE_URL: string;
 
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
-  DEBUG_ENABLE: boolean;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(1)
-  DEBUG_LEVEL: string;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
-  DEBUG_INTO_FILE: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
-  DEBUG_PRETTIER: boolean;
-
-  @IsBoolean()
-  @IsNotEmpty()
-  @Type(() => Boolean)
-  JOB_ENABLE: boolean;
-
-  @IsString()
-  @IsOptional()
-  DATABASE_URI?: string;
-
-  @IsString()
-  @IsOptional()
-  DATABASE_HOST?: string;
-
-  @IsString()
-  @IsOptional()
-  DATABASE_NAME?: string;
-
-  @IsString()
-  @IsOptional()
-  DATABASE_USER?: string;
-
-  @IsString()
-  @IsOptional()
-  DATABASE_PASSWORD?: string;
-
+  /**
+   * Whether database debug mode is enabled
+   */
   @IsBoolean()
   @IsNotEmpty()
   @Type(() => Boolean)
   DATABASE_DEBUG: boolean;
 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(1)
-  AUTH_JWT_ISSUER: string;
-
+  /**
+   * JWT audience claim for token validation
+   */
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
   AUTH_JWT_AUDIENCE: string;
 
+  /**
+   * JWT issuer claim for token validation
+   */
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(1)
+  AUTH_JWT_ISSUER: string;
+
+  /**
+   * JWKS URI for access token verification
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_JWKS_URI: string;
+  AUTH_JWT_ACCESS_TOKEN_JWKS_URI: string;
 
+  /**
+   * Key ID for the access token in JWKS
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   AUTH_JWT_ACCESS_TOKEN_KID: string;
 
+  /**
+   * Access token private key content
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY_PATH: string;
+  AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY: string;
 
+  /**
+   * Access token public key content
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY_PATH: string;
+  AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY: string;
 
+  /**
+   * Expiration time for access tokens (duration format: 15m, 1h, 1d)
+   */
   @IsNotEmpty()
   @IsString()
   @MinLength(1)
+  @Matches(/^\d+[smhd]$/)
   AUTH_JWT_ACCESS_TOKEN_EXPIRED: string;
 
+  /**
+   * JWKS URI for refresh token verification
+   */
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(1)
+  AUTH_JWT_REFRESH_TOKEN_JWKS_URI: string;
+
+  /**
+   * Key ID for the refresh token in JWKS
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
   AUTH_JWT_REFRESH_TOKEN_KID: string;
 
+  /**
+   * Refresh token private key content
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY_PATH: string;
+  AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY: string;
 
+  /**
+   * Refresh token public key content
+   */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY_PATH: string;
+  AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY: string;
 
+  /**
+   * Expiration time for refresh tokens (duration format: 15m, 1h, 1d)
+   */
   @IsNotEmpty()
   @IsString()
+  @Matches(/^\d+[smhd]$/)
   @MinLength(1)
   AUTH_JWT_REFRESH_TOKEN_EXPIRED: string;
 
+  /**
+   * AWS S3 access key for authentication
+   */
   @IsOptional()
   @IsString()
-  AWS_S3_PUBLIC_CREDENTIAL_KEY?: string;
+  AWS_S3_CREDENTIAL_KEY?: string;
 
+  /**
+   * AWS S3 secret key for authentication
+   */
   @IsOptional()
   @IsString()
-  AWS_S3_PUBLIC_CREDENTIAL_SECRET?: string;
+  AWS_S3_CREDENTIAL_SECRET?: string;
 
+  /**
+   * AWS S3 region where the buckets are located
+   */
   @IsOptional()
   @IsString()
-  AWS_S3_PUBLIC_REGION?: string;
+  AWS_S3_REGION?: string;
 
+  /**
+   * Name of the public S3 bucket for file storage
+   */
   @IsOptional()
   @IsString()
   AWS_S3_PUBLIC_BUCKET?: string;
 
+  /**
+   * CDN URL for the public S3 bucket (optional)
+   */
   @IsOptional()
   @IsString()
-  AWS_S3_PUBLIC_CND?: string;
+  AWS_S3_PUBLIC_CDN?: string;
 
-  @IsOptional()
-  @IsString()
-  AWS_S3_PRIVATE_CREDENTIAL_KEY?: string;
-
-  @IsOptional()
-  @IsString()
-  AWS_S3_PRIVATE_CREDENTIAL_SECRET?: string;
-
-  @IsOptional()
-  @IsString()
-  AWS_S3_PRIVATE_REGION?: string;
-
+  /**
+   * Name of the private S3 bucket for secure file storage
+   */
   @IsOptional()
   @IsString()
   AWS_S3_PRIVATE_BUCKET?: string;
 
+  /**
+   * CDN URL for the private S3 bucket (optional)
+   */
   @IsOptional()
   @IsString()
-  MINIO_PUBLIC_CREDENTIAL_KEY?: string;
+  AWS_S3_PRIVATE_CDN?: string;
 
-  @IsOptional()
-  @IsString()
-  MINIO_PUBLIC_CREDENTIAL_SECRET?: string;
-
-  @IsOptional()
-  @IsString()
-  MINIO_PUBLIC_BUCKET?: string;
-
-  @IsOptional()
-  @IsString()
-  MINIO_PUBLIC_ENDPOINT?: string;
-
-  @IsOptional()
-  @IsString()
-  MINIO_PRIVATE_CREDENTIAL_KEY?: string;
-
-  @IsOptional()
-  @IsString()
-  MINIO_PRIVATE_CREDENTIAL_SECRET?: string;
-
-  @IsOptional()
-  @IsString()
-  MINIO_PRIVATE_BUCKET?: string;
-
-  @IsOptional()
-  @IsString()
-  MINIO_PRIVATE_ENDPOINT?: string;
-
+  /**
+   * AWS SES access key for email service authentication
+   */
   @IsOptional()
   @IsString()
   AWS_SES_CREDENTIAL_KEY?: string;
 
+  /**
+   * AWS SES secret key for email service authentication
+   */
   @IsOptional()
   @IsString()
   AWS_SES_CREDENTIAL_SECRET?: string;
 
+  /**
+   * AWS SES region for email service
+   */
   @IsOptional()
   @IsString()
   AWS_SES_REGION?: string;
 
-  @IsNotEmpty()
-  @IsString()
-  REDIS_HOST: string;
-
-  @IsNumber({
-    allowInfinity: false,
-    allowNaN: false,
-    maxDecimalPlaces: 0,
-  })
-  @IsInt()
-  @Min(1)
-  @IsNotEmpty()
-  @Type(() => Number)
-  REDIS_PORT: number;
-
+  /**
+   * Google OAuth client ID for social authentication (optional)
+   */
   @IsOptional()
   @IsString()
-  REDIS_USERNAME?: string;
+  AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
 
+  /**
+   * Google OAuth client secret for social authentication (optional)
+   */
   @IsOptional()
   @IsString()
-  REDIS_PASSWORD?: string;
+  AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
 
+  /**
+   * Apple OAuth client ID for social authentication (optional)
+   */
+  @IsOptional()
+  @IsString()
+  AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
+
+  /**
+   * Apple Sign In client ID for social authentication (optional)
+   */
+  @IsOptional()
+  @IsString()
+  AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
+
+  /**
+   * Redis server URL for caching
+   */
+  @IsNotEmpty()
+  @IsString()
+  CACHE_REDIS_URL: string;
+
+  /**
+   * Queue Redis server hostname or IP address
+   */
+  @IsNotEmpty()
+  @IsString()
+  QUEUE_REDIS_URL: string;
+
+  /**
+   * Sentry DSN for error tracking and monitoring (optional)
+   */
   @IsOptional()
   @IsString()
   SENTRY_DSN?: string;

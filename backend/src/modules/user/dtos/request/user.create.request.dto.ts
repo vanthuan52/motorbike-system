@@ -1,4 +1,3 @@
-import { IsPhoneNumber } from '@/common/request/validations/request.is-phone-number.validation';
 import { faker } from '@faker-js/faker';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import {
@@ -9,15 +8,29 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsPhoneNumber } from '@/common/request/validations/request.is-phone-number.validation';
+import { IsCustomEmail } from '@/common/request/validations/request.custom-email.validation';
+import { UserDto } from '../user.dto';
 
-export class UserCreateRequestDto {
+export class UserCreateRequestDto extends OmitType(UserDto, [
+  '_id',
+  'role',
+  'email',
+  'name',
+  'phone',
+  'createdAt',
+  'updatedAt',
+] as const) {
   @ApiProperty({
     example: faker.internet.email(),
     required: true,
     maxLength: 100,
   })
+  @IsCustomEmail()
   @IsNotEmpty()
   @MaxLength(100)
+  @Transform(({ value }) => value.toLowerCase().trim())
   email: string;
 
   @ApiProperty({
@@ -51,8 +64,3 @@ export class UserCreateRequestDto {
   @IsPhoneNumber()
   phone?: string;
 }
-
-export class UserTypeUserCreateRequestDto extends OmitType(
-  UserCreateRequestDto,
-  ['role'] as const,
-) {}

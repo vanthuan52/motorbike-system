@@ -39,7 +39,6 @@ const nextConfig: NextConfig = {
   experimental: {
     cssChunking: true,
     optimizePackageImports: [],
-    reactCompiler: process.env.NODE_ENV === "production",
     serverActions: {
       allowedOrigins: process.env.CORS_ORIGINS?.split(","),
     },
@@ -71,7 +70,6 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-    domains: ["ui-avatars.com"],
   },
   logging: {
     fetches: {

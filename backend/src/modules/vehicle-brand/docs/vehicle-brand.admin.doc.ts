@@ -6,7 +6,7 @@ import {
   VehicleBrandDocQueryOrderDirection,
   VehicleBrandDocQueryStatus,
 } from '../constants/vehicle-brand.doc.constant';
-import { VehicleBrandGetResponseDto } from '../dtos/response/vehicle-brand.get.response.dto';
+import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
 import {
   Doc,
@@ -16,12 +16,12 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.create.request.dto';
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
 
-export function VehicleBrandAdminListDoc(): MethodDecorator {
+export function VehicleAdminBrandListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get all vehicle brands',
@@ -43,34 +43,34 @@ export function VehicleBrandAdminListDoc(): MethodDecorator {
   );
 }
 
-export function VehicleBrandAdminCreateDoc(): MethodDecorator {
+export function VehicleAdminBrandCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'create a new vehicle brand',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleBrandCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<VehicleBrandGetResponseDto>('vehicle-brand.create', {
-      dto: VehicleBrandGetResponseDto,
+    DocResponse<VehicleBrandDto>('vehicle-brand.create', {
+      dto: VehicleBrandDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
 }
 
-export function VehicleBrandAdminUpdateDoc(): MethodDecorator {
+export function VehicleAdminBrandUpdateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update a vehicle brand',
     }),
     DocRequest({
       params: VehicleBrandDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleBrandUpdateRequestDto,
     }),
     DocAuth({
@@ -81,7 +81,7 @@ export function VehicleBrandAdminUpdateDoc(): MethodDecorator {
   );
 }
 
-export function VehicleBrandAdminDeleteDoc(): MethodDecorator {
+export function VehicleAdminBrandDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'delete a vehicle brand',
@@ -97,14 +97,14 @@ export function VehicleBrandAdminDeleteDoc(): MethodDecorator {
   );
 }
 
-export function VehicleBrandAdminUpdateStatusDoc(): MethodDecorator {
+export function VehicleAdminBrandUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update status of a vehicle brand',
     }),
     DocRequest({
       params: VehicleBrandDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleBrandUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -115,7 +115,7 @@ export function VehicleBrandAdminUpdateStatusDoc(): MethodDecorator {
   );
 }
 
-export function VehicleBrandAdminParamsIdDoc(): MethodDecorator {
+export function VehicleAdminBrandParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get a vehicle brand by id',
@@ -127,8 +127,8 @@ export function VehicleBrandAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<VehicleBrandGetResponseDto>('vehicle-brand.getById', {
-      dto: VehicleBrandGetResponseDto,
+    DocResponse<VehicleBrandDto>('vehicle-brand.getById', {
+      dto: VehicleBrandDto,
     }),
   );
 }

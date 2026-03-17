@@ -1,16 +1,15 @@
-import { AwsModule } from '@/modules/aws/aws.module';
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
+import { FileService } from './services/file.service';
 
+/**
+ * Global module providing file handling services.
+ * Exports FileService for use in other modules requiring file operations.
+ */
 @Global()
-@Module({})
-export class FileModule {
-  static forRoot(): DynamicModule {
-    return {
-      module: FileModule,
-      providers: [],
-      exports: [],
-      imports: [AwsModule],
-      controllers: [],
-    };
-  }
-}
+@Module({
+  providers: [FileService],
+  exports: [FileService],
+  imports: [],
+  controllers: [],
+})
+export class FileModule {}

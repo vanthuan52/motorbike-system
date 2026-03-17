@@ -1,53 +1,42 @@
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CareRecordServiceDoc } from '../entities/care-record-service.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
-import { CareRecordServiceListResponseDto } from '../dtos/response/care-record-service.list.response.dto';
-import { CareRecordServiceGetResponseDto } from '../dtos/response/care-record-service.get.response.dto';
-import { ICareRecordServiceEntity } from './care-record-service.interface';
-import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
+import { CareRecordServiceDoc } from '../entities/care-record-service.entity';
+import { CareRecordChecklistDoc } from '@/modules/care-record-checklist/entities/care-record-checklist.entity';
 
 export interface ICareRecordServiceService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordServiceDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordServiceDoc[]; total: number }>;
 
-  findAllWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICareRecordServiceEntity[]>;
-
-  getTotalWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  getListOffsetWithChecklists(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{
+    data: {
+      service: CareRecordServiceDoc;
+      checklists: CareRecordChecklistDoc[];
+    }[];
+    total: number;
+  }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CareRecordServiceDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordServiceDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordServiceDoc | null>;
-
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  ): Promise<CareRecordServiceDoc>;
 
   create(
     payload: CareRecordServiceCreateRequestDto,
@@ -55,32 +44,26 @@ export interface ICareRecordServiceService {
   ): Promise<CareRecordServiceDoc>;
 
   update(
-    repository: CareRecordServiceDoc,
+    id: string,
     payload: CareRecordServiceUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordServiceDoc>;
+  ): Promise<void>;
 
   updateStatus(
-    repository: CareRecordServiceDoc,
-    { status }: CareRecordServiceUpdateStatusRequestDto,
+    id: string,
+    payload: CareRecordServiceUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordServiceDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: CareRecordServiceDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordServiceDoc>;
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+
+  createMany(
+    dtos: CareRecordServiceCreateRequestDto[],
+    options?: IDatabaseCreateOptions,
+  ): Promise<boolean>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-
-  mapList(data: CareRecordServiceDoc[]): CareRecordServiceListResponseDto[];
-
-  mapGet(data: CareRecordServiceDoc): CareRecordServiceGetResponseDto;
-
-  mapGetPopulate(
-    careRecordService: CareRecordServiceDoc | ICareRecordServiceEntity,
-  ): CareRecordServiceGetFullResponseDto;
 }

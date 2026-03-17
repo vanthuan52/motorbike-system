@@ -1,252 +1,225 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Request } from 'express';
-import { Document } from 'mongoose';
-import { Duration } from 'luxon';
-import { Cache } from 'cache-manager';
-import { plainToInstance } from 'class-transformer';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ISessionService } from '../interfaces/session.service.interface';
-import { HelperDateService } from '@/common/helper/services/helper.date.service';
 import { SessionRepository } from '../repository/session.repository';
-import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
-  IDatabaseUpdateManyOptions,
-} from '@/common/database/interfaces/database.interface';
-import { SessionDoc, SessionEntity } from '../entities/session.entity';
-import { SessionCreateRequestDto } from '../dtos/request/session.create.request.dto';
-import { ENUM_SESSION_STATUS } from '../enums/session.enum';
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import {
+  IPaginationIn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { EnumSessionStatusCodeError } from '../enums/session.status-code.enum';
+import { EnumSessionStatus } from '../enums/session.enum';
+import { SessionUtil } from '../utils/session.util';
+import { SessionDto } from '../dtos/session.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { HelperService } from '@/common/helper/services/helper.service';
+import { DatabaseService } from '@/common/database/services/database.service';
+import { SessionDoc } from '../entities/session.entity';
 import { SessionListResponseDto } from '../dtos/response/session.list.response.dto';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 
 @Injectable()
 export class SessionService implements ISessionService {
-  private readonly refreshTokenExpiration: number;
-  private readonly appName: string;
-
-  private readonly sessionKeyPrefix: string;
-
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly configService: ConfigService,
-    private readonly helperDateService: HelperDateService,
+    private readonly sessionUtil: SessionUtil,
     private readonly sessionRepository: SessionRepository,
+    private readonly helperService: HelperService,
     private readonly databaseService: DatabaseService,
-  ) {
-    this.refreshTokenExpiration = this.configService.get<number>(
-      'auth.jwt.refreshToken.expirationTime',
-    )!;
-    this.appName = this.configService.get<string>('app.name')!;
+  ) {}
 
-    this.sessionKeyPrefix =
-      this.configService.get<string>('session.keyPrefix')!;
-  }
+  /**
+   * Retrieves a paginated list of active sessions for a user using offset-based pagination.
+   */
+  async getListOffset(
+    userId: string,
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: SessionDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      user: userId,
+      ...where,
+      ...status,
+    };
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<SessionDoc[]> {
-    return this.sessionRepository.findAll<SessionDoc>(find, options);
-  }
-
-  async findAllByUser(
-    user: string,
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<SessionDoc[]> {
-    return this.sessionRepository.findAll<SessionDoc>(
-      { user, ...find },
-      options,
-    );
-  }
-
-  async findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<SessionDoc | null> {
-    return this.sessionRepository.findOneById<SessionDoc>(_id, options);
-  }
-
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseOptions,
-  ): Promise<SessionDoc | null> {
-    return this.sessionRepository.findOne<SessionDoc>(find, options);
-  }
-
-  async findOneActiveById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<SessionDoc | null> {
-    const today = this.helperDateService.create();
-
-    return this.sessionRepository.findOne<SessionDoc>(
-      {
-        _id,
-        ...this.databaseService.filterGte('expiredAt', today),
-      },
-      options,
-    );
-  }
-
-  async findOneActiveByIdAndUser(
-    _id: string,
-    user: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<SessionDoc | null> {
-    const today = this.helperDateService.create();
-
-    return this.sessionRepository.findOne<SessionDoc>(
-      {
-        _id,
-        user,
-        ...this.databaseService.filterGte('expiredAt', today),
-      },
-      options,
-    );
-  }
-
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.sessionRepository.getTotal(find, options);
-  }
-
-  async getTotalByUser(
-    user: string,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.sessionRepository.getTotal({ user }, options);
-  }
-
-  async create(
-    request: Request,
-    { user }: SessionCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<SessionDoc> {
-    const today = this.helperDateService.create();
-    const expiredAt: Date = this.helperDateService.forward(
-      today,
-      Duration.fromObject({
-        seconds: this.refreshTokenExpiration,
+    const [sessions, total] = await Promise.all([
+      this.sessionRepository.findAll(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
       }),
-    );
+      this.sessionRepository.getTotal(find),
+    ]);
 
-    const create = new SessionEntity();
-    create.user = user;
-    create.hostname = request.hostname;
-    create.ip = request.ip ?? '0.0.0.0';
-    create.protocol = request.protocol;
-    create.originalUrl = request.originalUrl;
-    create.method = request.method;
-
-    create.userAgent = request.headers['user-agent'] as string;
-    create.xForwardedFor = request.headers['x-forwarded-for'] as string;
-    create.xForwardedHost = request.headers['x-forwarded-host'] as string;
-    create.xForwardedPorto = request.headers['x-forwarded-porto'] as string;
-
-    create.status = ENUM_SESSION_STATUS.ACTIVE;
-    create.expiredAt = expiredAt;
-
-    return this.sessionRepository.create<SessionEntity>(create, options);
+    return {
+      data: sessions,
+      total,
+    };
   }
 
-  mapList(
-    userLogins: SessionDoc[] | SessionEntity[],
-  ): SessionListResponseDto[] {
-    return plainToInstance(
-      SessionListResponseDto,
-      userLogins.map((e: SessionDoc | SessionEntity) =>
-        e instanceof Document ? e.toObject() : e,
+  /**
+   * Get paginated list of sessions with cursor pagination
+   */
+  async getListCursor(
+    userId: string,
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: SessionDoc[]; total?: number }> {
+    const find: Record<string, any> = {
+      user: userId,
+      ...where,
+      ...status,
+    };
+
+    const [data, count] = await Promise.all([
+      this.sessionRepository.findAllCursor(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
+        },
+      }),
+      includeCount
+        ? this.sessionRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
+
+    const items = data.slice(0, limit);
+
+    return {
+      data: items,
+      total: count,
+    };
+  }
+
+  /**
+   * Finds one active session by userId and sessionId.
+   */
+  async findOneActive(userId: string, sessionId: string): Promise<SessionDoc> {
+    const today = this.helperService.dateCreate();
+    const session = await this.sessionRepository.findOne<SessionDoc>({
+      _id: sessionId,
+      user: userId,
+      status: EnumSessionStatus.active,
+      ...this.databaseService.filterGte('expiredAt', today),
+    });
+
+    if (!session) {
+      throw new NotFoundException({
+        statusCode: EnumSessionStatusCodeError.notFound,
+        message: 'session.error.notFound',
+      });
+    }
+
+    return session;
+  }
+
+  /**
+   * Updates the JTI (JWT ID) of a session.
+   * @param id The ID of the session to update.
+   * @param jti The new JTI value to set.
+   */
+  async updateJti(id: string, jti: string): Promise<void> {
+    await this.sessionRepository.updateRaw(
+      { _id: id },
+      {
+        $set: {
+          jti,
+        },
+      },
+    );
+  }
+
+  /**
+   * Revokes a specific user session.
+   */
+  async revoke(
+    userId: string,
+    sessionId: string,
+    requestLog: IRequestLog,
+  ): Promise<void> {
+    const today = this.helperService.dateCreate();
+    const session = await this.sessionRepository.findOne<SessionDoc>({
+      _id: sessionId,
+      user: userId,
+      status: EnumSessionStatus.active,
+      ...this.databaseService.filterGte('expiredAt', today),
+    });
+
+    if (!session) {
+      throw new NotFoundException({
+        statusCode: EnumSessionStatusCodeError.notFound,
+        message: 'session.error.notFound',
+      });
+    }
+
+    await Promise.all([
+      this.sessionRepository.updateRaw(
+        { _id: sessionId, user: userId },
+        {
+          $set: {
+            status: EnumSessionStatus.revoked,
+            revokeAt: today,
+            updatedBy: userId,
+          },
+        },
       ),
-    );
+      this.sessionUtil.deleteOneLogin(userId, sessionId),
+    ]);
   }
 
-  async findLoginSession(_id: string): Promise<string> {
-    return (await this.cacheManager.get<string>(
-      `${this.appName}:${this.sessionKeyPrefix}:${_id}`,
-    ))!;
+  /**
+   * Revokes a user session via admin action.
+   */
+  async revokeByAdmin(
+    userId: string,
+    sessionId: string,
+    requestLog: IRequestLog,
+    revokeBy: string,
+  ): Promise<void> {
+    const today = this.helperService.dateCreate();
+    const session = await this.sessionRepository.findOne<SessionDoc>({
+      _id: sessionId,
+      user: userId,
+      status: EnumSessionStatus.active,
+      ...this.databaseService.filterGte('expiredAt', today),
+    });
+
+    if (!session) {
+      throw new NotFoundException({
+        statusCode: EnumSessionStatusCodeError.notFound,
+        message: 'session.error.notFound',
+      });
+    }
+
+    await Promise.all([
+      this.sessionRepository.updateRaw(
+        { _id: sessionId },
+        {
+          $set: {
+            status: EnumSessionStatus.revoked,
+            revokeAt: today,
+            updatedBy: revokeBy,
+          },
+        },
+      ),
+      this.sessionUtil.deleteOneLogin(userId, sessionId),
+    ]);
   }
 
-  async setLoginSession(user: IUserDoc, session: SessionDoc): Promise<void> {
-    const key = `${this.appName}:${this.sessionKeyPrefix}:${session._id}`;
-
-    await this.cacheManager.set(
-      key,
-      { user: user._id },
-      this.refreshTokenExpiration,
-    );
-    // To-do
-    return;
-  }
-
-  async deleteLoginSession(_id: string): Promise<void> {
-    const key = `${this.appName}:${this.sessionKeyPrefix}:${_id}`;
-    await this.cacheManager.del(key);
-    // To-do
-
-    return;
-  }
-
-  async resetLoginSession(): Promise<void> {
-    await this.cacheManager.clear();
-
-    return;
-  }
-
-  async updateRevoke(
-    repository: SessionDoc,
-    options?: IDatabaseOptions,
-  ): Promise<SessionDoc> {
-    await this.deleteLoginSession(repository._id);
-
-    repository.status = ENUM_SESSION_STATUS.REVOKED;
-    repository.revokeAt = this.helperDateService.create();
-
-    return this.sessionRepository.save(
-      repository,
-      options as IDatabaseSaveOptions,
-    );
-  }
-
-  async updateManyRevokeByUser(
-    user: string,
-    options?: IDatabaseUpdateManyOptions,
-  ): Promise<boolean> {
-    const today = this.helperDateService.create();
-    const sessions = await this.findAllByUser(user, undefined, options);
-    const promises = sessions.map((e) => this.deleteLoginSession(e._id));
-
-    await Promise.all(promises);
-
-    await this.sessionRepository.updateMany(
-      {
-        user,
-      },
-      {
-        status: ENUM_SESSION_STATUS.REVOKED,
-        revokeAt: today,
-      },
-      options,
-    );
-
-    return true;
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.sessionRepository.deleteMany(find, options);
-
-    return true;
+  async findAllByUser(userId: string): Promise<SessionDoc[]> {
+    const sessions = await this.sessionRepository.findAll<SessionDoc>({
+      user: userId,
+    });
+    return sessions;
   }
 }
