@@ -8,10 +8,9 @@ import {
   IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CandidateDoc, CandidateEntity } from '../entities/candidate.entity';
+import { CandidateDoc } from '../entities/candidate.entity';
 import { CandidateUserCreateRequestDto } from '../dtos/request/candidate.create.request.dto';
-import { CandidateListResponseDto } from '../dtos/response/candidate.list.response.dto';
-import { CandidateGetResponseDto } from '../dtos/response/candidate.get.response.dto';
+import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.update-status.request.dto';
 
 export interface ICandidateService {
   findAll(
@@ -38,6 +37,7 @@ export interface ICandidateService {
     payload: CandidateUserCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<CandidateDoc>;
+
   softDelete(
     repository: CandidateDoc,
     options?: IDatabaseSaveOptions,
@@ -53,9 +53,9 @@ export interface ICandidateService {
     options?: IDatabaseExistsOptions,
   ): Promise<boolean>;
 
-  mapList(
-    Candidates: CandidateDoc[] | CandidateEntity[],
-  ): CandidateListResponseDto[];
-
-  mapGet(Candidate: CandidateDoc | CandidateEntity): CandidateGetResponseDto;
+  updateStatus(
+    repository: CandidateDoc,
+    payload: CandidateUpdateStatusRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<CandidateDoc>;
 }

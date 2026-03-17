@@ -1,26 +1,26 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { VehicleServiceGetResponseDto } from './vehicle-service.get.response.dto';
-import { ServiceCategoryGetResponseDto } from '@/modules/service-category/dtos/response/service-category.get.response.dto';
-import { ServiceChecklistGetResponseDto } from '@/modules/service-checklist/dtos/response/service-checklist.get.response.dto';
+import { VehicleServiceDto } from '../vehicle-service.dto';
+import { ServiceCategoryDto } from '@/modules/service-category/dtos/service-category.dto';
+import { ServiceChecklistDto } from '@/modules/service-checklist/dtos/service-checklist.dto';
 
 export class VehicleServiceGetFullResponseDto extends OmitType(
-  VehicleServiceGetResponseDto,
+  VehicleServiceDto,
   ['serviceCategory', 'checklistItems'] as const,
 ) {
   @ApiProperty({
     required: true,
-    type: ServiceCategoryGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(ServiceCategoryGetResponseDto) }],
+    type: ServiceCategoryDto,
+    oneOf: [{ $ref: getSchemaPath(ServiceCategoryDto) }],
   })
-  @Type(() => ServiceCategoryGetResponseDto)
-  serviceCategory: ServiceCategoryGetResponseDto;
+  @Type(() => ServiceCategoryDto)
+  serviceCategory: ServiceCategoryDto;
 
   @ApiProperty({
     required: true,
-    type: ServiceChecklistGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(ServiceChecklistGetResponseDto) }],
+    type: ServiceChecklistDto,
+    oneOf: [{ $ref: getSchemaPath(ServiceChecklistDto) }],
   })
-  @Type(() => ServiceChecklistGetResponseDto)
-  checklistItems: ServiceChecklistGetResponseDto;
+  @Type(() => ServiceChecklistDto)
+  checklistItems: ServiceChecklistDto;
 }

@@ -4,25 +4,24 @@ import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseDeleteOptions,
-  IDatabaseExistsOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { VehicleServiceDoc } from '../entities/vehicle-service.entity';
 import { VehicleServiceCreateRequestDto } from '../dtos/request/vehicle-service.create.request.dto';
 import { VehicleServiceUpdateRequestDto } from '../dtos/request/vehicle-service.update.request.dto';
-import { VehicleServiceGetResponseDto } from '../dtos/response/vehicle-service.get.response.dto';
-import { VehicleServiceListResponseDto } from '../dtos/response/vehicle-service.list.response.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
+import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-service.update-status.request.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { VehicleServiceUploadPhotoRequestDto } from '../dtos/request/vehicle-service.upload-photo.request.dto';
 import {
   IVehicleServiceDoc,
   IVehicleServiceEntity,
 } from './vehicle-service.interface';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IVehicleServiceService {
   findAll(
@@ -30,10 +29,15 @@ export interface IVehicleServiceService {
     options?: IDatabaseFindAllOptions,
   ): Promise<VehicleServiceDoc[]>;
 
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleServiceDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleServiceDoc[]; total: number }>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleServiceDoc[]; total?: number }>;
 
   createRawQueryFindAllWithServiceCategory(
     find?: Record<string, any>,
@@ -50,9 +54,9 @@ export interface IVehicleServiceService {
   ): Promise<number>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<VehicleServiceDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<VehicleServiceDoc>;
 
   findOneWithServiceCategoryById(
     _id: string,
@@ -62,7 +66,7 @@ export interface IVehicleServiceService {
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleServiceDoc | null>;
+  ): Promise<VehicleServiceDoc>;
 
   getTotal(
     find?: Record<string, any>,
@@ -75,43 +79,34 @@ export interface IVehicleServiceService {
   ): Promise<VehicleServiceDoc>;
 
   update(
-    repository: VehicleServiceDoc,
+    id: string,
     payload: VehicleServiceUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleServiceDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: VehicleServiceDoc,
+  updateStatus(
+    id: string,
+    payload: VehicleServiceUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleServiceDoc>;
+  ): Promise<void>;
 
-  delete(
-    repository: VehicleServiceDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<VehicleServiceDoc>;
+  delete(id: string, options?: IDatabaseDeleteOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
 
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
+  findBySlug(slug: string): Promise<VehicleServiceDoc>;
 
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  createSlug(name: string): string;
+  createRandomFilenamePhoto(
+    vehicleService: string,
+    payload: VehicleServiceUploadPhotoRequestDto,
+  ): string;
 
   updatePhoto(
     repository: VehicleServiceDoc,
     photo: AwsS3Dto,
     options?: IDatabaseSaveOptions,
   ): Promise<VehicleServiceDoc>;
-
-  createRandomFilenamePhoto(
-    user: string,
-    { mime }: VehicleServiceUploadPhotoRequestDto,
-  ): string;
-
-  mapList(data: VehicleServiceDoc[]): VehicleServiceListResponseDto[];
-  mapGet(data: VehicleServiceDoc): VehicleServiceGetResponseDto;
 }

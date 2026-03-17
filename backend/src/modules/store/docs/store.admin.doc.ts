@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   StoreDocParamsId,
-  StoreDocQueryStatus,
+  StoreDocQueryList,
 } from '../constants/store-doc.constants';
 import {
   Doc,
@@ -12,11 +12,11 @@ import {
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto';
-import { StoreGetResponseDto } from '../dtos/response/store.get.response.dto';
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
+import { StoreDto } from '../dtos/store.dto';
 
 export function StoreAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -24,7 +24,7 @@ export function StoreAdminListDoc(): MethodDecorator {
       summary: 'get all stores',
     }),
     DocRequest({
-      queries: [...StoreDocQueryStatus],
+      queries: StoreDocQueryList,
     }),
     DocAuth({
       jwtAccessToken: true,
@@ -42,15 +42,15 @@ export function StoreAdminCreateDoc(): MethodDecorator {
       summary: 'create a new store',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: StoreCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<StoreGetResponseDto>('store.create', {
-      dto: StoreGetResponseDto,
+    DocResponse<StoreDto>('store.create', {
+      dto: StoreDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -63,7 +63,7 @@ export function StoreAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: StoreDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: StoreUpdateRequestDto,
     }),
     DocAuth({
@@ -97,7 +97,7 @@ export function StoreAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: StoreDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: StoreUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -120,8 +120,8 @@ export function StoreAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<StoreGetResponseDto>('store.getById', {
-      dto: StoreGetResponseDto,
+    DocResponse<StoreDto>('store.getById', {
+      dto: StoreDto,
     }),
   );
 }

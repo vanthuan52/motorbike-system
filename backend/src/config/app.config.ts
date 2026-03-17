@@ -17,7 +17,7 @@ export type AppConfig = {
   jobEnable: boolean;
 };
 
-export default registerAs<AppConfig>('app', () => {
+export default registerAs<AppConfig>('app', (): AppConfig => {
   return {
     name: process.env.APP_NAME ?? 'nestjs-mongodb-motorbike',
     timezone: process.env.APP_TIMEZONE || 'Asia/Ho_Chi_Minh',

@@ -1,78 +1,75 @@
-import { PipelineStage } from 'mongoose';
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { AppointmentDoc } from '../entities/appointment.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
-import { AppointmentGetResponseDto } from '../dtos/response/appointment.get.response.dto';
+import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
+import { AppointmentDto } from '../dtos/appointment.dto';
 import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { IAppointmentDoc, IAppointmentEntity } from './appointment.interface';
+import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
+import { AppointmentDoc } from '../entities/appointment.entity';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import {
+  IPaginationQueryCursorParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IAppointmentService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<AppointmentDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: AppointmentDoc[]; total: number }>;
 
-  createRawQueryFindAllWithVehicleService(
-    find?: Record<string, any>,
-  ): PipelineStage[];
-
-  findAllWithVehicleService(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IAppointmentEntity[]>;
-
-  getTotalWithVehicleService(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: AppointmentDoc[]; total?: number }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<AppointmentDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<AppointmentDoc>;
+
+  findOneWithRelationsById(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<AppointmentDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentDoc | null>;
+  ): Promise<AppointmentDoc>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  findOneWithRelations(
+    find: Record<string, any>,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<AppointmentDoc>;
 
   create(
     payload: AppointmentCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<AppointmentDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: AppointmentDoc,
+    id: string,
     payload: AppointmentUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: AppointmentDoc,
+  updateStatus(
+    id: string,
+    payload: AppointmentUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<AppointmentDoc>;
+  ): Promise<void>;
 
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
-  mapList(data: AppointmentDoc[]): AppointmentListResponseDto[];
-  mapGet(data: IAppointmentDoc): AppointmentGetResponseDto;
+  softDelete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 }

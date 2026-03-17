@@ -3,25 +3,30 @@ import {
   IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
   IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { VehicleModelDoc } from '../entities/vehicle-model.entity';
 import { VehicleModelCreateRequestDto } from '../dtos/request/vehicle-model.create.request.dto';
 import { VehicleModelUpdateRequestDto } from '../dtos/request/vehicle-model.update.request.dto';
-import { VehicleModelGetResponseDto } from '../dtos/response/vehicle-model.get.response.dto';
+import { VehicleModelUpdateStatusRequestDto } from '../dtos/request/vehicle-model.update-status.request.dto';
 import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
+import { VehicleModelDto } from '../dtos/vehicle-model.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { VehicleModelUploadPhotoRequestDto } from '../dtos/request/vehicle-model.upload-photo.request.dto';
 import {
   IVehicleModelDoc,
   IVehicleModelEntity,
 } from './vehicle-model.interface';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IVehicleModelService {
   findAll(
@@ -29,29 +34,20 @@ export interface IVehicleModelService {
     options?: IDatabaseFindAllOptions,
   ): Promise<VehicleModelDoc[]>;
 
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleModelDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleModelDoc[]; total: number }>;
 
-  createRawQueryFindAllWithVehicleBrand(
-    find?: Record<string, any>,
-  ): PipelineStage[];
-
-  findAllWithVehicleBrand(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IVehicleModelEntity[]>;
-
-  getTotalWithVehicleBrand(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleModelDoc[]; total?: number }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<VehicleModelDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<VehicleModelDoc>;
 
   findOneWithVehicleBrandById(
     _id: string,
@@ -61,7 +57,7 @@ export interface IVehicleModelService {
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleModelDoc | null>;
+  ): Promise<VehicleModelDoc>;
 
   getTotal(
     find?: Record<string, any>,
@@ -74,38 +70,34 @@ export interface IVehicleModelService {
   ): Promise<VehicleModelDoc>;
 
   update(
-    repository: VehicleModelDoc,
+    id: string,
     payload: VehicleModelUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleModelDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: VehicleModelDoc,
+  updateStatus(
+    id: string,
+    payload: VehicleModelUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleModelDoc>;
+  ): Promise<void>;
+
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
 
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
+  findBySlug(slug: string): Promise<VehicleModelDoc>;
 
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  createSlug(name: string): string;
+  createRandomFilenamePhoto(
+    vehicleModel: string,
+    payload: VehicleModelUploadPhotoRequestDto,
+  ): string;
 
   updatePhoto(
     repository: VehicleModelDoc,
     photo: AwsS3Dto,
     options?: IDatabaseSaveOptions,
   ): Promise<VehicleModelDoc>;
-
-  createRandomFilenamePhoto(
-    user: string,
-    { mime }: VehicleModelUploadPhotoRequestDto,
-  ): string;
-
-  mapList(data: VehicleModelDoc[]): VehicleModelListResponseDto[];
-  mapGet(data: VehicleModelDoc): VehicleModelGetResponseDto;
 }

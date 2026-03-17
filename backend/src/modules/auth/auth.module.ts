@@ -1,16 +1,26 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Algorithm } from 'jsonwebtoken';
-import { AuthService } from './services/auth.service';
-import { AuthJwtAccessStrategy } from './guards/jwt/strategies/auth.jwt.access.strategy';
-import { AuthJwtRefreshStrategy } from './guards/jwt/strategies/auth.jwt.refresh.strategy';
+import { AuthJwtAccessStrategy } from '@/modules/auth/guards/jwt/strategies/auth.jwt.access.strategy';
+import { AuthJwtRefreshStrategy } from '@/modules/auth/guards/jwt/strategies/auth.jwt.refresh.strategy';
+import { AuthUtil } from '@/modules/auth/utils/auth.util';
+import { AuthService } from '@/modules/auth/services/auth.service';
+import { SessionModule } from '@/modules/session/session.module';
+import { AuthTwoFactorUtil } from './utils/auth.two-factor.util';
 
+@Global()
 @Module({
-  providers: [AuthService],
-  exports: [AuthService],
+  providers: [
+    AuthJwtAccessStrategy,
+    AuthJwtRefreshStrategy,
+    AuthUtil,
+    AuthTwoFactorUtil,
+    AuthService,
+  ],
+  exports: [AuthUtil, AuthTwoFactorUtil, AuthService],
   controllers: [],
   imports: [
+    SessionModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       imports: [ConfigModule],
@@ -18,20 +28,9 @@ import { AuthJwtRefreshStrategy } from './guards/jwt/strategies/auth.jwt.refresh
         signOptions: {
           audience: configService.get<string>('auth.jwt.audience'),
           issuer: configService.get<string>('auth.jwt.issuer'),
-          algorithm: configService.get<Algorithm>('auth.jwt.algorithm'),
         },
       }),
     }),
   ],
 })
-export class AuthModule {
-  static forRoot(): DynamicModule {
-    return {
-      module: AuthModule,
-      providers: [AuthJwtAccessStrategy, AuthJwtRefreshStrategy],
-      exports: [],
-      controllers: [],
-      imports: [],
-    };
-  }
-}
+export class AuthModule {}

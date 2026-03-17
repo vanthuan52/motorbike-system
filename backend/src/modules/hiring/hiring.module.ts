@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { HiringRepositoryModule } from './repository/hiring.repository.module';
-import { HiringService } from './services/hiring.services';
+import { HiringService } from './services/hiring.service';
 import { CandidateRepositoryModule } from './repository/candidate.respostory.module';
-import { CandidateService } from './services/candidate.services';
+import { CandidateService } from './services/candidate.service';
 import { CandidateReviewRepositoryModule } from './repository/candidate-review.respository.module';
-import { CandidateReviewService } from './services/candidate-review.services';
+import { CandidateReviewService } from './services/candidate-review.service';
+import { CandidateUtil } from './utils/candidate.util';
+import { CandidateReviewUtil } from './utils/candidate-review.util';
+import { HiringUtil } from './utils/hiring.util';
 
 @Module({
   imports: [
@@ -13,7 +16,14 @@ import { CandidateReviewService } from './services/candidate-review.services';
     CandidateReviewRepositoryModule,
   ],
   controllers: [],
-  providers: [HiringService, CandidateService, CandidateReviewService],
+  providers: [
+    HiringService,
+    CandidateService,
+    CandidateReviewService,
+    CandidateUtil,
+    CandidateReviewUtil,
+    HiringUtil,
+  ],
   exports: [
     HiringRepositoryModule,
     HiringService,
@@ -21,6 +31,9 @@ import { CandidateReviewService } from './services/candidate-review.services';
     CandidateRepositoryModule,
     CandidateReviewService,
     CandidateReviewRepositoryModule,
+    CandidateUtil,
+    CandidateReviewUtil,
+    HiringUtil,
   ],
 })
 export class HiringModule {}

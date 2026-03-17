@@ -1,8 +1,8 @@
-export enum ENUM_SESSION_STATUS {
-  ACTIVE = 'ACTIVE',
-  REVOKED = 'REVOKED',
+export enum EnumSessionStatus {
+  active = 'active',
+  revoked = 'revoked',
 }
 
-export enum ENUM_SESSION_PROCESS {
-  REVOKE = 'REVOKE',
+export enum EnumSessionProcess {
+  revoked = 'revoked',
 }

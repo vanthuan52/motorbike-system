@@ -1,12 +1,69 @@
-import { applyDecorators, SetMetadata } from '@nestjs/common';
 import {
-  REQUEST_CUSTOM_TIMEOUT_META_KEY,
-  REQUEST_CUSTOM_TIMEOUT_VALUE_META_KEY,
-} from '../constants/request.constant';
+  ExecutionContext,
+  SetMetadata,
+  UseGuards,
+  applyDecorators,
+  createParamDecorator,
+} from '@nestjs/common';
+import { RealIp } from 'nestjs-real-ip';
+import ms from 'ms';
+import { UAParser } from 'ua-parser-js';
+import {
+  RequestCustomTimeoutMetaKey,
+  RequestCustomTimeoutValueMetaKey,
+  RequestEnvMetaKey,
+} from '@/common/request/constants/request.constant';
+import { RequestEnvGuard } from '@/common/request/guards/request.env.guard';
+import { EnumAppEnvironment } from '@/app/enums/app.enum';
+import { IRequestApp } from '@/common/request/interfaces/request.interface';
 
-export function RequestTimeout(seconds: string): MethodDecorator {
+/**
+ * Request timeout decorator for route handlers.
+ * Sets a custom timeout value for specific endpoints.
+ * @param {ms.StringValue} seconds - Timeout duration in ms.StringValue format
+ * @returns {MethodDecorator} A method decorator that applies custom timeout metadata
+ */
+export function RequestTimeout(seconds: ms.StringValue): MethodDecorator {
   return applyDecorators(
-    SetMetadata(REQUEST_CUSTOM_TIMEOUT_META_KEY, true),
-    SetMetadata(REQUEST_CUSTOM_TIMEOUT_VALUE_META_KEY, seconds),
+    SetMetadata(RequestCustomTimeoutMetaKey, true),
+    SetMetadata(RequestCustomTimeoutValueMetaKey, seconds),
   );
 }
+
+/**
+ * Environment protection decorator for route handlers.
+ * Restricts access to endpoints based on the current application environment.
+ * @param {...EnumAppEnvironment[]} envs - Array of application environments where the route should be accessible
+ * @returns {MethodDecorator} A method decorator that applies environment-based access control
+ */
+export function RequestEnvProtected(
+  ...envs: EnumAppEnvironment[]
+): MethodDecorator {
+  return applyDecorators(
+    UseGuards(RequestEnvGuard),
+    SetMetadata(RequestEnvMetaKey, envs),
+  );
+}
+
+/**
+ * Parameter decorator to extract the IP address from the request
+ * Uses the nestjs-real-ip package to get the real IP address of the client.
+ * @returns The IP address as a string
+ */
+export const RequestIPAddress = RealIp;
+
+/**
+ * Parameter decorator to extract and parse the User-Agent header from the request
+ * Uses the UAParser library to parse the User-Agent string into a structured object.
+ *
+ * @param _ - Unused parameter
+ * @param ctx - Execution context containing the request information
+ * @returns The parsed User-Agent information as a UAParser.IResult object
+ */
+export const RequestUserAgent = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext): UAParser.IResult => {
+    const { headers } = ctx.switchToHttp().getRequest<IRequestApp>();
+    const userAgent = headers['user-agent'];
+    return UAParser(userAgent);
+  },
+);

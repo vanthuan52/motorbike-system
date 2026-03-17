@@ -10,7 +10,6 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
 import { VehicleBrandEntity } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
 
 export const VehicleModelTableName = 'vehicle_models';
@@ -110,9 +109,8 @@ export class VehicleModelEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
-    schema: AwsS3Schema,
   })
-  photo?: AwsS3Entity;
+  photo?: string;
 }
 
 export const VehicleModelSchema = DatabaseSchema(VehicleModelEntity);

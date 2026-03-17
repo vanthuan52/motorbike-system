@@ -1,22 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CareRecordConditionRepository } from '../respository/care-record-condition.repository';
+import { CareRecordConditionRepository } from '../repository/care-record-condition.repository';
 import {
   CareRecordConditionDoc,
   CareRecordConditionEntity,
 } from '../entities/care-record-condition.entity';
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
-import { CareRecordConditionGetResponseDto } from '../dtos/response/care-record-condition.get.response.dto';
-import { plainToInstance } from 'class-transformer';
 import { CareRecordRepository } from '@/modules/care-record/respository/care-record.repository';
 import {
   ENUM_BODY_CONDITION,
@@ -26,6 +21,9 @@ import {
   ENUM_SEAT_CONDITION,
 } from '../enums/care-record-condition.enum';
 import { ICareRecordConditionService } from '../interfaces/care-record-condition.service.interface';
+import { ENUM_CARE_RECORD_CONDITION_STATUS_CODE_ERROR } from '../enums/care-record-condition.status-code.enum';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 @Injectable()
 export class CareRecordConditionService implements ICareRecordConditionService {
@@ -34,41 +32,47 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     private readonly careRecordRepository: CareRecordRepository,
   ) {}
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordConditionDoc[]> {
-    return this.careRecordConditionRepository.findAll<CareRecordConditionDoc>(
-      find,
-      options,
-    );
-  }
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordConditionDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
 
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.careRecordConditionRepository.getTotal(find, options);
+    const [careRecordConditions, total] = await Promise.all([
+      this.careRecordConditionRepository.findAll<CareRecordConditionDoc>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.careRecordConditionRepository.getTotal(find),
+    ]);
+
+    return {
+      data: careRecordConditions,
+      total,
+    };
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordConditionDoc | null> {
-    return this.careRecordConditionRepository.findOneById<CareRecordConditionDoc>(
-      _id,
-      options,
-    );
+  ): Promise<CareRecordConditionDoc> {
+    const careRecordCondition = await this.findOneByIdOrFail(id, options);
+    return careRecordCondition;
   }
 
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordConditionDoc | null> {
-    return this.careRecordConditionRepository.findOne<CareRecordConditionDoc>(
-      find,
-      options,
-    );
+  ): Promise<CareRecordConditionDoc> {
+    const careRecordCondition =
+      await this.careRecordConditionRepository.findOne<CareRecordConditionDoc>(
+        find,
+        options,
+      );
+    return careRecordCondition;
   }
 
   async create(
@@ -94,10 +98,9 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       imageUrls,
     }: CareRecordConditionCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordConditionDoc> {
+  ): Promise<DatabaseIdDto> {
     const create: CareRecordConditionEntity = new CareRecordConditionEntity();
 
-    // Assign properties from DTO to entity with default values for required fields
     create.careRecord = careRecord;
     create.odoKm = odoKm;
     create.odoKmFaulty = odoKmFaulty ?? false;
@@ -120,7 +123,6 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     create.videoUrl = videoUrl;
     create.imageUrls = imageUrls;
 
-    // Create care record condition
     const careRecordCondition =
       await this.careRecordConditionRepository.create<CareRecordConditionEntity>(
         create,
@@ -129,20 +131,20 @@ export class CareRecordConditionService implements ICareRecordConditionService {
 
     // Update isInitialConditionRecorded in care record
     if (careRecordCondition) {
-      const careRecord = await this.careRecordRepository.findOneById(
+      const careRecordDoc = await this.careRecordRepository.findOneById(
         careRecordCondition.careRecord,
       );
-      if (careRecord) {
-        careRecord.isInitialConditionRecorded = true;
-        await this.careRecordRepository.save(careRecord);
+      if (careRecordDoc) {
+        careRecordDoc.isInitialConditionRecorded = true;
+        await this.careRecordRepository.save(careRecordDoc);
       }
     }
 
-    return careRecordCondition;
+    return { _id: careRecordCondition._id };
   }
 
   async update(
-    repository: CareRecordConditionDoc,
+    id: string,
     {
       odoKm,
       odoKmFaulty,
@@ -164,7 +166,9 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       imageUrls,
     }: CareRecordConditionUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordConditionDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+
     if (odoKm !== undefined) repository.odoKm = odoKm;
     if (odoKmFaulty !== undefined) repository.odoKmFaulty = odoKmFaulty;
     if (fuelLevelPercent !== undefined)
@@ -193,24 +197,12 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     if (videoUrl !== undefined) repository.videoUrl = videoUrl;
     if (imageUrls !== undefined) repository.imageUrls = imageUrls;
 
-    return this.careRecordConditionRepository.save(repository, options);
+    await this.careRecordConditionRepository.save(repository, options);
   }
 
-  async delete(
-    repository: CareRecordConditionDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<CareRecordConditionDoc> {
-    return this.careRecordConditionRepository.delete(
-      { _id: repository._id },
-      options,
-    );
-  }
-
-  async softDelete(
-    repository: CareRecordConditionDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordConditionDoc> {
-    return this.careRecordConditionRepository.softDelete(repository, options);
+  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.careRecordConditionRepository.softDelete(repository, options);
   }
 
   async deleteMany(
@@ -221,20 +213,21 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     return true;
   }
 
-  mapList(
-    careRecords: CareRecordConditionDoc[],
-  ): CareRecordConditionGetResponseDto[] {
-    return careRecords.map((record) => this.mapGet(record));
-  }
-
-  mapGet(
-    careRecord: CareRecordConditionDoc,
-  ): CareRecordConditionGetResponseDto {
-    return plainToInstance(
-      CareRecordConditionGetResponseDto,
-      typeof careRecord.toObject === 'function'
-        ? careRecord.toObject()
-        : careRecord,
-    );
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordConditionDoc> {
+    const careRecordCondition =
+      await this.careRecordConditionRepository.findOneById<CareRecordConditionDoc>(
+        id,
+        options,
+      );
+    if (!careRecordCondition) {
+      throw new NotFoundException({
+        statusCode: ENUM_CARE_RECORD_CONDITION_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'care-record-condition.error.notFound',
+      });
+    }
+    return careRecordCondition;
   }
 }

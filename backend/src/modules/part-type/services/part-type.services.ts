@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import slugify from 'slugify';
 import { PartTypeRepository } from '../repository/part-type.repository';
 import { IPartTypeService } from '../interfaces/part-type.service.interface';
 import { PartTypeDoc, PartTypeEntity } from '../entities/part-type.entity';
@@ -6,135 +11,234 @@ import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseSaveOptions,
+  IDatabaseSoftDeleteOptions,
+  IDatabaseUpdateOptions,
 } from '@/common/database/interfaces/database.interface';
 import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
 import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
-import { ENUM_PART_TYPE_STATUS } from '../enums/part-type.enum';
-import { PartTypeGetResponseDto } from '../dtos/response/part-type.get.response.dto';
-import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
+import { EnumPartTypeStatus } from '../enums/part-type.enum';
 import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
-import { IPartTypeEntity } from '../interfaces/part-type.interface';
-import { plainToInstance } from 'class-transformer';
+import {
+  IPaginationIn,
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { ENUM_PART_TYPE_STATUS_CODE_ERROR } from '../enums/part-type.status-code.enum';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 @Injectable()
 export class PartTypeService implements IPartTypeService {
   constructor(private readonly partTypeRepository: PartTypeRepository) {}
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const partType = await this.partTypeRepository.findOne({ name }, options);
-    return !!partType;
-  }
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const partType = await this.partTypeRepository.findOne({ slug }, options);
-    return !!partType;
-  }
-  createSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-  }
-  mapList(
-    partType: PartTypeDoc[] | IPartTypeEntity[],
-  ): PartTypeListResponseDto[] {
-    return plainToInstance(
-      PartTypeListResponseDto,
-      partType.map((p: PartTypeDoc | IPartTypeEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-  mapGet(partType: PartTypeDoc | IPartTypeEntity): PartTypeGetResponseDto {
-    return plainToInstance(
-      PartTypeGetResponseDto,
-      typeof (partType as any).toObject === 'function'
-        ? (partType as any).toObject()
-        : partType,
-    );
+
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: PartTypeDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...status,
+    };
+
+    const [partTypes, total] = await Promise.all([
+      this.partTypeRepository.findAll(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.partTypeRepository.getTotal(find),
+    ]);
+
+    return {
+      data: partTypes,
+      total,
+    };
   }
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<PartTypeDoc[]> {
-    return this.partTypeRepository.findAll<PartTypeDoc>(find, options);
-  }
+  async getListCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: PartTypeDoc[]; total?: number }> {
+    const find: Record<string, any> = { ...where, ...status };
 
-  async findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<PartTypeDoc[]> {
-    return this.partTypeRepository.findAll<PartTypeDoc>(find, options);
+    if (cursor && cursorField) {
+      find[cursorField] = { $gt: cursor };
+    }
+
+    const [data, count] = await Promise.all([
+      this.partTypeRepository.findAllCursor(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
+        },
+      }),
+      includeCount
+        ? this.partTypeRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
+
+    const items = data;
+
+    return { data: items, total: count };
   }
 
   async findOneById(
-    _id: string,
+    partTypeId: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<PartTypeDoc | null> {
-    return this.partTypeRepository.findOneById<PartTypeDoc>(_id, options);
-  }
-  async join(repository: PartTypeDoc): Promise<PartTypeDoc> {
-    return this.partTypeRepository.join(repository, this.partTypeRepository._join!);
-  }
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<PartTypeDoc | null> {
-    return this.partTypeRepository.findOne<PartTypeDoc>(find, options);
+  ): Promise<PartTypeDoc> {
+    const partType = await this.partTypeRepository.findOneById(
+      partTypeId,
+      options,
+    );
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'partType.error.notFound',
+      });
+    }
+    return partType;
   }
 
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.partTypeRepository.getTotal(find, options);
+  async findOneBySlug(slug: string): Promise<PartTypeDoc> {
+    const partType = await this.partTypeRepository.findOneBySlug(slug);
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'partType.error.notFound',
+      });
+    }
+    return partType;
   }
 
   async create(
-    { name, slug, description,  photo }: PartTypeCreateRequestDto,
+    payload: PartTypeCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<PartTypeDoc> {
-    const create: PartTypeEntity = new PartTypeEntity();
-    create.name = name;
-    create.slug = slug.toLowerCase();
-    create.description = description;
-    create.status = ENUM_PART_TYPE_STATUS.ACTIVE;
-    create.photo = photo;
+  ): Promise<DatabaseIdDto> {
+    // Validate slug uniqueness
+    if (payload.slug) {
+      const existingBySlug = await this.partTypeRepository.findOneBySlug(
+        payload.slug,
+      );
+      if (existingBySlug) {
+        throw new ConflictException({
+          statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'partType.error.slugExisted',
+        });
+      }
+    }
 
-    return this.partTypeRepository.create<PartTypeEntity>(create, options);
+    const create: PartTypeEntity = new PartTypeEntity();
+    create.name = payload.name;
+    create.slug = payload.slug
+      ? payload.slug.toLowerCase()
+      : slugify(payload.name, { lower: true, strict: true, locale: 'vi' });
+    create.description = payload.description;
+    create.status = EnumPartTypeStatus.active;
+    create.photo = payload.photo;
+
+    const created = await this.partTypeRepository.create(create, options);
+
+    return { _id: created._id };
   }
 
   async update(
-    repository: PartTypeDoc,
-    { name, slug, description, photo }: PartTypeUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartTypeDoc> {
-    repository.name = name ?? repository.name;
-    repository.slug = slug ?? repository.slug;
-    repository.description = description;
-    repository.photo = photo;
+    partTypeId: string,
+    payload: PartTypeUpdateRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void> {
+    const partType = await this.partTypeRepository.findOneById(partTypeId);
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'partType.error.notFound',
+      });
+    }
 
-    return this.partTypeRepository.save(repository, options);
+    // Validate slug uniqueness if changing
+    if (payload.slug && payload.slug !== partType.slug) {
+      const existingBySlug = await this.partTypeRepository.findOneBySlug(
+        payload.slug,
+      );
+      if (existingBySlug && existingBySlug._id.toString() !== partTypeId) {
+        throw new ConflictException({
+          statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'partType.error.slugExisted',
+        });
+      }
+    }
+
+    partType.name = payload.name ?? partType.name;
+    partType.slug = payload.slug ?? partType.slug;
+    partType.description = payload.description;
+    partType.photo = payload.photo;
+
+    await this.partTypeRepository.save(partType, options);
+  }
+
+  async updateStatus(
+    partTypeId: string,
+    { status }: PartTypeUpdateStatusRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void> {
+    const partType = await this.partTypeRepository.findOneById(partTypeId);
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'partType.error.notFound',
+      });
+    }
+
+    partType.status = status;
+    await this.partTypeRepository.save(partType, options);
+  }
+
+  async existBySlug(
+    slug: string,
+    options?: IDatabaseExistsOptions,
+  ): Promise<{ exist: boolean }> {
+    const exist = await this.partTypeRepository.exists({ slug }, options);
+    return {
+      exist,
+    };
+  }
+
+  async delete(
+    partTypeId: string,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void> {
+    const partType = await this.partTypeRepository.findOneById(partTypeId);
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'partType.error.notFound',
+      });
+    }
+
+    await this.partTypeRepository.delete({ _id: partTypeId }, options);
   }
 
   async softDelete(
-    repository: PartTypeDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartTypeDoc> {
-    return this.partTypeRepository.softDelete(repository, options);
-  }
+    partTypeId: string,
+    options?: IDatabaseSoftDeleteOptions,
+  ): Promise<void> {
+    const partType = await this.partTypeRepository.findOneById(partTypeId);
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'partType.error.notFound',
+      });
+    }
 
+    await this.partTypeRepository.softDelete(partType, options);
+  }
 
   async deleteMany(
     find?: Record<string, any>,
@@ -142,17 +246,5 @@ export class PartTypeService implements IPartTypeService {
   ): Promise<boolean> {
     await this.partTypeRepository.deleteMany(find, options);
     return true;
-  }
-  async updateStatus(
-    repository: PartTypeDoc,
-    { status }: PartTypeUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartTypeDoc> {
-    repository.status = status;
-
-    return this.partTypeRepository.save(repository, options);
-  }
-  async findBySlug(slug: string): Promise<PartTypeDoc | null> {
-    return this.partTypeRepository.findOneBySlug(slug);
   }
 }

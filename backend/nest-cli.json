@@ -3,14 +3,17 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
+    "deleteOutDir": true,
+    "watchAssets": true,
+    "typeCheck": true,
     "builder": {
       "type": "swc",
       "options": {
-        "swcrcPath": ".swcrc"
+        "swcrcPath": ".swcrc",
+        "outDir": "dist"
       }
     },
-    "typeCheck": true,
-    "plugins": ["@nestjs/swagger"],
+    "plugins": [],
     "assets": [
       {
         "include": "languages/**/*",
@@ -20,8 +23,20 @@
         "include": "**/**/templates/*",
         "outDir": "dist"
       }
-    ],
-    "deleteOutDir": true,
-    "watchAssets": true
+    ]
+  },
+  "projects": {
+    "app": {
+      "type": "application",
+      "root": "src",
+      "entryFile": "main",
+      "sourceRoot": "src"
+    },
+    "migration": {
+      "type": "application",
+      "root": "src",
+      "entryFile": "migration",
+      "sourceRoot": "src"
+    }
   }
 }

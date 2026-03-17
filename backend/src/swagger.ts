@@ -3,33 +3,43 @@ import { ConfigService } from '@nestjs/config';
 import { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
-import { ENUM_NODE_ENVIRONMENT } from '@/app/enums/app.enum';
-import { AllConfigType } from './config/config.type';
+import { EnumAppEnvironment } from '@/app/enums/app.enum';
+import { MessageService } from '@/common/message/services/message.service';
 
-export default async function (app: NestApplication) {
-  const configService = app.get(ConfigService<AllConfigType>);
-  const logger = new Logger('NestJs-Swagger');
+export default async function (app: NestApplication): Promise<void> {
+  const configService = app.get(ConfigService);
+  const messageService = app.get(MessageService);
 
-  const env: string = configService.getOrThrow<string>('app.env', {
-    infer: true,
-  });
-  const docName = configService.getOrThrow<string>('docs.name', {
-    infer: true,
-  });
-  const docDesc = configService.getOrThrow<string>('docs.description', {
-    infer: true,
-  });
-  const docPrefix = configService.getOrThrow<string>('docs.prefix', {
-    infer: true,
-  });
+  const env: string = configService.get<string>('app.env')!;
+  const appName: string = configService.get<string>('app.name');
+  const appVersion: string = configService.get<string>('app.version');
+  const appUrl: string = configService.get<string>('app.url')!;
 
-  if (env !== ENUM_NODE_ENVIRONMENT.PRODUCTION) {
+  const appAuthorName: string = configService.get<string>('app.author.name')!;
+  const appAuthorEmail: string = configService.get<string>('app.author.email')!;
+
+  const docName: string = configService.get<string>('doc.name')!;
+  const docDesc: string = configService.get<string>('doc.description')!;
+  const docVersion: string = configService.get<string>('doc.version')!;
+  const docPrefix: string = configService.get<string>('doc.prefix')!;
+
+  const logger = new Logger(`${appName}-Doc`);
+
+  if (env !== EnumAppEnvironment.production) {
     const documentBuild = new DocumentBuilder()
       .setTitle(docName)
       .setDescription(docDesc)
+      .setVersion(appVersion)
+      .setOpenAPIVersion(docVersion)
+      .setDescription(
+        messageService.setMessage('app.description.swagger', {
+          properties: {
+            appName,
+          },
+        }),
+      )
+      .setContact(appAuthorName, appUrl, appAuthorEmail)
       .addServer('/')
-      .addServer('/staging')
-      .addServer('/prod')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
         'accessToken',
@@ -38,19 +48,31 @@ export default async function (app: NestApplication) {
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
         'refreshToken',
       )
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'google',
+      )
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'apple',
+      )
+      .addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'xApiKey')
       .build();
 
     const document = SwaggerModule.createDocument(app, documentBuild, {
       deepScanRoutes: true,
     });
 
-    writeFileSync('./data/swagger.json', JSON.stringify(document));
+    try {
+      writeFileSync('generated/swagger.json', JSON.stringify(document));
+    } catch {}
 
     SwaggerModule.setup(docPrefix, app, document, {
       jsonDocumentUrl: `${docPrefix}/json`,
-      yamlDocumentUrl: `${docPrefix}/yaml`,
       explorer: true,
       customSiteTitle: docName,
+      ui: env !== EnumAppEnvironment.production,
+      raw: ['json'],
       swaggerOptions: {
         docExpansion: 'none',
         persistAuthorization: true,

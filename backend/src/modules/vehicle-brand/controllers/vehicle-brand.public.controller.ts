@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VehicleBrandService } from '../services/vehicle-brand.service';
 import {
@@ -6,27 +6,32 @@ import {
   VehicleBrandPublicGetOneDoc,
 } from '../docs/vehicle-brand.public.doc';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { VehicleBrandGetResponseDto } from '../dtos/response/vehicle-brand.get.response.dto';
+import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  PaginationQuery,
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { ENUM_VEHICLE_BRAND_STATUS } from '../enums/vehicle-brand.enum';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
   VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
   VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
   VEHICLE_BRAND_DEFAULT_STATUS,
 } from '../constants/vehicle-brand.list.constant';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+
+import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.vehicle-brand')
 @Controller({
@@ -36,22 +41,18 @@ import {
 export class VehicleBrandPublicController {
   constructor(
     private readonly vehicleBrandService: VehicleBrandService,
-    private readonly paginationService: PaginationService,
+    private readonly vehicleBrandUtil: VehicleBrandUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @VehicleBrandPublicGetOneDoc()
   @Response('vehicle-brand.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug') slug: string,
-  ): Promise<IResponse<VehicleBrandGetResponseDto>> {
+    @Param('slug', RequestRequiredPipe) slug: string,
+  ): Promise<IResponseReturn<VehicleBrandDto>> {
     const vehicleBrand = await this.vehicleBrandService.findBySlug(slug);
-    if (!vehicleBrand) {
-      throw new NotFoundException({
-        message: 'vehicle-brand.error.notFound',
-      });
-    }
-    const mapped = this.vehicleBrandService.mapGet(vehicleBrand);
+    const mapped = this.vehicleBrandUtil.mapGet(vehicleBrand);
     return { data: mapped };
   }
 
@@ -59,42 +60,19 @@ export class VehicleBrandPublicController {
   @ResponsePaging('vehicle-brand.list')
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      VEHICLE_BRAND_DEFAULT_STATUS,
-      ENUM_VEHICLE_BRAND_STATUS,
-    )
-    status: Record<string, any>,
-  ): Promise<IResponsePaging<VehicleBrandListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-      ...status,
-    };
-
-    const vehicleBrands = await this.vehicleBrandService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
-
-    const total: number = await this.vehicleBrandService.getTotal(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.vehicleBrandService.mapList(vehicleBrands);
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    pagination: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
+    status: Record<string, IPaginationIn>,
+  ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {
+    const { data, total } = await this.vehicleBrandService.getListOffset(
+      pagination,
+      status,
+    );
+    const mapped = this.vehicleBrandUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 }

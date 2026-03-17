@@ -7,9 +7,8 @@ import {
   IsIn,
   IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ENUM_CARE_RECORD_MEDIA_STAGE } from '../../enums/care-record-media.enum';
-import { ENUM_FILE_MIME } from '@/common/file/enums/file.enum';
+import { EnumFileExtension } from '@/common/file/enums/file.enum';
 
 export class CareRecordMediaCreateRequestDto {
   @ApiProperty({
@@ -32,14 +31,14 @@ export class CareRecordMediaCreateRequestDto {
   stage: ENUM_CARE_RECORD_MEDIA_STAGE;
 
   @IsNotEmpty()
-  @IsIn(Object.values(ENUM_FILE_MIME))
+  @IsIn(Object.values(EnumFileExtension))
   @ApiProperty({
-    example: ENUM_FILE_MIME.PNG,
+    example: EnumFileExtension.png,
     description: 'File extension',
     required: true,
-    enum: ENUM_FILE_MIME,
+    enum: EnumFileExtension,
   })
-  type: ENUM_FILE_MIME;
+  type: EnumFileExtension;
 
   @ApiProperty({
     example: faker.image.url(),

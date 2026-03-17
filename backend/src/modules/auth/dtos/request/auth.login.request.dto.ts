@@ -1,16 +1,20 @@
+import { IsCustomEmail } from '@/common/request/validations/request.custom-email.validation';
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { EnumUserLoginFrom } from '../../enums/auth.enum';
 
-export class AuthLoginRequestDto {
+export class UserLoginRequestDto {
   @ApiProperty({
     required: true,
     example: faker.internet.email(),
   })
   @IsString()
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @IsCustomEmail()
+  @Transform(({ value }) => value.toLowerCase().trim())
+  email: Lowercase<string>;
 
   @ApiProperty({
     description: 'string password',
@@ -20,4 +24,14 @@ export class AuthLoginRequestDto {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({
+    description: 'from where the user is logging in',
+    enum: EnumUserLoginFrom,
+    example: EnumUserLoginFrom.website,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsEnum(EnumUserLoginFrom)
+  from: EnumUserLoginFrom;
 }

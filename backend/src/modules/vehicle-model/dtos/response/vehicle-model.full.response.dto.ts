@@ -1,17 +1,16 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { VehicleModelGetResponseDto } from './vehicle-model.get.response.dto';
-import { VehicleBrandGetResponseDto } from '@/modules/vehicle-brand/dtos/response/vehicle-brand.get.response.dto';
+import { VehicleModelDto } from '../vehicle-model.dto';
+import { VehicleBrandDto } from '@/modules/vehicle-brand/dtos/vehicle-brand.dto';
 
-export class VehicleModelGetFullResponseDto extends OmitType(
-  VehicleModelGetResponseDto,
-  ['vehicleBrand'] as const,
-) {
+export class VehicleModelGetFullResponseDto extends OmitType(VehicleModelDto, [
+  'vehicleBrand',
+] as const) {
   @ApiProperty({
     required: true,
-    type: VehicleBrandGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(VehicleBrandGetResponseDto) }],
+    type: VehicleBrandDto,
+    oneOf: [{ $ref: getSchemaPath(VehicleBrandDto) }],
   })
-  @Type(() => VehicleBrandGetResponseDto)
-  vehicleBrand: VehicleBrandGetResponseDto;
+  @Type(() => VehicleBrandDto)
+  vehicleBrand: VehicleBrandDto;
 }

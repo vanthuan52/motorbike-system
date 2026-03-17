@@ -1,100 +1,87 @@
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-import { CareRecordChecklistDoc } from '../entities/care-record-checklist.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
 import { CareRecordChecklistCreateRequestDto } from '../dtos/request/care-record-checklist.create.request.dto';
 import { CareRecordChecklistUpdateRequestDto } from '../dtos/request/care-record-checklist.update.request.dto';
 import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record-checklist.list.response.dto';
-import { CareRecordChecklistGetResponseDto } from '../dtos/response/care-record-checklist.get.response.dto';
-import { ICareRecordChecklistEntity } from './care-record-checklist.interface';
-import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
+import { CareRecordChecklistDto } from '../dtos/care-record-checklist.dto';
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
 import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/request/care-record-checklist.update-wear-percentage.request.dto';
 import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-record-checklist.update-note.request.dto';
+import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
+import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
 
 export interface ICareRecordChecklistService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordChecklistDoc[]>;
-
-  findAllWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICareRecordChecklistEntity[]>;
-
-  getTotalWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<IResponsePagingReturn<CareRecordChecklistListResponseDto>>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CareRecordChecklistDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordChecklistDoc | null>;
-
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>>;
 
   create(
     payload: CareRecordChecklistCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordChecklistDoc>;
+  ): Promise<IResponseReturn<{ _id: string }>>;
+
+  createMany(
+    dtos: CareRecordChecklistCreateRequestDto[],
+    options?: IDatabaseCreateOptions,
+  ): Promise<boolean>;
 
   update(
-    repository: CareRecordChecklistDoc,
+    id: string,
     payload: CareRecordChecklistUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordChecklistDoc>;
+  ): Promise<IResponseReturn<void>>;
 
   updateStatus(
-    repository: CareRecordChecklistDoc,
-    { status }: CareRecordChecklistUpdateStatusRequestDto,
+    id: string,
+    payload: CareRecordChecklistUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordChecklistDoc>;
+  ): Promise<IResponseReturn<void>>;
+
+  updateResult(
+    id: string,
+    payload: CareRecordChecklistUpdateResultRequestDto,
+    options?: IDatabaseSaveOptions,
+  ): Promise<IResponseReturn<void>>;
 
   updateNote(
-    repository: CareRecordChecklistDoc,
-    { note }: CareRecordChecklistUpdateNoteRequestDto,
+    id: string,
+    payload: CareRecordChecklistUpdateNoteRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordChecklistDoc>;
+  ): Promise<IResponseReturn<void>>;
 
   updateWearPercentage(
-    repository: CareRecordChecklistDoc,
-    { wearPercentage }: CareRecordChecklistUpdateWearPercentageRequestDto,
+    id: string,
+    payload: CareRecordChecklistUpdateWearPercentageRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordChecklistDoc>;
+  ): Promise<IResponseReturn<void>>;
 
-  softDelete(
-    repository: CareRecordChecklistDoc,
+  delete(
+    id: string,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordChecklistDoc>;
+  ): Promise<IResponseReturn<void>>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-
-  mapList(data: CareRecordChecklistDoc[]): CareRecordChecklistListResponseDto[];
-
-  mapGet(data: CareRecordChecklistDoc): CareRecordChecklistGetResponseDto;
-
-  mapGetPopulate(
-    CareRecordChecklist: CareRecordChecklistDoc | ICareRecordChecklistEntity,
-  ): CareRecordChecklistGetFullResponseDto;
 }

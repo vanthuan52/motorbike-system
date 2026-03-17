@@ -1,7 +1,7 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { ENUM_FILE_MIME_IMAGE } from '@/common/file/enums/file.enum';
-import { AwsS3PresignRequestDto } from '@/modules/aws/dtos/request/aws.s3-presign.request.dto';
+import { EnumFileExtensionImage } from '@/common/file/enums/file.enum';
+import { AwsS3PresignRequestDto } from '@/common/aws/dtos/request/aws.s3-presign.request.dto';
 
 export class PartTypeUploadPhotoRequestDto extends PickType(
   AwsS3PresignRequestDto,
@@ -9,11 +9,11 @@ export class PartTypeUploadPhotoRequestDto extends PickType(
 ) {
   @ApiProperty({
     type: 'string',
-    enum: ENUM_FILE_MIME_IMAGE,
-    default: ENUM_FILE_MIME_IMAGE.JPEG,
+    enum: EnumFileExtensionImage,
+    default: EnumFileExtensionImage.jpeg,
   })
   @IsString()
-  @IsEnum(ENUM_FILE_MIME_IMAGE)
+  @IsEnum(EnumFileExtensionImage)
   @IsNotEmpty()
-  mime: ENUM_FILE_MIME_IMAGE;
+  mime: EnumFileExtensionImage;
 }

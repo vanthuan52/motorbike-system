@@ -14,16 +14,16 @@ import {
   AppointmentDocQueryStatus,
 } from '../constants/appointment.doc.constant';
 import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 
 export function AppointmentAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all maintenance schedules',
+      summary: 'get all appointments',
     }),
     DocRequest({
       queries: [
@@ -45,7 +45,7 @@ export function AppointmentAdminListDoc(): MethodDecorator {
 export function AppointmentAdminParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get maintenance schedule by id',
+      summary: 'get appointment by id',
     }),
     DocRequest({
       params: AppointmentDocParamsId,
@@ -63,18 +63,18 @@ export function AppointmentAdminParamsIdDoc(): MethodDecorator {
 export function AppointmentAdminCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'create maintenance schedule',
+      summary: 'create appointment',
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: AppointmentCreateRequestDto,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('appointment.create', {
-      dto: AppointmentListResponseDto,
+    DocResponse<DatabaseIdDto>('appointment.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -83,11 +83,11 @@ export function AppointmentAdminCreateDoc(): MethodDecorator {
 export function AppointmentAdminUpdateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'update maintenance schedule',
+      summary: 'update appointment',
     }),
     DocRequest({
       params: AppointmentDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: AppointmentUpdateRequestDto,
     }),
     DocAuth({
@@ -101,7 +101,7 @@ export function AppointmentAdminUpdateDoc(): MethodDecorator {
 export function AppointmentAdminDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'delete maintenance schedule',
+      summary: 'delete appointment',
     }),
     DocRequest({
       params: AppointmentDocParamsId,
@@ -117,7 +117,7 @@ export function AppointmentAdminDeleteDoc(): MethodDecorator {
 export function AppointmentAdminUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'update status maintenance schedule by id',
+      summary: 'update status appointment by id',
     }),
     DocRequest({
       params: AppointmentDocParamsId,

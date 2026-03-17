@@ -1,5 +1,5 @@
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
-import { ENUM_PART_TYPE_STATUS } from '../enums/part-type.enum';
+import { EnumPartTypeStatus } from '../enums/part-type.enum';
 import {
   DatabaseEntity,
   DatabaseProp,
@@ -44,12 +44,12 @@ export class PartTypeEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    default: ENUM_PART_TYPE_STATUS.ACTIVE,
+    default: EnumPartTypeStatus.active,
     index: true,
     type: String,
-    enum: ENUM_PART_TYPE_STATUS,
+    enum: EnumPartTypeStatus,
   })
-  status: ENUM_PART_TYPE_STATUS;
+  status: EnumPartTypeStatus;
 
   @DatabaseProp({
     required: false,

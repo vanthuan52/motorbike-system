@@ -1,163 +1,260 @@
-import { Injectable } from '@nestjs/common';
-import { PopulateOptions } from 'mongoose';
-import { plainToInstance } from 'class-transformer';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
+  IDatabaseSoftDeleteOptions,
+  IDatabaseUpdateOptions,
 } from '@/common/database/interfaces/database.interface';
-import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { StoreDoc, StoreEntity } from '../entities/store.entity';
-import { StoreGetResponseDto } from '../dtos/response/store.get.response.dto';
 import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto';
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
 import { StoreRepository } from '../repository/store.repository';
 import { IStoreService } from '../interfaces/store.service.interface';
+import {
+  IPaginationIn,
+  IPaginationQueryOffsetParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { ENUM_STORE_STATUS_CODE_ERROR } from '../enums/store.status-code.enum';
+import { StoreUtil } from '../utils/store.util';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class StoreService implements IStoreService {
-  constructor(private readonly storeRepository: StoreRepository) {}
+  constructor(
+    private readonly storeRepository: StoreRepository,
+    private readonly storeUtil: StoreUtil,
+  ) {}
 
-  async existsByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const store = await this.storeRepository.findOne({ name }, options);
-    return !!store;
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: StoreDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...status,
+    };
+
+    const [stores, total] = await Promise.all([
+      this.storeRepository.findAll(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+      }),
+      this.storeRepository.getTotal(find),
+    ]);
+
+    return {
+      data: stores,
+      total,
+    };
   }
 
-  async existsBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const store = await this.storeRepository.findOne({ slug }, options);
-    return !!store;
-  }
+  async getListCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    status?: Record<string, IPaginationIn>,
+  ): Promise<{ data: StoreDoc[]; total?: number }> {
+    const find: Record<string, any> = { ...where, ...status };
 
-  createSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-  }
+    if (cursor && cursorField) {
+      find[cursorField] = { $gt: cursor };
+    }
 
-  mapList(store: StoreDoc[] | StoreEntity[]): StoreListResponseDto[] {
-    return plainToInstance(
-      StoreListResponseDto,
-      store.map((s: StoreDoc | StoreEntity) =>
-        typeof (s as any).toObject === 'function' ? (s as any).toObject() : s,
-      ),
-    );
-  }
+    const [data, total] = await Promise.all([
+      this.storeRepository.findAllCursor<StoreDoc>(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
+        },
+      }),
+      includeCount
+        ? this.storeRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
 
-  mapGet(store: StoreDoc | StoreEntity): StoreGetResponseDto {
-    return plainToInstance(
-      StoreGetResponseDto,
-      typeof (store as any).toObject === 'function'
-        ? (store as any).toObject()
-        : store,
-    );
-  }
+    const items = data.slice(0, limit);
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<StoreDoc[]> {
-    return this.storeRepository.findAll(find, options);
-  }
-
-  async findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<StoreDoc[]> {
-    return this.storeRepository.findAll(find, options);
-  }
-
-  async findOneById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<StoreDoc | null> {
-    return this.storeRepository.findOne({ _id }, options);
-  }
-
-  async join(repository: StoreDoc): Promise<StoreDoc> {
-    return this.storeRepository.join(
-      repository,
-      this.storeRepository._joinActive! as (string | PopulateOptions)[],
-    );
+    return { data: items, total };
   }
 
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<StoreDoc | null> {
-    return this.storeRepository.findOne(find, options);
+  ): Promise<StoreDoc> {
+    const store = await this.storeRepository.findOne(find, options);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+
+    return store;
   }
 
-  async getTotal(
-    find: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<number> {
-    return this.storeRepository.getTotal(find, options);
+  async findOneById(
+    storeId: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<StoreDoc> {
+    const store = await this.storeRepository.findOneById(storeId, options);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+    return store;
+  }
+
+  async findOneBySlug(slug: string): Promise<StoreDoc> {
+    const store = await this.storeRepository.findOneBySlug(slug);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+    return store;
   }
 
   async create(
     payload: StoreCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<StoreDoc> {
+    // Validate slug uniqueness
+    if (payload.slug) {
+      const existingBySlug = await this.storeRepository.findOneBySlug(
+        payload.slug,
+      );
+      if (existingBySlug) {
+        throw new ConflictException({
+          statusCode: ENUM_STORE_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'store.error.slugExisted',
+        });
+      }
+    }
+
     const create: StoreEntity = new StoreEntity();
     create.name = payload.name;
     create.address = payload.address;
     create.workHours = payload.workHours;
     create.description = payload.description;
-    create.slug = payload.slug ?? this.createSlug(payload.name);
-    return this.storeRepository.create(create, options);
+    create.slug =
+      payload.slug ?? (await this.storeUtil.createSlug(payload.name));
+
+    const created = await this.storeRepository.create(create, options);
+
+    return created;
   }
 
   async update(
-    repository: StoreDoc,
+    storeId: string,
     payload: StoreUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<StoreDoc> {
-    repository.name = payload.name ?? repository.name;
-    repository.address = payload.address ?? repository.address;
-    repository.workHours = payload.workHours ?? repository.workHours;
-    repository.description = payload.description ?? repository.description;
-    repository.slug = payload.slug ?? repository.slug;
-    return this.storeRepository.save(repository, options);
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void> {
+    const store = await this.storeRepository.findOneById(storeId);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+
+    // Validate slug uniqueness if changing
+    if (payload.slug && payload.slug !== store.slug) {
+      const existingBySlug = await this.storeRepository.findOneBySlug(
+        payload.slug,
+      );
+      if (existingBySlug && existingBySlug._id.toString() !== storeId) {
+        throw new ConflictException({
+          statusCode: ENUM_STORE_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'store.error.slugExisted',
+        });
+      }
+    }
+
+    store.name = payload.name ?? store.name;
+    store.address = payload.address ?? store.address;
+    store.workHours = payload.workHours ?? store.workHours;
+    store.description = payload.description ?? store.description;
+    store.slug = payload.slug ?? store.slug;
+
+    await this.storeRepository.save(store, options);
+  }
+
+  async updateStatus(
+    _id: string,
+    { status }: StoreUpdateStatusRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void> {
+    const store = await this.storeRepository.findOneById(_id);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+
+    store.status = status;
+    await this.storeRepository.save(store, options);
+  }
+
+  async existBySlug(
+    slug: string,
+    options?: IDatabaseExistsOptions,
+  ): Promise<boolean> {
+    const exist = await this.storeRepository.exists({ slug }, options);
+    return exist;
+  }
+
+  async delete(
+    storeId: string,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void> {
+    const store = await this.storeRepository.findOneById(storeId);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+
+    await this.storeRepository.delete({ _id: storeId }, options);
   }
 
   async softDelete(
-    repository: StoreDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<StoreDoc> {
-    return this.storeRepository.softDelete(repository, options);
+    storeId: string,
+    options?: IDatabaseSoftDeleteOptions,
+  ): Promise<void> {
+    const store = await this.storeRepository.findOneById(storeId);
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: ENUM_STORE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'store.error.notFound',
+      });
+    }
+
+    await this.storeRepository.softDelete(store, options);
   }
 
   async deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
+  ): Promise<void> {
     await this.storeRepository.deleteMany(find, options);
-    return true;
-  }
-
-  async updateStatus(
-    repository: StoreDoc,
-    { status }: StoreUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<StoreDoc> {
-    repository.status = status;
-    return this.storeRepository.save(repository, options);
-  }
-
-  async findBySlug(slug: string): Promise<StoreDoc | null> {
-    return this.storeRepository.findOneBySlug(slug);
   }
 }

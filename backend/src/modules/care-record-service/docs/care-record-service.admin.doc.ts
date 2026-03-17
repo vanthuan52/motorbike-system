@@ -1,7 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
-import { CareRecordServiceGetResponseDto } from '../dtos/response/care-record-service.get.response.dto';
+import { CareRecordServiceDto } from '../dtos/care-record-service.dto';
 import { CareRecordServiceListResponseDto } from '../dtos/response/care-record-service.list.response.dto';
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
 import {
@@ -17,9 +17,10 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
+import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/care-record-service.with-checklists.response.dto';
 
 export function CareRecordServiceAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -51,15 +52,15 @@ export function CareRecordServiceAdminCreateDoc(): MethodDecorator {
       summary: 'create a new care record service',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordServiceCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordServiceGetResponseDto>('care-record-service.create', {
-      dto: CareRecordServiceGetResponseDto,
+    DocResponse<CareRecordServiceDto>('care-record-service.create', {
+      dto: CareRecordServiceDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -72,7 +73,7 @@ export function CareRecordServiceAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: CareRecordServiceDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordServiceUpdateRequestDto,
     }),
     DocAuth({
@@ -111,12 +112,9 @@ export function CareRecordServiceAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareRecordServiceGetResponseDto>(
-      'care-record-service.getById',
-      {
-        dto: CareRecordServiceGetResponseDto,
-      },
-    ),
+    DocResponse<CareRecordServiceDto>('care-record-service.getById', {
+      dto: CareRecordServiceDto,
+    }),
   );
 }
 
@@ -148,7 +146,7 @@ export function CareRecordServiceAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: CareRecordServiceDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareRecordServiceUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -156,5 +154,29 @@ export function CareRecordServiceAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('care-record-service.updateStatus'),
+  );
+}
+
+export function CareRecordServiceAdminListWithChecklistsDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all care record services with their checklists',
+    }),
+    DocRequest({
+      queries: [
+        ...CareRecordServiceDocQueryCareRecord,
+        ...CareRecordServiceDocQueryStatus,
+      ],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<CareRecordServiceWithChecklistsResponseDto>(
+      'care-record-service.listWithChecklists',
+      {
+        dto: CareRecordServiceWithChecklistsResponseDto,
+      },
+    ),
   );
 }

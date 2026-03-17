@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { plainToInstance } from 'class-transformer';
-import { Types } from 'mongoose';
 import { UserVehicleRepository } from '../repository/user-vehicle.repository';
 import { IUserVehicleService } from '../interfaces/user-vehicle.service.interface';
 import {
@@ -27,10 +29,18 @@ import {
   IUserVehicleEntity,
 } from '../interfaces/user-vehicle.interface';
 import { UserVehicleUploadPhotoRequestDto } from '../dtos/request/user-vehicle.upload-photo.request.dto';
-import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { UserVehicleGetFullResponseDto } from '../dtos/response/user-vehicle.full.response.dto';
-import { UserVehicleGetResponseDto } from '../dtos/response/user-vehicle.get.response.dto';
+import { HelperService } from '@/common/helper/services/helper.service';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { UserVehicleDto } from '../dtos/user-vehicle.dto';
+import { UserVehicleUtil } from '../utils/user-vehicle.util';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '../enums/user-vehicle.status-code.enum';
+import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
+import { UserRepository } from '@/modules/user/repository/user.repository';
 
 @Injectable()
 export class UserVehicleService implements IUserVehicleService {
@@ -38,8 +48,10 @@ export class UserVehicleService implements IUserVehicleService {
 
   constructor(
     private readonly userVehicleRepository: UserVehicleRepository,
+    private readonly vehicleModelRepository: VehicleModelRepository,
+    private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
-    private readonly helperStringService: HelperStringService,
+    private readonly helperService: HelperService,
   ) {
     this.uploadPath =
       this.configService.get<string>('userVehicle.uploadPath') || '';
@@ -52,11 +64,72 @@ export class UserVehicleService implements IUserVehicleService {
     return this.userVehicleRepository.findAll<UserVehicleDoc>(find, options);
   }
 
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: UserVehicleDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
+
+    const [userVehicles, total] = await Promise.all([
+      this.userVehicleRepository.findAll<UserVehicleDoc>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+        join: true,
+      }),
+      this.userVehicleRepository.getTotal(find),
+    ]);
+
+    return {
+      data: userVehicles,
+      total,
+    };
+  }
+
+  async getListCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: UserVehicleDoc[]; total?: number }> {
+    const find: Record<string, any> = { ...where, ...filters };
+
+    if (cursor && cursorField) {
+      find[cursorField] = { $gt: cursor };
+    }
+
+    const [data, count] = await Promise.all([
+      this.userVehicleRepository.findAllCursor<UserVehicleDoc>(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
+        },
+        join: true,
+      }),
+      includeCount
+        ? this.userVehicleRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
+
+    const items = data.slice(0, limit);
+
+    return { data: items, total: count };
+  }
+
   async findAllWithVehicleModel(
     find?: Record<string, any>,
     options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IUserVehicleEntity[]> {
-    return this.userVehicleRepository.findAll<IUserVehicleEntity>(find, {
+  ): Promise<UserVehicleDoc[]> {
+    return this.userVehicleRepository.findAll<UserVehicleDoc>(find, {
       ...options,
       join: true,
     });
@@ -73,17 +146,18 @@ export class UserVehicleService implements IUserVehicleService {
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<UserVehicleDoc | null> {
-    return this.userVehicleRepository.findOneById<UserVehicleDoc>(_id, options);
+  ): Promise<UserVehicleDoc> {
+    const userVehicle = await this.findOneByIdOrFail(id, options);
+    return userVehicle;
   }
 
   async findOneWithVehicleModelById(
     _id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<IUserVehicleDoc | null> {
-    return this.userVehicleRepository.findOneById<IUserVehicleDoc>(_id, {
+  ): Promise<UserVehicleDoc | null> {
+    return this.userVehicleRepository.findOneById<UserVehicleDoc>(_id, {
       ...options,
       join: true,
     });
@@ -99,8 +173,13 @@ export class UserVehicleService implements IUserVehicleService {
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<UserVehicleDoc | null> {
-    return this.userVehicleRepository.findOne<UserVehicleDoc>(find, options);
+  ): Promise<UserVehicleDoc> {
+    const userVehicle =
+      await this.userVehicleRepository.findOne<UserVehicleDoc>(find, options);
+    if (!userVehicle) {
+      return null as any;
+    }
+    return userVehicle;
   }
 
   async getTotal(
@@ -122,6 +201,26 @@ export class UserVehicleService implements IUserVehicleService {
     }: UserVehicleCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<UserVehicleDoc> {
+    const promises: Promise<any>[] = [
+      this.vehicleModelRepository.findOneById(vehicleModel),
+      this.userRepository.findOneById(user),
+    ];
+
+    const [checkVehicleModel, checkUser] = await Promise.all(promises);
+
+    if (!checkVehicleModel) {
+      throw new NotFoundException({
+        statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'vehicle-model.error.notFound',
+      });
+    }
+    if (!checkUser) {
+      throw new ConflictException({
+        statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'user.error.notFound',
+      });
+    }
+
     const create: UserVehicleEntity = new UserVehicleEntity();
     create.user = user;
     create.vehicleModel = vehicleModel;
@@ -132,14 +231,16 @@ export class UserVehicleService implements IUserVehicleService {
     create.chassisNumber = chassisNumber;
     create.color = color;
 
-    return this.userVehicleRepository.create<UserVehicleEntity>(
+    const created = await this.userVehicleRepository.create<UserVehicleEntity>(
       create,
       options,
     );
+
+    return created;
   }
 
   async update(
-    repository: UserVehicleDoc,
+    id: string,
     {
       user,
       vehicleModel,
@@ -150,7 +251,21 @@ export class UserVehicleService implements IUserVehicleService {
       color,
     }: UserVehicleUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<UserVehicleDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+
+    if (vehicleModel) {
+      const checkVehicleModel =
+        await this.vehicleModelRepository.findOneById(vehicleModel);
+
+      if (!checkVehicleModel) {
+        throw new NotFoundException({
+          statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+          message: 'user-vehicle.error.notFound',
+        });
+      }
+    }
+
     repository.user = user ?? repository.user;
     repository.vehicleModel = vehicleModel ?? repository.vehicleModel;
     repository.modelYear = modelYear;
@@ -160,15 +275,12 @@ export class UserVehicleService implements IUserVehicleService {
     repository.chassisNumber = chassisNumber ?? repository.chassisNumber;
     repository.color = color ?? repository.color;
 
-    return this.userVehicleRepository.save(repository, options);
+    await this.userVehicleRepository.save(repository, options);
   }
 
-  async delete(
-    repository: UserVehicleDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<boolean> {
+  async delete(id: string, options?: IDatabaseDeleteOptions): Promise<boolean> {
+    const repository = await this.findOneByIdOrFail(id);
     await this.userVehicleRepository.delete({ _id: repository._id }, options);
-
     return true;
   }
 
@@ -192,7 +304,7 @@ export class UserVehicleService implements IUserVehicleService {
     { mime }: UserVehicleUploadPhotoRequestDto,
   ): string {
     let path: string = this.uploadPath.replace('{UserVehicle}', UserVehicle);
-    const randomPath = this.helperStringService.random(10);
+    const randomPath = this.helperService.randomString(10);
     const extension = mime.split('/')[1];
 
     if (path.startsWith('/')) {
@@ -202,39 +314,6 @@ export class UserVehicleService implements IUserVehicleService {
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
   }
 
-  mapList(
-    UserVehicle: UserVehicleDoc[] | IUserVehicleEntity[],
-  ): UserVehicleListResponseDto[] {
-    return plainToInstance(
-      UserVehicleListResponseDto,
-      UserVehicle.map((p: UserVehicleDoc | IUserVehicleEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-
-  mapGet(
-    UserVehicle: UserVehicleDoc | IUserVehicleEntity,
-  ): UserVehicleGetResponseDto {
-    return plainToInstance(
-      UserVehicleGetResponseDto,
-      typeof (UserVehicle as any).toObject === 'function'
-        ? (UserVehicle as any).toObject()
-        : UserVehicle,
-    );
-  }
-
-  mapGetPopulate(
-    UserVehicle: UserVehicleDoc | IUserVehicleEntity,
-  ): UserVehicleGetFullResponseDto {
-    return plainToInstance(
-      UserVehicleGetFullResponseDto,
-      typeof (UserVehicle as any).toObject === 'function'
-        ? (UserVehicle as any).toObject()
-        : UserVehicle,
-    );
-  }
-
   async updatePhoto(
     repository: UserVehicleDoc,
     photo: AwsS3Dto,
@@ -242,9 +321,24 @@ export class UserVehicleService implements IUserVehicleService {
   ): Promise<UserVehicleDoc> {
     repository.photo = {
       ...photo,
-      size: new Types.Decimal128(photo.size.toString()),
+      size: photo.size,
     };
 
     return this.userVehicleRepository.save(repository, options);
+  }
+
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<UserVehicleDoc> {
+    const userVehicle =
+      await this.userVehicleRepository.findOneById<UserVehicleDoc>(id, options);
+    if (!userVehicle) {
+      throw new NotFoundException({
+        statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'user-vehicle.error.notFound',
+      });
+    }
+    return userVehicle;
   }
 }

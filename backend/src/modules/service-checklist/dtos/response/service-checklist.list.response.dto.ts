@@ -1,3 +1,3 @@
-import { ServiceChecklistGetResponseDto } from './service-checklist.get.response.dto';
+import { ServiceChecklistDto } from '../service-checklist.dto';
 
-export class ServiceChecklistListResponseDto extends ServiceChecklistGetResponseDto {}
+export class ServiceChecklistListResponseDto extends ServiceChecklistDto {}

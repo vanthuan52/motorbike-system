@@ -7,15 +7,14 @@ import {
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { applyDecorators } from '@nestjs/common';
-import { CandidateListResponseDto } from '../dtos/response/candidate.list.response.dto';
 import {
   CandidateDocQueryDate,
   CandidateDocQueryHiringId,
   CandidateDocQueryStatus,
 } from '../constants/candidate-doc.constants';
 import { HiringDocParamsId } from '../constants/hiring-doc.constants';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
-import { CandidateGetResponseDto } from '../dtos/response/candidate.get.response.dto';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
+import { CandidateResponseDto } from '../dtos/candidate-response.dto';
 
 export function CandidateAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -33,8 +32,8 @@ export function CandidateAdminListDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<CandidateListResponseDto>('candidate.list', {
-      dto: CandidateListResponseDto,
+    DocResponsePaging<CandidateResponseDto>('candidate.list', {
+      dto: CandidateResponseDto,
     }),
   );
 }
@@ -49,18 +48,18 @@ export function CandidateAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CandidateGetResponseDto>('candidate.getById', {
-      dto: CandidateGetResponseDto,
+    DocResponse<CandidateResponseDto>('candidate.getById', {
+      dto: CandidateResponseDto,
     }),
   );
 }
 
-export function CandidateUpdateStatusDoc(): MethodDecorator {
+export function CandidateAdminUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({ summary: 'update status of candidate' }),
     DocRequest({
       params: HiringDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
     }),
     DocAuth({
       jwtAccessToken: true,

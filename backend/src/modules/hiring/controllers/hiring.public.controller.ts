@@ -12,21 +12,28 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { HiringService } from '../services/hiring.services';
-import { HiringUserGetDoc, HiringUserListDoc } from '../docs/hiring.user.doc';
-import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
+import { HiringService } from '../services/hiring.service';
 import {
-  PaginationQuery,
+  HiringPublicParamsIdDoc,
+  HiringPublicListDoc,
+} from '../docs/hiring.public.doc';
+import {
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { ENUM_HIRING_STATUS, ENUM_HIRING_TYPE } from '../enums/hiring.enum';
-import { HiringListResponseDto } from '../dtos/response/hiring.list.response.dto';
 import { HiringDoc } from '../entities/hiring.entity';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { HiringUtil } from '../utils/hiring.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { HiringResponseDto } from '../dtos/hiring-response.dto';
 
 @ApiTags('modules.hiring.public')
 @Controller({
@@ -37,80 +44,72 @@ export class HiringPublicController {
   constructor(
     private readonly hiringService: HiringService,
     private readonly paginationService: PaginationService,
+    private readonly hiringUtil: HiringUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
-  @HiringUserGetDoc()
+
+  @HiringPublicParamsIdDoc()
   @Response('hiring.get')
   @HttpCode(HttpStatus.OK)
   @Get('/get/:slug')
   async get(
     @Param('slug') slug: string,
-  ): Promise<IResponse<HiringGetResponseDto>> {
+  ): Promise<IResponseReturn<HiringResponseDto>> {
     const hiring = await this.hiringService.findBySlug(slug);
     if (!hiring) {
       throw new NotFoundException({
         message: 'hiring.error.notFound',
       });
     }
-    const mapped = this.hiringService.mapGet(hiring);
+    const mapped = this.hiringUtil.mapOne(hiring);
     return { data: mapped };
   }
 
-  @HiringUserListDoc()
+  @HiringPublicListDoc()
   @ResponsePaging('hiring.list')
   @HttpCode(HttpStatus.OK)
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: ['title', 'status'],
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      [
-        ENUM_HIRING_STATUS.PUBLISHED,
-        ENUM_HIRING_STATUS.DRAFT,
-        ENUM_HIRING_STATUS.ARCHIVED,
-      ],
-      ENUM_HIRING_STATUS,
-    )
-    status: Record<string, any>,
-    @PaginationQueryFilterInEnum(
-      'jobType',
-      [
-        ENUM_HIRING_TYPE.FULL_TIME,
-        ENUM_HIRING_TYPE.PART_TIME,
-        ENUM_HIRING_TYPE.CONTRACT,
-        ENUM_HIRING_TYPE.ETC,
-      ],
-      ENUM_HIRING_TYPE,
-    )
-    jobType: Record<string, any>,
-  ): Promise<IResponsePaging<HiringListResponseDto>> {
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', [
+      ENUM_HIRING_STATUS.PUBLISHED,
+      ENUM_HIRING_STATUS.DRAFT,
+      ENUM_HIRING_STATUS.ARCHIVED,
+    ])
+    status: Record<string, IPaginationIn>,
+    @PaginationQueryFilterInEnum('jobType', [
+      ENUM_HIRING_TYPE.FULL_TIME,
+      ENUM_HIRING_TYPE.PART_TIME,
+      ENUM_HIRING_TYPE.CONTRACT,
+      ENUM_HIRING_TYPE.ETC,
+    ])
+    jobType: Record<string, IPaginationIn>,
+  ): Promise<IResponsePagingReturn<HiringResponseDto>> {
     const find: Record<string, any> = {
-      ..._search,
+      ...where,
       ...status,
       ...jobType,
     };
 
-    const hiring: HiringDoc[] = await this.hiringService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
+    const [hiring, total] = await Promise.all([
+      this.hiringService.findAll(find, {
+        paging: {
+          limit,
+          offset: skip,
+        },
+        order: orderBy,
+      }),
+      this.hiringService.getTotal(find),
+    ]);
+
+    const mapped = this.hiringUtil.mapList(hiring);
+
+    return this.paginationUtil.formatOffset(mapped, total, {
+      limit,
+      skip,
     });
-
-    const total: number = await this.hiringService.getTotal(find);
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.hiringService.mapList(hiring);
-
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
   }
 }

@@ -3,44 +3,51 @@ import {
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-
-import { CareAreaDoc } from '../entities/care-area.entity';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
-import { CareAreaGetResponseDto } from '../dtos/response/care-area.get.response.dto';
-import { CareAreaListResponseDto } from '../dtos/response/care-area.list.response.dto';
+import { CareAreaDoc } from '../entities/care-area.entity';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export interface ICareAreaService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareAreaDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareAreaDoc[]; total: number }>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareAreaDoc[]; total?: number }>;
+
+  getListOffsetWithServiceChecklists(
+    pagination: IPaginationQueryOffsetParams,
+    vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
+  ): Promise<{
+    data: CareAreaDoc[];
+    total: number;
+    checklistMap: Map<string, any[]>;
+  }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CareAreaDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareAreaDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareAreaDoc | null>;
-
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  ): Promise<CareAreaDoc>;
 
   create(
     payload: CareAreaCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareAreaDoc>;
+  ): Promise<DatabaseIdDto>;
 
   createMany(
     data: CareAreaCreateRequestDto[],
@@ -48,15 +55,14 @@ export interface ICareAreaService {
   ): Promise<boolean>;
 
   update(
-    repository: CareAreaDoc,
+    id: string,
     payload: CareAreaUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareAreaDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: CareAreaDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareAreaDoc>;
+  softDelete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
@@ -64,7 +70,4 @@ export interface ICareAreaService {
   ): Promise<boolean>;
 
   existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  mapList(data: CareAreaDoc[]): CareAreaListResponseDto[];
-  mapGet(data: CareAreaDoc): CareAreaGetResponseDto;
 }

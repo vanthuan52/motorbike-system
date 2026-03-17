@@ -1,17 +1,17 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { CareRecordGetResponseDto } from '@/modules/care-record/dtos/response/care-record.get.response.dto';
-import { CareRecordConditionGetResponseDto } from './care-record-condition.get.response.dto';
+import { CareRecordDto } from '@/modules/care-record/dtos/care-record.dto';
+import { CareRecordConditionDto } from '../care-record-condition.dto';
 
 export class CareRecordConditionGetFullResponseDto extends OmitType(
-  CareRecordConditionGetResponseDto,
+  CareRecordConditionDto,
   ['careRecord'] as const,
 ) {
   @ApiProperty({
     required: false,
-    type: CareRecordGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(CareRecordGetResponseDto) }],
+    type: CareRecordDto,
+    oneOf: [{ $ref: getSchemaPath(CareRecordDto) }],
   })
-  @Type(() => CareRecordGetResponseDto)
-  careRecord: CareRecordGetResponseDto;
+  @Type(() => CareRecordDto)
+  careRecord: CareRecordDto;
 }

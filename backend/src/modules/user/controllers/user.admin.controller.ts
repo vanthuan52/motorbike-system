@@ -1,96 +1,84 @@
 import {
-  BadRequestException,
   Body,
-  ConflictException,
   Controller,
   Delete,
   Get,
-  InternalServerErrorException,
+  HttpCode,
+  HttpStatus,
   Logger,
-  NotFoundException,
   Param,
   Patch,
   Post,
   Put,
+  UploadedFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../services/user.service';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { AuthService } from '@/modules/auth/services/auth.service';
-import { RoleService } from '@/modules/role/services/role.service';
 import {
+  UserAdminCheckEmailDoc,
+  UserAdminCheckPhoneDoc,
   UserAdminCreateDoc,
+  UserAdminCreateShadowUserDoc,
   UserAdminDeleteDoc,
   UserAdminGetDoc,
   UserAdminListDoc,
-  UserAdminListUserTypeUserDoc,
-  UserAdminPreCreateDoc,
   UserAdminUpdateDoc,
   UserAdminUpdateStatusDoc,
-  UserTypeUserAdminCreateDoc,
 } from '../docs/user.admin.doc';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
-import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '../decorators/user.decorator';
 import {
-  PaginationQuery,
-  PaginationQueryFilterEqual,
-  PaginationQueryFilterIn,
+  PaginationOffsetQuery,
+  PaginationQueryFilterEqualString,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  USER_DEFAULT_AVAILABLE_SEARCH,
-  USER_DEFAULT_STATUS,
-} from '../constants/user.list.contant';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
-import { ENUM_USER_SIGN_UP_FROM, ENUM_USER_STATUS } from '../enums/user.enum';
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+  IPaginationEqual,
+} from '@/common/pagination/interfaces/pagination.interface';
 import {
-  IResponse,
-  IResponsePaging,
+  UserDefaultAvailableSearch,
+  UserDefaultStatus,
+} from '../constants/user.list.contant';
+
+import { EnumUserStatus } from '../enums/user.enum';
+import {
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
 import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
-import { IUserDoc, IUserEntity } from '../interfaces/user.interface';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import {
-  UserParsePipe,
-  UserPhoneNumberParsePipe,
-} from '../pipes/user.parse.pipe';
-import { UserDoc } from '../entities/user.entity';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
-import {
-  UserCreateRequestDto,
-  UserTypeUserCreateRequestDto,
-} from '../dtos/request/user.create.request.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
-import { ENUM_ROLE_STATUS_CODE_ERROR } from '@/modules/role/enums/role.status-code.enum';
-import { ENUM_USER_STATUS_CODE_ERROR } from '../enums/user.status-code.enum';
-import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
-import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
-import { UserNotSelfPipe } from '../pipes/user.not-self.pipe';
+import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
 import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
-import { UserPreCreateRequestDto } from '../dtos/request/user.pre-create.request.dto';
-import { UserGetResponseDto } from '../dtos/response/user.get.response.dto';
+import { UserDto } from '../dtos/user.dto';
+import {
+  UserCheckEmailRequestDto,
+  UserCheckPhoneRequestDto,
+} from '../dtos/request/user.check.request.dto';
+import { UserCheckEmailResponseDto } from '../dtos/response/user.check-email.response.dto';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { UserCheckPhoneResponseDto } from '../dtos/response/user.check-phone.response.dto';
+import { UserUtil } from '../utils/user.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { UserCreateShadowUserRequestDto } from '../dtos/request/user.create-shadow-user.request.dto';
 
 @ApiTags('modules.admin.user')
 @Controller({
@@ -100,470 +88,225 @@ import { UserGetResponseDto } from '../dtos/response/user.get.response.dto';
 export class UserAdminController {
   private readonly logger = new Logger(UserAdminController.name);
   constructor(
-    private readonly paginationService: PaginationService,
-    private readonly roleService: RoleService,
-    private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly userUtil: UserUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @UserAdminListDoc()
   @ResponsePaging('user.list')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
   async list(
-    @PaginationQuery({
-      availableSearch: USER_DEFAULT_AVAILABLE_SEARCH,
+    @PaginationOffsetQuery({
+      availableSearch: UserDefaultAvailableSearch,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      USER_DEFAULT_STATUS,
-      ENUM_USER_STATUS,
-    )
-    status: Record<string, any>,
-    @PaginationQueryFilterEqual('role') role: Record<string, any>,
-  ): Promise<IResponsePaging<UserListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-      ...status,
-      ...role,
-    };
-
-    const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
-
-    const total: number = await this.userService.getTotalWithRole(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.userService.mapList(users);
-
-    return {
-      _pagination: { total, totalPage },
-      data: mapped,
-    };
-  }
-
-  @UserAdminListUserTypeUserDoc()
-  @ResponsePaging('user.listCustomer')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @Get('/list/user')
-  async listUser(
-    @PaginationQuery({
-      availableSearch: USER_DEFAULT_AVAILABLE_SEARCH,
-    })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      USER_DEFAULT_STATUS,
-      ENUM_USER_STATUS,
-    )
-    status: Record<string, any>,
-  ): Promise<IResponsePaging<UserListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-      ...status,
-    };
-
-    const role = await this.roleService.findOneByType(
-      ENUM_POLICY_ROLE_TYPE.USER,
+    pagination: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum<EnumUserStatus>('status', UserDefaultStatus)
+    status?: Record<string, IPaginationIn>,
+    @PaginationQueryFilterEqualString('role')
+    role?: Record<string, IPaginationEqual>,
+  ): Promise<IResponsePagingReturn<UserListResponseDto>> {
+    const { data, total } = await this.userService.getListOffset(
+      pagination,
+      status,
+      role,
     );
+    const mappedData = this.userUtil.mapList(data);
 
-    if (!role) {
-      return {
-        _pagination: { total: 0, totalPage: 1 },
-        data: [],
-      };
-    }
-    if (role) {
-      find['role._id'] = role._id;
-    }
+    return this.paginationUtil.formatOffset(mappedData, total, pagination);
+  }
 
-    const users: IUserEntity[] = await this.userService.findAllWithRole(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
-
-    const total: number = await this.userService.getTotalWithRole(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.userService.mapList(users);
+  @UserAdminGetDoc()
+  @Response('user.get')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected(EnumRoleType.admin)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/get/:userId')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
+  async get(
+    @Param('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    userId: string,
+  ): Promise<IResponseReturn<UserProfileResponseDto>> {
+    const user = await this.userService.findOneWithRoleById(userId);
+    const mapped = this.userUtil.mapProfile(user);
     return {
-      _pagination: { total, totalPage },
       data: mapped,
     };
   }
 
   @UserAdminGetDoc()
-  @Response('user.get')
+  @Response('user.getByPhone')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @Get('/get/:user')
-  async get(
-    @Param('user', RequestRequiredPipe, UserParsePipe) user: UserDoc,
-  ): Promise<IResponse<UserProfileResponseDto>> {
-    const userWithRole: IUserDoc = await this.userService.join(user);
-    const mapped: UserProfileResponseDto =
-      this.userService.mapProfile(userWithRole);
-
-    return { data: mapped };
-  }
-
-  @UserAdminGetDoc()
-  @Response('user.get')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/phone/:phone')
   async getByPhone(
-    @Param('phone', RequestRequiredPipe, UserPhoneNumberParsePipe)
-    user: UserDoc,
-  ): Promise<IResponse<UserGetResponseDto>> {
-    const userWithRole: IUserDoc = await this.userService.join(user);
-    const mapped: UserGetResponseDto = this.userService.mapGet(userWithRole);
-
-    return { data: mapped };
+    @Param('phone', RequestRequiredPipe)
+    phone: string,
+  ): Promise<IResponseReturn<UserDto>> {
+    const user = await this.userService.findOneByPhone(phone);
+    const mapped = this.userUtil.mapOne(user);
+    return {
+      data: mapped,
+    };
   }
 
   @UserAdminCreateDoc()
   @Response('user.create')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read, EnumPolicyAction.create],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
-  async create(
-    @AuthJwtPayload('user') createdBy: string,
-    @Body() { email, role, name, phone }: UserCreateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
-    const promises: Promise<any>[] = [
-      this.roleService.findOneById(role),
-      this.userService.existByEmail(email),
-    ];
-
-    const [checkRole, emailExist] = await Promise.all(promises);
-
-    if (!checkRole) {
-      throw new NotFoundException({
-        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'role.error.notFound',
-      });
-    } else if (emailExist) {
-      throw new ConflictException({
-        statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_EXIST,
-        message: 'user.error.emailExist',
-      });
-    }
-
-    const passwordString = this.authService.createDefaultPassword();
-    const password: IAuthPassword = this.authService.createPassword(
-      passwordString,
-      {
-        temporary: true,
-      },
-    );
-
-    try {
-      const created = await this.userService.create(
-        {
-          email,
-          name,
-          role,
-        },
-        password,
-        ENUM_USER_SIGN_UP_FROM.ADMIN,
-        { actionBy: createdBy } as IDatabaseCreateOptions,
-      );
-
-      return {
-        data: { _id: created._id },
-      };
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
-  }
-
-  @UserTypeUserAdminCreateDoc()
-  @Response('user.create')
-  @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
-  })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @Post('/create/user')
   async createUserTypeUser(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() { email, name }: UserTypeUserCreateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
-    const promises: Promise<any>[] = [
-      this.roleService.findOneByType(ENUM_POLICY_ROLE_TYPE.USER),
-      this.userService.existByEmail(email),
-    ];
-
-    const [checkRole, emailExist] = await Promise.all(promises);
-
-    if (!checkRole) {
-      throw new NotFoundException({
-        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'role.error.notFound',
-      });
-    } else if (emailExist) {
-      throw new ConflictException({
-        statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_EXIST,
-        message: 'user.error.emailExist',
-      });
-    }
-
-    const passwordString = this.authService.createDefaultPassword();
-    const password: IAuthPassword = this.authService.createPassword(
-      passwordString,
-      {
-        temporary: true,
+    @Body() body: UserCreateRequestDto,
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const created = await this.userService.createByAdmin(body, {
+      actionBy: createdBy,
+    });
+    const mapped = this.userUtil.mapOne(created);
+    return {
+      data: {
+        _id: mapped._id,
       },
-    );
-
-    try {
-      const created = await this.userService.create(
-        {
-          email,
-          name,
-          role: checkRole._id,
-        },
-        password,
-        ENUM_USER_SIGN_UP_FROM.ADMIN,
-        { actionBy: createdBy } as IDatabaseCreateOptions,
-      );
-
-      return {
-        data: { _id: created._id },
-      };
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
+    };
   }
 
-  @UserAdminPreCreateDoc()
-  @Response('user.create')
+  @UserAdminCreateShadowUserDoc()
+  @Response('user.createShadowUser')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.CREATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read, EnumPolicyAction.create],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/pre-create')
   async preRegisterUser(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() { phone, name, email }: UserPreCreateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
-    const promises: Promise<any>[] = [
-      this.roleService.findOneByType(ENUM_POLICY_ROLE_TYPE.USER),
-      this.userService.existByPhone(phone),
-    ];
-
-    const [checkRole, phoneExist] = await Promise.all(promises);
-
-    if (!checkRole) {
-      throw new NotFoundException({
-        statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'role.error.notFound',
-      });
-    } else if (phoneExist) {
-      throw new ConflictException({
-        statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_EXIST,
-        message: 'user.error.phoneExist',
-      });
-    }
-
-    const passwordString = this.authService.createDefaultPassword();
-    const password: IAuthPassword = this.authService.createPassword(
-      passwordString,
-      {
-        temporary: true,
+    @Body() body: UserCreateShadowUserRequestDto,
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const created = await this.userService.createShadowUser(body, {
+      actionBy: createdBy,
+    });
+    const mapped = this.userUtil.mapOne(created);
+    return {
+      data: {
+        _id: mapped._id,
       },
-    );
-
-    try {
-      const created = await this.userService.preCreate(
-        {
-          phone,
-          name,
-          email,
-          role: checkRole._id,
-        },
-        password,
-        ENUM_USER_SIGN_UP_FROM.ADMIN,
-        { actionBy: createdBy } as IDatabaseCreateOptions,
-      );
-
-      return {
-        data: { _id: created._id },
-      };
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
+    };
   }
 
   @UserAdminUpdateDoc()
   @Response('user.update')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Put('/update/:user')
+  @Put('/update/:userId')
   async update(
-    @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
-    user: UserDoc,
+    @Param('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    userId: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() { name, phone }: UserUpdateRequestDto,
-  ): Promise<void> {
-    // const checkRole = await this.roleService.findOneActiveById(role);
-    // if (!checkRole) {
-    //   throw new NotFoundException({
-    //     statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
-    //     message: 'role.error.notFound',
-    //   });
-    // }
-
-    try {
-      await this.userService.update(user, { name, phone }, {
-        actionBy: updatedBy,
-      } as IDatabaseSaveOptions);
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
+    @Body() body: UserUpdateRequestDto,
+  ): Promise<IResponseReturn<void>> {
+    await this.userService.update(userId, body, {
+      actionBy: updatedBy,
+    });
+    return {};
   }
 
   @UserAdminUpdateStatusDoc()
   @Response('user.updateStatus')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Patch('/update/:user/status')
+  @Patch('/update/:userId/status')
   async updateStatus(
-    @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
-    user: UserDoc,
+    @Param('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    userId: string,
     @AuthJwtPayload('user') actionBy: string,
-    @Body() { status }: UserUpdateStatusRequestDto,
-  ): Promise<IResponse<void>> {
-    if (user.status === ENUM_USER_STATUS.BLOCKED) {
-      throw new BadRequestException({
-        statusCode: ENUM_USER_STATUS_CODE_ERROR.STATUS_INVALID,
-        message: 'user.error.statusInvalid',
-        _metadata: {
-          customProperty: {
-            messageProperties: {
-              status: status.toLowerCase(),
-            },
-          },
-        },
-      });
-    }
-
-    try {
-      await this.userService.updateStatus(
-        user,
-        { status },
-        {} as IDatabaseSaveOptions,
-      );
-
-      return {
-        _metadata: {
-          customProperty: {
-            messageProperties: {
-              status: status.toLowerCase(),
-            },
-          },
-        },
-      };
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
+    @Body() body: UserUpdateStatusRequestDto,
+  ): Promise<IResponseReturn<void>> {
+    await this.userService.updateStatus(userId, body, { actionBy });
+    return {};
   }
 
   @UserAdminDeleteDoc()
   @Response('user.deleted')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ, ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Delete('/delete/:user')
+  @Delete('/delete/:userId')
   async delete(
-    @Param('user', RequestRequiredPipe, UserParsePipe, UserNotSelfPipe)
-    user: UserDoc,
+    @Param('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    userId: string,
     @AuthJwtPayload('user') actionBy: string,
-  ): Promise<IResponse<void>> {
-    try {
-      await this.userService.softDelete(user, {} as IDatabaseSaveOptions);
+  ): Promise<IResponseReturn<void>> {
+    await this.userService.softDelete(userId, { actionBy });
+    return {};
+  }
 
-      return {};
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
+  @UserAdminCheckEmailDoc()
+  @Response('user.checkEmail')
+  @HttpCode(HttpStatus.OK)
+  @Post('/check/email')
+  async checkEmail(
+    @Body() { email }: UserCheckEmailRequestDto,
+  ): Promise<IResponseReturn<UserCheckEmailResponseDto>> {
+    const exist = await this.userService.existByEmail(email);
+    return {
+      data: {
+        exist,
+      },
+    };
+  }
+
+  @UserAdminCheckPhoneDoc()
+  @Response('user.checkPhone')
+  @HttpCode(HttpStatus.OK)
+  @Post('/check/phone')
+  async checkPhone(
+    @Body() { phone }: UserCheckPhoneRequestDto,
+  ): Promise<IResponseReturn<UserCheckPhoneResponseDto>> {
+    const exist = await this.userService.existByPhone(phone);
+    return {
+      data: {
+        exist,
+      },
+    };
   }
 }

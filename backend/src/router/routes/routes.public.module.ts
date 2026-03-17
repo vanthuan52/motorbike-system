@@ -6,8 +6,7 @@ import { RoleModule } from '@/modules/role/role.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
-import { FilePublicController } from '@/common/file/controllers/file.public.controller';
-import { AwsModule } from '@/modules/aws/aws.module';
+import { AwsModule } from '@/common/aws/aws.module';
 import { CandidatePublicController } from '@/modules/hiring/controllers/candidate.public.controller';
 import { HiringModule } from '@/modules/hiring/hiring.module';
 import { HiringPublicController } from '@/modules/hiring/controllers/hiring.public.controller';
@@ -30,12 +29,16 @@ import { ServicePriceModule } from '@/modules/service-price/service-price.module
 import { AppointmentsPublicController } from '@/modules/appointment/controllers/appointment.public.controller';
 import { AppointmentModule } from '@/modules/appointment/appointment.module';
 import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
+import { HelloModule } from '@/modules/hello/hello.module';
 
+/**
+ * Public routes module that provides publicly accessible endpoints.
+ * Contains controllers for ... that don't require authentication.
+ */
 @Module({
   controllers: [
     HelloPublicController,
     AuthPublicController,
-    FilePublicController,
     PartTypePublicController,
     CandidatePublicController,
     HiringPublicController,
@@ -51,6 +54,7 @@ import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
   providers: [],
   exports: [],
   imports: [
+    HelloModule,
     UserModule,
     RoleModule,
     AwsModule,

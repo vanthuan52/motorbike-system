@@ -12,7 +12,7 @@ import {
   VehicleBrandDocQueryStatus,
 } from '../constants/vehicle-brand.doc.constant';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
-import { VehicleBrandGetResponseDto } from '../dtos/response/vehicle-brand.get.response.dto';
+import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 
 export function VehicleBrandPublicGetOneDoc(): MethodDecorator {
   return applyDecorators(
@@ -22,8 +22,8 @@ export function VehicleBrandPublicGetOneDoc(): MethodDecorator {
     DocRequest({
       params: VehicleBrandDocParamsSlug,
     }),
-    DocResponse<VehicleBrandGetResponseDto>('vehicle-brand.get', {
-      dto: VehicleBrandGetResponseDto,
+    DocResponse<VehicleBrandDto>('vehicle-brand.get', {
+      dto: VehicleBrandDto,
     }),
   );
 }

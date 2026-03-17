@@ -1,13 +1,17 @@
-import { Model, PopulateOptions } from 'mongoose';
+import { Model, PipelineStage, PopulateOptions } from 'mongoose';
 import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
 import {
   AppointmentDoc,
   AppointmentEntity,
 } from '../entities/appointment.entity';
 import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
-import { VehicleServiceEntity } from '@/modules/vehicle-service/entities/vehicle-service.entity';
-import { UserEntity } from '@/modules/user/entities/user.entity';
+import {
+  VehicleServiceEntity,
+  VehicleServiceTableName,
+} from '@/modules/vehicle-service/entities/vehicle-service.entity';
 import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
+import { IAppointmentDoc } from '../interfaces/appointment.interface';
+import { IDatabaseGetTotalOptions } from '@/common/database/interfaces/database.interface';
 
 export class AppointmentRepository extends DatabaseRepositoryBase<
   AppointmentEntity,
@@ -18,15 +22,8 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
     localField: 'vehicleServices',
     foreignField: '_id',
     model: VehicleServiceEntity.name,
+    justOne: true,
   };
-
-  // readonly _joinUser: PopulateOptions = {
-  //   path: 'user',
-  //   localField: 'user',
-  //   foreignField: '_id',
-  //   model: UserEntity.name,
-  //   justOne: true,
-  // };
 
   readonly _joinVehicleModel: PopulateOptions = {
     path: 'vehicleModel',
@@ -36,27 +33,7 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
     justOne: true,
   };
 
-  readonly _joinActive: PopulateOptions[] = [
-    // {
-    //   path: 'user',
-    //   localField: 'user',
-    //   foreignField: '_id',
-    //   model: UserEntity.name,
-    //   justOne: true,
-    // },
-    {
-      path: 'vehicleServices',
-      localField: 'vehicleServices',
-      foreignField: '_id',
-      model: VehicleServiceEntity.name,
-    },
-    {
-      path: 'vehicleModel',
-      localField: 'vehicleModel',
-      foreignField: '_id',
-      model: VehicleModelEntity.name,
-    },
-  ];
+  readonly _joinActive: PopulateOptions[] = [];
 
   constructor(
     @InjectDatabaseModel(AppointmentEntity.name)
@@ -69,13 +46,6 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
         foreignField: '_id',
         model: VehicleServiceEntity.name,
       },
-      // {
-      //   path: 'user',
-      //   localField: 'user',
-      //   foreignField: '_id',
-      //   model: UserEntity.name,
-      //   justOne: true,
-      // },
       {
         path: 'vehicleModel',
         localField: 'vehicleModel',
@@ -84,5 +54,33 @@ export class AppointmentRepository extends DatabaseRepositoryBase<
         justOne: true,
       },
     ]);
+  }
+
+  createRawQueryFindAllWithVehicleService(
+    find?: Record<string, any>,
+  ): PipelineStage[] {
+    return [
+      {
+        $lookup: {
+          from: VehicleServiceTableName,
+          as: 'vehicleService',
+          foreignField: '_id',
+          localField: 'vehicleService',
+        },
+      },
+      {
+        $unwind: '$VehicleService',
+      },
+      {
+        $match: find as {},
+      },
+    ];
+  }
+
+  async getTotal(
+    find?: Record<string, any>,
+    options?: IDatabaseGetTotalOptions,
+  ): Promise<number> {
+    return this.getTotal(find, options);
   }
 }

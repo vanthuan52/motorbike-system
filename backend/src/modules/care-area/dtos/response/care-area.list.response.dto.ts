@@ -1,3 +1,3 @@
-import { CareAreaGetResponseDto } from './care-area.get.response.dto';
+import { CareAreaDto } from '../care-area.dto';
 
-export class CareAreaListResponseDto extends CareAreaGetResponseDto {}
+export class CareAreaListResponseDto extends CareAreaDto {}

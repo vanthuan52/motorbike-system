@@ -5,23 +5,33 @@ import {
   DocRequest,
   DocResponse,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
-import { AuthLoginRequestDto } from '../dtos/request/auth.login.request.dto';
-import { AuthLoginResponseDto } from '../dtos/response/auth.login.response.dto';
-import { AuthSignUpRequestDto } from '../dtos/request/auth.sign-up.request.dto';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
+import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
+import { UserLoginRequestDto } from '../dtos/request/auth.login.request.dto';
+import { UserLoginResponseDto } from '@/modules/user/dtos/response/user.login.response.dto';
+import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
+import { UserSendEmailVerificationRequestDto } from '@/modules/user/dtos/request/user.send-email-verification.request.dto';
+import { UserVerifyEmailRequestDto } from '@/modules/user/dtos/request/user.verify-email.request.dto';
+import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
+import { UserLoginEnableTwoFactorRequestDto } from '@/modules/user/dtos/request/user.login-enable-two-factor.request.dto';
+import { UserTwoFactorEnableResponseDto } from '@/modules/user/dtos/response/user.two-factor-enable.response.dto';
+import { UserLoginVerifyTwoFactorRequestDto } from '@/modules/user/dtos/request/user.login-verify-two-factor.request.dto';
+import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
 
 export function AuthPublicLoginCredentialDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'Login with email and password',
+      summary: 'login with credential',
     }),
-    DocAuth({ xApiKey: true }),
+    DocAuth({
+      xApiKey: false,
+    }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: AuthLoginRequestDto,
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserLoginRequestDto,
     }),
-    DocResponse<AuthLoginResponseDto>('auth.loginWithCredential', {
-      dto: AuthLoginResponseDto,
+    DocResponse('auth.loginCredential', {
+      dto: UserLoginResponseDto,
     }),
   );
 }
@@ -31,9 +41,9 @@ export function AuthPublicLoginSocialGoogleDoc(): MethodDecorator {
     Doc({
       summary: 'Login with social google',
     }),
-    DocAuth({ xApiKey: true, google: true }),
-    DocResponse<AuthLoginResponseDto>('auth.loginWithSocialGoogle', {
-      dto: AuthLoginResponseDto,
+    DocAuth({ xApiKey: false, google: true }),
+    DocResponse('auth.loginWithSocialGoogle', {
+      dto: UserLoginResponseDto,
     }),
   );
 }
@@ -43,27 +53,128 @@ export function AuthPublicLoginSocialAppleDoc(): MethodDecorator {
     Doc({
       summary: 'Login with social apple',
     }),
-    DocAuth({ xApiKey: true, apple: true }),
-    DocResponse<AuthLoginResponseDto>('auth.loginWithSocialApple', {
-      dto: AuthLoginResponseDto,
+    DocAuth({ xApiKey: false, apple: true }),
+    DocResponse('auth.loginWithSocialApple', {
+      dto: UserLoginResponseDto,
     }),
   );
 }
 
-export function AuthPublicSignUpDoc(): MethodDecorator {
+export function UserPublicSignUpDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'Sign up',
+      summary: 'User sign up',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: AuthSignUpRequestDto,
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserSignUpRequestDto,
     }),
     DocAuth({
       xApiKey: true,
     }),
-    DocResponse('auth.signUp', {
+    DocResponse('user.signUp', {
       httpStatus: HttpStatus.CREATED,
+    }),
+  );
+}
+
+export function UserPublicSendEmailVerificationDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'User resend email verification',
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserSendEmailVerificationRequestDto,
+    }),
+    DocResponse('user.sendEmailVerification'),
+  );
+}
+
+export function UserPublicVerifyEmailDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'User Email Verification',
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserVerifyEmailRequestDto,
+    }),
+    DocResponse('user.verifyEmail'),
+  );
+}
+
+export function UserPublicForgotPasswordDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'User forgot password',
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserForgotPasswordRequestDto,
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocResponse('user.forgotPassword'),
+  );
+}
+
+export function UserPublicResetPasswordDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'User reset password',
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserForgotPasswordResetRequestDto,
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocResponse('user.resetPassword'),
+  );
+}
+
+export function UserPublicLoginVerifyTwoFactorDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'User verify two factor during login',
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserLoginVerifyTwoFactorRequestDto,
+    }),
+    DocResponse('user.loginVerifyTwoFactor', {
+      dto: AuthTokenResponseDto,
+    }),
+  );
+}
+
+export function UserPublicLoginEnableTwoFactorDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary:
+        'User enable two factor during login, for required setup 2FA flow',
+    }),
+    DocAuth({
+      xApiKey: true,
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserLoginEnableTwoFactorRequestDto,
+    }),
+    DocResponse('user.loginEnableTwoFactor', {
+      dto: UserTwoFactorEnableResponseDto,
     }),
   );
 }

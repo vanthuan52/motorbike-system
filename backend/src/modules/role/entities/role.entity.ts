@@ -4,11 +4,8 @@ import {
   DatabaseProp,
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
-import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
-import {
-  RolePermissionEntity,
-  RolePermissionSchema,
-} from './role.permission.entity';
+import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
+import { RoleAbilityEntity, RoleAbilitySchema } from './role.ability.entity';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 
 export const RoleTableName = 'roles';
@@ -43,14 +40,14 @@ export class RoleEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    enum: ENUM_POLICY_ROLE_TYPE,
+    enum: EnumRoleType,
     index: true,
     type: String,
   })
-  type: ENUM_POLICY_ROLE_TYPE;
+  type: EnumRoleType;
 
-  @DatabaseProp([RolePermissionSchema])
-  permissions: RolePermissionEntity[];
+  @DatabaseProp([RoleAbilitySchema])
+  abilities: RoleAbilityEntity[];
 }
 
 export const RoleSchema = DatabaseSchema(RoleEntity);

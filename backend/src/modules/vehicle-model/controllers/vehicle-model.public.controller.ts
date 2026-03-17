@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VehicleModelService } from '../services/vehicle-model.service';
 import {
@@ -12,25 +6,22 @@ import {
   VehicleModelPublicGetOneDoc,
 } from '../docs/vehicle-model.public.doc';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  PaginationQuery,
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
 import {
-  ENUM_VEHICLE_MODEL_FUEL_TYPE,
-  ENUM_VEHICLE_MODEL_STATUS,
-  ENUM_VEHICLE_MODEL_TYPE,
-} from '../enums/vehicle-model.enum';
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
   VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY,
   VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH,
@@ -38,10 +29,11 @@ import {
   VEHICLE_MODEL_DEFAULT_STATUS,
   VEHICLE_MODEL_DEFAULT_TYPE,
 } from '../constants/vehicle-model.list.constant';
-import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
-import { VehicleModelDoc } from '../entities/vehicle-model.entity';
-import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
-import { OptionalParseIntPipe } from '@/app/pipes/optional-parse-int.pipe';
+import { VehicleModelDto } from '../dtos/vehicle-model.dto';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+
+import { VehicleModelUtil } from '../utils/vehicle-model.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.vehicle-model')
 @Controller({
@@ -51,28 +43,18 @@ import { OptionalParseIntPipe } from '@/app/pipes/optional-parse-int.pipe';
 export class VehicleModelPublicController {
   constructor(
     private readonly vehicleModelService: VehicleModelService,
-    private readonly paginationService: PaginationService,
+    private readonly vehicleModelUtil: VehicleModelUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @VehicleModelPublicGetOneDoc()
   @Response('vehicle-model.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug') slug: string,
-  ): Promise<IResponse<VehicleModelGetFullResponseDto>> {
-    const vehicleModel: VehicleModelDoc | null =
-      await this.vehicleModelService.findBySlug(slug);
-
-    if (!vehicleModel) {
-      throw new NotFoundException({
-        message: 'vehicle-model.error.notFound',
-      });
-    }
-
-    const partFull = await this.vehicleModelService.join(vehicleModel);
-
-    const mapped: VehicleModelGetFullResponseDto =
-      this.vehicleModelService.mapGetPopulate(partFull);
+    @Param('slug', RequestRequiredPipe) slug: string,
+  ): Promise<IResponseReturn<VehicleModelDto>> {
+    const vehicleModel = await this.vehicleModelService.findBySlug(slug);
+    const mapped = this.vehicleModelUtil.mapGet(vehicleModel);
     return { data: mapped };
   }
 
@@ -80,75 +62,45 @@ export class VehicleModelPublicController {
   @ResponsePaging('vehicle-model.list')
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      VEHICLE_MODEL_DEFAULT_STATUS,
-      ENUM_VEHICLE_MODEL_STATUS,
-    )
-    status: Record<string, any>,
-    @PaginationQueryFilterInEnum(
-      'type',
-      VEHICLE_MODEL_DEFAULT_TYPE,
-      ENUM_VEHICLE_MODEL_TYPE,
-    )
-    type: Record<string, any>,
-    @PaginationQueryFilterInEnum(
-      'fuelType',
-      VEHICLE_MODEL_DEFAULT_FUEL_TYPE,
-      ENUM_VEHICLE_MODEL_FUEL_TYPE,
-    )
-    fuelType: Record<string, any>,
-    @Query('vehicleBrand', OptionalParseUUIDPipe)
+    pagination: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', VEHICLE_MODEL_DEFAULT_STATUS)
+    status: Record<string, IPaginationIn>,
+    @PaginationQueryFilterInEnum('type', VEHICLE_MODEL_DEFAULT_TYPE)
+    type: Record<string, IPaginationIn>,
+    @PaginationQueryFilterInEnum('fuelType', VEHICLE_MODEL_DEFAULT_FUEL_TYPE)
+    fuelType: Record<string, IPaginationIn>,
+    @Query('vehicleBrand')
     vehicleBrandId?: string,
-    @Query('engineDisplacement', OptionalParseIntPipe)
+    @Query('engineDisplacement')
     engineDisplacement?: number,
-    @Query('modelYear', OptionalParseIntPipe)
+    @Query('modelYear')
     modelYear?: number,
-  ): Promise<IResponsePaging<VehicleModelListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
+  ): Promise<IResponsePagingReturn<VehicleModelListResponseDto>> {
+    const filters: Record<string, any> = {
       ...status,
       ...type,
       ...fuelType,
     };
 
     if (modelYear !== undefined) {
-      find['modelYear'] = modelYear;
+      filters['modelYear'] = modelYear;
     }
     if (engineDisplacement !== undefined) {
-      find['engineDisplacement'] = engineDisplacement;
+      filters['engineDisplacement'] = engineDisplacement;
     }
-
     if (vehicleBrandId) {
-      find['vehicleBrand._id'] = vehicleBrandId;
+      filters['vehicleBrand'] = vehicleBrandId;
     }
 
-    const vehicleModels =
-      await this.vehicleModelService.findAllWithVehicleBrand(find, {
-        paging: {
-          limit: _limit,
-          offset: _offset,
-        },
-        order: _order,
-      });
-
-    const total: number =
-      await this.vehicleModelService.getTotalWithVehicleBrand(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.vehicleModelService.mapList(vehicleModels);
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    const { data, total } = await this.vehicleModelService.getListOffset(
+      pagination,
+      filters,
+    );
+    const mapped = this.vehicleModelUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 }

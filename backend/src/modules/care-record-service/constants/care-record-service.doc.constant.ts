@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 import { ENUM_CARE_RECORD_SERVICE_STATUS } from '../enums/care-record-service.enum';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const CareRecordServiceDocParamsId: DocField[] = [
+export const CareRecordServiceDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const CareRecordServiceDocParamsId: DocField[] = [
   },
 ];
 
-export const CareRecordServiceDocQueryStatus: DocField[] = [
+export const CareRecordServiceDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -31,7 +23,7 @@ export const CareRecordServiceDocQueryStatus: DocField[] = [
   },
 ];
 
-export const CareRecordServiceDocQueryCareRecord: DocField[] = [
+export const CareRecordServiceDocQueryCareRecord: ApiParamOptions[] = [
   {
     name: 'careRecord',
     allowEmptyValue: true,

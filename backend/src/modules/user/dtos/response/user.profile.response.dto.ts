@@ -1,16 +1,16 @@
 import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { UserGetResponseDto } from './user.get.response.dto';
-import { RoleGetResponseDto } from '@/modules/role/dtos/response/role.get.response.dto';
+import { RoleDto } from '@/modules/role/dtos/role.dto';
+import { UserDto } from '../user.dto';
 
-export class UserProfileResponseDto extends OmitType(UserGetResponseDto, [
+export class UserProfileResponseDto extends OmitType(UserDto, [
   'role',
 ] as const) {
   @ApiProperty({
     required: true,
-    type: RoleGetResponseDto,
-    oneOf: [{ $ref: getSchemaPath(RoleGetResponseDto) }],
+    type: RoleDto,
+    oneOf: [{ $ref: getSchemaPath(RoleDto) }],
   })
-  @Type(() => RoleGetResponseDto)
-  role: RoleGetResponseDto;
+  @Type(() => RoleDto)
+  role: RoleDto;
 }

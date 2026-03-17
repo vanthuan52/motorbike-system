@@ -1,16 +1,34 @@
-export enum ENUM_USER_SIGN_UP_FROM {
-  ADMIN = 'admin',
-  PUBLIC = 'public',
-  SEED = 'seed',
+export enum EnumUserLoginWith {
+  credential = 'credential',
+  google = 'google',
+  apple = 'apple',
 }
 
-export enum ENUM_USER_STATUS {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  BLOCKED = 'blocked',
+export enum EnumUserLoginFrom {
+  website = 'website',
+  mobile = 'mobile',
 }
 
-export enum ENUM_USER_GENDER {
-  MALE = 'male',
-  FEMALE = 'female',
+export enum EnumUserSignUpWith {
+  credential = 'credential',
+  google = 'google',
+  apple = 'apple',
+}
+
+export enum EnumUserSignUpFrom {
+  website = 'website',
+  mobile = 'mobile',
+  system = 'system',
+  admin = 'admin',
+}
+
+export enum EnumUserStatus {
+  active = 'active',
+  inactive = 'inactive',
+  blocked = 'blocked',
+}
+
+export enum EnumUserGender {
+  male = 'male',
+  female = 'female',
 }

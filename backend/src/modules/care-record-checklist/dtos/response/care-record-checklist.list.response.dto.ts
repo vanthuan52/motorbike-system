@@ -1,3 +1,3 @@
-import { CareRecordChecklistGetFullResponseDto } from './care-record-checklist.full.response.dto';
+import { CareRecordChecklistDto } from '../care-record-checklist.dto';
 
-export class CareRecordChecklistListResponseDto extends CareRecordChecklistGetFullResponseDto {}
+export class CareRecordChecklistListResponseDto extends CareRecordChecklistDto {}

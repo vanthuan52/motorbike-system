@@ -1,27 +1,26 @@
-export enum ENUM_POLICY_ACTION {
-  MANAGE = 'manage',
-  READ = 'read',
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
+export enum EnumPolicyAction {
+  manage = 'manage',
+  read = 'read',
+  create = 'create',
+  update = 'update',
+  delete = 'delete',
 }
 
-export enum ENUM_POLICY_SUBJECT {
-  AUTH = 'AUTH',
-  API_KEY = 'API_KEY',
-  COUNTRY = 'COUNTRY',
-  ROLE = 'ROLE',
-  USER = 'USER',
-  SESSION = 'SESSION',
-  ACTIVITY = 'ACTIVITY',
-  DASHBOARD = 'DASHBOARD',
-  UTILITIES = 'UTILITIES',
+export enum EnumPolicySubject {
+  all = 'all',
+  apiKey = 'apiKey',
+  role = 'role',
+  user = 'user',
+  auth = 'auth',
+  session = 'session',
+  activityLog = 'activityLog',
+  passwordHistory = 'passwordHistory',
+  termPolicy = 'termPolicy',
+  featureFlag = 'featureFlag',
 }
 
-export enum ENUM_POLICY_ROLE_TYPE {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  MANAGER = 'MANAGER',
-  TECHNICIAN = 'TECHNICIAN',
-  USER = 'USER',
+export enum EnumRoleType {
+  superAdmin = 'superadmin',
+  admin = 'admin',
+  user = 'user',
 }

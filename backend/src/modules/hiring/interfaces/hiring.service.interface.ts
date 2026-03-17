@@ -68,9 +68,5 @@ export interface IHiringService {
 
   existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
 
-  mapList(hiring: HiringDoc[] | HiringEntity[]): HiringListResponseDto[];
-
-  mapGet(hiring: HiringDoc | HiringEntity): HiringGetResponseDto;
-
   findBySlug(slug: string): Promise<HiringDoc | null>;
 }

@@ -6,55 +6,61 @@ import {
   Put,
   Delete,
   Param,
-  NotFoundException,
-  InternalServerErrorException,
-  HttpException,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CareAreaService } from '../services/care-area.service';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
 import { CareAreaListResponseDto } from '../dtos/response/care-area.list.response.dto';
-import { CareAreaGetResponseDto } from '../dtos/response/care-area.get.response.dto';
+import { CareAreaDto } from '../dtos/care-area.dto';
+import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
-  PaginationQuery,
-  PaginationQueryFilterInEnum,
-} from '@/common/pagination/decorators/pagination.decorator';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
-import {
-  CareAreaAdminCreateDoc,
-  CareAreaAdminDeleteDoc,
   CareAreaAdminListDoc,
+  CareAreaWithServiceChecklistDoc,
   CareAreaAdminParamsIdDoc,
+  CareAreaAdminCreateDoc,
   CareAreaAdminUpdateDoc,
+  CareAreaAdminDeleteDoc,
 } from '../docs/care-area.admin.doc';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
-import { ENUM_CARE_AREA_STATUS_CODE_ERROR } from '../enums/care-area.status-code.enum';
-import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
-import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
   CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
 } from '../constants/care-area.list.constant';
+import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { CareAreaWithServiceChecklistResponseDto } from '../dtos/response/care-area.with-service-checklist.response.dto';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import {
+  IDatabaseCreateOptions,
+  IDatabaseSaveOptions,
+} from '@/common/database/interfaces/database.interface';
+
+import { CareAreaUtil } from '../utils/care-area.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { ServiceChecklistUtil } from '@/modules/service-checklist/utils/service-checklist.util';
 
 @ApiTags('modules.admin.care-area')
 @Controller({
@@ -64,141 +70,137 @@ import {
 export class CareAreaAdminController {
   constructor(
     private readonly careAreaService: CareAreaService,
-    private readonly paginationService: PaginationService,
+    private readonly careAreaUtil: CareAreaUtil,
+    private readonly paginationUtil: PaginationUtil,
+    private readonly serviceChecklistUtil: ServiceChecklistUtil,
   ) {}
 
   @CareAreaAdminListDoc()
   @ResponsePaging('care-area.list')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-  ): Promise<IResponsePaging<CareAreaListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-    };
-
-    const careAreas = await this.careAreaService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
-
-    const total: number = await this.careAreaService.getTotal(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.careAreaService.mapList(careAreas);
-
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    pagination: IPaginationQueryOffsetParams,
+  ): Promise<IResponsePagingReturn<CareAreaListResponseDto>> {
+    const { data, total } =
+      await this.careAreaService.getListOffset(pagination);
+    const mapped = this.careAreaUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 
   @CareAreaAdminParamsIdDoc()
   @Response('care-area.get')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id') id: string,
-  ): Promise<IResponse<CareAreaGetResponseDto>> {
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+  ): Promise<IResponseReturn<CareAreaDto>> {
     const careArea = await this.careAreaService.findOneById(id);
-    if (!careArea) {
-      throw new NotFoundException({
-        message: 'care-area.error.notFound',
-      });
-    }
-    const mapped = this.careAreaService.mapGet(careArea);
+    const mapped = this.careAreaUtil.mapGet(careArea);
     return { data: mapped };
   }
 
   @CareAreaAdminCreateDoc()
   @Response('care-area.create')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.create],
+  })
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
     @Body() body: CareAreaCreateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
-    try {
-      const created = await this.careAreaService.create(body);
-      return { data: created };
-    } catch (err) {
-      if (err instanceof HttpException) throw err;
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const created = await this.careAreaService.create(body);
+    return { data: { _id: created._id } };
+  }
 
-      throw new InternalServerErrorException({
-        message: 'care-area.error.createFailed',
-        _error: err,
-      });
-    }
+  @CareAreaWithServiceChecklistDoc()
+  @ResponsePaging('care-area.listWithServiceChecklists')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected(EnumRoleType.admin)
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/list/checklists')
+  async listWithServiceChecklists(
+    @PaginationOffsetQuery({
+      availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    pagination: IPaginationQueryOffsetParams,
+    @Query('vehicleType') vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
+  ): Promise<IResponsePagingReturn<CareAreaWithServiceChecklistResponseDto>> {
+    const { data, total, checklistMap } =
+      await this.careAreaService.getListOffsetWithServiceChecklists(
+        pagination,
+        vehicleType,
+      );
+
+    const mapped = data.map((careArea) => {
+      const checklists = checklistMap.get(careArea._id.toString()) || [];
+      const mappedChecklists = this.serviceChecklistUtil.mapList(checklists);
+      return this.careAreaUtil.mapWithServiceChecklists(
+        careArea,
+        mappedChecklists,
+      );
+    });
+
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 
   @CareAreaAdminUpdateDoc()
   @Response('care-area.update')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id') id: string,
+    @Param('id', RequestRequiredPipe) id: string,
     @Body() body: CareAreaUpdateRequestDto,
-  ): Promise<void> {
-    const careArea = await this.careAreaService.findOneById(id);
-
-    if (!careArea) {
-      throw new NotFoundException({
-        statusCode: ENUM_CARE_AREA_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'care-area.error.notFound',
-      });
-    }
-
-    try {
-      await this.careAreaService.update(careArea, body);
-    } catch (err) {
-      throw new InternalServerErrorException({
-        message: 'care-area.error.updateFailed',
-        _error: err,
-      });
-    }
+  ): Promise<IResponseReturn<void>> {
+    await this.careAreaService.update(id, body);
+    return {};
   }
 
   @CareAreaAdminDeleteDoc()
   @Response('care-area.delete')
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
-  async delete(@Param('id') id: string): Promise<IResponse<void>> {
-    const CareArea = await this.careAreaService.findOneById(id);
-    if (!CareArea) {
-      throw new NotFoundException({
-        statusCode: ENUM_CARE_AREA_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'care-area.error.notFound',
-      });
-    }
-    try {
-      await this.careAreaService.delete(CareArea);
-      return {};
-    } catch (err) {
-      throw new InternalServerErrorException({
-        message: 'care-area.error.deleteFailed',
-        _error: err,
-      });
-    }
+  async delete(
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+  ): Promise<IResponseReturn<void>> {
+    await this.careAreaService.delete(id);
+    return {};
   }
 }

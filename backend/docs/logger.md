@@ -1,346 +1,691 @@
-# Overview
+# Logger Documentation
 
-The NestJS Motorbike System implements a comprehensive logging system using Pino, a very low overhead NodeJs logger.
+This documentation explains the features and usage of **Logger Module**: Located at `src/common/logger`
 
-This documentation explains features and usage of:
+## Overview
 
-- **Logger Module**: Located at `src/common/logger`
-- **Sentry Integration**: Located at `src/instrument.ts`
+Comprehensive logging system using Pino with file rotation, sensitive data redaction, Sentry integration, and custom serializers for request/response logging. The system includes HTTP request/response logging, automatic sensitive data redaction, file rotation, configurable log levels, pretty printing for development, route exclusion for health checks, request ID tracking across services, Sentry error tracking, and memory usage and uptime debugging for non-production environments.
 
-The logger configured globally and is automatically available throughout the application via dependency injecion.
+## Related Documents
 
-# Table of Contents
+- [Configuration Documentation][ref-doc-configuration] - For logger configuration settings
+- [Environment Documentation][ref-doc-environment] - For logger environment variables
+- [Handling Error Documentation][ref-doc-handling-error] - For error logging integration
+- [Security and Middleware Documentation][ref-doc-security-and-middleware] - For logger middleware and security features
+- [Security and Middleware Documentation][ref-doc-security-and-middleware] - For request ID tracking across services 
+
+## Table of Contents
 
 - [Overview](#overview)
-- [Table of Contents](#table-of-contents)
-  - [Configuration](#configuration)
-    - [Environment Variables](#environment-variables)
-    - [Debug Configuration](#debug-configuration)
-  - [Modules](#modules)
-    - [Logger Option Module](#logger-option-module)
-  - [Sentry](#sentry)
-    - [Configuration](#configuration-1)
-    - [How It Works](#how-it-works)
-    - [Filtering and Sampling](#filtering-and-sampling)
-  - [Examples](#examples)
-    - [Basic Logging](#basic-logging)
-    - [Error Handling](#error-handling)
-  - [Sensitive Data Handling](#sensitive-data-handling)
-  - [File Logging](#file-logging)
-  - [Performance Considerations](#performance-considerations)
+- [Related Documents](#related-documents)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Configuration Interface](#configuration-interface)
+- [Usage](#usage)
+  - [Log Levels](#log-levels)
+  - [Log Severity](#log-severity)
+- [Sensitive Data Redaction](#sensitive-data-redaction)
+  - [Sensitive Paths](#sensitive-paths)
+  - [Sensitive Fields](#sensitive-fields)
+  - [Redaction Examples](#redaction-examples)
+    - [Authentication Data](#authentication-data)
+    - [Array Truncation](#array-truncation)
+    - [Buffer Handling](#buffer-handling)
+    - [Object Depth Limitation](#object-depth-limitation)
+- [File Logging](#file-logging)
+  - [Configuration](#configuration-1)
+  - [File Rotation Settings](#file-rotation-settings)
+  - [File Structure](#file-structure)
+  - [Log Format](#log-format)
+  - [Example Usage](#example-usage)
+- [Auto Logging](#auto-logging)
+  - [Configuration](#configuration-2)
+  - [Logged Information](#logged-information)
+  - [Excluded Routes](#excluded-routes)
+  - [Pattern Matching Rules](#pattern-matching-rules)
+  - [Adding Custom Excluded Routes](#adding-custom-excluded-routes)
+  - [Auto-logging Context](#auto-logging-context)
+- [Console Output](#console-output)
+  - [Pretty Mode (LOGGER_PRETTIER=true)](#pretty-mode-logger_prettiertrue)
+  - [JSON Mode (LOGGER_PRETTIER=false)](#json-mode-logger_prettierfalse)
+  - [Debug Information (Non-Production)](#debug-information-non-production)
+- [Request ID Tracking](#request-id-tracking)
+  - [Header Priority](#header-priority)
+  - [Fallback Behavior](#fallback-behavior)
+  - [Usage Example](#usage-example)
+  - [Cross-Service Tracking](#cross-service-tracking)
+- [Sentry Integration](#sentry-integration)
+  - [Sentry Configuration](#sentry-configuration)
+  - [Configuration Details](#configuration-details)
+  - [Error Tracking](#error-tracking)
+  - [Usage Example](#usage-example-1)
+  - [Sentry Context](#sentry-context)
+  - [Disabling Sentry](#disabling-sentry)
 
 ## Configuration
 
 ### Environment Variables
 
-The logger behavior can be controlled through environment variables:
+Configuration is managed through environment variables. Add these to your `.env` file:
 
-| Variable          | Description                                | Default   |
-| ----------------- | ------------------------------------------ | --------- |
-| `DEBUG_ENABLE`    | Enable/disable debug logging               | `false`   |
-| `DEBUG_LEVEL`     | Minimum log level to output                | `debug`   |
-| `DEBUG_INTO_FILE` | Whether to write logs to files             | `false`   |
-| `DEBUG_PRETTIER`  | Enable pretty-printing of logs             | `true`    |
-| `SENTRY_DSN`      | Sentry Data Source Name for error tracking | undefined |
+```env
+# Logger Configuration
+LOGGER_ENABLE=true
+LOGGER_LEVEL=debug
+LOGGER_INTO_FILE=false
+LOGGER_PRETTIER=true
+LOGGER_AUTO=false
 
-These can be set in your `.env` file. For example:
-
-```dotenv
-DEBUG_ENABLE=true
-DEBUG_LEVEL=info
-DEBUG_INTO_FILE=true
-DEBUG_PRETTIER=true
-SENTRY_DSN=https://your-sentry-dsn
+# Sentry Configuration (Optional)
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 ```
 
-### Debug Configuration
+| Variable | Description | Type | Default | Required |
+|----------|-------------|------|---------|----------|
+| `LOGGER_ENABLE` | Enable/disable logging | `boolean` | `false` | No |
+| `LOGGER_LEVEL` | Minimum log level | `string` | `debug` | No |
+| `LOGGER_INTO_FILE` | Write logs to files | `boolean` | `false` | No |
+| `LOGGER_PRETTIER` | Enable pretty-printing in console | `boolean` | `false` | No |
+| `LOGGER_AUTO` | Enable automatic HTTP request/response logging | `boolean` | `false` | No |
+| `SENTRY_DSN` | Sentry Data Source Name for error tracking | `string` | `undefined` | No |
 
-The logger's behavior is defined in `src/configs/debug.config.ts`;
+### Configuration Interface
 
-```typescript
-export default registerAs(
-  'debug',
-  (): Record<string, any> => ({
-    enable: process.env.DEBUG_ENABLE === 'true',
-    level: process.env.DEBUG_LEVEL,
-    intoFile: process.env.DEBUG_INTO_FILE === 'true',
-    filePath: '/logs',
-    autoLogger: false,
-    prettier: process.env.DEBUG_PRETTIER === 'true',
-    sentry: {
-      dsn: process.env.SENTRY_DSN,
-      timeout: ms('10s'),
-    },
-  }),
-);
-```
+| Option | Description | Default |
+|--------|-------------|---------|
+| `enable` | Enable/disable logging | `false` |
+| `level` | Minimum log level (`error`, `warn`, `info`, `verbose`, `debug`, `silly`) | `debug` |
+| `intoFile` | Write logs to files | `false` |
+| `filePath` | Directory path for log files | `/logs` |
+| `auto` | Enable automatic HTTP request/response logging | `false` |
+| `prettier` | Enable pretty-printing in console | `false` |
+| `sentry.dsn` | Sentry DSN for error tracking | `undefined` |
+| `sentry.timeout` | Sentry request timeout | `10000ms` (10s) |
 
-The logger also defines excluded routes that won't be logged in `src/common/logger/constants/logger.constant.ts`
+## Usage
 
-```typescript
-export const LOGGER_EXCLUDED_ROUTES: string[] = [
-  '/api/health*',
-  '/metrics*',
-  '/favicon.ico',
-  '/docs*',
-  '/',
-] as const;
-```
-
-The excluded routes help reduce noise in the logs and improve performance by avoiding logging of high-frequency like health checks.
-
-## Modules
-
-### Logger Option Module
-
-The `LoggerOptionModule` (`src/common/logger/logger.option.module.ts`) sets up the logger configuration. It consists of:
-
-- **LoggerOptionService**: Located at `src/common/logger/services/logger.option.service.ts`, this service is responsible for creating Pino logger configuration based on the application's environment settings.
-- **Logger Constants**: Located at `src/common/logger/constants/logger.constant.ts`, these constant define excluded routes and sensitive data fields for redaction
-
-The logger is integrated globally in the `CommonModule` (`src/common/common.module.ts`) using:
-
-```typescript
-PinoLoggerModule.forRootAsync({
-    imports: [LoggerOptionModule],
-    inject: [LoggerOptionService],
-    useFactory: async (loggerOptionService: LoggerOptionService) => {
-        return loggerOptionService.createOptions();
-    },
-}),
-```
-
-## Sentry
-
-The project integrates Sentry for error tracking and monitoring. This provides:
-
-- Automatic error capture
-- Performance monitoring
-- Error filtering based on status code and route
-- Node.js profiling for performance analysis
-- Inteligent event sampling based on environment
-
-### Configuration
-
-Sentry is initialized in `src/instrument.ts`
-
-```typescript
-Sentry.init({
-  dsn: debugConfigs.sentry.dsn,
-  debug: false,
-  environment: appConfigs.env,
-  release: appConfigs.version,
-  integrations: [nodeProfilingIntegration()],
-  tracesSampleRate:
-    appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION ? 0.3 : 1.0,
-  profilesSampleRate:
-    appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION ? 0.1 : 0.5,
-  normalizeDepth: 3,
-  maxValueLength: 1000,
-  attachStacktrace: false,
-  sendDefaultPii: false,
-  maxBreadcrumbs: 30,
-  // additional configuration...
-});
-```
-
-### How's it works
-
-The `AppleGeneralFilter` captures exceptions and forwards them to Sentry using the `sendToSentry` method:
-
-```typescript
-sendToSentry(exception: unknown): void {
-    // Skip certain exception types
-    if (
-        (exception instanceof HttpException &&
-            !(exception instanceof InternalServerErrorException)) ||
-        exception instanceof RequestValidationException ||
-        exception instanceof FileImportException
-    ) {
-        return;
-    }
-
-    try {
-        Sentry.captureException(exception);
-    } catch (err: unknown) {
-        this.logger.error(err);
-    }
-
-    return;
-}
-```
-
-### Filtering and Sampling
-
-The sentry integration includes advanced filtering to reduce noise and focus on important events:
-
-1. **Route Filtering**: Health check and documentation routes are excluded from error tracking
-2. **Status Code Filtering**: Only 5xx errors are sent to Sentry be default
-3. **Log Level Filtering**: Debug and infor level are not sent to Sentry.
-4. **Exception Type Filtering**: Certain exception types, such as validation errors, are ignored
-   5 **Worker Exception Filtering**: Non-fatal worker exceptions are excluded
-
-Sampling rates are configured to optimize cost and performance:
-
-```typescript
-tracesSampler: samplingContext => {
-    const transaction = samplingContext?.transactionContext;
-
-    if (
-        appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION &&
-        transaction?.data?.status === 'ok'
-    ) {
-        // Only sample 5% of successful transactions
-        return 0.05;
-    }
-
-    // Use normal sampling rate for errors or non-production
-    return appConfigs.env === ENUM_NODE_ENVIRONMENT.PRODUCTION
-        ? 0.3
-        : 1.0;
-},
-```
-
-## Examples
-
-### Basic Logging
-
-The NestJs Logger is used throughout the application for consistent logging:
+Use [NestJS][ref-nestjs] Logger throughout the application:
 
 ```typescript
 import { Logger } from '@nestjs/common';
 
-export class ExampleService {
-  private readonly logger = new Logger(ExampleService.name);
+export class UserService {
+    private readonly logger = new Logger(UserService.name);
 
-  doSomething() {
-    this.logger.log('This is a log message');
-    this.logger.debug('This is a debug message');
-    this.logger.warn('This is a warning message');
-    this.logger.error('This is an error message');
-  }
-}
-```
-
-### Error Handling
-
-Proper error logging with stack traces:
-
-```typescript
-import { Logger } from '@nestjs/common';
-
-export class ErrorHandlingService {
-  private readonly logger = new Logger(ErrorHandlingService.name);
-
-  async riskyOperation() {
-    try {
-      // Operation that may fail
-      await someAsyncOperation();
-    } catch (error) {
-      this.logger.error(
-        `Failed to complete operation: ${error.message}`,
-        error.stack,
-      );
-      throw error;
+    async createUser(data: CreateUserDto) {
+        this.logger.log('Creating new user');
+        
+        try {
+            const user = await this.userRepository.create(data);
+            this.logger.log(`User created: ${user.id}`);
+            return user;
+        } catch (error) {
+            this.logger.error(`Failed to create user: ${error.message}`, error.stack);
+            throw error;
+        }
     }
-  }
+
+    async deleteUser(id: string) {
+        this.logger.warn(`Attempting to delete user: ${id}`);
+        // deletion logic
+    }
+
+    async getUserDetails(id: string) {
+        this.logger.debug(`Fetching user details for: ${id}`);
+        // fetch logic
+    }
 }
 ```
 
-## Sensitive Data Handling
+### Log Levels
 
-The logger automatically redacts sensitive information in requestd and responses.
-Sensitive fields are defined in `src/common/logger/constants/logger.constant.ts`
+Available log levels as defined in `EnumLoggerLevel`:
 
 ```typescript
-export const LOGGER_SENSITIVE_FIELDS: string[] = [
-  'password',
-  'newPassword',
-  'oldPassword',
-  'token',
-  'authorization',
-  'bearer',
-  'cookie',
-  'secret',
-  'credential',
-  'jwt',
-  'x-api-key',
-  'apiKey',
-  'refreshToken',
-  'accessToken',
-  'sessionId',
-  'set-cookie',
-  'creditCard',
-  'cardNumber',
-  'cvv',
-  'cvc',
-  'ccv',
-  'pin',
-  'bankAccount',
-  // Additional sensitive fields...
+this.logger.error('Error message');      // error level - Critical errors
+this.logger.warn('Warning message');     // warn level - Warning conditions
+this.logger.log('Info message');         // info level - General information
+this.logger.verbose('Verbose message');  // verbose level - Detailed information
+this.logger.debug('Debug message');      // debug level - Debug information
+```
+
+**Level Hierarchy (from highest to lowest priority):**
+1. `error` - Critical errors that need immediate attention
+2. `warn` - Warning conditions that should be reviewed
+3. `info` - General informational messages
+4. `verbose` - Detailed informational messages
+5. `debug` - Debug-level messages for development
+
+**Note:** Setting `LOGGER_LEVEL=warn` will log only `error` and `warn` messages, filtering out `info`, `verbose`, and `debug`.
+
+### Log Severity
+
+The logger maps numeric Pino levels to severity strings as defined in `EnumLoggerSeverity`:
+
+| Pino Level | Severity | Use Case |
+|------------|----------|----------|
+| ≥ 60 | `CRITICAL` | System-wide critical failures |
+| ≥ 50 | `ERROR` | Application errors |
+| ≥ 40 | `WARNING` | Warning conditions |
+| ≥ 30 | `INFO` | General information |
+| ≥ 20 | `DEBUG` | Debug information |
+| < 20 | `TRACE` | Trace-level debugging |
+
+## Sensitive Data Redaction
+
+The logger automatically redacts sensitive fields to prevent exposure of credentials, tokens, and personal information in logs.
+
+### Sensitive Paths
+
+Paths where sensitive data may be located (defined in `logger.constant.ts`):
+
+```typescript
+export const LoggerSensitivePaths = [
+    'req.body',
+    'req.headers',
+    'res.body',
+    'res.headers',
+    'request.body',
+    'request.headers',
+    'response.body',
+    'response.headers',
 ];
 ```
 
-These fields are automatically replaced with `***REDACTED***` in logs using Pino's redaction feature:
+The logger will scan these paths in request/response objects and redact any fields matching the sensitive field list.
+
+### Sensitive Fields
+
+Fields that are automatically redacted (defined in `logger.constant.ts`):
 
 ```typescript
-redact: {
-    paths: [
-        ...LOGGER_SENSITIVE_FIELDS.map(field =>
-            field.includes('-')
-                ? `req.body["${field}"]`
-                : `req.body.${field}`
-        ),
-        ...LOGGER_SENSITIVE_FIELDS.map(field =>
-            field.includes('-')
-                ? `req.headers["${field}"]`
-                : `req.headers.${field}`
-        ),
-        ...LOGGER_SENSITIVE_FIELDS.map(field =>
-            field.includes('-')
-                ? `res.body["${field}"]`
-                : `res.body.${field}`
-        ),
-        ...LOGGER_SENSITIVE_FIELDS.map(field =>
-            field.includes('-')
-                ? `res.headers["${field}"]`
-                : `res.headers.${field}`
-        ),
-    ],
-    censor: '***REDACTED***',
-},
+export const LoggerSensitiveFields: string[] = [
+    // Authentication & Authorization
+    'password',
+    'newPassword',
+    'oldPassword',
+    'token',
+    'authorization',
+    'bearer',
+    'secret',
+    'credential',
+    'jwt',
+    'x-api-key',
+    'apiKey',
+    'refreshToken',
+    'accessToken',
+    'sessionId',
+    'privateKey',
+    'secretKey',
+    'otp',
+    'recoveryCode',
+    
+    // Location & Personal Data
+    'location',
+    'gps',
+    'coordinates',
+    'latitude',
+    'longitude',
+    
+    // Session & Cookies
+    'cookie',
+    'cookies',
+];
 ```
+
+**Redaction Rules:**
+- Field names are **case-insensitive** (e.g., `Password`, `PASSWORD`, `password` all match)
+- Fields with hyphens are wrapped in brackets (e.g., `req.headers["x-api-key"]`)
+- All matching fields are replaced with `[REDACTED]`
+
+### Redaction Examples
+
+#### Authentication Data
+
+**Request with sensitive data:**
+
+```json
+{
+  "username": "john.doe",
+  "password": "secret123",
+  "apiKey": "abc-def-ghi-jkl",
+  "email": "john@example.com"
+}
+```
+
+**Logged as:**
+
+```json
+{
+  "username": "john.doe",
+  "password": "[REDACTED]",
+  "apiKey": "[REDACTED]",
+  "email": "john@example.com"
+}
+```
+
+#### Array Truncation
+
+Arrays longer than 10 items are automatically truncated to prevent excessive logging:
+
+```json
+{
+  "items": [
+    "item1",
+    "item2",
+    "item3",
+    "item4",
+    "item5",
+    "item6",
+    "item7",
+    "item8",
+    "item9",
+    "item10",
+    { "truncated": "...[TRUNCATED] - total length 50" }
+  ]
+}
+```
+
+#### Buffer Handling
+
+Binary data (Buffers) are replaced with a placeholder:
+
+```json
+{
+  "file": { "buffer": "[BUFFER]" }
+}
+```
+
+#### Object Depth Limitation
+
+Objects are sanitized up to a maximum depth of **5 levels** to prevent:
+- Performance issues with deeply nested objects
+- Circular reference problems
+- Excessive log size
 
 ## File Logging
 
-When `DEBUG_INTO_FLE` is enabled, logs are written to files in the `/logs` directory.
-The system uses rotating file streams to manage log files:
+Enable file logging by setting `LOGGER_INTO_FILE=true`. Logs are written to `./logs/api.log` with automatic rotation using `pino-roll`.
 
-- Log files are rotated daily or when they reach 10MB
-- Files are compressed using gzip
-- Up to `0 rotated files are kept
-- Files older thant 7 days are automatically removed
+### Configuration
 
-Example log file paths:
+```env
+LOGGER_INTO_FILE=true
+```
 
-- `/logs/api.log` - Current log file
-- `/logs/api.log.1.gz` - Previous rotated log file
+### File Rotation Settings
 
-## Performance Considerations
+- **File path**: `./logs/api.log`
+- **Size limit**: 10MB per file
+- **Rotation**: Daily or when size limit is reached
+- **Directory**: Automatically created if it doesn't exist
 
-The logging system is designed to have minimal impact on application performance:
+### File Structure
 
-1. **Conditional Logging**: Logs below the configured level are not processed
-2. **Path Exclusion**: Certain paths (like health checks) are excluded from automatic logging using `LOGGER_EXCLUDED_ROUTES`
-3. **Production Settings**: In production, sampling rates for Sentry are reduced (5% for successful transactions, 30% for others)
-4. **Asynchronous Processing**: Logs are processed asynchronous when possible
-5. **Buffer Control**: Large log objects are truncated to prevent memory issues (using `maxValueLength: 1000`)
-6. **Format Control**: Normalized depth is limited (using `normalizeDepth: 3`) to prevent excessive serialization
-7. **Breadcrumb Limitation**: Limited to 30 breadcrumbs to control memory usage
+```
+logs/
+└── api.log              # Current log file (rotates daily or at 10MB)
+```
 
-When configuration for production, consider:
+### Log Format
 
-- Setting `DEBUG_LEVEL` to `info` or higher
-- Diabling `DEBUG_PRETTIER` for better performance
-- Enabling `DEBUG_INTO_FILE` for persistence
-- Configuration proper log rotating settings
+When `LOGGER_PRETTIER=false`, logs are written in JSON format:
+
+```json
+{"severity":"INFO","context":"UserService","timestamp":1764577182750,"msg":"User created: user-123","service":{"name":"ACKNestJs","environment":"production","version":"8.0.0"},"level":30}
+```
+
+### Example Usage
+
+```typescript
+// Enable file logging in production
+// .env.production
+LOGGER_ENABLE=true
+LOGGER_LEVEL=info
+LOGGER_INTO_FILE=true
+LOGGER_PRETTIER=false
+LOGGER_AUTO=true
+```
+
+## Auto Logging
+
+Enable automatic HTTP request/response logging with `LOGGER_AUTO=true`. This feature automatically logs all incoming HTTP requests and their responses without manual instrumentation.
+
+### Configuration
+
+```env
+LOGGER_AUTO=true
+```
+
+### Logged Information
+
+When auto-logging is enabled, the following information is automatically captured:
+
+**Request:**
+- Request ID
+- HTTP method
+- URL and path
+- Route pattern
+- User-Agent
+- Content-Type
+- Client IP address
+- Authenticated user ID
+- Query parameters (sanitized)
+- Request headers (sanitized)
+
+**Response:**
+- HTTP status code
+- Response time
+- Content-Length
+- Response headers (sanitized)
+
+### Excluded Routes
+
+Routes excluded from auto-logging (defined in `logger.constant.ts`):
+
+```typescript
+export const LoggerExcludedRoutes: string[] = [
+    '/api/health',
+    '/api/health/*',
+    '/metrics',
+    '/metrics/*',
+    '/favicon.ico',
+    '/docs',
+    '/docs/*',
+    '/',
+];
+```
+
+### Pattern Matching Rules
+
+- **Exact match**: `/api/health` - matches only this exact path
+- **Wildcard suffix**: `/api/health/*` - matches `/api/health/status`, `/api/health/check`, etc.
+- **Root path**: `/` - matches only the root endpoint
+- All patterns are **case-insensitive**
+
+### Adding Custom Excluded Routes
+
+To exclude additional routes, modify the constant in `src/common/logger/constants/logger.constant.ts`:
+
+```typescript
+export const LoggerExcludedRoutes: string[] = [
+    '/api/health',
+    '/api/health/*',
+    '/metrics',
+    '/metrics/*',
+    '/favicon.ico',
+    '/docs',
+    '/docs/*',
+    '/',
+    // Add your custom routes
+    '/internal/*',
+    '/admin/debug',
+];
+```
+
+### Auto-logging Context
+
+All auto-logged entries use the context `LoggerAutoContext` to distinguish them from manual logs:
+
+```json
+{
+  "severity": "INFO",
+  "context": "LoggerAutoContext",
+  "msg": "request completed",
+  "req": { ... },
+  "res": { ... }
+}
+```
+
+## Console Output
+
+The logger supports two output modes: Pretty mode for development and JSON mode for production.
+
+### Pretty Mode (`LOGGER_PRETTIER=true`)
+
+Development-friendly colored output with structured formatting using `pino-pretty`:
+
+```
+INFO [2025-12-29 15:18:54.496 +0700]: [UserService] Creating new user
+    service: {
+      "name": "ACKNestJs",
+      "environment": "local",
+      "version": "8.0.0"
+    }
+    additionalData: {
+      "userId": "user-123",
+      "action": "create"
+    }
+    debug: {
+      "memory": {
+        "rss": 449,
+        "heapUsed": 182
+      },
+      "uptime": 2,
+      "pid": 12345,
+      "hostname": "localhost"
+    }
+```
+
+**Features:**
+- Color-coded log levels (ERROR = red, WARN = yellow, INFO = green, DEBUG = blue)
+- Timestamp in system timezone
+- Context displayed in square brackets
+- Multi-line structured data for readability
+
+**Configuration:**
+
+```env
+LOGGER_PRETTIER=true
+LOGGER_LEVEL=debug
+```
+
+### JSON Mode (`LOGGER_PRETTIER=false`)
+
+Production-optimized structured JSON for log aggregation and analysis tools:
+
+```json
+{"severity":"INFO","context":"UserService","timestamp":1735461534496,"msg":"Creating new user","service":{"name":"ACKNestJs","environment":"production","version":"8.0.0"},"additionalData":{"userId":"user-123","action":"create"},"level":30}
+```
+
+**Features:**
+- Machine-readable single-line JSON format
+- Consistent structure for parsing
+- Compatible with log aggregation tools (ELK, Datadog, CloudWatch)
+- Compact output without formatting
+
+**Configuration:**
+
+```env
+LOGGER_PRETTIER=false
+LOGGER_LEVEL=info
+```
+
+### Debug Information (Non-Production)
+
+In non-production environments (`app.env !== 'production'`), additional debug information is automatically included in every log entry:
+
+```json
+{
+  "debug": {
+    "memory": {
+      "rss": 413,
+      "heapUsed": 181
+    },
+    "uptime": 1,
+    "pid": 12345,
+    "hostname": "dev-server"
+  }
+}
+```
+
+**Debug Fields:**
+
+| Field | Description | Unit |
+|-------|-------------|------|
+| `memory.rss` | Resident Set Size - total memory allocated | MB |
+| `memory.heapUsed` | Heap memory currently in use | MB |
+| `uptime` | Process uptime since startup | seconds |
+| `pid` | Process ID | number |
+| `hostname` | Server hostname | string |
+
+**Use Cases:**
+- Memory leak detection
+- Performance monitoring
+- Process identification in multi-instance deployments
+
+**Note:** Debug information is automatically excluded in production to reduce log size and improve performance.
+
+## Request ID Tracking
+
+The logger extracts and tracks request IDs across services for distributed tracing and correlation.
+
+### Header Priority
+
+Request IDs are extracted from these headers in order of priority:
+
+```typescript
+export const LoggerRequestIdHeaders = [
+    'x-correlation-id',  // First priority
+    'x-request-id',      // Second priority
+];
+```
+
+### Fallback Behavior
+
+If no request ID header is found, the logger falls back to:
+1. The auto-generated `request.id` from the framework
+2. A new UUID generated by the framework
+
+### Usage Example
+
+**Client sends request with correlation ID:**
+
+```bash
+curl -H "x-correlation-id: req-abc-123" https://api.example.com/users
+```
+
+**Logger output:**
+
+```json
+{
+  "req": {
+    "id": "req-abc-123",
+    "method": "GET",
+    "url": "/users"
+  }
+}
+```
+
+### Cross-Service Tracking
+
+When making requests to other services, propagate the request ID:
+
+```typescript
+async callExternalService(requestId: string) {
+    const response = await this.httpService.get('https://external-api.com/data', {
+        headers: {
+            'x-correlation-id': requestId,
+        },
+    });
+    
+    return response.data;
+}
+```
+
+## Sentry Integration
+
+The logger includes built-in Sentry integration for error tracking and monitoring in production environments.
+
+### Sentry Configuration
+
+Configure Sentry by setting the `SENTRY_DSN` environment variable:
+
+```env
+# .env.production
+SENTRY_DSN=https://your-public-key@o123456.ingest.sentry.io/7654321
+```
+
+### Configuration Details
+
+The Sentry configuration is defined in `src/configs/logger.config.ts`:
+
+```typescript
+sentry: {
+    dsn?: string;        // Sentry Data Source Name
+    timeout: number;     // Request timeout in milliseconds (default: 10000ms = 10s)
+}
+```
+
+**Default timeout:** 10 seconds (`10000ms`)
+
+### Error Tracking
+
+When Sentry DSN is configured, errors logged through the logger are automatically sent to Sentry for:
+
+- **Error aggregation** and grouping
+- **Stack trace analysis**
+- **Release tracking**
+- **Environment tagging**
+- **User context** (if available)
+- **Request context** (URL, method, headers)
+
+### Usage Example
+
+```typescript
+export class PaymentService {
+    private readonly logger = new Logger(PaymentService.name);
+
+    async processPayment(orderId: string) {
+        try {
+            // Process payment logic
+        } catch (error) {
+            // This error will be sent to Sentry automatically
+            this.logger.error(
+                `Payment processing failed for order: ${orderId}`,
+                error.stack
+            );
+            throw error;
+        }
+    }
+}
+```
+
+### Sentry Context
+
+The logger automatically includes the following context in Sentry reports:
+
+```json
+{
+  "service": {
+    "name": "ACKNestJs",
+    "environment": "production",
+    "version": "8.0.0"
+  },
+  "request": {
+    "id": "req-123-abc",
+    "method": "POST",
+    "url": "/api/payments",
+    "ip": "203.0.113.45",
+    "user": "user-789"
+  }
+}
+```
+
+### Disabling Sentry
+
+To disable Sentry integration, simply remove or comment out the `SENTRY_DSN` environment variable:
+
+```env
+# SENTRY_DSN=https://...
+```
+
+When DSN is not configured, errors are only logged locally without being sent to Sentry.
+
+<!-- REFERENCES -->
+
+[ref-nestjs]: http://nestjs.com
+[ref-doc-configuration]: configuration.md
+[ref-doc-environment]: environment.md
+[ref-doc-handling-error]: handling-error.md
+[ref-doc-security-and-middleware]: security-and-middleware.md

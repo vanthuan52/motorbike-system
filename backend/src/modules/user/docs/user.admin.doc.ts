@@ -1,8 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   UserDocParamsId,
-  UserDocQueryRoleType,
-  UserDocQueryStatus,
+  UserDocQueryList,
 } from '../constants/user.doc.constant';
 import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
 import {
@@ -14,41 +13,25 @@ import {
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
-import {
-  UserCreateRequestDto,
-  UserTypeUserCreateRequestDto,
-} from '../dtos/request/user.create.request.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
+import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
 import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
-import { UserPreCreateRequestDto } from '../dtos/request/user.pre-create.request.dto';
-
+import {
+  UserCheckEmailRequestDto,
+  UserCheckPhoneRequestDto,
+} from '../dtos/request/user.check.request.dto';
+import { UserCheckEmailResponseDto } from '../dtos/response/user.check-email.response.dto';
+import { UserCheckPhoneResponseDto } from '../dtos/response/user.check-phone.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { UserCreateShadowUserRequestDto } from '../dtos/request/user.create-shadow-user.request.dto';
 export function UserAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get all users',
     }),
     DocRequest({
-      queries: [...UserDocQueryStatus],
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponsePaging<UserListResponseDto>('user.list', {
-      dto: UserListResponseDto,
-    }),
-  );
-}
-
-export function UserAdminListUserTypeUserDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'get all users with type USER',
-    }),
-    DocRequest({
-      queries: [...UserDocQueryStatus],
+      queries: UserDocQueryList,
     }),
     DocAuth({
       jwtAccessToken: true,
@@ -84,47 +67,30 @@ export function UserAdminCreateDoc(): MethodDecorator {
       summary: 'create a user',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: UserCreateRequestDto,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('user.create', {
+    DocResponse<DatabaseIdDto>('user.create', {
       httpStatus: HttpStatus.CREATED,
-      dto: DatabaseIdResponseDto,
+      dto: DatabaseIdDto,
     }),
   );
 }
 
-export function UserTypeUserAdminCreateDoc(): MethodDecorator {
+export function UserAdminCreateShadowUserDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'create a user with type user',
+      summary: 'create a shadow user',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: UserTypeUserCreateRequestDto,
+      bodyType: EnumDocRequestBodyType.json,
+      dto: UserCreateShadowUserRequestDto,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('user.create', {
+    DocResponse<DatabaseIdDto>('user.createShadowUser', {
       httpStatus: HttpStatus.CREATED,
-      dto: DatabaseIdResponseDto,
-    }),
-  );
-}
-
-export function UserAdminPreCreateDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'create a pre-user',
-    }),
-    DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
-      dto: UserPreCreateRequestDto,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('user.create', {
-      httpStatus: HttpStatus.CREATED,
-      dto: DatabaseIdResponseDto,
+      dto: DatabaseIdDto,
     }),
   );
 }
@@ -136,7 +102,7 @@ export function UserAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: UserDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: UserUpdateRequestDto,
     }),
     DocAuth({
@@ -155,7 +121,7 @@ export function UserAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: UserDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: UserUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -180,5 +146,44 @@ export function UserAdminDeleteDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('user.deleted'),
+  );
+}
+
+export function UserAdminCheckEmailDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'check user exist by email',
+    }),
+    DocRequest({
+      dto: UserCheckEmailRequestDto,
+      bodyType: EnumDocRequestBodyType.json,
+    }),
+    DocAuth({
+      xApiKey: false,
+      jwtAccessToken: true,
+    }),
+    DocResponse<UserCheckEmailResponseDto>('user.checkEmail', {
+      dto: UserCheckEmailResponseDto,
+    }),
+  );
+}
+
+export function UserAdminCheckPhoneDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'check user exist by phone',
+    }),
+    DocRequest({
+      dto: UserCheckPhoneRequestDto,
+      bodyType: EnumDocRequestBodyType.json,
+    }),
+    DocAuth({
+      xApiKey: false,
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<UserCheckPhoneResponseDto>('user.checkPhone', {
+      dto: UserCheckPhoneResponseDto,
+    }),
   );
 }

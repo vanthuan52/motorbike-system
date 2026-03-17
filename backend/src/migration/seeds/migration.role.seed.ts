@@ -1,7 +1,7 @@
 import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleService } from '@/modules/role/services/role.service';
@@ -20,28 +20,28 @@ export class MigrationRoleSeed {
     const data: RoleCreateRequestDto[] = [
       {
         name: 'superadmin',
-        type: ENUM_POLICY_ROLE_TYPE.SUPER_ADMIN,
-        permissions: [],
+        type: EnumRoleType.superAdmin,
+        abilities: [],
       },
       {
         name: 'admin',
-        type: ENUM_POLICY_ROLE_TYPE.ADMIN,
-        permissions: Object.values(ENUM_POLICY_SUBJECT)
-          .filter((e) => e !== ENUM_POLICY_SUBJECT.API_KEY)
+        type: EnumRoleType.admin,
+        abilities: Object.values(EnumPolicySubject)
+          .filter((e) => e !== EnumPolicySubject.apiKey)
           .map((val) => ({
             subject: val,
-            action: [ENUM_POLICY_ACTION.MANAGE],
+            action: [EnumPolicyAction.manage],
           })),
       },
       {
         name: 'technician',
-        type: ENUM_POLICY_ROLE_TYPE.TECHNICIAN,
-        permissions: [],
+        type: EnumRoleType.technician,
+        abilities: [],
       },
       {
         name: 'user',
-        type: ENUM_POLICY_ROLE_TYPE.USER,
-        permissions: [],
+        type: EnumRoleType.user,
+        abilities: [],
       },
     ];
 

@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_PART_TYPE_STATUS } from '../enums/part-type.enum';
+import { EnumPartTypeStatus } from '../enums/part-type.enum';
+import { ApiParamOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const PartTypeDocParamsId: DocField[] = [
+export const PartTypeDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const PartTypeDocParamsId: DocField[] = [
   },
 ];
 
-export const PartTypeDocParamsSlug: DocField[] = [
+export const PartTypeDocParamsSlug: ApiParamOptions[] = [
   {
     name: 'slug',
     allowEmptyValue: false,
@@ -30,18 +22,18 @@ export const PartTypeDocParamsSlug: DocField[] = [
   },
 ];
 
-export const PartTypeDocQueryStatus: DocField[] = [
+export const PartTypeDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_PART_TYPE_STATUS).join(','),
+    example: Object.values(EnumPartTypeStatus).join(','),
     description: "value with ',' delimiter",
   },
 ];
 
-export const PartTypeDocQueryOrderBy: DocField[] = [
+export const PartTypeDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -52,7 +44,7 @@ export const PartTypeDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const PartTypeDocQueryOrderDirection: DocField[] = [
+export const PartTypeDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,
@@ -60,5 +52,16 @@ export const PartTypeDocQueryOrderDirection: DocField[] = [
     type: 'string',
     example: 'asc',
     description: 'Arrange the position sorting by order field',
+  },
+];
+
+export const PartTypeDocQueryList: ApiParamOptions[] = [
+  {
+    name: 'status',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: Object.values(EnumPartTypeStatus).join(','),
+    description: "value with ',' delimiter",
   },
 ];

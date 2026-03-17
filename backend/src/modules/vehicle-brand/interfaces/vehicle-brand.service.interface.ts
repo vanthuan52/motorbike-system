@@ -5,15 +5,20 @@ import {
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
-  IDatabaseOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
-
 import { VehicleBrandDoc } from '../entities/vehicle-brand.entity';
 import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.create.request.dto';
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
-import { VehicleBrandGetResponseDto } from '../dtos/response/vehicle-brand.get.response.dto';
+import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
+import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IVehicleBrandService {
   findAll(
@@ -21,20 +26,25 @@ export interface IVehicleBrandService {
     options?: IDatabaseFindAllOptions,
   ): Promise<VehicleBrandDoc[]>;
 
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleBrandDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleBrandDoc[]; total: number }>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleBrandDoc[]; total?: number }>;
 
   findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<VehicleBrandDoc | null>;
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<VehicleBrandDoc>;
 
   findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleBrandDoc | null>;
+  ): Promise<VehicleBrandDoc>;
 
   getTotal(
     find?: Record<string, any>,
@@ -47,27 +57,27 @@ export interface IVehicleBrandService {
   ): Promise<VehicleBrandDoc>;
 
   update(
-    repository: VehicleBrandDoc,
+    id: string,
     payload: VehicleBrandUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleBrandDoc>;
+  ): Promise<void>;
 
-  softDelete(
-    repository: VehicleBrandDoc,
+  updateStatus(
+    id: string,
+    payload: VehicleBrandUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleBrandDoc>;
+  ): Promise<void>;
+
+  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
 
+  findBySlug(slug: string): Promise<VehicleBrandDoc>;
+
   existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
 
   existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  createSlug(name: string): string;
-
-  mapList(data: VehicleBrandDoc[]): VehicleBrandListResponseDto[];
-  mapGet(data: VehicleBrandDoc): VehicleBrandGetResponseDto;
 }

@@ -1,5 +1,4 @@
-import { ENUM_API_KEY_TYPE } from '../enums/api-key.enum';
+import { EnumApiKeyType } from '../enums/api-key.enum';
 
-export const API_KEY_DEFAULT_AVAILABLE_SEARCH = ['name', 'key'];
-export const API_KEY_DEFAULT_IS_ACTIVE = [true, false];
-export const API_KEY_DEFAULT_TYPE = Object.values(ENUM_API_KEY_TYPE);
+export const ApiKeyDefaultAvailableSearch = ['name'];
+export const ApiKeyDefaultType = Object.values(EnumApiKeyType);

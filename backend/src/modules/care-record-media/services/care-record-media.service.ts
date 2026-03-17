@@ -1,16 +1,8 @@
-import { plainToInstance } from 'class-transformer';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import _ from 'lodash';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
   IDatabaseSaveOptions,
 } from '@/common/database/interfaces/database.interface';
 import { ICareRecordMediaService } from '../interfaces/care-record-media.service.interface';
@@ -19,91 +11,63 @@ import {
   CareRecordMediaDoc,
   CareRecordMediaEntity,
 } from '../entities/care-record-media.entity';
-import {
-  ICareRecordMediaDoc,
-  ICareRecordMediaEntity,
-} from '../interfaces/care-record-media.interface';
-import { CareRecordMediaListResponseDto } from '../dtos/response/care-record-media.list.response.dto';
-import { CareRecordMediaGetResponseDto } from '../dtos/response/care-record-media.get.response.dto';
+import { ICareRecordMediaEntity } from '../interfaces/care-record-media.interface';
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
 import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-media.update.request.dto';
-import { CareRecordMediaGetFullResponseDto } from '../dtos/response/care-record-media.full.response.dto';
-import { HelperStringService } from '@/common/helper/services/helper.string.service';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 @Injectable()
 export class CareRecordMediaService implements ICareRecordMediaService {
-  private readonly uploadPath: string;
   constructor(
     private readonly careRecordMediaRepository: CareRecordMediaRepository,
-    private readonly configService: ConfigService,
-    private readonly helperStringService: HelperStringService,
   ) {}
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CareRecordMediaDoc[]> {
-    return this.careRecordMediaRepository.findAll<CareRecordMediaDoc>(
-      find,
-      options,
-    );
-  }
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: CareRecordMediaDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
 
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.careRecordMediaRepository.getTotal(find, options);
-  }
-
-  async findAllWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<ICareRecordMediaEntity[]> {
-    return this.careRecordMediaRepository.findAll<ICareRecordMediaEntity>(
-      find,
-      {
-        ...options,
+    const [careRecordMedias, total] = await Promise.all([
+      this.careRecordMediaRepository.findAll<ICareRecordMediaEntity>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
         join: true,
-      },
-    );
-  }
+      }),
+      this.careRecordMediaRepository.getTotal(find),
+    ]);
 
-  async getTotalWithPopulate(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number> {
-    return this.careRecordMediaRepository.getTotal(find, {
-      ...options,
-      join: true,
-    });
+    return {
+      data: careRecordMedias as unknown as CareRecordMediaDoc[],
+      total,
+    };
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordMediaDoc | null> {
-    return this.careRecordMediaRepository.findOneById<CareRecordMediaDoc>(
-      _id,
-      options,
-    );
-  }
-
-  async join(repository: CareRecordMediaDoc): Promise<ICareRecordMediaDoc> {
-    return this.careRecordMediaRepository.join(
-      repository,
-      this.careRecordMediaRepository._join!,
-    );
+  ): Promise<CareRecordMediaDoc> {
+    const careRecordMedia = await this.findOneByIdOrFail(id, {
+      ...options,
+      join: true,
+    });
+    return careRecordMedia;
   }
 
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordMediaDoc | null> {
-    return this.careRecordMediaRepository.findOne<CareRecordMediaDoc>(
-      find,
-      options,
-    );
+  ): Promise<CareRecordMediaDoc> {
+    const careRecordMedia =
+      await this.careRecordMediaRepository.findOne<CareRecordMediaDoc>(
+        find,
+        options,
+      );
+    return careRecordMedia;
   }
 
   async create(
@@ -115,7 +79,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       description,
     }: CareRecordMediaCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordMediaDoc> {
+  ): Promise<DatabaseIdDto> {
     const create: CareRecordMediaEntity = new CareRecordMediaEntity();
     create.careRecord = careRecord;
     create.stage = stage;
@@ -123,14 +87,17 @@ export class CareRecordMediaService implements ICareRecordMediaService {
     create.url = url;
     create.description = description;
 
-    return this.careRecordMediaRepository.create<CareRecordMediaEntity>(
-      create,
-      options,
-    );
+    const created =
+      await this.careRecordMediaRepository.create<CareRecordMediaEntity>(
+        create,
+        options,
+      );
+
+    return { _id: created._id };
   }
 
   async update(
-    repository: CareRecordMediaDoc,
+    id: string,
     {
       careRecord,
       stage,
@@ -139,31 +106,20 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       description,
     }: CareRecordMediaUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordMediaDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
     repository.careRecord = careRecord ?? repository.careRecord;
     repository.stage = stage ?? repository.stage;
     repository.type = type ?? repository.type;
-    repository.url = url;
-    repository.description = description;
+    repository.url = url ?? repository.url;
+    repository.description = description ?? repository.description;
 
-    return this.careRecordMediaRepository.save(repository, options);
+    await this.careRecordMediaRepository.save(repository, options);
   }
 
-  async delete(
-    repository: CareRecordMediaDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<CareRecordMediaDoc> {
-    return this.careRecordMediaRepository.delete(
-      { _id: repository._id },
-      options,
-    );
-  }
-
-  async softDelete(
-    repository: CareRecordMediaDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CareRecordMediaDoc> {
-    return this.careRecordMediaRepository.softDelete(repository, options);
+  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.careRecordMediaRepository.softDelete(repository, options);
   }
 
   async deleteMany(
@@ -174,36 +130,21 @@ export class CareRecordMediaService implements ICareRecordMediaService {
     return true;
   }
 
-  mapList(
-    CareRecordMedia: CareRecordMediaDoc[] | ICareRecordMediaEntity[],
-  ): CareRecordMediaListResponseDto[] {
-    return plainToInstance(
-      CareRecordMediaListResponseDto,
-      CareRecordMedia.map((p: CareRecordMediaDoc | ICareRecordMediaEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-
-  mapGet(
-    CareRecordMedia: CareRecordMediaDoc | ICareRecordMediaEntity,
-  ): CareRecordMediaGetResponseDto {
-    return plainToInstance(
-      CareRecordMediaGetResponseDto,
-      typeof (CareRecordMedia as any).toObject === 'function'
-        ? (CareRecordMedia as any).toObject()
-        : CareRecordMedia,
-    );
-  }
-
-  mapGetPopulate(
-    CareRecordMedia: CareRecordMediaDoc | ICareRecordMediaEntity,
-  ): CareRecordMediaGetFullResponseDto {
-    return plainToInstance(
-      CareRecordMediaGetFullResponseDto,
-      typeof (CareRecordMedia as any).toObject === 'function'
-        ? (CareRecordMedia as any).toObject()
-        : CareRecordMedia,
-    );
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<CareRecordMediaDoc> {
+    const careRecordMedia =
+      await this.careRecordMediaRepository.findOneById<CareRecordMediaDoc>(
+        id,
+        options,
+      );
+    if (!careRecordMedia) {
+      throw new NotFoundException({
+        statusCode: 5003,
+        message: 'care-record-media.error.notFound',
+      });
+    }
+    return careRecordMedia;
   }
 }

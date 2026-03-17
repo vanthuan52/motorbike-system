@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
+import { ApiParamOptions } from '@nestjs/swagger';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const AppointmentDocParamsId: DocField[] = [
+export const AppointmentDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const AppointmentDocParamsId: DocField[] = [
   },
 ];
 
-export const AppointmentDocQueryStatus: DocField[] = [
+export const AppointmentDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -31,7 +23,7 @@ export const AppointmentDocQueryStatus: DocField[] = [
   },
 ];
 
-export const AppointmentDocQueryOrderBy: DocField[] = [
+export const AppointmentDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -42,7 +34,7 @@ export const AppointmentDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const AppointmentDocQueryOrderDirection: DocField[] = [
+export const AppointmentDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,
@@ -53,7 +45,7 @@ export const AppointmentDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const AppointmentDocQueryVehicleService: DocField[] = [
+export const AppointmentDocQueryVehicleService: ApiParamOptions[] = [
   {
     name: 'vehicleService',
     allowEmptyValue: true,

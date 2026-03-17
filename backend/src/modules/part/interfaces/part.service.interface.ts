@@ -1,96 +1,87 @@
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
+  IDatabaseSoftDeleteOptions,
+  IDatabaseUpdateOptions,
 } from '@/common/database/interfaces/database.interface';
-import { PartDoc } from '../entities/part.entity';
 import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
+import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
+import { PartDto } from '../dtos/part.dto';
 import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
-import { PartGetResponseDto } from '../dtos/response/part.get.response.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { PartUploadPhotoRequestDto } from '../dtos/request/part.upload-photo.request.dto';
-import { IPartEntity } from './part.interface';
+import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
+import {
+  IPaginationIn,
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { PartDoc } from '../entities/part.entity';
 
 export interface IPartService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<PartDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    status?: Record<string, IPaginationIn>,
+    partTypeId?: string,
+    vehicleBrandId?: string,
+  ): Promise<{ data: PartDoc[]; total: number }>;
 
-  findAllWithVehicleBrandAndPartType(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IPartEntity[]>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    status?: Record<string, IPaginationIn>,
+    partTypeId?: string,
+    vehicleBrandId?: string,
+  ): Promise<{ data: PartDoc[]; total?: number }>;
 
-  getTotalWithVehicleBrandAndPartType(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
-
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<PartDoc[]>;
-
-  findOneById(_id: string, options?: IDatabaseOptions): Promise<PartDoc | null>;
-
-  findOne(
-    find: Record<string, any>,
+  findOneById(
+    partId: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<PartDoc | null>;
+  ): Promise<PartDoc>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  findOneWithRelationsById(
+    partId: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<PartDoc>;
+
+  findOneBySlug(
+    slug: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<PartDoc>;
 
   create(
     payload: PartCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<PartDoc>;
+  ): Promise<DatabaseIdDto>;
 
   update(
-    repository: PartDoc,
+    partId: string,
     payload: PartUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartDoc>;
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  updateStatus(
+    partId: string,
+    payload: PartUpdateStatusRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  existBySlug(
+    slug: string,
+    options?: IDatabaseExistsOptions,
+  ): Promise<{ exist: boolean }>;
+
+  delete(partId: string, options?: IDatabaseUpdateOptions): Promise<void>;
 
   softDelete(
-    repository: PartDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartDoc>;
+    partId: string,
+    options?: IDatabaseSoftDeleteOptions,
+  ): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
   ): Promise<boolean>;
-
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  createSlug(name: string): string;
-
-  updatePhoto(
-    repository: PartDoc,
-    photo: AwsS3Dto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<PartDoc>;
-
-  createRandomFilenamePhoto(
-    user: string,
-    { mime }: PartUploadPhotoRequestDto,
-  ): string;
-
-  mapList(data: PartDoc[]): PartListResponseDto[];
-
-  mapGet(data: PartDoc): PartGetResponseDto;
 }

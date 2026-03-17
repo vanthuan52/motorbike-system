@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
 import { CareRecordMediaRepositoryModule } from './respository/care-record-media.repository.module';
 import { CareRecordMediaService } from './services/care-record-media.service';
-import { UserVehicleRepositoryModule } from '../user-vehicle/repository/user-vehicle.repository.module';
-import { AppointmentRepositoryModule } from '../appointment/repository/appointment.repository.module';
+import { CareRecordMediaUtil } from './utils/care-record-media.util';
 
 @Module({
-  imports: [
-    CareRecordMediaRepositoryModule,
-    AppointmentRepositoryModule,
-    UserVehicleRepositoryModule,
-  ],
+  imports: [CareRecordMediaRepositoryModule],
   controllers: [],
-  providers: [CareRecordMediaService],
-  exports: [CareRecordMediaRepositoryModule, CareRecordMediaService],
+  providers: [CareRecordMediaService, CareRecordMediaUtil],
+  exports: [
+    CareRecordMediaRepositoryModule,
+    CareRecordMediaService,
+    CareRecordMediaUtil,
+  ],
 })
 export class CareRecordMediaModule {}

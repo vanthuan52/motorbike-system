@@ -1,5 +1,5 @@
 import { ClientSession, HydratedDocument, PopulateOptions } from 'mongoose';
-import { IPaginationOrder } from '@/common/pagination/interfaces/pagination.interface';
+import { IPaginationOrderBy } from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IDatabaseQueryContainOptions {
   fullWord: boolean;
@@ -20,7 +20,7 @@ export interface IDatabaseExistsOptions extends IDatabaseOptions {
 }
 
 export interface IDatabaseFindOneOptions extends IDatabaseOptions {
-  order?: IPaginationOrder;
+  order?: IPaginationOrderBy;
 }
 
 export type IDatabaseGetTotalOptions = Omit<IDatabaseOptions, 'select'>;
@@ -30,8 +30,16 @@ export interface IDatabaseFindAllPagingOptions {
   offset: number;
 }
 
+export interface IDatabaseFindAllCursorOptions {
+  limit: number;
+  order: IPaginationOrderBy;
+  cursorField: string;
+  cursor?: string;
+}
+
 export interface IDatabaseFindAllOptions extends IDatabaseFindOneOptions {
   paging?: IDatabaseFindAllPagingOptions;
+  cursor?: IDatabaseFindAllCursorOptions;
 }
 
 // Action
@@ -56,7 +64,8 @@ export type IDatabaseSoftDeleteOptions = IDatabaseOptions &
 export type IDatabaseCreateManyOptions = Pick<IDatabaseOptions, 'session'> &
   IDatabaseActionByOptions;
 export interface IDatabaseUpdateManyOptions
-  extends Pick<IDatabaseOptions, 'session' | 'withDeleted'>,
+  extends
+    Pick<IDatabaseOptions, 'session' | 'withDeleted'>,
     IDatabaseActionByOptions {
   upsert?: boolean;
 }

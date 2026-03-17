@@ -8,8 +8,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
-import { HiringListResponseDto } from '../dtos/response/hiring.list.response.dto';
+import { HiringResponseDto } from '../dtos/hiring-response.dto';
 import { HiringCreateRequestDto } from '../dtos/request/hiring.create.request.dto';
 import { HiringUpdateRequestDto } from '../dtos/request/hiring.update.request.dto';
 import { HiringUpdateStatusRequestDto } from '../dtos/request/hiring.update-status.request.dto';
@@ -17,7 +16,7 @@ import {
   HiringDocParamsId,
   HiringDocQueryStatus,
 } from '../constants/hiring-doc.constants';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 
 export function HiringAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -31,8 +30,8 @@ export function HiringAdminListDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<HiringListResponseDto>('hiring.list', {
-      dto: HiringListResponseDto,
+    DocResponsePaging<HiringResponseDto>('hiring.list', {
+      dto: HiringResponseDto,
     }),
   );
 }
@@ -43,15 +42,15 @@ export function HiringAdminCreateDoc(): MethodDecorator {
       summary: 'create a new hiring',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: HiringCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<HiringGetResponseDto>('hiring.create', {
-      dto: HiringGetResponseDto,
+    DocResponse<HiringResponseDto>('hiring.create', {
+      dto: HiringResponseDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -62,7 +61,7 @@ export function HiringAdminUpdateDoc(): MethodDecorator {
     Doc({ summary: 'update a hiring' }),
     DocRequest({
       params: HiringDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: HiringUpdateRequestDto,
     }),
     DocAuth({
@@ -92,7 +91,7 @@ export function HiringAdminUpdateStatusDoc(): MethodDecorator {
     Doc({ summary: 'update status of hiring' }),
     DocRequest({
       params: HiringDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: HiringUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -113,8 +112,8 @@ export function HiringAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<HiringGetResponseDto>('hiring.getById', {
-      dto: HiringGetResponseDto,
+    DocResponse<HiringResponseDto>('hiring.getById', {
+      dto: HiringResponseDto,
     }),
   );
 }

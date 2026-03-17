@@ -1,16 +1,16 @@
 import { registerAs } from '@nestjs/config';
 
-export type UserConfig = {
+export interface IVehicleServiceConfig {
   vehicleServicePrefix: string;
-  vehicleServicePattern: string;
-  uploadPath: string;
-};
+  vehicleServicePattern: RegExp;
+  uploadImagePath: string;
+}
 
 export default registerAs(
   'vehicleService',
-  (): Record<string, any> => ({
+  (): IVehicleServiceConfig => ({
     vehicleServicePrefix: 'vehicleService',
     vehicleServicePattern: /^[a-zA-Z0-9-_]+$/,
-    uploadPath: '/vehicleServices/{vehicleService}',
+    uploadImagePath: 'vehicleServices/{vehicleService}',
   }),
 );

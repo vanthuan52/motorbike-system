@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsIn,
 } from 'class-validator';
-import { ENUM_PART_TYPE_STATUS } from '../../enums/part-type.enum';
+import { EnumPartTypeStatus } from '../../enums/part-type.enum';
 
 export class PartTypeCreateRequestDto {
   @ApiProperty({
@@ -54,15 +54,15 @@ export class PartTypeCreateRequestDto {
   order?: string;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_PART_TYPE_STATUS))
+  @IsIn(Object.values(EnumPartTypeStatus))
   @ApiProperty({
-    example: ENUM_PART_TYPE_STATUS.ACTIVE,
+    example: EnumPartTypeStatus.active,
     description: 'Trạng thái hoạt động (active/inactive)',
     required: false,
-    enum: ENUM_PART_TYPE_STATUS,
-    default: ENUM_PART_TYPE_STATUS.ACTIVE,
+    enum: EnumPartTypeStatus,
+    default: EnumPartTypeStatus.active,
   })
-  status?: ENUM_PART_TYPE_STATUS;
+  status?: EnumPartTypeStatus;
 
   @ApiProperty({
     description: 'Ảnh đại diện loại phụ tùng (có thể để trống)',

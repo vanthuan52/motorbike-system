@@ -7,61 +7,57 @@ import {
   Patch,
   Delete,
   Param,
-  NotFoundException,
-  InternalServerErrorException,
-  HttpException,
-  ConflictException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VehicleBrandService } from '../services/vehicle-brand.service';
 import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.create.request.dto';
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
-import { VehicleBrandGetResponseDto } from '../dtos/response/vehicle-brand.get.response.dto';
-import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.interface';
+import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 import {
-  PaginationQuery,
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
-import { ENUM_VEHICLE_BRAND_STATUS } from '../enums/vehicle-brand.enum';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  VehicleBrandAdminCreateDoc,
-  VehicleBrandAdminDeleteDoc,
-  VehicleBrandAdminListDoc,
-  VehicleBrandAdminParamsIdDoc,
-  VehicleBrandAdminUpdateDoc,
-  VehicleBrandAdminUpdateStatusDoc,
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import {
+  VehicleAdminBrandCreateDoc,
+  VehicleAdminBrandDeleteDoc,
+  VehicleAdminBrandListDoc,
+  VehicleAdminBrandParamsIdDoc,
+  VehicleAdminBrandUpdateDoc,
+  VehicleAdminBrandUpdateStatusDoc,
 } from '../docs/vehicle-brand.admin.doc';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
-import { ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR } from '../enums/vehicle-brand.status-code.enum';
-import { ENUM_APP_STATUS_CODE_ERROR } from '@/app/enums/app.status-code.num';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
-import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
   VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
   VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
   VEHICLE_BRAND_DEFAULT_STATUS,
 } from '../constants/vehicle-brand.list.constant';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.admin.vehicle-brand')
 @Controller({
@@ -70,239 +66,123 @@ import {
 })
 export class VehicleBrandAdminController {
   constructor(
-    private readonly VehicleBrandService: VehicleBrandService,
-    private readonly paginationService: PaginationService,
+    private readonly vehicleBrandService: VehicleBrandService,
+    private readonly vehicleBrandUtil: VehicleBrandUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
-  @VehicleBrandAdminListDoc()
+  @VehicleAdminBrandListDoc()
   @ResponsePaging('vehicle-brand.list')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      VEHICLE_BRAND_DEFAULT_STATUS,
-      ENUM_VEHICLE_BRAND_STATUS,
-    )
-    status: Record<string, any>,
-  ): Promise<IResponsePaging<VehicleBrandListResponseDto>> {
-    const find: Record<string, any> = {
-      ..._search,
-      ...status,
-    };
-
-    const vehicleBrands = await this.VehicleBrandService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
-    });
-
-    const total: number = await this.VehicleBrandService.getTotal(find);
-
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.VehicleBrandService.mapList(vehicleBrands);
-
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
+    pagination: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
+    status: Record<string, IPaginationIn>,
+  ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {
+    const { data, total } = await this.vehicleBrandService.getListOffset(
+      pagination,
+      status,
+    );
+    const mapped = this.vehicleBrandUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 
-  @VehicleBrandAdminParamsIdDoc()
+  @VehicleAdminBrandParamsIdDoc()
   @Response('vehicle-brand.get')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id') id: string,
-  ): Promise<IResponse<VehicleBrandGetResponseDto>> {
-    const vehicleBrand = await this.VehicleBrandService.findOneById(id);
-    if (!vehicleBrand) {
-      throw new NotFoundException({
-        message: 'vehicle-brand.error.notFound',
-      });
-    }
-    const mapped = this.VehicleBrandService.mapGet(vehicleBrand);
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+  ): Promise<IResponseReturn<VehicleBrandDto>> {
+    const vehicleBrand = await this.vehicleBrandService.findOneById(id);
+    const mapped = this.vehicleBrandUtil.mapGet(vehicleBrand);
     return { data: mapped };
   }
 
-  @VehicleBrandAdminCreateDoc()
+  @VehicleAdminBrandCreateDoc()
   @Response('vehicle-brand.create')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
     @Body() body: VehicleBrandCreateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
-    try {
-      const existingVehicleBrand = await this.VehicleBrandService.findBySlug(
-        body.slug,
-      );
-      if (existingVehicleBrand) {
-        throw new InternalServerErrorException({
-          statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.SLUG_EXISTED,
-          message: 'vehicle-brand.error.slugExisted',
-        });
-      }
-
-      const created = await this.VehicleBrandService.create(body);
-      return { data: { _id: created._id } };
-    } catch (err) {
-      if (err instanceof HttpException) throw err;
-
-      throw new InternalServerErrorException({
-        message: 'vehicle-brand.error.createFailed',
-        _error: err,
-      });
-    }
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const created = await this.vehicleBrandService.create(body);
+    return { data: { _id: created._id } };
   }
 
-  @VehicleBrandAdminUpdateDoc()
+  @VehicleAdminBrandUpdateDoc()
   @Response('vehicle-brand.update')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id') id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
     @Body() body: VehicleBrandUpdateRequestDto,
-  ): Promise<void> {
-    const vehicleBrand = await this.VehicleBrandService.findOneById(id);
-
-    if (!vehicleBrand) {
-      throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'vehicle-brand.error.notFound',
-      });
-    }
-
-    if (body.slug && body.slug !== vehicleBrand.slug) {
-      const existingBySlug = await this.VehicleBrandService.findOne({
-        slug: body.slug,
-      });
-
-      if (
-        existingBySlug &&
-        existingBySlug._id.toString() !== vehicleBrand._id.toString()
-      ) {
-        throw new ConflictException({
-          statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.SLUG_EXISTED,
-          message: 'vehicle-brand.error.slugExisted',
-        });
-      }
-    }
-    try {
-      await this.VehicleBrandService.update(vehicleBrand, body);
-    } catch (err) {
-      throw new InternalServerErrorException({
-        message: 'vehicle-brand.error.updateFailed',
-        _error: err,
-      });
-    }
+  ): Promise<IResponseReturn<void>> {
+    await this.vehicleBrandService.update(id, body);
+    return {};
   }
 
-  @VehicleBrandAdminUpdateStatusDoc()
+  @VehicleAdminBrandUpdateStatusDoc()
   @Response('vehicle-brand.updateStatus')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id') id: string,
-    @Body() { status }: VehicleBrandUpdateStatusRequestDto,
-  ): Promise<IResponse<void>> {
-    const VehicleBrand = await this.VehicleBrandService.findOneById(id);
-    if (!VehicleBrand) {
-      throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'vehicle-brand.error.notFound',
-      });
-    }
-    try {
-      await this.VehicleBrandService.updateStatus(
-        VehicleBrand,
-        { status },
-        {} as IDatabaseSaveOptions,
-      );
-      return {
-        _metadata: {
-          customProperty: {
-            messageProperties: {
-              status: status.toLowerCase(),
-            },
-          },
-        },
-      };
-    } catch (err: unknown) {
-      throw new InternalServerErrorException({
-        statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
-        message: 'vehicle-brand.error.updateStatusFailed',
-        _error: err,
-      });
-    }
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Body() body: VehicleBrandUpdateStatusRequestDto,
+  ): Promise<IResponseReturn<void>> {
+    await this.vehicleBrandService.updateStatus(id, body);
+    return {};
   }
 
-  @VehicleBrandAdminDeleteDoc()
+  @VehicleAdminBrandDeleteDoc()
   @Response('vehicle-brand.delete')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
-  async delete(@Param('id') id: string): Promise<IResponse<void>> {
-    const VehicleBrand = await this.VehicleBrandService.findOneById(id);
-    if (!VehicleBrand) {
-      throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'vehicle-brand.error.notFound',
-      });
-    }
-    try {
-      await this.VehicleBrandService.softDelete(VehicleBrand);
-      return {};
-    } catch (err) {
-      throw new InternalServerErrorException({
-        message: 'vehicle-brand.error.deleteFailed',
-        _error: err,
-      });
-    }
+  async delete(
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+  ): Promise<IResponseReturn<void>> {
+    await this.vehicleBrandService.delete(id);
+    return {};
   }
 }

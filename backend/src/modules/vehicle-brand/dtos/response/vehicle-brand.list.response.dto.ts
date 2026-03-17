@@ -1,3 +1,3 @@
-import { VehicleBrandGetResponseDto } from './vehicle-brand.get.response.dto';
+import { VehicleBrandDto } from '../vehicle-brand.dto';
 
-export class VehicleBrandListResponseDto extends VehicleBrandGetResponseDto {}
+export class VehicleBrandListResponseDto extends VehicleBrandDto {}

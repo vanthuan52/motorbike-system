@@ -1,197 +1,190 @@
-import { PipelineStage } from 'mongoose';
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
+  IDatabaseDeleteOptions,
   IDatabaseExistsOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
   IDatabaseOptions,
   IDatabaseSaveOptions,
+  IDatabaseSoftDeleteOptions,
   IDatabaseUpdateOptions,
 } from '@/common/database/interfaces/database.interface';
-import { UserDoc, UserEntity } from '../entities/user.entity';
-import { IUserDoc, IUserEntity } from './user.interface';
+import { UserDoc } from '../entities/user.entity';
+import { IUserDoc, IUserLogin } from './user.interface';
 import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
-import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
-import { ENUM_USER_SIGN_UP_FROM } from '../enums/user.enum';
-import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { UserUpdatePasswordAttemptRequestDto } from '../dtos/request/user.update-password-attempt.request.dto';
+import { UserCreateShadowUserRequestDto } from '../dtos/request/user.create-shadow-user.request.dto';
+import { UserCreateBySignUpRequestDto } from '../dtos/request/user.create-by-sign-up.request.dto';
 import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
-import { UserUpdateMobileNumberRequestDto } from '../dtos/request/user.update-mobile-number.request.dto';
-import { UserUpdateProfileRequestDto } from '../dtos/request/user.update-profile.dto';
-import { UserUploadPhotoRequestDto } from '../dtos/request/user.upload-photo.request.dto';
-import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
-import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
-import { UserCensorResponseDto } from '../dtos/response/user.censor.response.dto';
-import { UserShortResponseDto } from '../dtos/response/user.short.response.dto';
-import { UserGetResponseDto } from '../dtos/response/user.get.response.dto';
-import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
+import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
+import { UserGeneratePhotoProfileRequestDto } from '../dtos/request/user.generate-photo-profile.request.dto';
+import { UserCreateSocialRequestDto } from '../dtos/request/user.create-social.request.dto';
+import { AwsS3PresignDto } from '@/common/aws/dtos/aws.s3-presign.dto';
+import {
+  IRequestApp,
+  IRequestLog,
+} from '@/common/request/interfaces/request.interface';
+import { IFile } from '@/common/file/interfaces/file.interface';
+import {
+  IPaginationEqual,
+  IPaginationIn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { EnumUserLoginWith } from '../enums/user.enum';
+import { UserUpdateProfileRequestDto } from '../dtos/request/user.update-profile.request.dto';
 
 export interface IUserService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<UserDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams,
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+  ): Promise<{ data: IUserDoc[]; total: number }>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
-
-  createRawQueryFindAllWithRole(find?: Record<string, any>): PipelineStage[];
-
-  findAllWithRole(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IUserEntity[]>;
-
-  getTotalWithRole(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
-
-  findOneById(_id: string, options?: IDatabaseOptions): Promise<UserDoc | null>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams,
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+  ): Promise<{ data: IUserDoc[]; total?: number }>;
 
   findOne(
     find: Record<string, any>,
-    options?: IDatabaseOptions,
-  ): Promise<UserDoc | null>;
-
-  findOneByEmail(
-    email: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc | null>;
-  findOneByPhone(
-    phone: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc | null>;
+  ): Promise<UserDoc>;
 
   findOneWithRole(
     find?: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<IUserDoc | null>;
+  ): Promise<IUserDoc>;
+
+  findOneById(id: string, options?: IDatabaseOptions): Promise<UserDoc>;
 
   findOneWithRoleById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<IUserDoc | null>;
+  ): Promise<IUserDoc>;
 
-  findAllActiveWithRole(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<IUserDoc[]>;
-
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<IUserDoc[]>;
-
-  getTotalActive(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
-
-  findOneActiveById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<IUserDoc | null>;
-
-  findOneActiveByEmail(
-    email: string,
-    options?: IDatabaseOptions,
-  ): Promise<IUserDoc | null>;
-
-  findOneActiveByMobileNumber(
+  findOneByPhone(
     phone: string,
-    options?: IDatabaseOptions,
-  ): Promise<IUserDoc | null>;
-
-  create(
-    { email, name, role, phone }: UserCreateRequestDto,
-    { passwordExpired, passwordHash, salt, passwordCreated }: IAuthPassword,
-    signUpForm: ENUM_USER_SIGN_UP_FROM,
-    options?: IDatabaseCreateOptions,
+    options?: IDatabaseFindOneOptions,
   ): Promise<UserDoc>;
 
-  signUp(
-    role: string,
-    { email, name, phone }: AuthSignUpRequestDto,
-    { passwordExpired, passwordHash, salt, passwordCreated }: IAuthPassword,
-    options?: IDatabaseCreateOptions,
+  findOneByEmail(
+    email: string,
+    options?: IDatabaseFindOneOptions,
   ): Promise<UserDoc>;
-
-  existByRole(role: string, options?: IDatabaseExistsOptions): Promise<boolean>;
 
   existByEmail(
     email: string,
     options?: IDatabaseExistsOptions,
   ): Promise<boolean>;
 
-  updatePhoto(
-    repository: UserDoc,
-    photo: AwsS3Dto,
-    options?: IDatabaseSaveOptions,
+  existByPhone(
+    phone: string,
+    options?: IDatabaseExistsOptions,
+  ): Promise<boolean>;
+
+  create(data: UserCreateRequestDto): Promise<UserDoc>;
+
+  createByAdmin(
+    data: UserCreateRequestDto,
+    options?: IDatabaseCreateOptions,
   ): Promise<UserDoc>;
 
-  updatePassword(
-    repository: UserDoc,
-    { passwordHash, passwordExpired, salt, passwordCreated }: IAuthPassword,
-    options?: IDatabaseSaveOptions,
+  createUserByAdmin(
+    data: UserCreateRequestDto,
+    options?: IDatabaseCreateOptions,
   ): Promise<UserDoc>;
 
-  updatePasswordAttempt(
-    repository: UserDoc,
-    { passwordAttempt }: UserUpdatePasswordAttemptRequestDto,
-    options?: IDatabaseSaveOptions,
+  createShadowUser(
+    data: UserCreateShadowUserRequestDto,
+    options?: IDatabaseCreateOptions,
   ): Promise<UserDoc>;
 
-  increasePasswordAttempt(
-    repository: UserDoc,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<UserDoc | null>;
+  createBySignUp(
+    data: UserCreateBySignUpRequestDto,
+    options?: IDatabaseCreateOptions,
+  ): Promise<UserDoc>;
+
+  createBySocial(
+    email: string,
+    roleId: string,
+    loginWith: EnumUserLoginWith,
+    socialData: UserCreateSocialRequestDto,
+    requestLog: IRequestLog,
+    options?: IDatabaseCreateOptions,
+  ): Promise<IUserDoc>;
+
+  findOrCreateUserBySocial(
+    email: string,
+    loginWith: EnumUserLoginWith,
+    socialData: UserCreateSocialRequestDto,
+    requestLog: IRequestLog,
+  ): Promise<IUserDoc>;
 
   update(
-    repository: UserDoc,
-    { name, phone }: UserUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<UserDoc>;
+    id: string,
+    data: UserUpdateRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
 
-  updateMobileNumber(
-    repository: UserDoc,
-    { phone }: UserUpdateMobileNumberRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<UserDoc>;
+  updateProfile(
+    id: string,
+    data: UserUpdateProfileRequestDto,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
 
-  softDelete(
-    repository: UserDoc,
+  updateStatus(
+    id: string,
+    data: UserUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<UserDoc>;
+  ): Promise<void>;
+
+  updatePassword(
+    id: string,
+    newPassword: string,
+    options?: IDatabaseSaveOptions,
+  ): Promise<void>;
+
+  updateVerify(
+    id: string,
+    isVerified: boolean,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  delete(id: string, options?: IDatabaseDeleteOptions): Promise<void>;
+
+  softDelete(id: string, options?: IDatabaseSoftDeleteOptions): Promise<void>;
 
   deleteMany(
     find?: Record<string, any>,
     options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
+  ): Promise<void>;
 
-  updateProfile(
-    repository: UserDoc,
-    { name }: UserUpdateProfileRequestDto,
-    options?: IDatabaseSaveOptions,
+  generatePhotoProfilePresign(
+    id: string,
+    data: UserGeneratePhotoProfileRequestDto,
+  ): Promise<AwsS3PresignDto>;
+
+  confirmPhotoProfile(id: string, key: string): Promise<void>;
+
+  uploadPhotoProfile(
+    id: string,
+    file: IFile,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  updateLogin(
+    id: string,
+    { loginFrom, loginWith, sessionId, expiredAt, jti }: IUserLogin,
+    { ipAddress, userAgent }: IRequestLog,
+    options?: IDatabaseUpdateOptions,
+  ): Promise<void>;
+
+  validateUserGuard(
+    request: IRequestApp,
+    requiredVerified: boolean,
   ): Promise<UserDoc>;
 
-  join(repository: UserDoc): Promise<IUserDoc>;
-
-  createRandomFilenamePhoto(
-    user: string,
-    { mime }: UserUploadPhotoRequestDto,
-  ): string;
-
-  mapProfile(user: IUserDoc | IUserEntity): UserProfileResponseDto;
-  mapList(users: IUserDoc[] | IUserEntity[]): UserListResponseDto[];
-  mapCensor(user: UserDoc | UserEntity): UserCensorResponseDto;
-  mapShort(users: IUserDoc[] | IUserEntity[]): UserShortResponseDto[];
-  mapGet(user: IUserDoc | IUserEntity): UserGetResponseDto;
+  incrementUserPasswordAttempt(id: string): Promise<void>;
+  resetUserPasswordAttempt(id: string): Promise<void>;
 }

@@ -1,5 +1,4 @@
-import { plainToInstance } from 'class-transformer';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import _ from 'lodash';
 import {
@@ -25,17 +24,18 @@ import {
   IServicePriceDoc,
   IServicePriceEntity,
 } from '../interfaces/service-price.interface';
-import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
-import { ServicePriceGetResponseDto } from '../dtos/response/service-price.get.response.dto';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
-import { ServicePriceGetFullResponseDto } from '../dtos/response/service-price.full.response.dto';
-import { HelperStringService } from '@/common/helper/services/helper.string.service';
+import { HelperService } from '@/common/helper/services/helper.service';
 import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
-import { PipelineStage, RootFilterQuery } from 'mongoose';
+import { PipelineStage } from 'mongoose';
 import { VehicleServiceTableName } from '@/modules/vehicle-service/entities/vehicle-service.entity';
 import { VehicleModelTableName } from '@/modules/vehicle-model/entities/vehicle-model.entity';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
+import { VehicleServiceRepository } from '@/modules/vehicle-service/repository/vehicle-service.repository';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { ENUM_SERVICE_PRICE_STATUS_CODE_ERROR } from '../enums/service-price.status-code.enum';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 @Injectable()
 export class ServicePriceService implements IServicePriceService {
@@ -43,8 +43,9 @@ export class ServicePriceService implements IServicePriceService {
   constructor(
     private readonly servicePriceRepository: ServicePriceRepository,
     private readonly vehicleModelRepository: VehicleModelRepository,
+    private readonly vehicleServiceRepository: VehicleServiceRepository,
     private readonly configService: ConfigService,
-    private readonly helperStringService: HelperStringService,
+    private readonly helperService: HelperService,
   ) {}
 
   async findAll(
@@ -52,6 +53,30 @@ export class ServicePriceService implements IServicePriceService {
     options?: IDatabaseFindAllOptions,
   ): Promise<ServicePriceDoc[]> {
     return this.servicePriceRepository.findAll<ServicePriceDoc>(find, options);
+  }
+
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: ServicePriceDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
+
+    const [servicePrices, total] = await Promise.all([
+      this.servicePriceRepository.findAll<ServicePriceDoc>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+        join: true,
+      }),
+      this.servicePriceRepository.getTotal(find),
+    ]);
+
+    return {
+      data: servicePrices,
+      total,
+    };
   }
 
   async getTotal(
@@ -82,13 +107,11 @@ export class ServicePriceService implements IServicePriceService {
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<ServicePriceDoc | null> {
-    return this.servicePriceRepository.findOneById<ServicePriceDoc>(
-      _id,
-      options,
-    );
+  ): Promise<ServicePriceDoc> {
+    const servicePrice = await this.findOneByIdOrFail(id, options);
+    return servicePrice;
   }
 
   async join(repository: ServicePriceDoc): Promise<IServicePriceDoc> {
@@ -101,8 +124,18 @@ export class ServicePriceService implements IServicePriceService {
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<ServicePriceDoc | null> {
-    return this.servicePriceRepository.findOne<ServicePriceDoc>(find, options);
+  ): Promise<ServicePriceDoc> {
+    const servicePrice =
+      await this.servicePriceRepository.findOne<ServicePriceDoc>(find, options);
+
+    if (!servicePrice) {
+      throw new NotFoundException({
+        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'service-price.error.notFound',
+      });
+    }
+
+    return servicePrice;
   }
 
   async create(
@@ -114,21 +147,43 @@ export class ServicePriceService implements IServicePriceService {
       dateEnd,
     }: ServicePriceCreateRequestDto,
     options?: IDatabaseCreateOptions,
-  ): Promise<ServicePriceDoc> {
+  ): Promise<DatabaseIdDto> {
+    const promises: Promise<any>[] = [
+      this.vehicleServiceRepository.findOneById(vehicleService),
+      this.vehicleModelRepository.findOneById(vehicleModel),
+    ];
+    const [checkVehicleService, checkVehicleModel] =
+      await Promise.all(promises);
+
+    if (!checkVehicleService) {
+      throw new NotFoundException({
+        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'vehicle-service.error.notFound',
+      });
+    } else if (!checkVehicleModel) {
+      throw new NotFoundException({
+        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'vehicle-model-type.error.notFound',
+      });
+    }
+
     const create: ServicePriceEntity = new ServicePriceEntity();
     create.price = price;
     create.vehicleService = vehicleService;
     create.vehicleModel = vehicleModel;
     create.dateStart = dateStart;
     create.dateEnd = dateEnd;
-    return this.servicePriceRepository.create<ServicePriceEntity>(
-      create,
-      options,
-    );
+    const created =
+      await this.servicePriceRepository.create<ServicePriceEntity>(
+        create,
+        options,
+      );
+
+    return { _id: created._id };
   }
 
   async update(
-    repository: ServicePriceDoc,
+    id: string,
     {
       price,
       vehicleService,
@@ -137,20 +192,21 @@ export class ServicePriceService implements IServicePriceService {
       dateEnd,
     }: ServicePriceUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<ServicePriceDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+
     repository.price = price ?? repository.price;
     repository.vehicleService = vehicleService ?? repository.vehicleService;
     repository.vehicleModel = vehicleModel ?? repository.vehicleModel;
     repository.dateStart = dateStart ?? repository.dateStart;
     repository.dateEnd = dateEnd ?? repository.dateEnd;
-    return this.servicePriceRepository.save(repository, options);
+
+    await this.servicePriceRepository.save(repository, options);
   }
 
-  async delete(
-    repository: ServicePriceDoc,
-    options?: IDatabaseDeleteOptions,
-  ): Promise<ServicePriceDoc> {
-    return this.servicePriceRepository.delete({ _id: repository._id }, options);
+  async delete(id: string, options?: IDatabaseDeleteOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.servicePriceRepository.delete({ _id: repository._id }, options);
   }
 
   async softDelete(
@@ -168,42 +224,8 @@ export class ServicePriceService implements IServicePriceService {
     return true;
   }
 
-  mapList(
-    servicePrice: ServicePriceDoc[] | IServicePriceEntity[],
-  ): ServicePriceListResponseDto[] {
-    return plainToInstance(
-      ServicePriceListResponseDto,
-      servicePrice.map((p: ServicePriceDoc | IServicePriceEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-
-  mapGet(
-    servicePrice: ServicePriceDoc | IServicePriceEntity,
-  ): ServicePriceGetResponseDto {
-    return plainToInstance(
-      ServicePriceGetResponseDto,
-      typeof (servicePrice as any).toObject === 'function'
-        ? (servicePrice as any).toObject()
-        : servicePrice,
-    );
-  }
-
-  mapGetPopulate(
-    servicePrice: ServicePriceDoc | IServicePriceEntity,
-  ): ServicePriceGetFullResponseDto {
-    return plainToInstance(
-      ServicePriceGetFullResponseDto,
-      typeof (servicePrice as any).toObject === 'function'
-        ? (servicePrice as any).toObject()
-        : servicePrice,
-    );
-  }
-
   async getLatestServicePrices(): Promise<IModelServicePrice[]> {
     const pipeline: PipelineStage[] = [
-      // Stage 1: Sort by most recent/effective prices
       {
         $sort: {
           dateEnd: 1,
@@ -211,7 +233,6 @@ export class ServicePriceService implements IServicePriceService {
           createdAt: -1,
         },
       },
-      // Stage 2: Group by serviceId + modelId to get the latest price per pair
       {
         $group: {
           _id: {
@@ -221,13 +242,9 @@ export class ServicePriceService implements IServicePriceService {
           latestPriceDoc: { $first: '$$ROOT' },
         },
       },
-
-      // Stage 3: Flatten the grouped document
       {
         $replaceRoot: { newRoot: '$latestPriceDoc' },
       },
-
-      // Stage 4: Lookup detailed info for service and model
       {
         $lookup: {
           from: VehicleServiceTableName,
@@ -250,8 +267,6 @@ export class ServicePriceService implements IServicePriceService {
       {
         $unwind: '$vehicleModelInfo',
       },
-
-      // Stage 5: Final projection with status field
       {
         $project: {
           _id: '$$ROOT._id',
@@ -269,7 +284,6 @@ export class ServicePriceService implements IServicePriceService {
           status: {
             $cond: {
               if: {
-                // dateStart <= today AND (dateEnd >= today OR dateEnd is null)
                 $and: [
                   { $lte: ['$dateStart', '$$NOW'] },
                   {
@@ -284,7 +298,6 @@ export class ServicePriceService implements IServicePriceService {
               else: {
                 $cond: {
                   if: {
-                    // UPCOMING: dateStart > today
                     $gt: ['$dateStart', '$$NOW'],
                   },
                   then: ENUM_SERVICE_PRICE_STATUS.UPCOMING,
@@ -413,5 +426,23 @@ export class ServicePriceService implements IServicePriceService {
       this.createVehicleModelWithLatestServicePricePipeline(find);
 
     return this.vehicleModelRepository.getTotalAggregate(pipeline, options);
+  }
+
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<ServicePriceDoc> {
+    const servicePrice =
+      await this.servicePriceRepository.findOneById<ServicePriceDoc>(
+        id,
+        options,
+      );
+    if (!servicePrice) {
+      throw new NotFoundException({
+        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'service-price.error.notFound',
+      });
+    }
+    return servicePrice;
   }
 }

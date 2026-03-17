@@ -1,12 +1,9 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-
-import {
-  ServiceChecklistDocParamsId,
-  ServiceChecklistDocQueryOrderBy,
-  ServiceChecklistDocQueryOrderDirection,
-} from '../constants/service-checklist.doc.constant';
-import { ServiceChecklistGetResponseDto } from '../dtos/response/service-checklist.get.response.dto';
+import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
+import { ServiceChecklistDocParamsId } from '../constants/service-checklist.doc.constant';
+import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
 import { ServiceChecklistListResponseDto } from '../dtos/response/service-checklist.list.response.dto';
+import { ServiceChecklistDto } from '../dtos/service-checklist.dto';
 import {
   Doc,
   DocAuth,
@@ -15,29 +12,12 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
-import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
-import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 
 export function ServiceChecklistAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all service checklist',
-      description: 'Get all service checklists with optional vehicle type filtering.',
-    }),
-    DocRequest({
-      queries: [
-        ...ServiceChecklistDocQueryOrderBy,
-        ...ServiceChecklistDocQueryOrderDirection,
-        {
-          name: 'vehicleType',
-          allowEmptyValue: true,
-          required: false,
-          type: 'string',
-          enum: ['scooter', 'manual_or_clutch', 'manual', 'clutch', 'electric', 'unknown'],
-          description: 'Filter service checklists by vehicle type (xe tay ga: scooter, xe số/côn: manual_or_clutch)',
-        },
-      ],
+      summary: 'get all service checklists',
     }),
     DocAuth({
       jwtAccessToken: true,
@@ -52,21 +32,39 @@ export function ServiceChecklistAdminListDoc(): MethodDecorator {
   );
 }
 
+export function ServiceChecklistAdminParamsIdDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get service checklist by id',
+    }),
+    DocRequest({
+      params: ServiceChecklistDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<ServiceChecklistDto>('service-checklist.get', {
+      dto: ServiceChecklistDto,
+    }),
+  );
+}
+
 export function ServiceChecklistAdminCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'create a new service checklist',
+      summary: 'create a service checklist',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServiceChecklistCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServiceChecklistGetResponseDto>('service-checklist.create', {
-      dto: ServiceChecklistGetResponseDto,
+    DocResponse<ServiceChecklistDto>('service-checklist.create', {
+      dto: ServiceChecklistDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -79,7 +77,7 @@ export function ServiceChecklistAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: ServiceChecklistDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: ServiceChecklistUpdateRequestDto,
     }),
     DocAuth({
@@ -103,23 +101,5 @@ export function ServiceChecklistAdminDeleteDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('service-checklist.delete'),
-  );
-}
-
-export function ServiceChecklistAdminParamsIdDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'get a service checklist by id',
-    }),
-    DocRequest({
-      params: ServiceChecklistDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<ServiceChecklistGetResponseDto>('service-checklist.getById', {
-      dto: ServiceChecklistGetResponseDto,
-    }),
   );
 }

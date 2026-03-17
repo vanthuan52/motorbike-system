@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const ServicePriceDocParamsId: DocField[] = [
+export const ServicePriceDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const ServicePriceDocParamsId: DocField[] = [
   },
 ];
 
-export const ServicePriceDocParamsVehicleServiceId: DocField[] = [
+export const ServicePriceDocParamsVehicleServiceId: ApiParamOptions[] = [
   {
     name: 'vehicleServiceId',
     allowEmptyValue: false,
@@ -30,7 +22,7 @@ export const ServicePriceDocParamsVehicleServiceId: DocField[] = [
   },
 ];
 
-export const ServicePriceDocParamsVehicleModelId: DocField[] = [
+export const ServicePriceDocParamsVehicleModelId: ApiParamOptions[] = [
   {
     name: 'vehicleModelId',
     allowEmptyValue: false,
@@ -40,7 +32,7 @@ export const ServicePriceDocParamsVehicleModelId: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryStatus: DocField[] = [
+export const ServicePriceDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -51,7 +43,7 @@ export const ServicePriceDocQueryStatus: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryOrderBy: DocField[] = [
+export const ServicePriceDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -62,7 +54,7 @@ export const ServicePriceDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryOrderDirection: DocField[] = [
+export const ServicePriceDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,
@@ -73,7 +65,7 @@ export const ServicePriceDocQueryOrderDirection: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryVehicleModel: DocField[] = [
+export const ServicePriceDocQueryVehicleModel: ApiParamOptions[] = [
   {
     name: 'vehicleModel',
     allowEmptyValue: true,
@@ -84,7 +76,7 @@ export const ServicePriceDocQueryVehicleModel: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryVehicleService: DocField[] = [
+export const ServicePriceDocQueryVehicleService: ApiParamOptions[] = [
   {
     name: 'vehicleService',
     allowEmptyValue: true,
@@ -95,7 +87,7 @@ export const ServicePriceDocQueryVehicleService: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryVehicleModelId: DocField[] = [
+export const ServicePriceDocQueryVehicleModelId: ApiParamOptions[] = [
   {
     name: 'vehicleModelId',
     allowEmptyValue: true,
@@ -106,7 +98,7 @@ export const ServicePriceDocQueryVehicleModelId: DocField[] = [
   },
 ];
 
-export const ServicePriceDocQueryVehicleServiceId: DocField[] = [
+export const ServicePriceDocQueryVehicleServiceId: ApiParamOptions[] = [
   {
     name: 'vehicleServiceId',
     allowEmptyValue: true,

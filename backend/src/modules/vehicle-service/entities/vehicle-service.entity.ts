@@ -6,7 +6,6 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { AwsS3Entity, AwsS3Schema } from '@/modules/aws/entities/aws.s3.entity';
 import { ServiceCategoryEntity } from '@/modules/service-category/entities/service-category.entity';
 import { ServiceChecklistEntity } from '@/modules/service-checklist/entities/service-checklist.entity';
 
@@ -63,9 +62,10 @@ export class VehicleServiceEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: false,
-    schema: AwsS3Schema,
+    default: null,
+    trim: true,
   })
-  photo?: AwsS3Entity;
+  photo?: string;
 
   @DatabaseProp({
     type: [String],

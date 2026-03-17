@@ -1,6 +1,5 @@
-import { faker } from '@faker-js/faker';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { faker } from '@faker-js/faker';
 import {
   IsArray,
   IsEnum,
@@ -10,8 +9,9 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
-import { RolePermissionDto } from '../role.permission.dto';
-import { ENUM_POLICY_ROLE_TYPE } from '@/modules/policy/enums/policy.enum';
+import { Type } from 'class-transformer';
+import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
+import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
 
 export class RoleUpdateRequestDto {
   @ApiProperty({
@@ -27,24 +27,23 @@ export class RoleUpdateRequestDto {
 
   @ApiProperty({
     description: 'Representative for role type',
-    example: ENUM_POLICY_ROLE_TYPE.ADMIN,
+    example: EnumRoleType.admin,
     required: true,
-    enum: ENUM_POLICY_ROLE_TYPE,
+    enum: EnumRoleType,
   })
-  @IsEnum(ENUM_POLICY_ROLE_TYPE)
+  @IsEnum(EnumRoleType)
   @IsNotEmpty()
-  type: ENUM_POLICY_ROLE_TYPE;
+  type: EnumRoleType;
 
   @ApiProperty({
     required: true,
-    description: 'Permision list of role',
+    description: 'Ability list of role',
     isArray: true,
-    type: RolePermissionDto,
-    oneOf: [{ $ref: getSchemaPath(RolePermissionDto) }],
+    type: [RoleAbilityRequestDto],
   })
-  @Type(() => RolePermissionDto)
+  @Type(() => RoleAbilityRequestDto)
   @IsNotEmpty()
   @ValidateNested()
   @IsArray()
-  permissions: RolePermissionDto[];
+  abilities: RoleAbilityRequestDto[];
 }

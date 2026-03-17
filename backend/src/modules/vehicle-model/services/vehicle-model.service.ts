@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { plainToInstance } from 'class-transformer';
-import { FilterQuery, PipelineStage, Types } from 'mongoose';
 import { VehicleModelRepository } from '../repository/vehicle-model.repository';
 import { IVehicleModelService } from '../interfaces/vehicle-model.service.interface';
 import {
@@ -9,11 +11,8 @@ import {
   VehicleModelEntity,
 } from '../entities/vehicle-model.entity';
 import {
-  IDatabaseAggregateOptions,
   IDatabaseCreateOptions,
   IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllAggregateOptions,
   IDatabaseFindAllOptions,
   IDatabaseFindOneOptions,
   IDatabaseGetTotalOptions,
@@ -26,18 +25,17 @@ import {
   ENUM_VEHICLE_MODEL_STATUS,
   ENUM_VEHICLE_MODEL_TYPE,
 } from '../enums/vehicle-model.enum';
-import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
 import { VehicleModelUpdateStatusRequestDto } from '../dtos/request/vehicle-model.update-status.request.dto';
-import {
-  IVehicleModelDoc,
-  IVehicleModelEntity,
-} from '../interfaces/vehicle-model.interface';
+import { IVehicleModelDoc } from '../interfaces/vehicle-model.interface';
 import { VehicleModelUploadPhotoRequestDto } from '../dtos/request/vehicle-model.upload-photo.request.dto';
-import { HelperStringService } from '@/common/helper/services/helper.string.service';
-import { AwsS3Dto } from '@/modules/aws/dtos/aws.s3.dto';
-import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
-import { VehicleModelGetResponseDto } from '../dtos/response/vehicle-model.get.response.dto';
-import { VehicleBrandTableName } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
+import { HelperService } from '@/common/helper/services/helper.service';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { VehicleModelUtil } from '../utils/vehicle-model.util';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR } from '../enums/vehicle-model.status-code.enum';
 
 @Injectable()
 export class VehicleModelService implements IVehicleModelService {
@@ -46,31 +44,11 @@ export class VehicleModelService implements IVehicleModelService {
   constructor(
     private readonly vehicleModelRepository: VehicleModelRepository,
     private readonly configService: ConfigService,
-    private readonly helperStringService: HelperStringService,
+    private readonly helperService: HelperService,
+    private readonly vehicleModelUtil: VehicleModelUtil,
   ) {
     this.uploadPath =
       this.configService.get<string>('VehicleModel.uploadPath') || '';
-  }
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const vehicleModel = await this.vehicleModelRepository.findOne(
-      { name },
-      options,
-    );
-    return !!vehicleModel;
-  }
-
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const vehicleModel = await this.vehicleModelRepository.findOne(
-      { slug },
-      options,
-    );
-    return !!vehicleModel;
   }
 
   async findAll(
@@ -80,65 +58,73 @@ export class VehicleModelService implements IVehicleModelService {
     return this.vehicleModelRepository.findAll<VehicleModelDoc>(find, options);
   }
 
-  async findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleModelDoc[]> {
-    return this.vehicleModelRepository.findAll<VehicleModelDoc>(find, options);
+  async getListOffset(
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleModelDoc[]; total: number }> {
+    const find: Record<string, any> = {
+      ...where,
+      ...filters,
+    };
+
+    const [vehicleModels, total] = await Promise.all([
+      this.vehicleModelRepository.findAll<VehicleModelDoc>(find, {
+        paging: { limit, offset: skip },
+        order: orderBy,
+        join: true,
+      }),
+      this.vehicleModelRepository.getTotal(find),
+    ]);
+
+    return {
+      data: vehicleModels,
+      total,
+    };
   }
 
-  createRawQueryFindAllWithVehicleBrand(
-    find?: Record<string, any>,
-  ): PipelineStage[] {
-    return [
-      {
-        $lookup: {
-          from: VehicleBrandTableName,
-          as: 'vehicleBrand',
-          foreignField: '_id',
-          localField: 'vehicleBrand',
+  async getListCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams,
+    filters?: Record<string, any>,
+  ): Promise<{ data: VehicleModelDoc[]; total?: number }> {
+    const find: Record<string, any> = { ...where, ...filters };
+
+    if (cursor && cursorField) {
+      find[cursorField] = { $gt: cursor };
+    }
+
+    const [data, count] = await Promise.all([
+      this.vehicleModelRepository.findAllCursor<VehicleModelDoc>(find, {
+        cursor: {
+          cursor,
+          cursorField,
+          limit: limit + 1,
+          order: orderBy,
         },
-      },
-      {
-        $unwind: '$vehicleBrand',
-      },
-      {
-        $match: find as FilterQuery<any>,
-      },
-    ];
-  }
+        join: true,
+      }),
+      includeCount
+        ? this.vehicleModelRepository.getTotal(find)
+        : Promise.resolve(undefined),
+    ]);
 
-  async findAllWithVehicleBrand(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IVehicleModelEntity[]> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithVehicleBrand(find);
+    const items = data.slice(0, limit);
 
-    return this.vehicleModelRepository.findAllAggregate<IVehicleModelEntity>(
-      pipeline,
-      options,
-    );
-  }
-
-  async getTotalWithVehicleBrand(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number> {
-    const pipeline: PipelineStage[] =
-      this.createRawQueryFindAllWithVehicleBrand(find);
-
-    return this.vehicleModelRepository.getTotalAggregate(pipeline, options);
+    return { data: items, total: count };
   }
 
   async findOneById(
-    _id: string,
+    id: string,
     options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleModelDoc | null> {
-    return this.vehicleModelRepository.findOneById<VehicleModelDoc>(
-      _id,
-      options,
-    );
+  ): Promise<VehicleModelDoc> {
+    const vehicleModel = await this.findOneByIdOrFail(id, options);
+    return vehicleModel;
   }
 
   async findOneWithVehicleBrandById(
@@ -161,8 +147,13 @@ export class VehicleModelService implements IVehicleModelService {
   async findOne(
     find: Record<string, any>,
     options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleModelDoc | null> {
-    return this.vehicleModelRepository.findOne<VehicleModelDoc>(find, options);
+  ): Promise<VehicleModelDoc> {
+    const vehicleModel =
+      await this.vehicleModelRepository.findOne<VehicleModelDoc>(find, options);
+    if (!vehicleModel) {
+      return null as any;
+    }
+    return vehicleModel;
   }
 
   async getTotal(
@@ -190,6 +181,15 @@ export class VehicleModelService implements IVehicleModelService {
     }: VehicleModelCreateRequestDto,
     options?: IDatabaseCreateOptions,
   ): Promise<VehicleModelDoc> {
+    // Check slug conflict
+    const existingSlug = await this.vehicleModelRepository.findOne({ slug });
+    if (existingSlug) {
+      throw new ConflictException({
+        statusCode: ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR.SLUG_EXISTED,
+        message: 'vehicle-model.error.slugExisted',
+      });
+    }
+
     const create: VehicleModelEntity = new VehicleModelEntity();
     create.name = name;
     create.fullName = fullName;
@@ -207,14 +207,17 @@ export class VehicleModelService implements IVehicleModelService {
     create.yearStart = yearStart;
     create.yearEnd = yearEnd;
 
-    return this.vehicleModelRepository.create<VehicleModelEntity>(
-      create,
-      options,
-    );
+    const created =
+      await this.vehicleModelRepository.create<VehicleModelEntity>(
+        create,
+        options,
+      );
+
+    return created;
   }
 
   async update(
-    repository: VehicleModelDoc,
+    id: string,
     {
       name,
       fullName,
@@ -230,7 +233,20 @@ export class VehicleModelService implements IVehicleModelService {
       vehicleBrand,
     }: VehicleModelUpdateRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleModelDoc> {
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+
+    // Check slug conflict if slug is being updated
+    if (slug && slug !== repository.slug) {
+      const existingSlug = await this.vehicleModelRepository.findOne({ slug });
+      if (existingSlug && existingSlug._id.toString() !== id) {
+        throw new ConflictException({
+          statusCode: ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR.SLUG_EXISTED,
+          message: 'vehicle-model.error.slugExisted',
+        });
+      }
+    }
+
     repository.name = name ?? repository.name;
     repository.fullName = fullName ?? repository.fullName;
     repository.slug = slug ?? repository.slug;
@@ -245,14 +261,23 @@ export class VehicleModelService implements IVehicleModelService {
     repository.yearStart = yearStart ?? repository.yearStart;
     repository.yearEnd = yearEnd ?? repository.yearEnd;
 
-    return this.vehicleModelRepository.save(repository, options);
+    await this.vehicleModelRepository.save(repository, options);
   }
 
-  async softDelete(
-    repository: VehicleModelDoc,
+  async updateStatus(
+    id: string,
+    { status }: VehicleModelUpdateStatusRequestDto,
     options?: IDatabaseSaveOptions,
-  ): Promise<VehicleModelDoc> {
-    return this.vehicleModelRepository.softDelete(repository, options);
+  ): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    repository.status = status;
+
+    await this.vehicleModelRepository.save(repository, options);
+  }
+
+  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+    const repository = await this.findOneByIdOrFail(id);
+    await this.vehicleModelRepository.softDelete(repository, options);
   }
 
   async deleteMany(
@@ -263,18 +288,15 @@ export class VehicleModelService implements IVehicleModelService {
     return true;
   }
 
-  async updateStatus(
-    repository: VehicleModelDoc,
-    { status }: VehicleModelUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<VehicleModelDoc> {
-    repository.status = status;
-
-    return this.vehicleModelRepository.save(repository, options);
-  }
-
-  async findBySlug(slug: string): Promise<VehicleModelDoc | null> {
-    return this.vehicleModelRepository.findOneBySlug(slug);
+  async findBySlug(slug: string): Promise<VehicleModelDoc> {
+    const vehicleModel = await this.vehicleModelRepository.findOneBySlug(slug);
+    if (!vehicleModel) {
+      throw new NotFoundException({
+        statusCode: ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'vehicle-model.error.notFound',
+      });
+    }
+    return vehicleModel;
   }
 
   createRandomFilenamePhoto(
@@ -282,7 +304,7 @@ export class VehicleModelService implements IVehicleModelService {
     { mime }: VehicleModelUploadPhotoRequestDto,
   ): string {
     let path: string = this.uploadPath.replace('{vehicleModel}', vehicleModel);
-    const randomPath = this.helperStringService.random(10);
+    const randomPath = this.helperService.randomString(10);
     const extension = mime.split('/')[1];
 
     if (path.startsWith('/')) {
@@ -292,58 +314,29 @@ export class VehicleModelService implements IVehicleModelService {
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
   }
 
-  createSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
-  }
-
-  mapList(
-    vehicleModel: VehicleModelDoc[] | IVehicleModelEntity[],
-  ): VehicleModelListResponseDto[] {
-    return plainToInstance(
-      VehicleModelListResponseDto,
-      vehicleModel.map((p: VehicleModelDoc | IVehicleModelEntity) =>
-        typeof (p as any).toObject === 'function' ? (p as any).toObject() : p,
-      ),
-    );
-  }
-
-  mapGet(
-    vehicleModel: VehicleModelDoc | IVehicleModelEntity,
-  ): VehicleModelGetResponseDto {
-    return plainToInstance(
-      VehicleModelGetResponseDto,
-      typeof (vehicleModel as any).toObject === 'function'
-        ? (vehicleModel as any).toObject()
-        : vehicleModel,
-    );
-  }
-
-  mapGetPopulate(
-    vehicleModel: VehicleModelDoc | IVehicleModelEntity,
-  ): VehicleModelGetFullResponseDto {
-    return plainToInstance(
-      VehicleModelGetFullResponseDto,
-      typeof (vehicleModel as any).toObject === 'function'
-        ? (vehicleModel as any).toObject()
-        : vehicleModel,
-    );
-  }
-
   async updatePhoto(
     repository: VehicleModelDoc,
     photo: AwsS3Dto,
     options?: IDatabaseSaveOptions,
   ): Promise<VehicleModelDoc> {
-    repository.photo = {
-      ...photo,
-      size: new Types.Decimal128(photo.size.toString()),
-    };
-
     return this.vehicleModelRepository.save(repository, options);
+  }
+
+  private async findOneByIdOrFail(
+    id: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<VehicleModelDoc> {
+    const vehicleModel =
+      await this.vehicleModelRepository.findOneById<VehicleModelDoc>(
+        id,
+        options,
+      );
+    if (!vehicleModel) {
+      throw new NotFoundException({
+        statusCode: ENUM_VEHICLE_MODEL_STATUS_CODE_ERROR.NOT_FOUND,
+        message: 'vehicle-model.error.notFound',
+      });
+    }
+    return vehicleModel;
   }
 }

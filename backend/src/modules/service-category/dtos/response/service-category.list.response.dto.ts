@@ -1,3 +1,3 @@
-import { ServiceCategoryGetResponseDto } from './service-category.get.response.dto';
+import { ServiceCategoryDto } from '../service-category.dto';
 
-export class ServiceCategoryListResponseDto extends ServiceCategoryGetResponseDto {}
+export class ServiceCategoryListResponseDto extends ServiceCategoryDto {}

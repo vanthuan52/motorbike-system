@@ -1,16 +1,8 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions } from '@nestjs/swagger';
 import { ENUM_SERVICE_CATEGORY_STATUS } from '../enums/service-category.enum';
 
-interface DocField {
-  name: string;
-  allowEmptyValue: boolean;
-  required: boolean;
-  type: string;
-  example: any;
-  description?: string;
-}
-
-export const ServiceCategoryDocParamsId: DocField[] = [
+export const ServiceCategoryDocParamsId: ApiParamOptions[] = [
   {
     name: 'id',
     allowEmptyValue: false,
@@ -20,7 +12,7 @@ export const ServiceCategoryDocParamsId: DocField[] = [
   },
 ];
 
-export const ServiceCategoryDocParamsSlug: DocField[] = [
+export const ServiceCategoryDocParamsSlug: ApiParamOptions[] = [
   {
     name: 'slug',
     allowEmptyValue: false,
@@ -30,7 +22,7 @@ export const ServiceCategoryDocParamsSlug: DocField[] = [
   },
 ];
 
-export const ServiceCategoryDocQueryStatus: DocField[] = [
+export const ServiceCategoryDocQueryStatus: ApiParamOptions[] = [
   {
     name: 'status',
     allowEmptyValue: true,
@@ -41,7 +33,7 @@ export const ServiceCategoryDocQueryStatus: DocField[] = [
   },
 ];
 
-export const ServiceCategoryDocQueryOrderBy: DocField[] = [
+export const ServiceCategoryDocQueryOrderBy: ApiParamOptions[] = [
   {
     name: 'orderBy',
     allowEmptyValue: true,
@@ -52,7 +44,7 @@ export const ServiceCategoryDocQueryOrderBy: DocField[] = [
   },
 ];
 
-export const ServiceCategoryDocQueryOrderDirection: DocField[] = [
+export const ServiceCategoryDocQueryOrderDirection: ApiParamOptions[] = [
   {
     name: 'orderDirection',
     allowEmptyValue: true,

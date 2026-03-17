@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { ArrayNotEmpty, IsAlpha, IsOptional, IsUUID } from 'class-validator';
+import { IsOptional, IsUUID } from 'class-validator';
 import { CareRecordChecklistCreateRequestDto } from './care-record-checklist.create.request.dto';
 
 export class CareRecordChecklistUpdateRequestDto extends PartialType(

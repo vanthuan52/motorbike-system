@@ -6,6 +6,7 @@ import {
 } from '../constants/part-type.doc.constant';
 import { PartTypeGetResponseDto } from '../dtos/response/part-type.get.response.dto';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import {
   Doc,
   DocAuth,
@@ -14,7 +15,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
 import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
 import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
@@ -43,15 +44,15 @@ export function PartTypeAdminCreateDoc(): MethodDecorator {
       summary: 'create a new part type',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: PartTypeCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<PartTypeGetResponseDto>('part-type.create', {
-      dto: PartTypeGetResponseDto,
+    DocResponse<DatabaseIdDto>('part-type.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -64,7 +65,7 @@ export function PartTypeAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: PartTypeDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: PartTypeUpdateRequestDto,
     }),
     DocAuth({
@@ -98,7 +99,7 @@ export function PartTypeAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocRequest({
       params: PartTypeDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: PartTypeUpdateStatusRequestDto,
     }),
     DocAuth({

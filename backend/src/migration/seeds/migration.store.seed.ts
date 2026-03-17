@@ -44,7 +44,7 @@ export class MigrationStoreSeed {
     ];
 
     for (const store of stores) {
-      const exist = await this.storeService.existsBySlug(store.slug);
+      const exist = await this.storeService.existBySlug(store.slug);
       if (!exist) {
         await this.storeService.create({
           ...store,

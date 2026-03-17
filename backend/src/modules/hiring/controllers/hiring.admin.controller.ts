@@ -17,16 +17,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { HiringCreateRequestDto } from '../dtos/request/hiring.create.request.dto';
 import { HiringUpdateRequestDto } from '../dtos/request/hiring.update.request.dto';
 import { HiringUpdateStatusRequestDto } from '../dtos/request/hiring.update-status.request.dto';
-import { PaginationListDto } from '@/common/pagination/dtos/pagination.list.dto';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponse,
-  IResponsePaging,
+  IResponseReturn,
+  IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { HiringListResponseDto } from '../dtos/response/hiring.list.response.dto';
 import { HiringDoc } from '../entities/hiring.entity';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
@@ -37,27 +35,31 @@ import {
   HiringAdminUpdateDoc,
   HiringAdminUpdateStatusDoc,
 } from '../docs/hiring.admin.doc';
-import { HiringService } from '../services/hiring.services';
+import { HiringService } from '../services/hiring.service';
 import {
-  ENUM_POLICY_ACTION,
-  ENUM_POLICY_ROLE_TYPE,
-  ENUM_POLICY_SUBJECT,
+  EnumPolicyAction,
+  EnumRoleType,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
-import {
-  PolicyAbilityProtected,
-  PolicyRoleProtected,
-} from '@/modules/policy/decorators/policy.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import {
-  PaginationQuery,
+  PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { ENUM_HIRING_STATUS } from '../enums/hiring.enum';
-import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.interface';
 import { ENUM_HIRING_STATUS_CODE_ERROR } from '../enums/hiring.status-code.enum';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { HiringUtil } from '../utils/hiring.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { HiringResponseDto } from '../dtos/hiring-response.dto';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -68,93 +70,90 @@ export class HiringAdminController {
   constructor(
     private readonly hiringService: HiringService,
     private readonly paginationService: PaginationService,
+    private readonly hiringUtil: HiringUtil,
+    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @HiringAdminListDoc()
   @ResponsePaging('hiring.list')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
   async list(
-    @PaginationQuery({
+    @PaginationOffsetQuery({
       availableSearch: ['title', 'status'],
     })
-    { _search, _limit, _offset, _order }: PaginationListDto,
-    @PaginationQueryFilterInEnum(
-      'status',
-      [
-        ENUM_HIRING_STATUS.PUBLISHED,
-        ENUM_HIRING_STATUS.DRAFT,
-        ENUM_HIRING_STATUS.ARCHIVED,
-      ],
-      ENUM_HIRING_STATUS,
-    )
-    status: Record<string, any>,
-  ): Promise<IResponsePaging<HiringListResponseDto>> {
+    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    @PaginationQueryFilterInEnum('status', [
+      ENUM_HIRING_STATUS.PUBLISHED,
+      ENUM_HIRING_STATUS.DRAFT,
+      ENUM_HIRING_STATUS.ARCHIVED,
+    ])
+    status: Record<string, IPaginationIn>,
+  ): Promise<IResponsePagingReturn<HiringResponseDto>> {
     const find: Record<string, any> = {
-      ..._search,
+      ...where,
       ...status,
     };
 
-    const hiring: HiringDoc[] = await this.hiringService.findAll(find, {
-      paging: {
-        limit: _limit,
-        offset: _offset,
-      },
-      order: _order,
+    const [hiring, total] = await Promise.all([
+      this.hiringService.findAll(find, {
+        paging: {
+          limit,
+          offset: skip,
+        },
+        order: orderBy,
+      }),
+      this.hiringService.getTotal(find),
+    ]);
+
+    const mapped = this.hiringUtil.mapList(hiring);
+
+    return this.paginationUtil.formatOffset(mapped, total, {
+      limit,
+      skip,
     });
-
-    const total: number = await this.hiringService.getTotal(find);
-    const totalPage: number = this.paginationService.totalPage(total, _limit);
-
-    const mapped = this.hiringService.mapList(hiring);
-
-    return {
-      _pagination: {
-        total,
-        totalPage,
-      },
-      data: mapped,
-    };
   }
 
   @HiringAdminParamsIdDoc()
   @Response('hiring.get')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.READ],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
-  async get(@Param('id') id: string): Promise<IResponse<HiringGetResponseDto>> {
+  async get(
+    @Param('id') id: string,
+  ): Promise<IResponseReturn<HiringResponseDto>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
       throw new NotFoundException('hiring.error.notFoundHiring');
     }
-    const mapped = this.hiringService.mapGet(hiring);
+    const mapped = this.hiringUtil.mapOne(hiring);
     return { data: mapped };
   }
 
   @HiringAdminCreateDoc()
   @Response('hiring.create')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.CREATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.create],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
     @Body() body: HiringCreateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
     try {
       const existingHiringBySlug = await this.hiringService.findOne({
         slug: body.slug,
@@ -166,10 +165,8 @@ export class HiringAdminController {
         });
       }
       const hiring = await this.hiringService.create(body);
-      return { data: hiring };
+      return { data: { _id: hiring._id } };
     } catch (err) {
-      // console.log(err);
-
       if (err instanceof HttpException) throw err;
 
       throw new InternalServerErrorException({
@@ -182,17 +179,17 @@ export class HiringAdminController {
   @HiringAdminUpdateDoc()
   @Response('hiring.update')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
     @Param('id') id: string,
     @Body() body: HiringUpdateRequestDto,
-  ): Promise<IResponse<DatabaseIdResponseDto>> {
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
       throw new NotFoundException('hiring.error.notFoundHiring');
@@ -215,7 +212,7 @@ export class HiringAdminController {
     }
     try {
       const hiringUpdated = await this.hiringService.update(hiring, body);
-      return { data: hiringUpdated };
+      return { data: { _id: hiringUpdated._id } };
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -229,14 +226,14 @@ export class HiringAdminController {
   @HiringAdminDeleteDoc()
   @Response('hiring.delete')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.DELETE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.delete],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
-  async delete(@Param('id') id: string): Promise<IResponse<void>> {
+  async delete(@Param('id') id: string): Promise<IResponseReturn<void>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
       throw new NotFoundException('hiring.error.notFoundHiring');
@@ -255,17 +252,17 @@ export class HiringAdminController {
   @HiringAdminUpdateStatusDoc()
   @Response('hiring.updateStatus')
   @PolicyAbilityProtected({
-    subject: ENUM_POLICY_SUBJECT.USER,
-    action: [ENUM_POLICY_ACTION.UPDATE],
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.update],
   })
-  @PolicyRoleProtected(ENUM_POLICY_ROLE_TYPE.ADMIN)
+  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
     @Body() { status }: HiringUpdateStatusRequestDto,
-  ): Promise<IResponse<void>> {
+  ): Promise<IResponseReturn<void>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
       throw new NotFoundException('hiring.error.notFoundHiring');
@@ -277,11 +274,9 @@ export class HiringAdminController {
         {} as IDatabaseSaveOptions,
       );
       return {
-        _metadata: {
-          customProperty: {
-            messageProperties: {
-              status: status.toLowerCase(),
-            },
+        metadata: {
+          messageProperties: {
+            status: status.toLowerCase(),
           },
         },
       };

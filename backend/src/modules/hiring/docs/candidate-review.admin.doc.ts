@@ -7,13 +7,13 @@ import {
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { CandidateReviewListResponseDto } from '../dtos/response/candidate-review.list.response.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import {
   CandidateDocQueryCandidateId,
-  CandidateDocQueryMore,
+  // CandidateDocQueryMore, // Removed as we use standard pagination now
 } from '../constants/candidate-review.doc.constants';
-import { CandidateReviewAdminCreateRequestDto } from '../dtos/request/candidate-review.create.request.dto';
+import { CandidateReviewCreateRequestDto } from '../dtos/request/candidate-review.create.request.dto';
+import { CandidateReviewResponseDto } from '../dtos/candidate-review-response.dto';
 
 export function CandidateReviewAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -21,14 +21,15 @@ export function CandidateReviewAdminListDoc(): MethodDecorator {
       summary: 'get all candidate reviews',
     }),
     DocRequest({
-      queries: [...CandidateDocQueryCandidateId, ...CandidateDocQueryMore],
+      queries: [...CandidateDocQueryCandidateId],
+      // Removed More query
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponsePaging<CandidateReviewListResponseDto>('candidate-review.list', {
-      dto: CandidateReviewListResponseDto,
+    DocResponsePaging<CandidateReviewResponseDto>('candidate-review.list', {
+      dto: CandidateReviewResponseDto,
     }),
   );
 }
@@ -38,15 +39,15 @@ export function CandidateReviewAdminCreateDoc(): MethodDecorator {
     Doc({ summary: 'create a new candidate review' }),
     DocRequest({
       queries: [],
-      dto: CandidateReviewAdminCreateRequestDto,
+      dto: CandidateReviewCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('candidate.create', {
+    DocResponse<DatabaseIdDto>('candidate-review.create', {
       statusCode: HttpStatus.CREATED,
-      dto: DatabaseIdResponseDto,
+      dto: DatabaseIdDto,
     }),
   );
 }

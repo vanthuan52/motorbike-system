@@ -6,7 +6,7 @@ import {
   VehicleServiceDocQueryOrderDirection,
   VehicleServiceDocQueryStatus,
 } from '../constants/vehicle-service.doc.constant';
-import { VehicleServiceGetResponseDto } from '../dtos/response/vehicle-service.get.response.dto';
+import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
 import { VehicleServiceListResponseDto } from '../dtos/response/vehicle-service.list.response.dto';
 import {
   Doc,
@@ -16,14 +16,16 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { VehicleServiceCreateRequestDto } from '../dtos/request/vehicle-service.create.request.dto';
 import { VehicleServiceUpdateRequestDto } from '../dtos/request/vehicle-service.update.request.dto';
 import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-service.update-status.request.dto';
-import { DatabaseIdResponseDto } from '@/common/database/dtos/response/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { VehicleServiceGetFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { AwsS3PresignRequestDto } from '@/common/aws/dtos/request/aws.s3-presign.request.dto';
 
-export function VehicleServiceAdminListDoc(): MethodDecorator {
+export function VehicleAdminServiceListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get all vehicle services',
@@ -46,34 +48,34 @@ export function VehicleServiceAdminListDoc(): MethodDecorator {
   );
 }
 
-export function VehicleServiceAdminCreateDoc(): MethodDecorator {
+export function VehicleAdminServiceCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'create a new vehicle service',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleServiceCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdResponseDto>('vehicle-service.create', {
-      dto: DatabaseIdResponseDto,
+    DocResponse<DatabaseIdDto>('vehicle-service.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
 }
 
-export function VehicleServiceAdminUpdateDoc(): MethodDecorator {
+export function VehicleAdminServiceUpdateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update a vehicle service',
     }),
     DocRequest({
       params: VehicleServiceDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleServiceUpdateRequestDto,
     }),
     DocAuth({
@@ -84,7 +86,7 @@ export function VehicleServiceAdminUpdateDoc(): MethodDecorator {
   );
 }
 
-export function VehicleServiceAdminDeleteDoc(): MethodDecorator {
+export function VehicleAdminServiceDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'delete a vehicle service',
@@ -100,14 +102,14 @@ export function VehicleServiceAdminDeleteDoc(): MethodDecorator {
   );
 }
 
-export function VehicleServiceAdminUpdateStatusDoc(): MethodDecorator {
+export function VehicleAdminServiceUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'update status of a vehicle service',
     }),
     DocRequest({
       params: VehicleServiceDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: VehicleServiceUpdateStatusRequestDto,
     }),
     DocAuth({
@@ -118,7 +120,7 @@ export function VehicleServiceAdminUpdateStatusDoc(): MethodDecorator {
   );
 }
 
-export function VehicleServiceAdminParamsIdDoc(): MethodDecorator {
+export function VehicleAdminServiceParamsIdDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get a vehicle service by id',
@@ -130,13 +132,13 @@ export function VehicleServiceAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<VehicleServiceGetResponseDto>('vehicle-service.getById', {
-      dto: VehicleServiceGetResponseDto,
+    DocResponse<VehicleServiceDto>('vehicle-service.getById', {
+      dto: VehicleServiceDto,
     }),
   );
 }
 
-export function VehicleServiceAdminGetDoc(): MethodDecorator {
+export function VehicleAdminServiceGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get detail a vehicle',
@@ -151,5 +153,35 @@ export function VehicleServiceAdminGetDoc(): MethodDecorator {
     DocResponse<VehicleServiceGetFullResponseDto>('vehicle-service.get', {
       dto: VehicleServiceGetFullResponseDto,
     }),
+  );
+}
+
+export function VehicleAdminServiceUploadPhotoDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get presign url for photo vehicle service',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocResponse<AwsS3Dto>('vehicle-service.uploadPhoto', {
+      dto: AwsS3Dto,
+    }),
+  );
+}
+
+export function VehicleAdminServiceUpdatePhotoDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'update photo vehicle service',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocRequest({
+      bodyType: EnumDocRequestBodyType.json,
+      dto: AwsS3PresignRequestDto,
+    }),
+    DocResponse('vehicle-service.updatePhoto'),
   );
 }

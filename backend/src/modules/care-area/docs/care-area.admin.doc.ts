@@ -5,7 +5,7 @@ import {
   CareAreaDocQueryOrderBy,
   CareAreaDocQueryOrderDirection,
 } from '../constants/care-area.doc.constant';
-import { CareAreaGetResponseDto } from '../dtos/response/care-area.get.response.dto';
+import { CareAreaDto } from '../dtos/care-area.dto';
 import { CareAreaListResponseDto } from '../dtos/response/care-area.list.response.dto';
 import {
   Doc,
@@ -15,9 +15,10 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ENUM_DOC_REQUEST_BODY_TYPE } from '@/common/doc/enums/doc.enum';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export function CareAreaAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -43,15 +44,15 @@ export function CareAreaAdminCreateDoc(): MethodDecorator {
       summary: 'create a new care area',
     }),
     DocRequest({
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareAreaCreateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareAreaGetResponseDto>('care-area.create', {
-      dto: CareAreaGetResponseDto,
+    DocResponse<DatabaseIdDto>('care-area.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
     }),
   );
@@ -64,14 +65,14 @@ export function CareAreaAdminUpdateDoc(): MethodDecorator {
     }),
     DocRequest({
       params: CareAreaDocParamsId,
-      bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+      bodyType: EnumDocRequestBodyType.json,
       dto: CareAreaUpdateRequestDto,
     }),
     DocAuth({
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-checklist.update'),
+    DocResponse('care-area.update'),
   );
 }
 
@@ -87,7 +88,7 @@ export function CareAreaAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-checklist.delete'),
+    DocResponse('care-area.delete'),
   );
 }
 
@@ -103,8 +104,43 @@ export function CareAreaAdminParamsIdDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<CareAreaGetResponseDto>('care-area.getById', {
-      dto: CareAreaGetResponseDto,
+    DocResponse<CareAreaDto>('care-area.getById', {
+      dto: CareAreaDto,
     }),
+  );
+}
+
+export function CareAreaWithServiceChecklistDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all care areas with service checklists',
+      description:
+        'Get all care areas with their service checklists. Optionally filter service checklists by vehicle type.',
+    }),
+    DocRequest({
+      queries: [
+        {
+          name: 'vehicleType',
+          allowEmptyValue: true,
+          required: false,
+          type: 'string',
+          enum: [
+            'scooter',
+            'manual_or_clutch',
+            'manual',
+            'clutch',
+            'electric',
+            'unknown',
+          ],
+          description:
+            'Filter service checklists by vehicle type (xe tay ga: scooter, xe số/côn: manual_or_clutch)',
+        },
+      ],
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('care-area.listWithServiceChecklists'),
   );
 }

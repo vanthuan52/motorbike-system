@@ -4,6 +4,8 @@ import { InjectDatabaseModel } from '@/common/database/decorators/database.decor
 import { PartDoc, PartEntity } from '../entities/part.entity';
 import { PartTypeEntity } from '@/modules/part-type/entities/part-type.entity';
 import { VehicleBrandEntity } from '@/modules/vehicle-brand/entities/vehicle-brand.entity';
+import { IData } from 'ua-parser-js';
+import { IDatabaseFindOneOptions } from '@/common/database/interfaces/database.interface';
 
 export class PartRepository extends DatabaseRepositoryBase<
   PartEntity,
@@ -54,7 +56,10 @@ export class PartRepository extends DatabaseRepositoryBase<
     ]);
   }
 
-  async findOneBySlug(slug: string): Promise<PartDoc | null> {
-    return this.partModel.findOne({ slug }).exec();
+  async findOneBySlug(
+    slug: string,
+    options?: IDatabaseFindOneOptions,
+  ): Promise<PartDoc | null> {
+    return this.findOne({ slug }, options);
   }
 }

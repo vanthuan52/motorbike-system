@@ -13,19 +13,33 @@
     "sourceRoot": "/",
     "outDir": "./dist",
     "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
     "paths": {
       "@/*": ["src/*"]
     },
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowJs": false,
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
-  }
+  },
+  "include": ["src/**/*", "test/**/*"],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "logs",
+        "keys",
+        ".warmup",
+        ".nyc_output",
+        "generated",
+        "src/metadata.ts",
+        "src/swagger.json",
+        "**/**/templates/*"
+    ]
 }

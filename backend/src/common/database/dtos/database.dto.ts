@@ -1,14 +1,20 @@
 import { faker } from '@faker-js/faker';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class DatabaseDto {
-  @ApiProperty({
-    description: 'Alias id of api key',
-    example: faker.string.uuid(),
-    required: true,
-  })
+  @ApiHideProperty()
+  @Exclude()
   _id: string;
+
+  // @ApiProperty({
+  //   description: 'The unique identifier of the record',
+  //   example: faker.string.uuid(),
+  //   required: true,
+  // })
+  // @Expose()
+  // @Transform(({ obj }) => obj._id?.toString())
+  // id: string;
 
   @ApiProperty({
     description: 'Date created at',
@@ -18,6 +24,12 @@ export class DatabaseDto {
   createdAt: Date;
 
   @ApiProperty({
+    description: 'Created by',
+    required: false,
+  })
+  createdBy?: string;
+
+  @ApiProperty({
     description: 'Date updated at',
     example: faker.date.recent(),
     required: true,
@@ -25,35 +37,22 @@ export class DatabaseDto {
   updatedAt: Date;
 
   @ApiProperty({
-    description: 'Date deleted at',
-    required: false,
-  })
-  deletedAt: Date;
-
-  @ApiProperty({
-    description: 'Flag for deleted',
-    default: false,
-    required: true,
-  })
-  deleted: boolean;
-
-  @ApiProperty({
-    description: 'Created by',
-    required: false,
-  })
-  createdBy: string;
-
-  @ApiProperty({
     description: 'Updated by',
     required: false,
   })
-  updatedBy: string;
+  updatedBy?: string;
+
+  @ApiProperty({
+    description: 'Date deleted at',
+    required: false,
+  })
+  deletedAt?: Date;
 
   @ApiProperty({
     description: 'Deleted by',
     required: false,
   })
-  deletedBy: string;
+  deletedBy?: string;
 
   @ApiHideProperty()
   @Exclude()
