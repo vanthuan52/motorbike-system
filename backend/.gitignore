@@ -1,8 +1,9 @@
 # compiled output
-/dist
-/node_modules
-/build
-/data/swagger.json
+dist/
+node_modules/
+.warmup/
+generated/
+swagger.json
 /src/metadata.ts
 
 # Logs
@@ -10,8 +11,6 @@ logs
 *.log
 npm-debug.log*
 pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 lerna-debug.log*
 
 # OS
@@ -37,20 +36,15 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# yarn
-.yarn/*
-.pnp.*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# pnpm
+.pnpm-store/
+pnpm-debug.log*
 
-# dotenv environment variable files
+# environment
 .env*
 !.env.example
-!.env.development
+config.yaml
+config.yml
 
 # Runtime generated files
 keys/
@@ -58,23 +52,19 @@ keys/
 *.pub
 jwks.json
 
-# temp directory
-.temp
-.tmp
+# Temporary and cache files
+.cache/
+.temp/
+.tmp/
+temp/
+tmp/
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+# Build and development artifacts
+.swc/
+.turbo/
+.parcel-cache/
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-config.yaml
-config.yml
-
-./docker/minio/data/*
-./docker/minio/config/*
-!.docker/minio/data/.gitkeep
-!.docker/minio/config/.gitkeep
+# Claude Code - cache data
+.claude/agent-memory/
+.claude/*.local.md
+.claude/settings.local.json

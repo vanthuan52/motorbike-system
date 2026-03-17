@@ -1,513 +1,599 @@
-# Overview
+# Database Documentation
 
-The database architecture in NestJs Motorbike System follows a clean repository pattern that provides a clear seperation between business logic and data access layers. The architecture is built on MongoDB using mongoose as the Object Data Modeling (ODM) library, offering a robust, type-safe approach to database operations.
+This documentation explains the features and usage of **Database Module**: Located at `src/common/database`
 
-This documentation explains the features and usage of:
+## Overview
 
-- **Database Core**: Located at `src/common/database`
+This documentation explains the database architecture and features in ACK NestJS Boilerplate:
 
-The database funcionality is organized into several key components:
+## Related Documents
 
-1. **Database Module** - Global module providing database services
-2. **Repository Pattern** - Implementation for data access abstraction
-3. **Entity Definitions** - MongoDB schema representations
-4. **Repository Implementations** - Concrete data access implementations
+- [Installation Documentation][ref-doc-installation] - For complete project setup and dependencies
+- [Environment Documentation][ref-doc-environment] - For database connection and environment variables
+- [Configuration Documentation][ref-doc-configuration] - For understanding the config module structure
 
-# Table of Contents
-
-# Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
-- [Table of Contents](#table-of-contents)
-  - [Modules](#modules)
-  - [Services](#services)
-    - [DatabaseOptionService](#databaseoptionservice)
-    - [DatabaseService](#databaseservice)
-  - [Repository](#repository)
-    - [Base Repository Classes](#base-repository-classes)
-      - [Database UUID Repository Base](#database-uuid-repository-base)
-      - [Database Object ID Repository Base](#database-object-id-repository-base)
-      - [Soft Delete Implementation](#soft-delete-implementation)
-        [Entity Base Classes](#entity-base-classes)
-      - [Database UUID Entity Base](#database-uuid-entity-base)
-      - [Database Object ID Entity Base](#database-object-id-entity-base)
-  - [Structure](#structure)
-  - [Example](#example)
-    - [Entity](#entity)
-    - [Repository](#repository-1)
-    - [Repository Module Example](#repository-module-example)
-    - [Service](#service)
+- [Related Documents](#related-documents)
+- [Prerequisites](#prerequisites)
+- [Migration](#migration)
+- [Generate Database Client](#generate-database-client)
+- [Seeding](#seeding)
+	- [Database Seeds](#database-seeds)
+	- [Template Seeds](#template-seeds)
+	- [AWS S3 Configuration Seed](#aws-s3-configuration-seed)
+- [Initial Seeded Data](#initial-seeded-data)
+	- [API Keys](#api-keys)
+	- [Roles](#roles)
+	- [Users](#users)
+	- [Feature Flags](#feature-flags)
+	- [Term Policies](#term-policies)
+- [Composite Types](#composite-types)
+	- [GeoLocation](#geolocation)
+	- [UserAgent](#useragent)
+	- [UserTermPolicy](#usertermpolicy)
+	- [UserPhoto](#userphoto)
+	- [RoleAbility](#roleability)
+	- [TermPolicyContent](#termpolicycontent)
+- [Docker](#docker)
+- [Database Tools](#database-tools)
+	- [Prisma ORM](#prisma-orm)
+	- [Why Prisma for Repository Design Pattern?](#why-prisma-for-repository-design-pattern)
+	- [Change DB with Minimal Effort](#change-db-with-minimal-effort)
 
-## Modules
 
-The database architecture uses two primary modules:
+## Prerequisites
 
-1. **DatabaseOptionModule**: Provides the configuration for MongoDB connections.
-2. **DatabaseModule**: Global module that provides database services throughout the application.
+> **💡 Tip:** Use Docker setup from the installation guide for automatic MongoDB replica set configuration.
 
-```typescript
-@Module({
-  providers: [DatabaseOptionService],
-  exports: [DatabaseOptionService],
-  imports: [],
-  controllers: [],
-})
-export class DatabaseOptionModule {}
+**MongoDB 8.0.x** running as a **replica set** (required for transactions)
 
-@Global()
-@Module({})
-export class DatabaseModule {
-  static forRoot(): DynamicModule {
-    return {
-      module: DatabaseModule,
-      providers: [DatabaseService],
-      exports: [DatabaseService],
-      imports: [],
-      controllers: [],
-    };
-  }
+## Migration
+
+Prisma does not support migrations for MongoDB. Instead, use `prisma db push` to sync your Prisma schema with the MongoDB database.
+
+In ACK NestJS Boilerplate, you can use the `pnpm db:migrate` script to quickly sync your schema to MongoDB.
+
+For details, see the official Prisma documentation: [Prisma for MongoDB][ref-prisma-mongodb]
+
+
+## Generate Database Client
+
+Prisma uses a generated client to provide type-safe database access and query building. You must generate the Prisma Client every time you change your Prisma schema (`prisma/schema.prisma`).
+
+**When to Generate Prisma client?**
+- After any change to your Prisma schema (e.g., adding, removing, or updating models/fields).
+- After pulling schema changes from version control.
+
+**How to Generate Prisma Client:**
+```bash
+pnpm db:generate
+```
+
+This command will read your Prisma schema and generate the client code in `generated/prisma-client`. The generated client is required for your application to interact with the database using Prisma.
+
+
+## Seeding
+
+Seeding in ACK NestJS Boilerplate is handled using [Commander.js][ref-commander]. All seed commands are implemented in `src/migration/seeds/*`.
+
+### Database Seeds
+
+ACK NestJS Boilerplate provides ready-to-use seed scripts to help you quickly initialize or remove data for development and testing. Database seeding is used to populate the database with initial or test data, making development and testing easier.
+
+**Seed Data Location:**
+- All seed data is stored in `src/migration/data/*`.
+
+**How to Run All Seeds:**
+- `pnpm migration:seed` — runs all seed commands to populate initial data.
+- `pnpm migration:remove` — removes all seeded data from the database.
+- `pnpm migration:fresh` — force-resets the database schema (`prisma db push --force-reset`) then immediately re-seeds all data. Useful during development when you need a clean slate.
+
+**How to Seed/Remove a Specific Module:**
+Run the command:
+   - Seed: `pnpm migration {module} --type seed`
+   - Remove: `pnpm migration {module} --type remove`
+
+**Available Types:**
+- `seed` (add data)
+- `remove` (delete data)
+
+**Available Modules:**
+
+- `apiKey`: Inserts default and system API keys for authentication and service access.
+- `country`: Inserts country data (name, codes, phone code, continent, timezone).
+- `featureFlag`: Inserts feature flags to enable/disable features (e.g., login methods, sign up, change password).
+- `role`: Inserts user roles (superadmin, admin, user) with abilities and permissions.
+- `termPolicy`: Inserts term policy documents (cookies, marketing, privacy, terms of service) with version and content.
+- `user`: Inserts initial user accounts (Super Admin, Admin, User) with country, role, and credentials.
+
+
+### Template Seeds
+
+Template seeding uses the same script and commands as Database Seeds, but is specifically for template files like email and term policies.
+
+**Available Types:**
+- `seed` (add template data)
+- `remove` (delete template data)
+
+#### Email Templates
+
+Every time you run the email template seed, the templates will be inserted into AWS SES automatically.
+
+**How to Run Email Template Seeds:**
+- Seed: `pnpm migration template-email-notification --type seed`
+- Remove: `pnpm migration template-email-notification --type remove`
+
+#### Term Policy Templates
+
+Every time you run the term policy template seed, the policy documents will be linked to the database records automatically.
+
+**How to Run Term Policy Template Seeds:**
+- Seed: `pnpm migration template-termPolicy --type seed`
+- Remove: `pnpm migration template-termPolicy --type remove` *(no-op — term policy removal is intentionally skipped)*
+
+
+### AWS S3 Configuration Seed
+
+The migration script is a special seed command that configures AWS S3 bucket policies and settings for both public and private buckets. Unlike other seed commands, this migration doesn't populate database data but instead configures your AWS infrastructure.
+
+**What It Does:**
+
+This script automatically configures essential S3 bucket settings in the correct order:
+
+1. **Block Public Access Configuration** - Controls public access restrictions
+2. **Disable ACL Configuration** - Enforces bucket owner ownership controls
+3. **Bucket Policy** - Sets read/write permissions based on bucket accessibility
+4. **CORS Configuration** - Configures Cross-Origin Resource Sharing rules
+5. **Lifecycle Configuration** - Automatically deletes incomplete multipart uploads
+
+**Why Sequential Configuration Matters:**
+
+The configuration must be applied in a specific order because AWS S3 policies have dependencies. 
+For example, you must configure public access blocks before setting bucket policies.
+
+**How to Run:**
+
+```bash
+# Configure both public and private buckets
+pnpm migration aws-s3-config --type seed
+```
+
+**Important Notes:**
+
+- This migration runs configurations for **both public and private buckets** simultaneously
+- The `--type remove` option is intentionally skipped (no removal operation)
+- Requires valid AWS credentials and appropriate IAM permissions
+- Bucket names and ARNs must be properly configured in your environment variables
+
+**Configuration Applied:**
+
+For **Public Buckets**:
+- Public read access (`s3:GetObject`) for all objects
+- Full IAM user access for management operations
+- CORS rules allowing GET/HEAD from any origin
+- CORS rules allowing PUT/POST/DELETE from whitelisted origins
+
+For **Private Buckets**:
+- Blocks all public access
+- CORS rules only allow whitelisted origins for all methods
+- Full IAM user access required for all operations
+
+
+## Initial Seeded Data
+
+When you run `pnpm migration:seed`, the following initial data will be created in your database. This data is essential for testing and development purposes.
+
+### API Keys
+
+> ⚠️ These are development keys. Always regenerate API keys for production environments.
+
+Two API keys are created for authentication and service access:
+
+| Name | Type | Key | Secret | Usage |
+|------|------|-----|--------|-------|
+| Api Key Default | `default` | `fyFGb7ywyM37TqDY8nuhAmGW5` | `qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP` | For general API access |
+| Api Key System | `system` | `UTDH0fuDMAbd1ZVnwnyrQJd8Q` | `qbp7LmCxYUTHFwKvHnxGW1aTyjSNU6ytN21etK89MaP2Dj2KZP` | For system-level operations |
+
+**API Key Prefix Convention:**
+
+All generated API keys automatically include an environment prefix to help identify which environment they belong to. The format is:
+
+```
+{environment}_{random_string}
+```
+
+**Examples:**
+- `local_abc123xyz` - API key for local/development environment
+- `development_def456uvw` - API key for development environment
+- `staging_ghi789rst` - API key for staging environment
+- `production_jkl012mno` - API key for production environment
+
+This prefix is automatically added based on the `APP_ENV` environment variable when creating new API keys, ensuring easy identification and preventing accidental cross-environment usage.
+
+### Roles
+
+Three user roles are created with different permission levels:
+
+| Role | Type | Description | Abilities |
+|------|------|-------------|-----------|
+| superadmin | `superAdmin` | Super Admin Role | Full system access (unrestricted) |
+| admin | `admin` | Admin Role | All CRUD operations on all subjects |
+| user | `user` | User Role | Limited access (no special abilities) |
+
+**Admin Role Abilities**: The admin role has full CRUD permissions (`create`, `read`, `update`, `delete`) on all policy subjects defined in the system.
+
+### Users
+
+> ⚠️ These are test accounts with default passwords. Change or remove these accounts in production environments.
+
+The seeded users differ per environment. This is controlled by `migrationUserData` in `src/migration/data/migration.user.data.ts`:
+
+| Environment | Seeded Users |
+|---|---|
+| `local` | superadmin + admin + user |
+| `development` | superadmin + admin only |
+| `staging` | superadmin + admin only |
+| `production` | superadmin + admin only |
+
+**User accounts:**
+
+| Email | Name | Role | Password | Country | Environments |
+|-------|------|------|----------|---------|-------------|
+| superadmin@mail.com | Super Admin | superadmin | `aaAA@123` | ID (Indonesia) | all |
+| admin@mail.com | Admin | admin | `aaAA@123` | ID (Indonesia) | all |
+| user@mail.com | User | user | `aaAA@123` | ID (Indonesia) | `local` only |
+
+### Feature Flags
+
+Five feature flags are created to control authentication and user features:
+
+| Key | Description | Enabled | Rollout | Metadata |
+|-----|-------------|---------|---------|----------|
+| `loginWithGoogle` | Enable login with Google | ✅ Yes | 100% | `signUpAllowed: true` |
+| `loginWithApple` | Enable login with Apple | ✅ Yes | 100% | `signUpAllowed: true` |
+| `loginWithCredential` | Enable login with Credential | ✅ Yes | 100% | - |
+| `signUp` | Enable user sign up | ✅ Yes | 100% | - |
+| `changePassword` | Enable change password feature | ✅ Yes | 100% | `forgotAllowed: true` |
+
+All features are enabled by default with 100% rollout for development convenience.
+
+### Term Policies
+
+Four term policy documents are created:
+
+| Type | Version | Language | Description |
+|------|---------|----------|-------------|
+| `cookies` | 1 | EN | Cookie policy document |
+| `marketing` | 1 | EN | Marketing terms document |
+| `privacy` | 1 | EN | Privacy policy document |
+| `termsOfService` | 1 | EN | Terms of Service document |
+
+The actual content for these policies is stored as file references in `src/migration/data/term-policy/*`. The files are not automatically linked to the database records. You must run the term policy migration script to link the files and update the content keys in the database.
+
+For more details on how seeding works, see: [Template Seeds](#template-seeds)
+
+
+## Composite Types
+
+Prisma composite types are embedded sub-documents in MongoDB (not separate collections). They are defined with the `type` keyword in `prisma/schema.prisma` and stored inline within the parent document rather than in separate collections.
+
+### GeoLocation
+
+Represents the geographic location derived from a client's IP address using `geoip-lite`.
+
+```prisma
+type GeoLocation {
+  latitude  Float
+  longitude Float
+  country   String
+  region    String
+  city      String
 }
 ```
 
-## Services
+| Field | Type | Description |
+|---|---|---|
+| `latitude` | `Float` | Latitude coordinate |
+| `longitude` | `Float` | Longitude coordinate |
+| `country` | `String` | ISO country code (e.g. `"ID"`) |
+| `region` | `String` | Region/state code (e.g. `"JK"`) |
+| `city` | `String` | City name (e.g. `"Jakarta"`) |
 
-### DatabaseOptionService
+**Used in:**
+- `Session.geoLocation` — location at login time
+- `ActivityLog.geoLocation` — location when the action was performed
 
-The `DatabaseOptionService` configures MongoDB connection parameters, handling environment variables and connection optimization:
+Resolved automatically via the `@RequestGeoLocation()` parameter decorator. See [Security and Middleware Documentation][ref-doc-security-and-middleware] for details.
 
-```typescript
-@Injectable()
-export class DatabaseOptionService implements IDatabaseOptionService {
-  private readonly logger = new Logger(DatabaseOptionService.name);
+---
 
-  constructor(private readonly configService: ConfigService) {}
+### UserAgent
 
-  createOptions(): MongooseModuleOptions {
-    const env = this.configService.get<string>('app.env');
-    const name = this.configService.get<string>('app.name');
+Represents parsed user-agent information from the client's `User-Agent` HTTP header using `ua-parser-js`. `UserAgent` is the top-level type that embeds four sub-types.
 
-    const uri = this.configService.get<string>('database.uri');
+```prisma
+type UserAgent {
+  ua      String?
+  browser UserAgentBrowser?
+  cpu     UserAgentCpu?
+  device  UserAgentDevice?
+  engine  UserAgentEngine?
+  os      UserAgentOs?
+}
 
-    const dbName = this.configService.get<string>('database.name');
-    const user = this.configService.get<string>('database.username');
-    const pass = this.configService.get<string>('database.password');
+type UserAgentBrowser {
+  name    String?
+  version String?
+  major   String?
+  type    String?
+}
 
-    const debug = this.configService.get<boolean>('database.debug');
+type UserAgentCpu {
+  architecture String?
+}
 
-    let timeoutOptions = this.configService.get<Record<string, number>>(
-      'database.timeoutOptions',
-    );
+type UserAgentDevice {
+  type   String?
+  vendor String?
+  model  String?
+}
 
-    let poolOptions = this.configService.get<Record<string, number>>(
-      'database.poolOptions',
-    );
+type UserAgentEngine {
+  name    String?
+  version String?
+}
 
-    if (env !== ENUM_NODE_ENVIRONMENT.PRODUCTION) {
-      mongoose.set('debug', debug);
-    }
-
-    if (env === ENUM_NODE_ENVIRONMENT.MIGRATION) {
-      timeoutOptions = {
-        serverSelectionTimeoutMS: 60 * 1000, // 60 secs
-        socketTimeoutMS: 300 * 1000, // 5 minutes
-        heartbeatFrequencyMS: 10 * 1000, // 10 secs
-      };
-
-      poolOptions = {
-        maxPoolSize: 20,
-        minPoolSize: 5,
-        maxIdleTimeMS: 120000, // Increased from 60000
-        waitQueueTimeoutMS: 60000, // Increased from 30000
-      };
-    }
-
-    const mongooseOptions: MongooseModuleOptions = {
-      autoIndex: env !== ENUM_NODE_ENVIRONMENT.PRODUCTION,
-      appName: name,
-      retryWrites: true,
-      retryReads: true,
-      ...timeoutOptions,
-      ...poolOptions,
-    };
-
-    // If a full URI is provided, we can connect directly to the database
-    // In this case, host, port, username, and password are not required.
-    if (uri) {
-      mongooseOptions.uri = uri;
-      this.logger.log(`Using database URI: ${uri}`);
-    } else {
-      const host = this.configService.get<string>('database.host');
-      mongooseOptions.uri = host;
-      mongooseOptions.dbName = dbName;
-      mongooseOptions.user = user;
-      mongooseOptions.pass = pass;
-      mongooseOptions.authSource = dbName;
-
-      this.logger.log(`Using database host: ${host}`);
-      this.logger.log(`Database name: ${dbName}`);
-    }
-
-    return mongooseOptions;
-  }
+type UserAgentOs {
+  name    String?
+  version String?
 }
 ```
 
-### DatabaseService
+**`UserAgent` fields:**
 
-The `DatabaseService` provides database funcionality, including transaction management and query helpers:
+| Field | Type | Description |
+|---|---|---|
+| `ua` | `String?` | Raw user-agent string |
+| `browser` | `UserAgentBrowser?` | Browser details |
+| `cpu` | `UserAgentCpu?` | CPU architecture |
+| `device` | `UserAgentDevice?` | Device details |
+| `engine` | `UserAgentEngine?` | Rendering engine details |
+| `os` | `UserAgentOs?` | Operating system details |
 
-```typescript
-@Injectable()
-export class DatabaseService implements IDatabaseService {
-  constructor(
-    @InjectDatabaseConnection()
-    private readonly databaseConnection: Connection,
-  ) {}
+**Used in:**
+- `Session.userAgent` — client info at login time
+- `ActivityLog.userAgent` — client info when the action was performed
 
-  // Transaction support
-  async createTransaction(): Promise<ClientSession> {
-    const session: ClientSession = await this.databaseConnection.startSession();
-    session.startTransaction();
-    return session;
-  }
+Resolved automatically via the `@RequestUserAgent()` parameter decorator. See [Security and Middleware Documentation][ref-doc-security-and-middleware] for details.
 
-  async commitTransaction(session: ClientSession): Promise<void> {
-    await session.commitTransaction();
-    await session.endSession();
-  }
+---
 
-  async abortTransaction(session: ClientSession): Promise<void> {
-    await session.abortTransaction();
-    await session.endSession();
-  }
+### UserTermPolicy
 
-  // ...
+Represents the user's acceptance flags for each term policy type. Stored inline on the `User` document.
+
+```prisma
+type UserTermPolicy {
+  termsOfService Boolean
+  privacy        Boolean
+  marketing      Boolean
+  cookies        Boolean
 }
 ```
 
-## Repository
+| Field | Type | Description |
+|---|---|---|
+| `termsOfService` | `Boolean` | Has accepted Terms of Service |
+| `privacy` | `Boolean` | Has accepted Privacy Policy |
+| `marketing` | `Boolean` | Has accepted Marketing terms |
+| `cookies` | `Boolean` | Has accepted Cookie policy |
 
-The repository pattern implementation provides a consistent approach to database operations across all entities in the application.
+**Used in:**
+- `User.termPolicy`
 
-### Base Repository Classes
+---
 
-The project provides two base repository implementations to support different MongoDB ID types:
+### UserPhoto
 
-#### Database UUID Repository Base
+Represents the user's profile photo stored in AWS S3.
 
-The `DatabaseUUIDRepositoryBase` class serves as the foundation for repositories that use UUID strings as primary keys. This is the recommended approach for most use cases as it provides readable IDs that can be generated on the client side and don't expose incremental information about record counts.
-
-```typescript
-export class DatabaseRepositoryBase<
-    Entity extends DatabaseEntityBase,
-    EntityDocument extends IDatabaseDocument<Entity>,
-> {
-    protected readonly _repository: Model<Entity>;
-    readonly _join?: PopulateOptions | (string | PopulateOptions)[];
-
-    constructor(
-        repository: Model<Entity>,
-        options?: PopulateOptions | (string | PopulateOptions)[]
-    ) {
-        this._repository = repository;
-        this._join = options;
-    }
-
-    // Categories of operations provided:
-
-    // 1. Query Methods - for searching and retrieving data
-    async findAll<T = EntityDocument>(...): Promise<T[]> { /* ... */ }
-    async findOne<T = EntityDocument>(...): Promise<T> { /* ... */ }
-    async findOneById<T = EntityDocument>(...): Promise<T> { /* ... */ }
-    async getTotal(...): Promise<number> { /* ... */ }
-    async exists(...): Promise<boolean> { /* ... */ }
-
-    // 2. Mutation Methods - for creating and modifying data
-    async create<T extends Entity>(...): Promise<EntityDocument> { /* ... */ }
-    async save(...): Promise<EntityDocument> { /* ... */ }
-    async update(...): Promise<EntityDocument> { /* ... */ }
-    async delete(...): Promise<EntityDocument> { /* ... */ }
-
-    // 3. Soft Delete - supports data deletion without actually removing it
-    async softDelete(...): Promise<EntityDocument> { /* ... */ }
-    async restore(...): Promise<EntityDocument> { /* ... */ }
-
-    // 4. Relation Methods - for accessing relationships between entities
-    async join<T = any>(...): Promise<T> { /* ... */ }
-
-    // 5. Bulk Operations - for mass operations
-    async createMany<T extends Partial<Entity>>(...): Promise<InsertManyResult<Entity>> { /* ... */ }
-    async updateMany<T = Entity>(...): Promise<UpdateResult<Entity>> { /* ... */ }
-    async updateManyRaw(...): Promise<UpdateResult<Entity>> { /* ... */ }
-    async deleteMany(...): Promise<DeleteResult> { /* ... */ }
-    async softDeleteMany(...): Promise<UpdateResult<Entity>> { /* ... */ }
-    async restoreMany(...): Promise<UpdateResult<Entity>> { /* ... */ }
-
-    // 6. Aggregate Operations - for aggregation queries
-    async aggregate<AggregatePipeline extends PipelineStage, AggregateResponse = any>(...): Promise<AggregateResponse[]> { /* ... */ }
-    async findAllAggregate<AggregatePipeline extends PipelineStage, AggregateResponse = any>(...): Promise<AggregateResponse[]> { /* ... */ }
-    async getTotalAggregate<AggregatePipeline extends PipelineStage>(...): Promise<number> { /* ... */ }
-
-    // 7. Model Access - direct access to the Mongoose model
-    async model(): Promise<Model<Entity>> { /* ... */ }
+```prisma
+type UserPhoto {
+  bucket       String
+  key          String
+  cdnUrl       String?
+  completedUrl String
+  mime         String
+  extension    String
+  access       String
 }
 ```
 
-#### Database Object ID Repository Base
+| Field | Type | Description |
+|---|---|---|
+| `bucket` | `String` | S3 bucket name |
+| `key` | `String` | S3 object key |
+| `cdnUrl` | `String?` | Optional CDN base URL |
+| `completedUrl` | `String` | Full resolved URL (CDN or S3 direct) |
+| `mime` | `String` | MIME type (e.g. `image/jpeg`) |
+| `extension` | `String` | File extension (e.g. `jpg`) |
+| `access` | `String` | Access level (`public` or `private`) |
 
-The `DatabaseObjectIdRepositoryBase` class serves a similar function but uses MongoDB's native ObjectId type as the primary key. This can be useful for specific use cases where native ObjectId performance benefits are needed.
+**Used in:**
+- `User.photo`
 
-The API surface is almost identical to the UUID version with the main difference being the handling of ID fields.
+---
 
-#### Soft Delete Implementation
+### RoleAbility
 
-The repository implements soft delete funcationality where records are marked as deleted but not physically removed from the database. This provides data recoverability and historical preservation when needed.
+Represents a single CASL ability entry embedded in a `Role`. Each entry defines which actions are allowed on a given policy subject.
 
-When querying data:
-
-- By default, soft-delete records are filtered out (only returns records where `deleted: false`)
-- When the `withDeleted` option is set to `true`, both deleted and non-deleted records are returned
-
-Implementation example:
-
-```typescript
-async findAll<T = EntityDocument>(
-    find?: RootFilterQuery<Entity>,
-    options?: IDatabaseFindAllOptions
-): Promise<T[]> {
-    const repository = this._repository.find<T>({
-        ...find,
-        ...(!options?.withDeleted && {
-            deleted: false,
-        }),
-    });
-
-    // Additional query operations...
-
-    return repository.exec();
+```prisma
+type RoleAbility {
+  action  String[]
+  subject String
 }
 ```
 
-This pattern is consistently applied across all query mothods to ensure proper handling of soft-deleted records.
+| Field | Type | Description |
+|---|---|---|
+| `action` | `String[]` | List of allowed actions (e.g. `["read", "create"]`) |
+| `subject` | `String` | Policy subject (e.g. `"user"`, `"apiKey"`) |
 
-### Entitiy Base Classes
+**Used in:**
+- `Role.abilities`
 
-The project provides two entity base classes that correspond to the repository base classes.
+See [Authorization Documentation][ref-doc-authorization] for how abilities are evaluated at runtime.
 
-#### Database UUID Entity Base
+---
 
-The `DatabaseUUIDEntityBase` class provides a foundation for entities using UUID strings as primary keys. It includes common fields like timestamps and soft delete flags.
+### TermPolicyContent
 
-```typescript
-export class DatabaseEntityBase {
-  // Primary key using UUID by default
-  @DatabaseProp({
-    type: String,
-    required: true,
-    default: uuidV4,
-  })
-  _id: string;
+Represents a localized content file for a term policy document, stored in AWS S3.
 
-  // Soft delete flag
-  @DatabaseProp({
-    required: true,
-    index: true,
-    default: false,
-  })
-  deleted: boolean;
-
-  // And other audit fields...
+```prisma
+type TermPolicyContent {
+  language     String
+  bucket       String
+  key          String
+  cdnUrl       String?
+  completedUrl String
+  mime         String
+  extension    String
+  access       String
+  size         Int
 }
 ```
 
-## Structure
+| Field | Type | Description |
+|---|---|---|
+| `language` | `String` | Language code (e.g. `"en"`) |
+| `bucket` | `String` | S3 bucket name |
+| `key` | `String` | S3 object key |
+| `cdnUrl` | `String?` | Optional CDN base URL |
+| `completedUrl` | `String` | Full resolved URL |
+| `mime` | `String` | MIME type (e.g. `application/pdf`) |
+| `extension` | `String` | File extension (e.g. `pdf`) |
+| `access` | `String` | Access level (`public` or `private`) |
+| `size` | `Int` | File size in bytes |
 
-Each module in the application follows a consistent repository structure:
+**Used in:**
+- `TermPolicy.contents`
 
+
+## Docker
+
+Running database commands inside Docker containers from your host machine:
+
+**Generate Prisma Client inside container:**
+```bash
+docker-compose exec apis pnpm db:generate
 ```
-/modules/{module-name}/
-├── entities/
-│   ├── {entity-name}.entity.ts    # Schema definition
-├── repository/
-│   ├── {entity-name}.repository.ts # Repository implementation
-│   └── {entity-name}.repository.module.ts # Repository module config
+
+**Run database migration inside container:**
+```bash
+docker-compose exec apis pnpm db:migrate
 ```
 
-## Example
+**Run all seeds inside container:**
+```bash
+docker-compose exec apis pnpm migration:seed
+```
 
-### Entity
+**Remove all seeded data inside container:**
+```bash
+docker-compose exec apis pnpm migration:remove
+```
 
-Entity definitions include schema fields and validation through decorators. Each entity defines the data structure stored in MongoDB.
+These commands execute directly in the running Docker container without needing to enter the container shell. Ensure Docker Compose is running with `docker-compose up -d` before executing these commands.
 
-```typescript
-@DatabaseEntity({ collection: UserTableName })
-export class UserEntity extends DatabaseEntityBase {
-  // Field definitions with decorators for index configuration and validation
-  @DatabaseProp({
-    required: true,
-    unique: true,
-    index: true,
-    trim: true,
-    type: String,
-    maxlength: 100,
-  })
-  email: string;
+## Database Tools
 
-  // Other fields with validation
-  @DatabaseProp({
-    required: true,
-    index: true,
-    trim: true,
-    type: String,
-  })
-  name: string;
+### **Prisma ORM**
 
-  // Add entity fields according to requirements
+ACK NestJS Boilerplate uses **[Prisma][ref-prisma] v6.19.x** as the primary database toolkit. Prisma is not just an ORM - it's a complete database toolkit that provides the foundation for implementing clean architecture patterns.
+
+### **Why Prisma for Repository Design Pattern?**
+
+Prisma perfectly enables **Repository Design Pattern** implementation:
+
+- **Type-Safe Repository Layer**: Auto-generated TypeScript types ensure compile-time validation throughout repositories
+- **Clean Architecture**: PrismaClient provides foundation for clean separation between database and business logic  
+- **Easy Implementation**: Consistent query API and transaction support simplify repository development
+- **Database Agnostic**: Switch between MongoDB, PostgreSQL without changing repository code
+
+### Change DB with Minimal Effort
+
+Prisma, combined with the Repository Pattern, allows you to switch databases with minimal effort and maximum codebase stability. The data access layer is fully abstracted, so your service and business logic remain unchanged regardless of the underlying database engine.
+
+#### Supported Databases
+
+| Database | Best For | Transaction Support |
+|----------|----------|---------------------|
+| **MongoDB** | Document-based, flexible schema | ✅ Yes (replica set) |
+| **PostgreSQL** | Relational Database, reliability | ✅ Yes |
+
+**Other supported databases:** MySQL, SQLite, SQL Server, CockroachDB
+
+#### Quick Migration: MongoDB → PostgreSQL
+
+**1. Update Prisma Schema** (`prisma/schema.prisma`):
+```prisma
+// Change provider
+datasource db {
+  provider = "postgresql"  // was: "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-// Code to generate schema and define document type
-export const UserSchema = DatabaseSchema(UserEntity);
-export type UserDoc = IDatabaseDocument<UserEntity>;
-```
-
-### Repository
-
-Each repository extends the base repository and can customize functionality as needed. The repository handles all data operations for a specific entity
-
-```typescript
-export class UserRepository extends DatabaseRepositoryBase<
-  UserEntity,
-  UserDoc
-> {
-  constructor(
-    @InjectDatabaseModel(UserEntity.name)
-    private readonly userModel: Model<UserEntity>,
-  ) {
-    // Call parent constructor with model and join (relation) definitions
-    super(userModel, [
-      // Example of join configuration: User with Role
-      {
-        path: 'role',
-        localField: 'role',
-        foreignField: '_id',
-        model: RoleEntity.name,
-        justOne: true,
-      },
-      // Other join definitions...
-    ]);
-  }
-
-  // Add custom methods if needed
+// Update ID fields in all models
+model User {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid  // was: @default(auto()) @map("_id") @db.ObjectId
+  // Replace @db.ObjectId with @db.Uuid from all foreign keys
 }
 ```
 
-Repositories provide a clean abstraction over Mongoose and enable:
+**2. Update Environment** (`.env`):
+```bash
+# From:
+DATABASE_URL=mongodb://localhost:27017/ACKNestJs?replicaSet=rs0
 
-- Complete CRUD operations on entities
-- Automatic relations/joins base on configuration
-- Soft delete and restore
-- Buld operations for high performance
-
-### Repository Module Example
-
-Each repository has its own module to handle dependencies and exports. This module facilitates dependency injection and NestJS integration.
-
-```typescript
-@Module({
-  providers: [UserRepository],
-  exports: [UserRepository],
-  controllers: [],
-  imports: [
-    // Register schema with Mongoose
-    MongooseModule.forFeature(
-      [
-        {
-          name: UserEntity.name,
-          schema: UserSchema,
-        },
-      ],
-      DATABASE_CONNECTION_NAME,
-    ),
-  ],
-})
-export class UserRepositoryModule {}
+# To:
+DATABASE_URL=postgresql://user:password@localhost:5432/ACKNestJs
 ```
 
-### Service
-
-Services user repositories for data access, implementing business logic on top of repository layer. the service layer bridges controllers and the data access layer.
-
-```typescript
-@Injectable()
-export class UserService implements IUserService {
-  constructor(
-    private readonly userRepository: UserRepository,
-    // Other dependencies...
-    private readonly helperDateService: HelperDateService,
-    private readonly configService: ConfigService,
-  ) {}
-
-  // Service method implementations
-  async findAll<T>(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<T[]> {
-    // Call repository with required parameters
-    return this.userRepository.findAll<T>(find, {
-      ...options,
-      join: true, // Enable automatic relation joining
-    });
-  }
-
-  // Method that includes soft-deleted records in results
-  async findAllWithDeleted<T>(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<T[]> {
-    return this.userRepository.findAll<T>(find, {
-      ...options,
-      join: true,
-      withDeleted: true, // This will include soft-deleted records
-    });
-  }
-
-  async create<Dto>(
-    data: Dto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc> {
-    // Transform DTO to entity before saving
-    const create: UserEntity = new UserEntity();
-    Object.assign(create, data);
-
-    return this.userRepository.create<UserEntity>(create, options);
-  }
-
-  // Soft delete a record
-  async softDelete(
-    id: string,
-    options?: IDatabaseSoftDeleteOptions,
-  ): Promise<UserDoc> {
-    const user = await this.userRepository.findOneById<UserDoc>(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return this.userRepository.softDelete(user, options);
-  }
-
-  // Restore a soft-deleted record
-  async restore(id: string, options?: IDatabaseSaveOptions): Promise<UserDoc> {
-    // We need to include deleted records to find the one to restore
-    const user = await this.userRepository.findOneById<UserDoc>(id, {
-      withDeleted: true,
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return this.userRepository.restore(user, options);
-  }
-
-  // Other service methods...
-}
+**3. Generate Migration & Client:**
+```bash
+pnpm prisma migrate dev --name init  # PostgreSQL
+pnpm db:generate                      # Regenerate client
 ```
+
+**4. Update DatabaseService Code:**
+
+- **DatabaseService** (`src/common/database/services/database.service.ts`) - May require updates for connection management, health checks, and database-specific features
+- **DatabaseUtil** (`src/common/database/utils/database.util.ts`) - Replace MongoDB `ObjectId` helpers with UUID validators
+
+**5. Re-seed Database:**
+```bash
+pnpm migration:seed
+```
+
+#### Learn More
+
+- [Prisma: Switching Databases][ref-prisma-setup]
+- [Prisma MongoDB Documentation][ref-prisma-mongodb]
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+
+
+<!-- REFERENCES -->
+
+[ref-prisma-mongodb]: https://www.prisma.io/docs/orm/overview/databases/mongodb#commonalities-with-other-database-provider
+[ref-prisma-setup]: https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project#switching-databases
+[ref-commander]: https://nest-commander.jaymcdoniel.dev
+
+[ref-doc-installation]: installation.md
+[ref-doc-environment]: environment.md
+[ref-doc-configuration]: configuration.md
+[ref-doc-security-and-middleware]: security-and-middleware.md
+[ref-doc-authorization]: authorization.md
