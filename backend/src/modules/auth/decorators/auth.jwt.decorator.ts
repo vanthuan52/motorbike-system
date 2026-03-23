@@ -16,11 +16,11 @@ import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.inter
 export const AuthJwtPayload = createParamDecorator(
   <T = IAuthJwtAccessTokenPayload>(
     data: string,
-    ctx: ExecutionContext,
+    ctx: ExecutionContext
   ): T | undefined => {
     const { user } = ctx.switchToHttp().getRequest<IRequestApp & { user: T }>();
     return data ? user[data] : user;
-  },
+  }
 );
 
 /**
@@ -38,7 +38,7 @@ export const AuthJwtToken = createParamDecorator(
     const authorizations: string[] = authorization?.split(' ') ?? [];
 
     return authorizations.length >= 2 ? authorizations[1] : undefined;
-  },
+  }
 );
 
 /**

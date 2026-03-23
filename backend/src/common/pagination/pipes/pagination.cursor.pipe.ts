@@ -1,8 +1,7 @@
 import {
-  BadRequestException,
-  HttpStatus,
   Inject,
   Injectable,
+  UnprocessableEntityException,
   mixin,
 } from '@nestjs/common';
 import { PipeTransform, Scope, Type } from '@nestjs/common/interfaces';
@@ -15,6 +14,7 @@ import {
 } from '@/common/pagination/constants/pagination.constant';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import { EnumPaginationStatusCodeError } from '@/common/pagination/enums/pagination.status-code.enum';
 
 /**
  * Factory function to create a request-scoped NestJS pipe for cursor-based pagination.
@@ -22,10 +22,6 @@ import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pag
  * @param {number} [defaultPerPage=PaginationDefaultPerPage] - Default number of items per page if not provided by the client.
  * @param {string} [defaultCursorField=PaginationDefaultCursorField] - Default field to use as the cursor for pagination.
  * @returns {Type<PipeTransform>} A NestJS pipe class that parses and validates cursor pagination query parameters.
- *
- * @example
- *   @Query(new PaginationCursorPipe())
- *   async findAll(@Query() query: IPaginationQueryCursorParams) { ... }
  *
  * @constraint
  * - PerPage: minimum 1, maximum PaginationDefaultMaxPerPage
@@ -36,7 +32,7 @@ import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pag
  */
 export function PaginationCursorPipe(
   defaultPerPage: number = PaginationDefaultPerPage,
-  defaultCursorField: string = PaginationDefaultCursorField,
+  defaultCursorField: string = PaginationDefaultCursorField
 ): Type<PipeTransform> {
   @Injectable({ scope: Scope.REQUEST })
   class MixinPaginationCursorPipe implements PipeTransform {
@@ -55,7 +51,7 @@ export function PaginationCursorPipe(
       value: {
         cursor?: string;
         perPage?: number | string;
-      } & IPaginationQueryCursorParams,
+      } & IPaginationQueryCursorParams
     ): Promise<IPaginationQueryCursorParams> {
       try {
         const finalPerPage = this.validatePerPage(value.perPage);
@@ -70,12 +66,13 @@ export function PaginationCursorPipe(
           cursorField: defaultCursorField,
         };
       } catch (error) {
-        if (error instanceof BadRequestException) {
+        if (error instanceof UnprocessableEntityException) {
           throw error;
         }
 
-        throw new BadRequestException({
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        throw new UnprocessableEntityException({
+          statusCode:
+            EnumPaginationStatusCodeError.invalidCursorPaginationParams,
           message: 'pagination.error.invalidCursorPaginationParams',
         });
       }
@@ -103,8 +100,8 @@ export function PaginationCursorPipe(
       }
 
       if (!Number.isFinite(finalPerPage) || !Number.isInteger(finalPerPage)) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        throw new UnprocessableEntityException({
+          statusCode: EnumPaginationStatusCodeError.invalidPerPage,
           message: 'pagination.error.invalidPerPage',
           messageProperties: {
             maxPerPage: PaginationDefaultMaxPerPage,
@@ -113,8 +110,8 @@ export function PaginationCursorPipe(
       }
 
       if (finalPerPage > PaginationDefaultMaxPerPage) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        throw new UnprocessableEntityException({
+          statusCode: EnumPaginationStatusCodeError.perPageExceedsMaximum,
           message: 'pagination.error.perPageExceedsMaximum',
           messageProperties: {
             maxPerPage: PaginationDefaultMaxPerPage,
@@ -124,8 +121,8 @@ export function PaginationCursorPipe(
       }
 
       if (finalPerPage < 1) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        throw new UnprocessableEntityException({
+          statusCode: EnumPaginationStatusCodeError.perPageCannotBeLessThanOne,
           message: 'pagination.error.perPageCannotBeLessThanOne',
           messageProperties: {
             minPerPage: 1,
@@ -166,8 +163,8 @@ export function PaginationCursorPipe(
       }
 
       if (trimmed.length > PaginationMaxCursorLength) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        throw new UnprocessableEntityException({
+          statusCode: EnumPaginationStatusCodeError.cursorTooLong,
           message: 'pagination.error.cursorTooLong',
           messageProperties: {
             maxCursorLength: PaginationMaxCursorLength,
@@ -179,8 +176,8 @@ export function PaginationCursorPipe(
       // Using + instead of * to require at least 1 character
       const urlSafeBase64Regex = /^[A-Za-z0-9_-]+$/;
       if (!urlSafeBase64Regex.test(trimmed)) {
-        throw new BadRequestException({
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        throw new UnprocessableEntityException({
+          statusCode: EnumPaginationStatusCodeError.invalidCursorFormat,
           message: 'pagination.error.invalidCursorFormat',
           messageProperties: {
             format: 'URL-safe base64 (A-Za-z0-9_-)',

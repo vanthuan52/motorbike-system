@@ -39,7 +39,6 @@ import {
   VehicleAdminBrandUpdateDoc,
   VehicleAdminBrandUpdateStatusDoc,
 } from '../docs/vehicle-brand.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
@@ -55,9 +54,10 @@ import {
 } from '../constants/vehicle-brand.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.vehicle-brand')
 @Controller({
@@ -68,7 +68,7 @@ export class VehicleBrandAdminController {
   constructor(
     private readonly vehicleBrandService: VehicleBrandService,
     private readonly vehicleBrandUtil: VehicleBrandUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @VehicleAdminBrandListDoc()
@@ -86,13 +86,16 @@ export class VehicleBrandAdminController {
       availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleBrandSelect,
+      Prisma.VehicleBrandWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {
     const { data, total } = await this.vehicleBrandService.getListOffset(
       pagination,
-      status,
+      status
     );
     const mapped = this.vehicleBrandUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -109,7 +112,7 @@ export class VehicleBrandAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<VehicleBrandDto>> {
     const vehicleBrand = await this.vehicleBrandService.findOneById(id);
     const mapped = this.vehicleBrandUtil.mapGet(vehicleBrand);
@@ -127,10 +130,10 @@ export class VehicleBrandAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: VehicleBrandCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    @Body() body: VehicleBrandCreateRequestDto
+  ): Promise<IResponseReturn<{ id: string }>> {
     const created = await this.vehicleBrandService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created.id } };
   }
 
   @VehicleAdminBrandUpdateDoc()
@@ -144,8 +147,8 @@ export class VehicleBrandAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: VehicleBrandUpdateRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: VehicleBrandUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.vehicleBrandService.update(id, body);
     return {};
@@ -162,8 +165,8 @@ export class VehicleBrandAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: VehicleBrandUpdateStatusRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: VehicleBrandUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.vehicleBrandService.updateStatus(id, body);
     return {};
@@ -180,7 +183,7 @@ export class VehicleBrandAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<void>> {
     await this.vehicleBrandService.delete(id);
     return {};

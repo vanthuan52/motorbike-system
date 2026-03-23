@@ -5,7 +5,7 @@ import { AppointmentsPublicCreateDoc } from '../docs/appointment.public.doc';
 import { Response } from '@/common/response/decorators/response.decorator';
 import { AppointmentBookRequestDto } from '../dtos/request/appointment.book.request.dto';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 @ApiTags('modules.public.appointment')
 @Controller({
@@ -19,9 +19,9 @@ export class AppointmentPublicController {
   @Response('appointment.create')
   @Post('/create')
   async create(
-    @Body() body: AppointmentBookRequestDto,
+    @Body() body: AppointmentBookRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.appointmentService.createAppointment(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created._id } };
   }
 }

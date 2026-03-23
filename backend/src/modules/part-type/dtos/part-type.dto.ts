@@ -36,7 +36,7 @@ export class PartTypeDto extends DatabaseDto {
     description: 'Display order',
   })
   @Expose()
-  order?: string;
+  orderBy?: string;
 
   @ApiProperty({
     enum: EnumPartTypeStatus,

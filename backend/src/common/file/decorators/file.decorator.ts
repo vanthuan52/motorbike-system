@@ -29,8 +29,8 @@ export function FileUploadSingle(options?: IFileUploadSingle): MethodDecorator {
           fileSize: options?.fileSize ?? FileSizeInBytes,
           files: 1,
         },
-      }),
-    ),
+      })
+    )
   );
 }
 
@@ -41,7 +41,7 @@ export function FileUploadSingle(options?: IFileUploadSingle): MethodDecorator {
  * @returns {MethodDecorator} A method decorator that applies file upload interceptor for multiple files
  */
 export function FileUploadMultiple(
-  options?: IFileUploadMultiple,
+  options?: IFileUploadMultiple
 ): MethodDecorator {
   return applyDecorators(
     UseInterceptors(
@@ -52,9 +52,9 @@ export function FileUploadMultiple(
           limits: {
             fileSize: options?.fileSize ?? FileSizeInBytes,
           },
-        },
-      ),
-    ),
+        }
+      )
+    )
   );
 }
 
@@ -67,12 +67,12 @@ export function FileUploadMultiple(
  */
 export function FileUploadMultipleFields(
   fields: IFileUploadMultipleField[],
-  options?: IFileUploadMultipleFieldOptions,
+  options?: IFileUploadMultipleFieldOptions
 ): MethodDecorator {
   return applyDecorators(
     UseInterceptors(
       FileFieldsInterceptor(
-        fields.map((e) => ({
+        fields.map(e => ({
           name: e.field,
           maxCount: e.maxFiles,
         })),
@@ -81,8 +81,8 @@ export function FileUploadMultipleFields(
             fileSize: options?.fileSize ?? FileSizeInBytes,
             files: FileMaxMultiple,
           },
-        },
-      ),
-    ),
+        }
+      )
+    )
   );
 }

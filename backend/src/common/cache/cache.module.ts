@@ -4,9 +4,9 @@ import {
   CacheModule as CacheManagerModule,
   CacheOptions,
 } from '@nestjs/cache-manager';
-import KeyvRedis from '@keyv/redis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisClientCachedProvider } from '@/common/redis/constants/redis.constant';
+import KeyvRedis from '@keyv/redis';
 import { CacheMainProvider } from '@/common/cache/constants/cache.constant';
 
 /**
@@ -38,7 +38,7 @@ export class CacheMainModule {
           inject: [ConfigService, RedisClientCachedProvider],
           useFactory: (
             configService: ConfigService,
-            redisClient: KeyvRedis<unknown>,
+            redisClient: KeyvRedis<unknown>
           ): CacheOptions => {
             return {
               stores: [redisClient],

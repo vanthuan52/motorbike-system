@@ -1,44 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { CareRecordItemDoc } from '../entities/care-record-item.entity';
-import { ICareRecordItemEntity } from '../interfaces/care-record-item.interface';
+import { CareRecordItem } from '@prisma/client';
 import { CareRecordItemListResponseDto } from '../dtos/response/care-record-item.list.response.dto';
 import { CareRecordItemDto } from '../dtos/care-record-item.dto';
 import { CareRecordItemGetFullResponseDto } from '../dtos/response/care-record-item.full.response.dto';
 
 @Injectable()
 export class CareRecordItemUtil {
-  mapList(
-    careRecordItems: CareRecordItemDoc[] | ICareRecordItemEntity[],
-  ): CareRecordItemListResponseDto[] {
-    return plainToInstance(
-      CareRecordItemListResponseDto,
-      careRecordItems.map((c: CareRecordItemDoc | ICareRecordItemEntity) =>
-        c instanceof Document ? c.toObject() : c,
-      ),
-    );
+  mapList(careRecordItems: CareRecordItem[]): CareRecordItemListResponseDto[] {
+    return plainToInstance(CareRecordItemListResponseDto, careRecordItems);
   }
 
-  mapGet(
-    careRecordItem: CareRecordItemDoc | ICareRecordItemEntity,
-  ): CareRecordItemDto {
-    return plainToInstance(
-      CareRecordItemDto,
-      careRecordItem instanceof Document
-        ? careRecordItem.toObject()
-        : careRecordItem,
-    );
+  mapGet(careRecordItem: CareRecordItem): CareRecordItemDto {
+    return plainToInstance(CareRecordItemDto, careRecordItem);
   }
 
-  mapGetFull(
-    careRecordItem: CareRecordItemDoc | ICareRecordItemEntity,
-  ): CareRecordItemGetFullResponseDto {
-    return plainToInstance(
-      CareRecordItemGetFullResponseDto,
-      careRecordItem instanceof Document
-        ? careRecordItem.toObject()
-        : careRecordItem,
-    );
+  mapGetFull(careRecordItem: CareRecordItem): CareRecordItemGetFullResponseDto {
+    return plainToInstance(CareRecordItemGetFullResponseDto, careRecordItem);
   }
 }

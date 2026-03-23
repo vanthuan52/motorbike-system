@@ -7,7 +7,7 @@ export const RequestCustomTimeoutMetaKey = 'RequestCustomTimeoutMetaKey';
  * Meta key for request custom timeout value.
  */
 export const RequestCustomTimeoutValueMetaKey =
-    'RequestCustomTimeoutValueMetaKey';
+  'RequestCustomTimeoutValueMetaKey';
 
 /**
  * Meta key for request environment.

@@ -2,8 +2,8 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ApiKeyXTypeMetaKey } from '@/modules/api-key/constants/api-key.constant';
-import { EnumApiKeyType } from '@/modules/api-key/enums/api-key.enum';
 import { ApiKeyService } from '@/modules/api-key/services/api-key.service';
+import { EnumApiKeyType } from '@/generated/prisma-client';
 
 /**
  * Guard that validates API key type authorization.
@@ -13,7 +13,7 @@ import { ApiKeyService } from '@/modules/api-key/services/api-key.service';
 export class ApiKeyXApiKeyTypeGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly apiKeyService: ApiKeyService,
+    private readonly apiKeyService: ApiKeyService
   ) {}
 
   /**

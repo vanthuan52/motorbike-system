@@ -12,7 +12,7 @@ import { CandidateService } from '../services/candidate.service';
 import { Response } from '@/common/response/decorators/response.decorator';
 import { CandidateUserCreateRequestDto } from '../dtos/request/candidate.create.request.dto';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { HiringService } from '../services/hiring.service';
 import { CandidateUtil } from '../utils/candidate.util';
 
@@ -25,13 +25,13 @@ export class CandidatePublicController {
   constructor(
     private readonly candidateService: CandidateService,
     private readonly hiringService: HiringService,
-    private readonly candidateUtil: CandidateUtil,
+    private readonly candidateUtil: CandidateUtil
   ) {}
   @CandidatePublicCreateDoc()
   @Response('candidate.create')
   @Post('/create')
   async create(
-    @Body() body: CandidateUserCreateRequestDto,
+    @Body() body: CandidateUserCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     try {
       // HiringService refactor is pending, assuming findOneById returns raw or whatever it returns.
@@ -47,7 +47,7 @@ export class CandidatePublicController {
 
       const candidate = await this.candidateService.create(body);
 
-      return { data: { _id: candidate._id } };
+      return { data: { id: candidate.id } };
     } catch (err) {
       if (err instanceof HttpException) throw err;
 

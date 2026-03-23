@@ -1,5 +1,5 @@
-import { Module, Global } from '@nestjs/common';
-import { PaginationService } from './services/pagination.service';
+import { Global, Module } from '@nestjs/common';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
 
 /**
  * Global pagination module that provides pagination services across the application.
@@ -10,5 +10,6 @@ import { PaginationService } from './services/pagination.service';
   providers: [PaginationService],
   exports: [PaginationService],
   imports: [],
+  controllers: [],
 })
 export class PaginationModule {}

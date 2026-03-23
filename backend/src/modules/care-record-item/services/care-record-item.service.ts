@@ -1,16 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { ICareRecordItemService } from '../interfaces/care-record-item.service.interface';
 import { CareRecordItemRepository } from '../respository/care-record-item.repository';
-import {
-  CareRecordItemDoc,
-  CareRecordItemEntity,
-} from '../entities/care-record-item.entity';
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
@@ -18,134 +8,94 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { ENUM_CARE_RECORD_ITEM_STATUS_CODE_ERROR } from '../enums/care-record-item.status-code.enum';
+import { CareRecordItem, Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordItemService implements ICareRecordItemService {
   constructor(
-    private readonly careRecordItemRepository: CareRecordItemRepository,
+    private readonly careRecordItemRepository: CareRecordItemRepository
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: CareRecordItemDoc[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordItemSelect,
+      Prisma.CareRecordItemWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordItem[]; total: number }> {
+    const { data, count } =
+      await this.careRecordItemRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
 
-    const [careRecordItems, total] = await Promise.all([
-      this.careRecordItemRepository.findAll(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-        join: true,
-      }),
-      this.careRecordItemRepository.getTotal(find),
-    ]);
-
-    return {
-      data: careRecordItems,
-      total,
-    };
+    const careRecordItems: CareRecordItem[] = data;
+    return { data: careRecordItems, total: count || 0 };
   }
 
   async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: CareRecordItemDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...filters };
-
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
-    }
-
-    const [data, count] = await Promise.all([
-      this.careRecordItemRepository.findAllCursor(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordItemSelect,
+      Prisma.CareRecordItemWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordItem[]; total?: number }> {
+    const { data, count } =
+      await this.careRecordItemRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
         },
-        join: true,
-      }),
-      includeCount
-        ? this.careRecordItemRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
+      });
 
-    return { data, total: count };
+    const careRecordItems: CareRecordItem[] = data;
+    return { data: careRecordItems, total: count || 0 };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordItemDoc> {
-    const careRecordItem = await this.findOneByIdOrFail(id, {
-      ...options,
-      join: true,
-    });
+  async findOneById(id: string): Promise<CareRecordItem> {
+    return this.findOneByIdOrFail(id);
+  }
+
+  async findOneWithRelationsById(id: string): Promise<CareRecordItem> {
+    const careRecordItem = await this.findOneByIdOrFail(id);
     return careRecordItem;
   }
 
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordItemDoc> {
-    const careRecordItem =
-      await this.careRecordItemRepository.findOne<CareRecordItemDoc>(
-        find,
-        options,
-      );
-    return careRecordItem;
-  }
-
-  async create(
-    {
-      careRecord,
-      vehicleService,
+  async create({
+    careRecord,
+    vehicleService,
+    source,
+    itemType,
+    name,
+    part,
+    quantity,
+    unitPrice,
+    technician,
+    approvedByOwner,
+    note,
+  }: CareRecordItemCreateRequestDto): Promise<DatabaseIdDto> {
+    const created = await this.careRecordItemRepository.create({
+      name,
       source,
       itemType,
-      name,
-      part,
       quantity,
       unitPrice,
-      technician,
-      approvedByOwner,
-      note,
-    }: CareRecordItemCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto> {
-    const create: CareRecordItemEntity = new CareRecordItemEntity();
+      totalPrice: quantity * unitPrice,
+      approvedByOwner: approvedByOwner ?? false,
+      note: note ?? '',
+      careRecord: { connect: { id: careRecord } },
+      vehicleService: { connect: { id: vehicleService } },
+      ...(part && { part: { connect: { id: part } } }),
+      ...(technician && { technician: { connect: { id: technician } } }),
+    });
 
-    create.careRecord = careRecord;
-    create.vehicleService = vehicleService;
-    create.source = source;
-    create.itemType = itemType;
-    create.name = name;
-    create.quantity = quantity;
-    create.unitPrice = unitPrice;
-    create.part = part;
-    create.technician = technician;
-    create.approvedByOwner = approvedByOwner ?? false;
-    create.note = note ?? '';
-
-    const created =
-      await this.careRecordItemRepository.create<CareRecordItemEntity>(
-        create,
-        options,
-      );
-
-    return { _id: created._id };
+    return { _id: created.id };
   }
 
   async update(
@@ -161,57 +111,55 @@ export class CareRecordItemService implements ICareRecordItemService {
       technician,
       approvedByOwner,
       note,
-    }: CareRecordItemUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
+    }: CareRecordItemUpdateRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.vehicleService = vehicleService ?? repository.vehicleService;
-    repository.source = source ?? repository.source;
-    repository.itemType = itemType ?? repository.itemType;
-    repository.name = name ?? repository.name;
-    repository.part = part ?? repository.part;
-    repository.quantity = quantity ?? repository.quantity;
-    repository.unitPrice = unitPrice ?? repository.unitPrice;
-    repository.technician = technician ?? repository.technician;
-    repository.approvedByOwner = approvedByOwner ?? repository.approvedByOwner;
-    repository.note = note ?? repository.note;
+    const record = await this.findOneByIdOrFail(id);
 
-    await this.careRecordItemRepository.save(repository, options);
+    const updateData: any = {};
+    if (vehicleService !== undefined)
+      updateData.vehicleService = { connect: { id: vehicleService } };
+    if (source !== undefined) updateData.source = source;
+    if (itemType !== undefined) updateData.itemType = itemType;
+    if (name !== undefined) updateData.name = name;
+    if (part !== undefined)
+      updateData.part = part ? { connect: { id: part } } : { disconnect: true };
+    if (quantity !== undefined) updateData.quantity = quantity;
+    if (unitPrice !== undefined) updateData.unitPrice = unitPrice;
+    if (quantity !== undefined || unitPrice !== undefined) {
+      const qty = quantity ?? record.quantity;
+      const price = unitPrice ?? record.unitPrice;
+      updateData.totalPrice = qty * price;
+    }
+    if (technician !== undefined)
+      updateData.technician = technician
+        ? { connect: { id: technician } }
+        : { disconnect: true };
+    if (approvedByOwner !== undefined)
+      updateData.approvedByOwner = approvedByOwner;
+    if (note !== undefined) updateData.note = note;
+
+    await this.careRecordItemRepository.update(id, updateData);
   }
 
   async updateApproval(
     id: string,
-    { approvedByOwner }: CareRecordItemUpdateApprovalRequestDto,
-    options?: IDatabaseSaveOptions,
+    { approvedByOwner }: CareRecordItemUpdateApprovalRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.approvedByOwner = approvedByOwner;
-
-    await this.careRecordItemRepository.save(repository, options);
+    await this.findOneByIdOrFail(id);
+    await this.careRecordItemRepository.update(id, { approvedByOwner });
   }
 
-  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    await this.careRecordItemRepository.softDelete(repository, options);
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordItemRepository.delete(id);
   }
 
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.careRecordItemRepository.deleteMany(find, options);
+  async deleteMany(find?: Record<string, any>): Promise<boolean> {
     return true;
   }
 
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordItemDoc> {
-    const careRecordItem =
-      await this.careRecordItemRepository.findOneById<CareRecordItemDoc>(
-        id,
-        options,
-      );
+  private async findOneByIdOrFail(id: string): Promise<CareRecordItem> {
+    const careRecordItem = await this.careRecordItemRepository.findOneById(id);
     if (!careRecordItem) {
       throw new NotFoundException({
         statusCode: ENUM_CARE_RECORD_ITEM_STATUS_CODE_ERROR.NOT_FOUND,

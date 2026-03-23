@@ -18,10 +18,10 @@ export class RequestUrlVersionMiddleware implements NestMiddleware {
   constructor(private readonly configService: ConfigService) {
     this.globalPrefix = this.configService.get<string>('app.globalPrefix');
     this.urlVersionEnable = this.configService.get<boolean>(
-      'app.urlVersion.enable',
+      'app.urlVersion.enable'
     );
     this.urlVersionPrefix = this.configService.get<string>(
-      'app.urlVersion.prefix',
+      'app.urlVersion.prefix'
     );
     this.urlVersion = this.configService.get<string>('app.urlVersion.version');
   }
@@ -36,7 +36,7 @@ export class RequestUrlVersionMiddleware implements NestMiddleware {
   async use(
     req: IRequestApp,
     _res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const originalUrl: string = req.originalUrl;
     let version = this.urlVersion;

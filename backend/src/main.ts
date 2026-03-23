@@ -15,32 +15,34 @@ import { RequestValidationException } from './common/request/exceptions/request.
 async function bootstrap() {
   const app: NestApplication = await NestFactory.create(AppModule, {
     abortOnError: true,
-    bufferLogs: false,
+    bufferLogs: true,
   });
 
   // Custom Logger
   app.useLogger(app.get(PinoLogger));
 
   const configService = app.get(ConfigService);
-
   const env: string = configService.get<string>('app.env');
   const timezone: string = configService.get<string>('app.timezone');
-  const appName: string = configService.get<string>('app.name');
   const host: string = configService.get<string>('app.http.host');
   const port: number = configService.get<number>('app.http.port');
   const globalPrefix: string = configService.get<string>('app.globalPrefix');
   const versioningPrefix: string = configService.get<string>(
-    'app.versioning.prefix',
+    'app.urlVersion.prefix'
   );
-  const version: string = configService.get<string>('app.versioning.version');
-  const versionEnable: boolean = configService.get<boolean>(
-    'app.versioning.enable',
-  );
+  const version: string = configService.get<string>('app.urlVersion.version');
+  const appName: string = configService.get<string>('app.name');
+  const databaseUrl = configService.get<string>('database.url');
+  const databaseDebug = configService.get<boolean>('database.debug');
   const loggerAuto = configService.get<boolean>('logger.auto');
   const loggerDebugEnable = configService.get<boolean>('logger.enable');
   const loggerDebugLevel = configService.get<string>('logger.level');
 
-  const logger = new Logger('NestJs-Main');
+  // enable
+  const versionEnable: string = configService.get<string>(
+    'app.urlVersion.enable'
+  );
+
   process.env.NODE_ENV = env;
   process.env.TZ = timezone;
 
@@ -68,13 +70,14 @@ async function bootstrap() {
       whitelist: true,
       forbidNonWhitelisted: false,
       disableErrorMessages: false,
-      exceptionFactory: (errors) => {
+      exceptionFactory: errors => {
         return new RequestValidationException(errors);
       },
-    }),
+    })
   );
 
   // Validate Env
+  const logger = new Logger(`${appName}-Main`);
   const classEnv = plainToInstance(AppEnvDto, process.env);
   const errors = await validate(classEnv, {
     skipMissingProperties: false,
@@ -85,20 +88,20 @@ async function bootstrap() {
       value: true,
     },
   });
-
   if (errors.length > 0) {
     const messageService = app.get(MessageService);
     const errorsMessage = messageService.setValidationMessage(errors);
 
     logger.error(
       `Env Variable Invalid: ${JSON.stringify(errorsMessage)}`,
-      'NestApplication',
+      'NestApplication'
     );
 
     throw new Error('Env Variable Invalid', {
       cause: errorsMessage,
     });
   }
+
   // Swagger
   await swaggerInit(app);
 
@@ -113,8 +116,10 @@ async function bootstrap() {
   logger.log(`App Timezone: ${timezone}`, 'NestApplication');
   logger.log(
     `App URL: http://${host}:${port}${globalPrefix}`,
-    'NestApplication',
+    'NestApplication'
   );
+  logger.log(`Database URL: ${databaseUrl}`, 'NestApplication');
+  logger.log(`Database Debug: ${databaseDebug}`, 'NestApplication');
   logger.log(`Logger Auto: ${loggerAuto}`, 'NestApplication');
   logger.log(`Logger Debug Enable: ${loggerDebugEnable}`, 'NestApplication');
   logger.log(`Logger Debug Level: ${loggerDebugLevel}`, 'NestApplication');

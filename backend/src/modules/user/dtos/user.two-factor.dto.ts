@@ -1,12 +1,12 @@
-import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { DatabaseDto } from '@/common/database/dtos/database.dto';
 
 export class UserTwoFactorDto extends DatabaseDto {
   @ApiProperty({
     required: true,
-    example: faker.string.uuid(),
+    example: faker.database.mongodbObjectId(),
   })
   userId: string;
 
@@ -45,11 +45,4 @@ export class UserTwoFactorDto extends DatabaseDto {
   @ApiHideProperty()
   @Exclude()
   lastUsedAt?: Date;
-
-  @ApiProperty({
-    required: true,
-    example: faker.number.int(),
-    default: 0,
-  })
-  attempt: number;
 }

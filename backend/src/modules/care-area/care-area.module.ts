@@ -8,6 +8,6 @@ import { ServiceChecklistModule } from '@/modules/service-checklist/service-chec
   imports: [CareAreaRepositoryModule, ServiceChecklistModule],
   controllers: [],
   providers: [CareAreaService, CareAreaUtil],
-  exports: [CareAreaRepositoryModule, CareAreaService, CareAreaUtil],
+  exports: [CareAreaService, CareAreaUtil],
 })
 export class CareAreaModule {}

@@ -1,15 +1,18 @@
 import { registerAs } from '@nestjs/config';
 
-export type DocConfig = {
+export interface IConfigDoc {
   name: string;
   description: string;
   prefix: string;
-};
+  version: string;
+}
 
-export default registerAs('docs', () => {
-  return {
-    name: `${process.env.APP_NAME ?? 'Nestjs App'} APIs Specification`,
+export default registerAs(
+  'doc',
+  (): IConfigDoc => ({
+    name: `${process.env.APP_NAME ?? 'Nestjs Motorbike System'} APIs Specification`,
     description: 'Section for describe whole APIs',
     prefix: '/docs',
-  };
-});
+    version: '3.1.0',
+  })
+);

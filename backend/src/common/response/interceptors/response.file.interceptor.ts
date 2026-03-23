@@ -14,7 +14,6 @@ import { HelperService } from '@/common/helper/services/helper.service';
 import { FileService } from '@/common/file/services/file.service';
 import { IResponseFileReturn } from '@/common/response/interfaces/response.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-
 import { EnumMessageLanguage } from '@/common/message/enums/message.enum';
 import { EnumFileExtensionDocument } from '@/common/file/enums/file.enum';
 
@@ -34,7 +33,7 @@ export class ResponseFileInterceptor implements NestInterceptor {
   constructor(
     private readonly fileService: FileService,
     private readonly helperService: HelperService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   /**
@@ -49,7 +48,7 @@ export class ResponseFileInterceptor implements NestInterceptor {
    */
   intercept(
     context: ExecutionContext,
-    next: CallHandler,
+    next: CallHandler
   ): Observable<Promise<StreamableFile>> {
     if (context.getType() === 'http') {
       return next.handle().pipe(
@@ -68,12 +67,12 @@ export class ResponseFileInterceptor implements NestInterceptor {
             response,
             fileBuffer,
             timestamp,
-            responseData.filename,
+            responseData.filename
           );
           this.setStandardHeaders(response, request);
 
           return new StreamableFile(fileBuffer);
-        }),
+        })
       );
     }
 
@@ -183,7 +182,7 @@ export class ResponseFileInterceptor implements NestInterceptor {
     response: Response,
     file: Buffer,
     timestamp: number,
-    filename?: string,
+    filename?: string
   ): void {
     filename =
       filename ?? `export-${timestamp}.${EnumFileExtensionDocument.csv}`;

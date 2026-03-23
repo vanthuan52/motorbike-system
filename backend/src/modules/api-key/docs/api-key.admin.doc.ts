@@ -32,11 +32,11 @@ export function ApiKeyAdminListDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocResponsePaging<ApiKeyDto>('apiKey.list', {
       dto: ApiKeyDto,
       availableSearch: ApiKeyDefaultAvailableSearch,
-    }),
+    })
   );
 }
 
@@ -51,11 +51,11 @@ export function ApiKeyAdminCreateDoc(): MethodDecorator {
       bodyType: EnumDocRequestBodyType.json,
       dto: ApiKeyCreateRequestDto,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocResponse<ApiKeyCreateResponseDto>('apiKey.create', {
       httpStatus: HttpStatus.CREATED,
       dto: ApiKeyCreateResponseDto,
-    }),
+    })
   );
 }
 
@@ -72,7 +72,7 @@ export function ApiKeyAdminUpdateStatusDoc(): MethodDecorator {
     DocResponse('apiKey.updateStatus', {
       dto: ApiKeyDto,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocDefault({
       httpStatus: HttpStatus.NOT_FOUND,
       statusCode: EnumApiKeyStatusCodeError.notFound,
@@ -81,7 +81,7 @@ export function ApiKeyAdminUpdateStatusDoc(): MethodDecorator {
     DocOneOf(HttpStatus.BAD_REQUEST, {
       statusCode: EnumApiKeyStatusCodeError.expired,
       messagePath: 'apiKey.error.expired',
-    }),
+    })
   );
 }
 
@@ -95,7 +95,7 @@ export function ApiKeyAdminResetDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocResponse<ApiKeyCreateResponseDto>('apiKey.reset', {
       dto: ApiKeyCreateResponseDto,
     }),
@@ -113,8 +113,8 @@ export function ApiKeyAdminResetDoc(): MethodDecorator {
       {
         statusCode: EnumApiKeyStatusCodeError.expired,
         messagePath: 'apiKey.error.expired',
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -130,7 +130,7 @@ export function ApiKeyAdminUpdateDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocResponse('apiKey.update', {
       dto: ApiKeyDto,
     }),
@@ -148,8 +148,8 @@ export function ApiKeyAdminUpdateDoc(): MethodDecorator {
       {
         statusCode: EnumApiKeyStatusCodeError.expired,
         messagePath: 'apiKey.error.expired',
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -165,7 +165,7 @@ export function ApiKeyAdminUpdateDateDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocResponse('apiKey.updateDate', {
       dto: ApiKeyDto,
     }),
@@ -183,8 +183,8 @@ export function ApiKeyAdminUpdateDateDoc(): MethodDecorator {
       {
         statusCode: EnumApiKeyStatusCodeError.expired,
         messagePath: 'apiKey.error.expired',
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -198,7 +198,7 @@ export function ApiKeyAdminDeleteDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ policy: true, role: true }),
+    DocGuard({ policy: true, role: true, termPolicy: true }),
     DocResponse('apiKey.delete', {
       dto: ApiKeyDto,
     }),
@@ -206,6 +206,6 @@ export function ApiKeyAdminDeleteDoc(): MethodDecorator {
       httpStatus: HttpStatus.NOT_FOUND,
       statusCode: EnumApiKeyStatusCodeError.notFound,
       messagePath: 'apiKey.error.notFound',
-    }),
+    })
   );
 }

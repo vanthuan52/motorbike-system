@@ -28,7 +28,7 @@ import {
 } from '@/common/response/interfaces/response.interface';
 import { CandidateReviewCreateRequestDto } from '../dtos/request/candidate-review.create.request.dto';
 import { UserService } from '@/modules/user/services/user.service';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   Response,
   ResponsePaging,
@@ -56,7 +56,7 @@ export class CandidateReviewAdminController {
     private readonly userService: UserService,
     private readonly paginationService: PaginationService,
     private readonly candidateReviewUtil: CandidateReviewUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @CandidateReviewAdminListDoc()
@@ -81,7 +81,7 @@ export class CandidateReviewAdminController {
     // Usually standard pattern suggests using query params for filters.
     // I will use @Query('candidate') like before, but integrate it into 'find'.
     @Query('candidate')
-    candidateId: string,
+    candidateId: string
   ): Promise<IResponsePagingReturn<CandidateReviewResponseDto>> {
     // Original logic: required candidate.
     // If I want to maintain that:
@@ -131,10 +131,10 @@ export class CandidateReviewAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() payload: CandidateReviewCreateRequestDto,
+    @Body() payload: CandidateReviewCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const isCandidateExist = await this.candidateService.findOneById(
-      payload.candidate,
+      payload.candidate
     );
     if (!isCandidateExist)
       throw new NotFoundException('hiring.error.notFoundCandidate');

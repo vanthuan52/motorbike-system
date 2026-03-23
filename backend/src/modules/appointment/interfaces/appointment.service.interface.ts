@@ -1,75 +1,50 @@
-import {
-  IDatabaseCreateOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
-import { AppointmentDto } from '../dtos/appointment.dto';
-import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
-import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
-import { AppointmentDoc } from '../entities/appointment.entity';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { Appointment, Prisma } from '@/generated/prisma-client';
 import {
   IPaginationQueryCursorParams,
-  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IAppointmentService {
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
     filters?: Record<string, any>,
-  ): Promise<{ data: AppointmentDoc[]; total: number }>;
+  ): Promise<{ data: Appointment[]; total: number }>;
 
   getListCursor(
-    pagination: IPaginationQueryCursorParams,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
     filters?: Record<string, any>,
-  ): Promise<{ data: AppointmentDoc[]; total?: number }>;
+  ): Promise<{ data: Appointment[]; total?: number }>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentDoc>;
+  findOneById(id: string): Promise<Appointment>;
 
-  findOneWithRelationsById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentDoc>;
+  findOneWithRelationsById(id: string): Promise<Appointment>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentDoc>;
+  findOne(find: Record<string, any>): Promise<Appointment | null>;
 
-  findOneWithRelations(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<AppointmentDoc>;
+  findOneWithRelations(find: Record<string, any>): Promise<Appointment | null>;
 
-  create(
-    payload: AppointmentCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto>;
+  create(payload: AppointmentCreateRequestDto): Promise<{ _id: string }>;
 
   update(
     id: string,
     payload: AppointmentUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
   ): Promise<void>;
 
   updateStatus(
     id: string,
     payload: AppointmentUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
   ): Promise<void>;
 
-  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  softDelete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+  softDelete(id: string): Promise<void>;
 }

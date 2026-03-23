@@ -1,4 +1,3 @@
-import { HelperService } from '@/common/helper/services/helper.service';
 import { Injectable } from '@nestjs/common';
 import {
   ValidationArguments,
@@ -7,6 +6,7 @@ import {
   ValidatorConstraintInterface,
   registerDecorator,
 } from 'class-validator';
+import { HelperService } from '@/common/helper/services/helper.service';
 
 /**
  * Custom password validation constraint that validates password strength.
@@ -59,7 +59,7 @@ export class IsPasswordConstraint implements ValidatorConstraintInterface {
  */
 export function IsPassword(
   minLength?: number,
-  validationOptions?: ValidationOptions,
+  validationOptions?: ValidationOptions
 ) {
   return function (object: unknown, propertyName: string): void {
     registerDecorator({

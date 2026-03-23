@@ -1,4 +1,4 @@
-export enum ENUM_STORE_STATUS {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+export enum EnumStoreStatus {
+  active = 'active',
+  inactive = 'inactive',
 }

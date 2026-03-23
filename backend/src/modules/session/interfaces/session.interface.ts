@@ -1,8 +1,8 @@
-import { SessionDoc, SessionEntity } from '../entities/session.entity';
+import { Session, User } from '@/generated/prisma-client';
 
-export interface ISessionEntity extends SessionEntity {}
-
-export interface ISessionDoc extends SessionDoc {}
+export interface ISession extends Session {
+  user: User;
+}
 
 export interface ISessionCache {
   userId: string;

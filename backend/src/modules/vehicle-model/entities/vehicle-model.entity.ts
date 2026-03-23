@@ -1,8 +1,8 @@
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
 import {
-  ENUM_VEHICLE_MODEL_FUEL_TYPE,
-  ENUM_VEHICLE_MODEL_STATUS,
-  ENUM_VEHICLE_MODEL_TYPE,
+  EnumVehicleModelFuelType,
+  EnumVehicleModelStatus,
+  EnumVehicleModelType,
 } from '../enums/vehicle-model.enum';
 import {
   DatabaseEntity,
@@ -59,36 +59,36 @@ export class VehicleModelEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    default: ENUM_VEHICLE_MODEL_TYPE.UNKNOWN,
+    default: EnumVehicleModelType.unknown,
     index: true,
     type: String,
-    enum: ENUM_VEHICLE_MODEL_TYPE,
+    enum: EnumVehicleModelType,
   })
-  type: ENUM_VEHICLE_MODEL_TYPE;
+  type: EnumVehicleModelType;
 
   @DatabaseProp({
     required: true,
-    default: ENUM_VEHICLE_MODEL_FUEL_TYPE.UNKNOWN,
+    default: EnumVehicleModelFuelType.unknown,
     index: true,
     type: String,
-    enum: ENUM_VEHICLE_MODEL_FUEL_TYPE,
+    enum: EnumVehicleModelFuelType,
   })
-  fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE;
+  fuelType: EnumVehicleModelFuelType;
 
   @DatabaseProp({
     required: true,
-    default: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
+    default: EnumVehicleModelStatus.active,
     index: true,
     type: String,
-    enum: ENUM_VEHICLE_MODEL_STATUS,
+    enum: EnumVehicleModelStatus,
   })
-  status: ENUM_VEHICLE_MODEL_STATUS;
+  status: EnumVehicleModelStatus;
 
   @DatabaseProp({
     required: false,
     default: '0',
   })
-  order?: string;
+  orderBy?: string;
 
   @DatabaseProp({
     required: false,

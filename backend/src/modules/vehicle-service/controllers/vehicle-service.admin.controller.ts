@@ -24,11 +24,6 @@ import {
 import { VehicleServiceListResponseDto } from '../dtos/response/vehicle-service.list.response.dto';
 import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
 import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import {
   PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
@@ -66,7 +61,8 @@ import {
 import { VehicleServiceService } from '../services/vehicle-service.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.vehicle-service')
 @Controller({
@@ -91,7 +87,10 @@ export class VehicleServiceAdminController {
       availableSearch: VEHICLE_SERVICE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleServiceSelect,
+      Prisma.VehicleServiceWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', VEHICLE_SERVICE_DEFAULT_STATUS)
     status?: Record<string, IPaginationIn>,
     @Query('serviceCategory')
@@ -102,7 +101,7 @@ export class VehicleServiceAdminController {
     };
 
     if (serviceCategoryId) {
-      filters['serviceCategory'] = serviceCategoryId;
+      filters['serviceCategoryId'] = serviceCategoryId; // Prisma field
     }
 
     const { data, total } = await this.vehicleServiceService.getListOffset(
@@ -124,7 +123,7 @@ export class VehicleServiceAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
   ): Promise<IResponseReturn<VehicleServiceDto>> {
     const vehicleService = await this.vehicleServiceService.findOneById(id);
     const mapped = this.vehicleServiceUtil.mapGet(vehicleService);
@@ -147,11 +146,9 @@ export class VehicleServiceAdminController {
     checklistItems: string[],
     @Body() body: VehicleServiceCreateRequestDto,
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    body.checklistItems = checklistItems;
-    const created = await this.vehicleServiceService.create(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
-    return { data: { _id: created._id } };
+    body.checklistItems = checklistItems || [];
+    const created = await this.vehicleServiceService.create(body);
+    return { data: { _id: created.id } };
   }
 
   @VehicleAdminServiceUpdateDoc()
@@ -165,16 +162,16 @@ export class VehicleServiceAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
     @Body('checklistItems')
     checklistItems: string[],
     @Body() body: VehicleServiceUpdateRequestDto,
   ): Promise<IResponseReturn<void>> {
-    body.checklistItems = checklistItems;
-    await this.vehicleServiceService.update(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    if (checklistItems !== undefined) {
+        body.checklistItems = checklistItems;
+    }
+    await this.vehicleServiceService.update(id, body);
     return {};
   }
 
@@ -189,13 +186,11 @@ export class VehicleServiceAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
     @Body() body: VehicleServiceUpdateStatusRequestDto,
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleServiceService.updateStatus(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.vehicleServiceService.updateStatus(id, body);
     return {};
   }
 
@@ -210,12 +205,10 @@ export class VehicleServiceAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleServiceService.delete(id, {
-      actionBy: updatedBy,
-    } as IDatabaseDeleteOptions);
+    await this.vehicleServiceService.delete(id);
     return {};
   }
 }

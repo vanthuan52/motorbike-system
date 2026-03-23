@@ -3,14 +3,15 @@ import {
   EnumUserLoginWith,
 } from '@/modules/user/enums/user.enum';
 import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
+import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
 import { EnumAuthTwoFactorMethod } from '../enums/auth.enum';
 
 export interface IAuthPassword {
-  salt: string;
   passwordHash: string;
-  passwordExpired: Date;
-  passwordCreated: Date;
-  passwordPeriodExpired: Date;
+  passwordExpired?: Date;
+  passwordCreated?: Date;
+  passwordEncrypted?: string;
+  passwordPeriodExpired?: Date;
 }
 
 export interface IAuthPasswordOptions {
@@ -22,8 +23,10 @@ export interface IAuthJwtAccessTokenPayload {
   loginFrom: EnumUserLoginFrom;
   loginWith: EnumUserLoginWith;
   email: string;
+  username?: string;
   userId: string;
   sessionId: string;
+  deviceOwnershipId: string;
   roleId: string;
 
   // standard JWT claims
@@ -38,7 +41,7 @@ export interface IAuthJwtAccessTokenPayload {
 
 export type IAuthJwtRefreshTokenPayload = Omit<
   IAuthJwtAccessTokenPayload,
-  'type' | 'roleId' | 'username' | 'email' | 'termPolicy' | 'verification'
+  'type' | 'roleId' | 'username' | 'email' | 'verification'
 >;
 
 export interface IAuthSocialPayload extends Pick<
@@ -75,6 +78,7 @@ export interface IAuthTwoFactorChallenge {
 
 export interface IAuthTwoFactorChallengeCache {
   userId: string;
+  device: DeviceRequestDto;
   loginFrom: EnumUserLoginFrom;
   loginWith: EnumUserLoginWith;
 }

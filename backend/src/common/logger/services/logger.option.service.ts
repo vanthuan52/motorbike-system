@@ -1,9 +1,9 @@
 import { HttpException, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { Params } from 'nestjs-pino';
-import { Response } from 'express';
-import { Options } from 'pino-http';
 import stripAnsi from 'strip-ansi';
+import { Options } from 'pino-http';
 import { EnumAppEnvironment } from '@/app/enums/app.enum';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
@@ -54,7 +54,7 @@ export class LoggerOptionService {
    */
   constructor(
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
     this.env = this.configService.get<EnumAppEnvironment>('app.env');
     this.name = this.configService.get<string>('app.name');
@@ -69,12 +69,12 @@ export class LoggerOptionService {
     this.prettier = this.configService.get<boolean>('logger.prettier');
 
     this.sensitiveFields = new Set(
-      LoggerSensitiveFields.map((field) => field.toLowerCase()),
+      LoggerSensitiveFields.map(field => field.toLowerCase())
     );
-    this.sensitivePaths = LoggerSensitivePaths.map((path) =>
-      LoggerSensitiveFields.map((field) =>
-        field.includes('-') ? `${path}["${field}"]` : `${path}.${field}`,
-      ),
+    this.sensitivePaths = LoggerSensitivePaths.map(path =>
+      LoggerSensitiveFields.map(field =>
+        field.includes('-') ? `${path}["${field}"]` : `${path}.${field}`
+      )
     ).flat();
   }
 
@@ -191,7 +191,7 @@ export class LoggerOptionService {
    * @returns {(obj: Record<string, unknown>) => Record<string, unknown>} Log formatter function for Pino
    */
   private createLogFormatter(): (
-    obj: Record<string, unknown>,
+    obj: Record<string, unknown>
   ) => Record<string, unknown> {
     return (obj: Record<string, unknown>) => {
       const pid = process.pid;
@@ -291,7 +291,7 @@ export class LoggerOptionService {
   private sanitizeObject(
     obj: unknown,
     maxDepth: number = 5,
-    currentDepth: number = 0,
+    currentDepth: number = 0
   ): unknown {
     if (
       !obj ||
@@ -311,7 +311,7 @@ export class LoggerOptionService {
       if (obj.length > 10) {
         const newObj = obj
           .slice(0, 10)
-          .map((item) => this.sanitizeObject(item, maxDepth, currentDepth + 1));
+          .map(item => this.sanitizeObject(item, maxDepth, currentDepth + 1));
 
         newObj.push({
           truncated: `...[TRUNCATED] - total length ${obj.length}`,
@@ -319,8 +319,8 @@ export class LoggerOptionService {
 
         return newObj;
       }
-      return obj.map((item) =>
-        this.sanitizeObject(item, maxDepth, currentDepth + 1),
+      return obj.map(item =>
+        this.sanitizeObject(item, maxDepth, currentDepth + 1)
       );
     }
 
@@ -333,7 +333,7 @@ export class LoggerOptionService {
         result[key] = this.sanitizeObject(
           result[key],
           maxDepth,
-          currentDepth + 1,
+          currentDepth + 1
         );
       }
     }
@@ -392,7 +392,7 @@ export class LoggerOptionService {
    * @returns {LoggerDebugInfo | undefined} Debug information object, or undefined in production
    */
   private addDebugInfo(
-    additionalParams: Record<string, unknown>,
+    additionalParams: Record<string, unknown>
   ): LoggerDebugInfo | undefined {
     if (this.env === EnumAppEnvironment.production) {
       return undefined;
@@ -415,7 +415,7 @@ export class LoggerOptionService {
    * @returns {(request: IRequestApp) => Record<string, unknown>} Serializer function for HTTP requests
    */
   private createRequestSerializer(): (
-    request: IRequestApp,
+    request: IRequestApp
   ) => Record<string, unknown> {
     return (request: IRequestApp) => {
       return {
@@ -445,7 +445,7 @@ export class LoggerOptionService {
    * @returns {(response: Response) => Record<string, unknown>} Serializer function for HTTP responses
    */
   private createResponseSerializer(): (
-    response: Response,
+    response: Response
   ) => Record<string, unknown> {
     return (response: Response) => {
       return {
@@ -453,7 +453,7 @@ export class LoggerOptionService {
         contentLength: response.getHeader('content-length'),
         responseTime: response.getHeader('X-Response-Time'),
         headers: this.sanitizeObject(
-          response.getHeaders() as Record<string, unknown>,
+          response.getHeaders() as Record<string, unknown>
         ),
       };
     };
@@ -500,7 +500,7 @@ export class LoggerOptionService {
           ignore: (req: IRequestApp) =>
             this.helperService.checkUrlMatchesPatterns(
               req.url,
-              LoggerExcludedRoutes,
+              LoggerExcludedRoutes
             ),
         }
       : false;
@@ -537,7 +537,7 @@ export class LoggerOptionService {
    */
   private createMixin(): (
     _: Record<string, unknown>,
-    level: number,
+    level: number
   ) => Record<string, unknown> {
     return (_: Record<string, unknown>, level: number) => {
       return {

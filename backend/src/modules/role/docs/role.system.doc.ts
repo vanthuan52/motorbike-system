@@ -6,13 +6,13 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
 import {
   RoleDocParamsId,
   RoleDocQueryList,
-} from '../constants/role.doc.constant';
-import { RoleListResponseDto } from '../dtos/response/role.list.response.dto';
-import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
-import { RoleAbilitiesResponseDto } from '../dtos/response/role.abilities.response.dto';
+} from '@/modules/role/constants/role.doc.constant';
+import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
+import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 
 export function RoleSystemListDoc(): MethodDecorator {
   return applyDecorators(
@@ -28,7 +28,7 @@ export function RoleSystemListDoc(): MethodDecorator {
     DocResponsePaging<RoleListResponseDto>('role.list', {
       dto: RoleListResponseDto,
       type: EnumPaginationType.cursor,
-    }),
+    })
   );
 }
 
@@ -45,6 +45,6 @@ export function RoleSystemGetAbilitiesDoc(): MethodDecorator {
     }),
     DocResponse<RoleAbilitiesResponseDto>('role.getAbilities', {
       dto: RoleAbilitiesResponseDto,
-    }),
+    })
   );
 }

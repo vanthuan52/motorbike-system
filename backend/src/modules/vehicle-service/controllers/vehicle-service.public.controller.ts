@@ -27,6 +27,9 @@ import {
 import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { Prisma } from '@/generated/prisma-client';
+import { VehicleServiceUtil } from '../utils/vehicle-service.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.vehicle-service')
 @Controller({
@@ -34,7 +37,11 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
   path: '/vehicle-service',
 })
 export class VehicleServicePublicController {
-  constructor(private readonly vehicleServiceService: VehicleServiceService) {}
+  constructor(
+    private readonly vehicleServiceService: VehicleServiceService,
+    private readonly vehicleServiceUtil: VehicleServiceUtil,
+    private readonly paginationUtil: PaginationUtil,
+  ) {}
 
   @VehicleServicePublicGetOneDoc()
   @Response('vehicle-service.get')
@@ -42,7 +49,9 @@ export class VehicleServicePublicController {
   async get(
     @Param('slug', RequestRequiredPipe) slug: string,
   ): Promise<IResponseReturn<VehicleServiceDto>> {
-    return this.vehicleServiceService.findBySlug(slug);
+    const vehicleService = await this.vehicleServiceService.findBySlug(slug);
+    const mapped = this.vehicleServiceUtil.mapGet(vehicleService);
+    return { data: mapped };
   }
 
   @VehicleServicePublicListDoc()
@@ -53,7 +62,10 @@ export class VehicleServicePublicController {
       availableSearch: VEHICLE_SERVICE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleServiceSelect,
+      Prisma.VehicleServiceWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', VEHICLE_SERVICE_DEFAULT_STATUS)
     status: Record<string, any>,
     @Query('serviceCategory', OptionalParseUUIDPipe)
@@ -64,9 +76,14 @@ export class VehicleServicePublicController {
     };
 
     if (serviceCategoryId) {
-      filters['serviceCategory'] = serviceCategoryId;
+      filters['serviceCategoryId'] = serviceCategoryId; // mapped to Prisma
     }
 
-    return this.vehicleServiceService.getListOffset(pagination, filters);
+    const { data, total } = await this.vehicleServiceService.getListOffset(
+      pagination,
+      filters,
+    );
+    const mapped = this.vehicleServiceUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 }

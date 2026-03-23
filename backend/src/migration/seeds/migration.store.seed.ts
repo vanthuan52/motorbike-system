@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
 import { StoreService } from '@/modules/store/services/store.services';
 import { MessageService } from '@/common/message/services/message.service';
-import { ENUM_STORE_STATUS } from '@/modules/store/enums/store.enum';
+import { EnumStoreStatus } from '@/modules/store/enums/store.enum';
 
 @Injectable()
 export class MigrationStoreSeed {
@@ -48,7 +48,7 @@ export class MigrationStoreSeed {
       if (!exist) {
         await this.storeService.create({
           ...store,
-          status: ENUM_STORE_STATUS.ACTIVE,
+          status: EnumStoreStatus.active,
         });
       }
     }

@@ -2,8 +2,8 @@ import { DynamicModule, Global, Module } from '@nestjs/common';
 import * as path from 'path';
 import { HeaderResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { ConfigService } from '@nestjs/config';
-import { MessageService } from './services/message.service';
-import { EnumMessageLanguage } from './enums/message.enum';
+import { MessageService } from '@/common/message/services/message.service';
+import { EnumMessageLanguage } from '@/common/message/enums/message.enum';
 
 /**
  * Global dynamic module providing internationalization services.
@@ -28,7 +28,7 @@ export class MessageModule {
               .join(','),
             fallbacks: Object.values(EnumMessageLanguage).reduce(
               (a, v) => ({ ...a, [`${v}-*`]: v }),
-              {},
+              {}
             ),
             loaderOptions: {
               path: path.join(__dirname, '../../languages'),

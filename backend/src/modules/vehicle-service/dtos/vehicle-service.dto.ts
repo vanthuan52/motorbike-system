@@ -7,7 +7,7 @@ import { Expose, Type } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
-import { ENUM_VEHICLE_SERVICE_STATUS } from '../enums/vehicle-service.enum';
+import { EnumVehicleServiceStatus } from '../enums/vehicle-service.enum';
 
 export class VehicleServiceDto extends DatabaseDto {
   @ApiProperty({ maxLength: 150, minLength: 1 })
@@ -24,14 +24,14 @@ export class VehicleServiceDto extends DatabaseDto {
 
   @ApiPropertyOptional({ default: 0 })
   @Expose()
-  order?: number;
+  orderBy?: number;
 
   @ApiProperty({
-    example: ENUM_VEHICLE_SERVICE_STATUS.ACTIVE,
-    enum: () => ENUM_VEHICLE_SERVICE_STATUS,
+    example: EnumVehicleServiceStatus.active,
+    enum: () => EnumVehicleServiceStatus,
   })
   @Expose()
-  status: ENUM_VEHICLE_SERVICE_STATUS;
+  status: EnumVehicleServiceStatus;
 
   @ApiProperty({ example: faker.string.uuid() })
   @Expose()

@@ -9,7 +9,7 @@ import { EnumPolicyStatusCodeError } from '@/modules/policy/enums/policy.status-
 import { PolicyAbilityFactory } from '@/modules/policy/factories/policy.factory';
 import { IPolicyService } from '@/modules/policy/interfaces/policy.service.interface';
 import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
-import { EnumRoleType } from '../enums/policy.enum';
+import { EnumRoleType } from '@/generated/prisma-client';
 
 @Injectable()
 export class PolicyService implements IPolicyService {
@@ -17,7 +17,7 @@ export class PolicyService implements IPolicyService {
 
   async validatePolicyGuard(
     request: IRequestApp,
-    requiredAbilities: RoleAbilityRequestDto[],
+    requiredAbilities: RoleAbilityRequestDto[]
   ): Promise<boolean> {
     const { __user, user, __abilities } = request;
 
@@ -42,7 +42,7 @@ export class PolicyService implements IPolicyService {
     const userAbilities = this.policyAbilityFactory.createForUser(__abilities);
     const policyHandler = this.policyAbilityFactory.handlerAbilities(
       userAbilities,
-      requiredAbilities,
+      requiredAbilities
     );
     if (!policyHandler) {
       throw new ForbiddenException({

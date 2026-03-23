@@ -1,16 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CareRecordChecklistRepositoryModule } from './respository/care-record-checklist.repository.module';
 import { CareRecordChecklistService } from './services/care-record-checklist.service';
 import { CareRecordChecklistUtil } from './utils/care-record-checklist.util';
 
 @Module({
-  imports: [CareRecordChecklistRepositoryModule],
+  imports: [],
   controllers: [],
   providers: [CareRecordChecklistService, CareRecordChecklistUtil],
-  exports: [
-    CareRecordChecklistRepositoryModule,
-    CareRecordChecklistService,
-    CareRecordChecklistUtil,
-  ],
+  exports: [CareRecordChecklistService, CareRecordChecklistUtil],
 })
 export class CareRecordChecklistModule {}

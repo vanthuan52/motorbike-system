@@ -1,17 +1,18 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import KeyvRedis from '@keyv/redis';
 import {
   CACHE_MANAGER,
   CacheModule as CacheManagerModule,
   CacheOptions,
 } from '@nestjs/cache-manager';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import KeyvRedis from '@keyv/redis';
+import { SessionRepository } from '@/modules/session/repositories/session.repository';
+import { SessionUtil } from '@/modules/session/utils/session.util';
+import { SessionCacheProvider } from '@/modules/session/constants/session.constant';
+import { SessionService } from '@/modules/session/services/session.service';
 import { RedisClientCachedProvider } from '@/common/redis/constants/redis.constant';
-import { SessionRepositoryModule } from './repository/session.repository.module';
-import { SessionService } from './services/session.service';
-import { SessionUtil } from './utils/session.util';
-import { SessionCacheProvider } from './constants/session.constant';
 
+@Global()
 @Module({
   imports: [
     CacheManagerModule.registerAsync({
@@ -19,7 +20,7 @@ import { SessionCacheProvider } from './constants/session.constant';
       inject: [ConfigService, RedisClientCachedProvider],
       useFactory: (
         configService: ConfigService,
-        redisClient: KeyvRedis<unknown>,
+        redisClient: KeyvRedis<unknown>
       ): CacheOptions => {
         return {
           stores: [redisClient],
@@ -27,12 +28,12 @@ import { SessionCacheProvider } from './constants/session.constant';
         };
       },
     }),
-    SessionRepositoryModule,
   ],
-  exports: [SessionUtil, SessionService],
+  exports: [SessionService, SessionRepository, SessionUtil],
   providers: [
-    SessionUtil,
     SessionService,
+    SessionRepository,
+    SessionUtil,
     {
       provide: SessionCacheProvider,
       useExisting: CACHE_MANAGER,

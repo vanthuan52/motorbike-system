@@ -1,9 +1,9 @@
-export enum ENUM_VEHICLE_SERVICE_STATUS_CODE_ERROR {
-  NOT_FOUND = 5500,
-  EXIST = 5501,
-  IS_ACTIVE = 5502,
-  USED = 5503,
-  INACTIVE_FORBIDDEN = 5504,
-  SLUG_EXISTED = 5505,
-  NAME_EXISTED = 5506,
+export enum EnumVehicleServiceStatusCodeError {
+  notFound = 5500,
+  exist = 5501,
+  isActive = 5502,
+  used = 5503,
+  inactiveForbidden = 5504,
+  slugExisted = 5505,
+  nameExisted = 5506,
 }

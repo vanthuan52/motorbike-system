@@ -1,18 +1,12 @@
-import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.interface';
 import { SendMessageDto } from '../dtos/request/send-message.dto';
-import { ConversationDoc } from '../entities/conversation.entity';
-import { MessageDoc } from '../entities/message.entity';
+import { Conversation, Message } from '@/generated/prisma-client';
 
 export interface IMessageService {
   sendMessage(
-    repository: ConversationDoc,
-    payload: SendMessageDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<MessageDoc>;
+    conversation: Conversation,
+    payload: SendMessageDto
+  ): Promise<Message>;
 
-  findAllMessages(conversationId: string): Promise<MessageDoc[] | null>;
-  markMessageRead(
-    messageDoc: MessageDoc,
-    readerId: string,
-  ): Promise<MessageDoc>;
+  findAllMessages(conversationId: string): Promise<Message[]>;
+  markMessageRead(message: Message, readerId: string): Promise<Message>;
 }

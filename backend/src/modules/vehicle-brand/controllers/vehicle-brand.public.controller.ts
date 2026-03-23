@@ -32,6 +32,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.vehicle-brand')
 @Controller({
@@ -64,7 +65,10 @@ export class VehicleBrandPublicController {
       availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleBrandSelect,
+      Prisma.VehicleBrandWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
   ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {

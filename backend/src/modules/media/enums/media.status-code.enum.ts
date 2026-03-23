@@ -3,12 +3,12 @@
  * @description Error codes specific to media operations
  */
 export enum EnumMediaStatusCodeError {
-  NotFound = 4201,
-  KeyAlreadyExists = 4202,
-  InvalidMimeType = 4203,
-  FileTooLarge = 4204,
-  UploadFailed = 4205,
-  DeleteFailed = 4206,
-  PresignFailed = 4207,
-  StatusInvalid = 4208,
+  notFound = 4201,
+  keyAlreadyExists = 4202,
+  invalidMimeType = 4203,
+  fileTooLarge = 4204,
+  uploadFailed = 4205,
+  deleteFailed = 4206,
+  presignFailed = 4207,
+  statusInvalid = 4208,
 }

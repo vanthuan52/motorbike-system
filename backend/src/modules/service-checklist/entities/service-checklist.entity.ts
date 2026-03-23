@@ -6,7 +6,7 @@ import {
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
 import { CareAreaEntity } from '@/modules/care-area/entities/care-area.entity';
-import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export const ServiceChecklistTableName = 'service_checklists';
 
@@ -39,7 +39,7 @@ export class ServiceChecklistEntity extends DatabaseEntityBase {
     required: false,
     default: '0',
   })
-  order?: string;
+  orderBy?: string;
 
   @DatabaseProp({
     required: true,
@@ -51,10 +51,10 @@ export class ServiceChecklistEntity extends DatabaseEntityBase {
   @DatabaseProp({
     required: false,
     type: [String],
-    enum: Object.values(ENUM_VEHICLE_MODEL_TYPE),
+    enum: Object.values(EnumVehicleModelType),
     default: [],
   })
-  vehicleType?: ENUM_VEHICLE_MODEL_TYPE[];
+  vehicleType?: EnumVehicleModelType[];
 }
 
 export const ServiceChecklistSchema = DatabaseSchema(ServiceChecklistEntity);

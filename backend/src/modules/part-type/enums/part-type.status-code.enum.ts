@@ -1,9 +1,9 @@
-export enum ENUM_PART_TYPE_STATUS_CODE_ERROR {
-  NOT_FOUND = 5200,
-  EXIST = 5201,
-  IS_ACTIVE = 5202,
-  USED = 5203,
-  INACTIVE_FORBIDDEN = 5204,
-  SLUG_EXISTED = 5205,
-  NAME_EXISTED = 5206,
+export enum EnumPartTypeStatusCodeError {
+  notFound = 5200,
+  exist = 5201,
+  isActive = 5202,
+  used = 5203,
+  inactiveForbidden = 5204,
+  slugExisted = 5205,
+  nameExisted = 5206,
 }

@@ -10,7 +10,7 @@ import { CacheMainProvider } from '@/common/cache/constants/cache.constant';
 export class HealthRedisIndicator {
   constructor(
     @Inject(CacheMainProvider) private cacheManager: Cache,
-    private readonly healthIndicatorService: HealthIndicatorService,
+    private readonly healthIndicatorService: HealthIndicatorService
   ) {}
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {

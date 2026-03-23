@@ -4,6 +4,7 @@ import {
   IHelperEmailValidation,
   IHelperPasswordOptions,
 } from '@/common/helper/interfaces/helper.interface';
+import { GeoLocation, UserAgent } from '@generated/prisma-client';
 
 export interface IHelperService {
   arrayUnique<T>(array: T[]): T[];
@@ -13,7 +14,12 @@ export interface IHelperService {
   base64Decrypt(data: string): string;
   base64Compare(basicToken1: string, basicToken2: string): boolean;
   aes256Encrypt<T>(data: T, key: string, iv: string): string;
+  aes256EncryptSimple(data: string, extendEncryptionKey?: string): string;
   aes256Decrypt<T>(encrypted: string, key: string, iv: string): T;
+  aes256DecryptSimple(
+    encryptedData: string,
+    extendEncryptionKey?: string
+  ): string;
   aes256Compare(aes1: string, aes2: string): boolean;
   bcryptGenerateSalt(length: number): string;
   bcryptHash(passwordString: string, salt: string): string;
@@ -28,7 +34,7 @@ export interface IHelperService {
   censorString(text: string): string;
   checkPasswordStrength(
     password: string,
-    options?: IHelperPasswordOptions,
+    options?: IHelperPasswordOptions
   ): boolean;
   checkEmail(value: string): IHelperEmailValidation;
   checkUrlMatchesPatterns(url: string, patterns: string[]): boolean;
@@ -47,11 +53,13 @@ export interface IHelperService {
   dateCreateFromIso(iso: string, options?: IHelperDateCreateOptions): Date;
   dateCreateFromTimestamp(
     timestamp?: number,
-    options?: IHelperDateCreateOptions,
+    options?: IHelperDateCreateOptions
   ): Date;
   dateSet(date: Date, units: DateObjectUnits): Date;
   dateForward(date: Date, duration: Duration): Date;
   dateBackward(date: Date, duration: Duration): Date;
   dateCreateDuration(duration: DurationLikeObject): Duration;
   dateDiff(dateOne: Date, dateTwo: Date): Duration;
+  resolveCity(geoLocation?: GeoLocation): string;
+  resolveDevice(userAgent: UserAgent): string;
 }

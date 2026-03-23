@@ -1,63 +1,193 @@
-import { Model, PopulateOptions } from 'mongoose';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
-import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@/common/database/services/database.service';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  ServicePriceDoc,
-  ServicePriceEntity,
-} from '../entities/service-price.entity';
-import { VehicleServiceEntity } from '@/modules/vehicle-service/entities/vehicle-service.entity';
-import { VehicleModelEntity } from '@/modules/vehicle-model/entities/vehicle-model.entity';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { ServicePrice, Prisma } from '@/generated/prisma-client';
 
-export class ServicePriceRepository extends DatabaseRepositoryBase<
-  ServicePriceEntity,
-  ServicePriceDoc
-> {
-  readonly _joinActive: PopulateOptions[] = [
-    {
-      path: 'vehicleService',
-      localField: 'vehicleService',
-      foreignField: '_id',
-      model: VehicleServiceEntity.name,
-      justOne: true,
-      match: {
-        isActive: true,
-      },
-    },
-    {
-      path: 'vehicleModel',
-      localField: 'vehicleModel',
-      foreignField: '_id',
-      model: VehicleModelEntity.name,
-      justOne: true,
-      match: {
-        isActive: true,
-      },
-    },
-  ];
-
+@Injectable()
+export class ServicePriceRepository {
   constructor(
-    @InjectDatabaseModel(ServicePriceEntity.name)
-    private readonly ServicePriceModel: Model<ServicePriceEntity>,
-  ) {
-    super(ServicePriceModel, [
-      {
-        path: 'vehicleService',
-        localField: 'vehicleService',
-        foreignField: '_id',
-        model: VehicleServiceEntity.name,
-        justOne: true,
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService,
+  ) {}
+
+  async findAll(
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
+    filters?: Record<string, any>,
+  ): Promise<ServicePrice[]> {
+    const mergedWhere: Prisma.ServicePriceWhereInput = {
+      ...where,
+      ...filters,
+    };
+
+    return this.databaseService.servicePrice.findMany({
+      where: mergedWhere,
+      take: limit,
+      skip,
+      orderBy,
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
       },
-      {
-        path: 'vehicleModel',
-        localField: 'vehicleModel',
-        foreignField: '_id',
-        model: VehicleModelEntity.name,
-        justOne: true,
-      },
-    ]);
+    });
   }
 
-  async findOneBySlug(slug: string): Promise<ServicePriceDoc | null> {
-    return this.ServicePriceModel.findOne({ slug }).exec();
+  async getTotal(
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
+    filters?: Record<string, any>,
+  ): Promise<number> {
+    const mergedWhere: Prisma.ServicePriceWhereInput = {
+      ...where,
+      ...filters,
+    };
+
+    return this.databaseService.servicePrice.count({
+      where: mergedWhere,
+    });
+  }
+
+  async findWithPaginationOffset(
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
+    filters?: Record<string, any>,
+  ): Promise<{ data: ServicePrice[]; count: number }> {
+    const mergedWhere: Prisma.ServicePriceWhereInput = {
+      ...where,
+      ...filters,
+    };
+
+    return this.paginationService.offsetRaw<ServicePrice>(
+      this.databaseService.servicePrice,
+      {
+        limit,
+        skip,
+        where: mergedWhere,
+        orderBy,
+      },
+      {
+        include: {
+          vehicleService: true,
+          vehicleModel: true,
+        },
+      }
+    );
+  }
+
+  async findWithPaginationCursor(
+    {
+      limit,
+      where,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    }: IPaginationQueryCursorParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
+    filters?: Record<string, any>,
+  ): Promise<{ data: ServicePrice[]; count?: number }> {
+    const mergedWhere: Prisma.ServicePriceWhereInput = {
+      ...where,
+      ...filters,
+    };
+
+    return this.paginationService.cursorRaw<ServicePrice>(
+      this.databaseService.servicePrice,
+      {
+        limit,
+        where: mergedWhere,
+        orderBy,
+        cursor,
+        cursorField,
+        includeCount,
+      },
+      {
+        include: {
+          vehicleService: true,
+          vehicleModel: true,
+        },
+      }
+    );
+  }
+
+  async findOneById(id: string): Promise<ServicePrice | null> {
+    return this.databaseService.servicePrice.findUnique({
+      where: { id },
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+  }
+
+  async findOne(find: Record<string, any>): Promise<ServicePrice | null> {
+    return this.databaseService.servicePrice.findFirst({
+      where: find,
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+  }
+
+  async create(data: Prisma.ServicePriceCreateInput): Promise<ServicePrice> {
+    return this.databaseService.servicePrice.create({
+      data,
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.ServicePriceUpdateInput
+  ): Promise<ServicePrice> {
+    return this.databaseService.servicePrice.update({
+      where: { id },
+      data,
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<ServicePrice> {
+    return this.databaseService.servicePrice.delete({
+      where: { id },
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
   }
 }

@@ -1,10 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
-import {
-  Doc,
-  DocAuth,
-  DocResponse,
-} from '@/common/doc/decorators/doc.decorator';
-import { HelloResponseDto } from '../dtos/response/hello.response.dto';
+import { Doc, DocResponse } from '@/common/doc/decorators/doc.decorator';
+import { HelloResponseDto } from '@/modules/hello/dtos/response/hello.response.dto';
 
 export function HelloPublicDoc(): MethodDecorator {
   return applyDecorators(
@@ -13,6 +9,6 @@ export function HelloPublicDoc(): MethodDecorator {
     }),
     DocResponse<HelloResponseDto>('app.hello', {
       dto: HelloResponseDto,
-    }),
+    })
   );
 }

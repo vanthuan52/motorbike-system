@@ -18,7 +18,7 @@ export class RequestTooManyException extends HttpException {
         errors: errors as IMessageValidationError[],
         _error,
       },
-      429,
+      429
     );
   }
 }

@@ -21,11 +21,6 @@ import {
 } from '@/common/response/interfaces/response.interface';
 import { UserVehicleListResponseDto } from '../dtos/response/user-vehicle.list.response.dto';
 import { UserVehicleDto } from '../dtos/user-vehicle.dto';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-  IDatabaseDeleteOptions,
-} from '@/common/database/interfaces/database.interface';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
@@ -38,7 +33,6 @@ import {
 } from '../docs/user-vehicle.admin.doc';
 import { UserVehicleUtil } from '../utils/user-vehicle.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -52,7 +46,8 @@ import {
 } from '../constants/user-vehicle.list.constant';
 import { UserVehicleService } from '../services/user-vehicle.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user-vehicle')
 @Controller({
@@ -63,7 +58,7 @@ export class UserVehicleAdminController {
   constructor(
     private readonly userVehicleService: UserVehicleService,
     private readonly userVehicleUtil: UserVehicleUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @UserVehicleAdminListDoc()
@@ -77,19 +72,22 @@ export class UserVehicleAdminController {
       availableSearch: USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.UserVehicleSelect,
+      Prisma.UserVehicleWhereInput
+    >,
     @Query('vehicleModel')
-    vehicleModelId: string,
+    vehicleModelId: string
   ): Promise<IResponsePagingReturn<UserVehicleListResponseDto>> {
     const filters: Record<string, any> = {};
 
     if (vehicleModelId) {
-      filters['vehicleModel._id'] = vehicleModelId;
+      filters['vehicleModelId'] = vehicleModelId;
     }
 
     const { data, total } = await this.userVehicleService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.userVehicleUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -102,19 +100,23 @@ export class UserVehicleAdminController {
   @UserProtected()
   @AuthJwtAccessProtected()
   async getByUserId(
-    @Param('userId', RequestRequiredPipe) userId: string,
+    @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    userId: string,
     @PaginationOffsetQuery({
       availableSearch: USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.UserVehicleSelect,
+      Prisma.UserVehicleWhereInput
+    >
   ): Promise<IResponsePagingReturn<UserVehicleListResponseDto>> {
     const filters: Record<string, any> = {
-      user: userId,
+      userId: userId,
     };
     const { data, total } = await this.userVehicleService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.userVehicleUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -127,8 +129,8 @@ export class UserVehicleAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe)
-    id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    id: string
   ): Promise<IResponseReturn<UserVehicleDto>> {
     const userVehicle = await this.userVehicleService.findOneById(id);
     const mapped = this.userVehicleUtil.mapGet(userVehicle);
@@ -143,12 +145,10 @@ export class UserVehicleAdminController {
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() body: UserVehicleCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.userVehicleService.create(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
-    return { data: { _id: created._id } };
+    @Body() body: UserVehicleCreateRequestDto
+  ): Promise<IResponseReturn<{ id: string }>> {
+    const created = await this.userVehicleService.create(body);
+    return { data: { id: created.id } };
   }
 
   @UserVehicleAdminUpdateDoc()
@@ -158,14 +158,12 @@ export class UserVehicleAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe)
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: UserVehicleUpdateRequestDto,
+    @Body() body: UserVehicleUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.userVehicleService.update(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.userVehicleService.update(id, body);
     return {};
   }
 
@@ -176,10 +174,10 @@ export class UserVehicleAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe)
-    id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    id: string
   ): Promise<IResponseReturn<boolean>> {
-    await this.userVehicleService.delete(id, {} as IDatabaseDeleteOptions);
+    await this.userVehicleService.delete(id);
     return { data: true };
   }
 }

@@ -39,18 +39,18 @@ export class PartEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    default: ENUM_PART_STATUS.ACTIVE,
+    default: EnumPartStatus.active,
     index: true,
     type: String,
-    enum: ENUM_PART_STATUS,
+    enum: EnumPartStatus,
   })
-  status: ENUM_PART_STATUS;
+  status: EnumPartStatus;
 
   @DatabaseProp({
     required: false,
     default: '0',
   })
-  order?: string;
+  orderBy?: string;
 
   @DatabaseProp({
     required: true,

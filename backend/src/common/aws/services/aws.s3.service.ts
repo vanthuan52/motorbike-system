@@ -1,6 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   AbortMultipartUploadCommand,
   AbortMultipartUploadCommandInput,
@@ -90,6 +89,7 @@ import {
   AwsS3MaxFetchItems,
   AwsS3MaxPartNumber,
 } from '@/common/aws/constants/aws.constant';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 import {
   AwsS3PresignDto,
@@ -102,51 +102,45 @@ import {
 import { FileService } from '@/common/file/services/file.service';
 
 /**
- * AWS S3 service for managing file operations in Amazon S3 buckets.
- * Provides comprehensive functionality for uploading, downloading, deleting,
- * and managing files in both public and private S3 buckets. Supports both
- * simple uploads and multipart uploads for large files, as well as presigned
- * URLs for client-side uploads.
+ * Service for AWS S3 file operations across public and private S3 buckets.
+ *
+ * Handles file management (upload, download, delete, move, list), multipart uploads
+ * for large files, presigned URL generation, and bucket configuration (policy, CORS, lifecycle).
+ *
+ * The service is initialized lazily on module init. If IAM credentials or region are not
+ * configured, the S3 client will not be created and all methods will return default
+ * empty responses instead of throwing errors.
  */
 @Injectable()
-export class AwsS3Service implements IAwsS3Service {
+export class AwsS3Service implements IAwsS3Service, OnModuleInit {
   private readonly logger: Logger = new Logger(AwsS3Service.name);
 
-  private readonly client: S3Client;
+  private readonly accessKeyId: string | null;
+  private readonly secretAccessKey: string | null;
+  private readonly region: string | null;
+  private readonly maxAttempts: number;
+  private readonly timeoutInMs: number;
 
   private readonly presignExpired: number;
   private readonly multipartExpiredInDay: number;
 
   private readonly iamArn: string | undefined;
-
   private readonly corsAllowedOrigin: string[];
 
   private readonly config: Map<EnumAwsS3Accessibility, IAwsS3ConfigBucket> =
     new Map<EnumAwsS3Accessibility, IAwsS3ConfigBucket>();
 
+  private s3Client: S3Client;
+
   constructor(
     private readonly configService: ConfigService,
-    private readonly fileService: FileService,
+    private readonly fileService: FileService
   ) {
-    const accessKeyId = this.configService.get<string>('aws.s3.iam.key');
-    const secretAccessKey = this.configService.get<string>('aws.s3.iam.secret');
-    const region = this.configService.get<string>('aws.s3.region');
-
-    if (!accessKeyId || !secretAccessKey || !region) {
-      this.logger.warn('AWS S3 not configured');
-    }
-
-    this.client = new S3Client({
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-      region,
-      maxAttempts: this.configService.get<number>('aws.s3.maxAttempts'),
-      requestHandler: {
-        requestTimeout: this.configService.get<number>('aws.s3.timeoutInMs'),
-      },
-    });
+    this.accessKeyId = this.configService.get<string>('aws.s3.iam.key');
+    this.secretAccessKey = this.configService.get<string>('aws.s3.iam.secret');
+    this.region = this.configService.get<string>('aws.s3.region');
+    this.maxAttempts = this.configService.get<number>('aws.s3.maxAttempts');
+    this.timeoutInMs = this.configService.get<number>('aws.s3.timeoutInMs');
 
     this.config.set(EnumAwsS3Accessibility.public, {
       ...this.configService.get<IAwsS3ConfigBucket>('aws.s3.config.public'),
@@ -159,16 +153,51 @@ export class AwsS3Service implements IAwsS3Service {
     });
 
     this.presignExpired = this.configService.get<number>(
-      'aws.s3.presignExpired',
+      'aws.s3.presignExpired'
     );
     this.multipartExpiredInDay = this.configService.get<number>(
-      'aws.s3.multipartExpiredInDay',
+      'aws.s3.multipartExpiredInDay'
     );
-    this.iamArn = this.configService.get<string>('aws.s3.iam.arn');
 
+    this.iamArn = this.configService.get<string>('aws.s3.iam.arn');
     this.corsAllowedOrigin = this.configService.get<string[]>(
-      'request.cors.allowedOrigin',
+      'request.cors.allowedOrigin'
     );
+  }
+
+  /**
+   * Initializes the S3 client using configured IAM credentials, region, and timeout settings.
+   * If any required credential is missing, the client will not be created
+   * and the service will operate in a no-op mode.
+   */
+  onModuleInit(): void {
+    if (!this.accessKeyId || !this.secretAccessKey || !this.region) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
+    this.s3Client = new S3Client({
+      credentials: {
+        accessKeyId: this.accessKeyId,
+        secretAccessKey: this.secretAccessKey,
+      },
+      region: this.region,
+      maxAttempts: this.maxAttempts,
+      requestHandler: {
+        requestTimeout: this.timeoutInMs,
+      },
+    });
+  }
+
+  /**
+   * Returns whether the S3 client has been successfully initialized.
+   * @returns {boolean} `true` if the S3 client is ready to use, `false` otherwise
+   */
+  isInitialized(): boolean {
+    return !!this.s3Client;
   }
 
   /**
@@ -180,7 +209,7 @@ export class AwsS3Service implements IAwsS3Service {
     const pathWithFilename: string = `/${key}`;
     const filename: string = key.substring(
       key.lastIndexOf('/') + 1,
-      key.length,
+      key.length
     );
 
     const extension: string =
@@ -191,12 +220,21 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Checks the connection to AWS S3 by listing buckets.
-   * @returns {Promise<boolean>} Promise that resolves to true if connection is successful, false otherwise
+   * Verifies connectivity to AWS S3 by listing buckets.
+   * Returns `false` immediately if the service is not initialized.
+   * @returns {Promise<boolean>} `true` if connected successfully, `false` if not initialized or request fails
    */
   async checkConnection(): Promise<boolean> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return false;
+    }
+
     try {
-      await this.client.send(new ListBucketsCommand({}));
+      await this.s3Client.send(new ListBucketsCommand({}));
       return true;
     } catch {
       return false;
@@ -204,32 +242,54 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Checks if the specified S3 bucket exists and is accessible.
+   * Checks if the configured S3 bucket exists and is accessible.
+   * Returns `false` immediately if the service is not initialized.
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
-   * @returns {Promise<boolean>} Promise that resolves to true if bucket exists and is accessible
+   * @returns {Promise<boolean>} `true` if the bucket exists and is reachable, `false` if not initialized
    */
   async checkBucket(options?: IAwsS3Options): Promise<boolean> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return false;
+    }
+
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const command: HeadBucketCommand = new HeadBucketCommand({
       Bucket: config.bucket,
     });
 
-    await this.client.send<HeadBucketCommandInput, HeadBucketCommandOutput>(
-      command,
+    await this.s3Client.send<HeadBucketCommandInput, HeadBucketCommandOutput>(
+      command
     );
     return true;
   }
 
   /**
-   * Checks if an item exists in S3 and retrieves its metadata.
-   * @param {string} key - The S3 object key to check
+   * Checks if an object exists in S3 and returns its metadata.
+   * Returns `null` immediately if the service is not initialized.
+   * @param {string} key - The S3 object key to check (must not start with "/")
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
-   * @returns {Promise<AwsS3Dto>} Promise that resolves to an AwsS3Dto with item information
+   * @returns {Promise<AwsS3Dto>} Object metadata, or `null` if not initialized
+   * @throws {Error} If the key starts with "/"
    */
-  async checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto> {
+  async checkItem(
+    key: string,
+    options?: IAwsS3Options
+  ): Promise<AwsS3Dto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
@@ -241,7 +301,7 @@ export class AwsS3Service implements IAwsS3Service {
       Bucket: config.bucket,
       Key: key,
     });
-    const item = await this.client.send<
+    const item = await this.s3Client.send<
       HeadObjectCommandInput,
       HeadObjectCommandOutput
     >(headCommand);
@@ -263,15 +323,25 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Retrieves a list of items from S3 with a specified path prefix.
-   * @param {string} path - The path prefix to search for items
+   * Retrieves all objects from S3 under the given path prefix, paginating automatically.
+   * Returns an empty array immediately if the service is not initialized.
+   * @param {string} path - The path prefix to search (must not start with "/")
    * @param {IAwsS3GetItemsOptions} [options] - Optional configuration including access level and continuation token
-   * @returns {Promise<AwsS3Dto[]>} Promise that resolves to an array of AwsS3Dto objects
+   * @returns {Promise<AwsS3Dto[]>} List of matching objects, or `[]` if not initialized
+   * @throws {Error} If the path starts with "/"
    */
   async getItems(
     path: string,
-    options?: IAwsS3GetItemsOptions,
+    options?: IAwsS3GetItemsOptions
   ): Promise<AwsS3Dto[]> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return [];
+    }
+
     if (path.startsWith('/')) {
       throw new Error('Path should not start with "/"');
     }
@@ -290,7 +360,7 @@ export class AwsS3Service implements IAwsS3Service {
         ContinuationToken: continuationToken,
       });
 
-      const listItems: ListObjectsV2Output = await this.client.send<
+      const listItems: ListObjectsV2Output = await this.s3Client.send<
         ListObjectsV2CommandInput,
         ListObjectsV2CommandOutput
       >(command);
@@ -298,7 +368,7 @@ export class AwsS3Service implements IAwsS3Service {
       if (listItems.Contents) {
         const mappedItems = listItems.Contents.map((item: _Object) => {
           const { pathWithFilename, extension, mime } = this.getFileInfoFromKey(
-            item.Key,
+            item.Key
           );
 
           return {
@@ -328,12 +398,25 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Retrieves a single item from S3 including its content data.
-   * @param {string} key - The S3 object key to retrieve
+   * Retrieves a single object from S3 including its content body.
+   * Returns `null` immediately if the service is not initialized.
+   * @param {string} key - The S3 object key to retrieve (must not start with "/")
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
-   * @returns {Promise<AwsS3Dto>} Promise that resolves to an AwsS3Dto with item data
+   * @returns {Promise<AwsS3Dto>} Object with content data, or `null` if not initialized
+   * @throws {Error} If the key starts with "/"
    */
-  async getItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto> {
+  async getItem(
+    key: string,
+    options?: IAwsS3Options
+  ): Promise<AwsS3Dto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
@@ -344,7 +427,7 @@ export class AwsS3Service implements IAwsS3Service {
       Bucket: config.bucket,
       Key: key,
     });
-    const item: GetObjectOutput = await this.client.send<
+    const item: GetObjectOutput = await this.s3Client.send<
       GetObjectCommandInput,
       GetObjectCommandOutput
     >(command);
@@ -367,15 +450,26 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Uploads a file to S3 using a simple PUT operation.
-   * @param {IAwsS3PutItem} file - The file object containing key, file data, and optional size
+   * Uploads a file to S3 using a single PUT operation.
+   * Returns `null` immediately if the service is not initialized.
+   * By default throws if the key already exists; pass `forceUpdate: true` to overwrite.
+   * @param {IAwsS3PutItem} file - File object containing the key, buffer, and optional size
    * @param {IAwsS3PutItemOptions} [options] - Optional configuration including force update and access level
-   * @returns {Promise<AwsS3Dto>} Promise that resolves to an AwsS3Dto with upload information
+   * @returns {Promise<AwsS3Dto>} Uploaded object metadata, or `null` if not initialized
+   * @throws {Error} If the key starts with "/", file is missing, path traversal is detected, or key already exists
    */
   async putItem(
     file: IAwsS3PutItem,
-    options?: IAwsS3PutItemOptions,
-  ): Promise<AwsS3Dto> {
+    options?: IAwsS3PutItemOptions
+  ): Promise<AwsS3Dto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (file.key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
@@ -398,9 +492,10 @@ export class AwsS3Service implements IAwsS3Service {
       });
 
       try {
-        await this.client.send<HeadObjectCommandInput, HeadObjectCommandOutput>(
-          headCommand,
-        );
+        await this.s3Client.send<
+          HeadObjectCommandInput,
+          HeadObjectCommandOutput
+        >(headCommand);
 
         throw new Error(`Key ${file.key} is already exist.`);
       } catch (error: unknown) {
@@ -411,7 +506,7 @@ export class AwsS3Service implements IAwsS3Service {
     }
 
     const { pathWithFilename, extension, mime } = this.getFileInfoFromKey(
-      file.key,
+      file.key
     );
 
     const content: Buffer = file.file;
@@ -423,8 +518,8 @@ export class AwsS3Service implements IAwsS3Service {
       ChecksumAlgorithm: 'SHA256',
     });
 
-    await this.client.send<PutObjectCommandInput, PutObjectCommandOutput>(
-      command,
+    await this.s3Client.send<PutObjectCommandInput, PutObjectCommandOutput>(
+      command
     );
 
     return {
@@ -443,42 +538,63 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Deletes a single item from S3.
-   * @param {string} key - The S3 object key to delete
+   * Deletes a single object from S3.
+   * Returns immediately if the service is not initialized.
+   * @param {string} key - The S3 object key to delete (must not start with "/")
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
+   * @throws {Error} If the key starts with "/"
    */
   async deleteItem(key: string, options?: IAwsS3Options): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
 
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
     const command: DeleteObjectCommand = new DeleteObjectCommand({
       Bucket: config.bucket,
       Key: key,
     });
 
-    await this.client.send<DeleteObjectCommandInput, DeleteObjectCommandOutput>(
-      command,
-    );
+    await this.s3Client.send<
+      DeleteObjectCommandInput,
+      DeleteObjectCommandOutput
+    >(command);
   }
 
   /**
-   * Deletes multiple items from S3 in a batch operation.
-   * @param {string[]} keys - Array of S3 object keys to delete
+   * Deletes multiple objects from S3 in a single batch request.
+   * Returns immediately if the service is not initialized.
+   * @param {string[]} keys - Array of S3 object keys to delete (none may start with "/")
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
+   * @throws {Error} If any key starts with "/"
    */
   async deleteItems(keys: string[], options?: IAwsS3Options): Promise<void> {
-    if (keys.some((e) => e.startsWith('/'))) {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
+    if (keys.some(e => e.startsWith('/'))) {
       throw new Error('Keys should not start with "/"');
     }
 
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
     const obj: ObjectIdentifier[] = keys.map((val: string) => ({
       Key: val,
@@ -488,28 +604,39 @@ export class AwsS3Service implements IAwsS3Service {
       Delete: { Objects: obj },
     });
 
-    await this.client.send<
+    await this.s3Client.send<
       DeleteObjectsCommandInput,
       DeleteObjectsCommandOutput
     >(command);
   }
 
   /**
-   * Deletes all items in a directory (path prefix) from S3.
-   * @param {string} path - The directory path prefix to delete
+   * Deletes all objects under a directory prefix from S3, paginating automatically.
+   * Returns immediately if the service is not initialized.
+   * Throws if deletion exceeds 100 pagination iterations (too many objects).
+   * @param {string} path - The directory prefix to delete (must not start with "/")
    * @param {IAwsS3DeleteDirOptions} [options] - Optional configuration for bucket access level
-   * @returns {Promise<void | _Object[]>}
+   * @returns {Promise<void>}
+   * @throws {Error} If the path starts with "/" or max iterations are exceeded
    */
   async deleteDir(
     path: string,
-    options?: IAwsS3DeleteDirOptions,
+    options?: IAwsS3DeleteDirOptions
   ): Promise<void | _Object[]> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     if (path.startsWith('/')) {
       throw new Error('Path should not start with "/"');
     }
 
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
     let continuationToken: string | undefined = undefined;
 
@@ -519,7 +646,7 @@ export class AwsS3Service implements IAwsS3Service {
     do {
       if (iterations >= maxIterations) {
         throw new Error(
-          `DeleteDir exceeded max iterations (${maxIterations}). Too many objects.`,
+          `DeleteDir exceeded max iterations (${maxIterations}). Too many objects.`
         );
       }
 
@@ -530,7 +657,7 @@ export class AwsS3Service implements IAwsS3Service {
         ContinuationToken: continuationToken,
       });
 
-      const listItems: ListObjectsV2Output = await this.client.send<
+      const listItems: ListObjectsV2Output = await this.s3Client.send<
         ListObjectsV2CommandInput,
         ListObjectsV2CommandOutput
       >(listCommand);
@@ -540,14 +667,14 @@ export class AwsS3Service implements IAwsS3Service {
           new DeleteObjectsCommand({
             Bucket: config.bucket,
             Delete: {
-              Objects: listItems.Contents.map((item) => ({
+              Objects: listItems.Contents.map(item => ({
                 Key: item.Key,
               })),
               Quiet: true,
             },
           });
 
-        await this.client.send<
+        await this.s3Client.send<
           DeleteObjectsCommandInput,
           DeleteObjectsCommandOutput
         >(deleteObjectsCommand);
@@ -559,17 +686,28 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Initiates a multipart upload for large files in S3.
-   * @param {IAwsS3CreateMultiplePart} file - The file object containing key, and optional size
-   * @param {number} maxPartNumber - The maximum number of parts for the multipart upload
+   * Initiates a multipart upload session for a large file in S3.
+   * Returns `null` immediately if the service is not initialized.
+   * By default throws if the key already exists; pass `forceUpdate: true` to overwrite.
+   * @param {IAwsS3CreateMultiplePart} file - File descriptor containing the key and optional size
+   * @param {number} maxPartNumber - Total number of parts planned for this upload (max: `AwsS3MaxPartNumber`)
    * @param {IAwsS3PutItemOptions} [options] - Optional configuration including force update and access level
-   * @returns {Promise<AwsS3MultipartDto>} Promise that resolves to an AwsS3MultipartDto with upload information
+   * @returns {Promise<AwsS3MultipartDto>} Multipart upload metadata, or `null` if not initialized
+   * @throws {Error} If the key starts with "/", max part number is exceeded, or key already exists
    */
   async createMultiPart(
     file: IAwsS3CreateMultiplePart,
     maxPartNumber: number,
-    options?: IAwsS3PutItemOptions,
-  ): Promise<AwsS3MultipartDto> {
+    options?: IAwsS3PutItemOptions
+  ): Promise<AwsS3MultipartDto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (file.key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     } else if (maxPartNumber > AwsS3MaxPartNumber) {
@@ -586,9 +724,10 @@ export class AwsS3Service implements IAwsS3Service {
       });
 
       try {
-        await this.client.send<HeadObjectCommandInput, HeadObjectCommandOutput>(
-          headCommand,
-        );
+        await this.s3Client.send<
+          HeadObjectCommandInput,
+          HeadObjectCommandOutput
+        >(headCommand);
 
         throw new Error(`Key ${file.key} is already exist.`);
       } catch (error: unknown) {
@@ -599,7 +738,7 @@ export class AwsS3Service implements IAwsS3Service {
     }
 
     const { pathWithFilename, extension, mime } = this.getFileInfoFromKey(
-      file.key,
+      file.key
     );
 
     const multiPartCommand: CreateMultipartUploadCommand =
@@ -612,7 +751,7 @@ export class AwsS3Service implements IAwsS3Service {
         ChecksumAlgorithm: 'SHA256',
       });
 
-    const response = await this.client.send<
+    const response = await this.s3Client.send<
       CreateMultipartUploadCommandInput,
       CreateMultipartUploadCommandOutput
     >(multiPartCommand);
@@ -637,21 +776,30 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Uploads a single part of a multipart upload to S3.
-   * @param {AwsS3MultipartDto} multipart - The multipart upload object containing upload metadata
-   * @param {number} partNumber - The part number for this upload (1-based)
-   * @param {Buffer} file - The file buffer data for this part
+   * Uploads a single part within an active multipart upload session.
+   * Returns the unmodified `multipart` object if the service is not initialized.
+   * @param {AwsS3MultipartDto} multipart - Active multipart upload metadata
+   * @param {number} partNumber - 1-based part number for this chunk
+   * @param {Buffer} file - Raw file buffer for this part
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
-   * @returns {Promise<AwsS3MultipartDto>} Promise that resolves to the updated multipart object with the new part information
+   * @returns {Promise<AwsS3MultipartDto>} Updated multipart DTO with the new part appended
    */
   async putItemMultiPart(
     multipart: AwsS3MultipartDto,
     partNumber: number,
     file: Buffer,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<AwsS3MultipartDto> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return multipart;
+    }
+
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const uploadPartCommand: UploadPartCommand = new UploadPartCommand({
@@ -662,7 +810,7 @@ export class AwsS3Service implements IAwsS3Service {
       UploadId: multipart.uploadId,
     });
 
-    const { ETag } = await this.client.send<
+    const { ETag } = await this.s3Client.send<
       UploadPartCommandInput,
       UploadPartCommandOutput
     >(uploadPartCommand);
@@ -680,10 +828,11 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Completes a multipart upload by combining all uploaded parts into a single object.
+   * Finalizes a multipart upload by assembling all uploaded parts into a single S3 object.
+   * Returns immediately if the service is not initialized.
    * @param {string} key - The S3 object key for the multipart upload
-   * @param {string} uploadId - The unique upload ID for the multipart upload
-   * @param {AwsS3MultipartPartDto[]} parts - Array of part information including part numbers and ETags
+   * @param {string} uploadId - The upload session ID returned by `createMultiPart`
+   * @param {AwsS3MultipartPartDto[]} parts - Ordered list of uploaded parts with ETags
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
    */
@@ -691,10 +840,18 @@ export class AwsS3Service implements IAwsS3Service {
     key: string,
     uploadId: string,
     parts: AwsS3MultipartPartDto[],
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const completeMultipartCommand: CompleteMultipartUploadCommand =
@@ -703,14 +860,14 @@ export class AwsS3Service implements IAwsS3Service {
         Key: key,
         UploadId: uploadId,
         MultipartUpload: {
-          Parts: parts.map((part) => ({
+          Parts: parts.map(part => ({
             PartNumber: part.partNumber,
             ETag: part.eTag.startsWith('"') ? part.eTag : `"${part.eTag}"`,
           })),
         },
       });
 
-    await this.client.send<
+    await this.s3Client.send<
       CompleteMultipartUploadCommandInput,
       CompleteMultipartUploadCommandOutput
     >(completeMultipartCommand);
@@ -719,19 +876,28 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Aborts a multipart upload and removes all uploaded parts.
+   * Aborts an active multipart upload and discards all uploaded parts.
+   * Returns immediately if the service is not initialized.
    * @param {string} key - The S3 object key for the multipart upload
-   * @param {string} uploadId - The unique upload ID for the multipart upload to abort
+   * @param {string} uploadId - The upload session ID to abort
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
    */
   async abortMultipart(
     key: string,
     uploadId: string,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const abortMultipartCommand: AbortMultipartUploadCommand =
@@ -741,7 +907,7 @@ export class AwsS3Service implements IAwsS3Service {
         UploadId: uploadId,
       });
 
-    await this.client.send<
+    await this.s3Client.send<
       AbortMultipartUploadCommandInput,
       AbortMultipartUploadCommandOutput
     >(abortMultipartCommand);
@@ -750,21 +916,31 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Generates a presigned URL for getting an object from S3.
-   * @param {string} key - The S3 object key to download
-   * @param {IAwsS3PresignGetItemOptions} [options] - Optional configuration including expiration time and access level
-   * @returns {Promise<AwsS3PresignDto>} Promise that resolves to a presigned URL and metadata
+   * Generates a presigned URL that allows temporary read access to an S3 object.
+   * Returns `null` immediately if the service is not initialized.
+   * @param {string} key - The S3 object key to generate a download URL for (must not start with "/")
+   * @param {IAwsS3PresignGetItemOptions} [options] - Optional expiration time and access level
+   * @returns {Promise<AwsS3PresignDto>} Presigned URL with expiry and file metadata, or `null` if not initialized
+   * @throws {Error} If the key starts with "/"
    */
   async presignGetItem(
     key: string,
-    options?: IAwsS3PresignGetItemOptions,
-  ): Promise<AwsS3PresignDto> {
+    options?: IAwsS3PresignGetItemOptions
+  ): Promise<AwsS3PresignDto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
 
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const headCommand = new HeadObjectCommand({
@@ -773,8 +949,8 @@ export class AwsS3Service implements IAwsS3Service {
     });
 
     try {
-      await this.client.send<HeadObjectCommandInput, HeadObjectCommandOutput>(
-        headCommand,
+      await this.s3Client.send<HeadObjectCommandInput, HeadObjectCommandOutput>(
+        headCommand
       );
     } catch (error: unknown) {
       if (!(error instanceof NotFound)) {
@@ -789,7 +965,7 @@ export class AwsS3Service implements IAwsS3Service {
     });
     const expiresIn = options?.expired ?? this.presignExpired;
 
-    const presignUrl = await getSignedUrl(this.client, command, {
+    const presignUrl = await getSignedUrl(this.s3Client, command, {
       expiresIn,
     });
 
@@ -803,21 +979,32 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Generates a presigned URL for uploading an object to S3.
-   * @param {AwsS3PresignRequestDto} request - Object containing key and size information for the upload
-   * @param {IAwsS3PresignPutItemOptions} [options] - Optional configuration including expiration time, force update, and access level
-   * @returns {Promise<AwsS3PresignDto>} Promise that resolves to a presigned URL and metadata
+   * Generates a presigned URL that allows temporary write access to upload a file directly to S3.
+   * Returns `null` immediately if the service is not initialized.
+   * By default throws if the key already exists; pass `forceUpdate: true` to overwrite.
+   * @param {AwsS3PresignRequestDto} dto - DTO containing the target key and expected file size
+   * @param {IAwsS3PresignPutItemOptions} [options] - Optional expiration time, force update, and access level
+   * @returns {Promise<AwsS3PresignDto>} Presigned URL with expiry and file metadata, or `null` if not initialized
+   * @throws {Error} If the key starts with "/" or key already exists
    */
   async presignPutItem(
     { key, size }: AwsS3PresignRequestDto,
-    options?: IAwsS3PresignPutItemOptions,
-  ): Promise<AwsS3PresignDto> {
+    options?: IAwsS3PresignPutItemOptions
+  ): Promise<AwsS3PresignDto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
 
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     if (!options?.forceUpdate) {
@@ -827,9 +1014,10 @@ export class AwsS3Service implements IAwsS3Service {
       });
 
       try {
-        await this.client.send<HeadObjectCommandInput, HeadObjectCommandOutput>(
-          headCommand,
-        );
+        await this.s3Client.send<
+          HeadObjectCommandInput,
+          HeadObjectCommandOutput
+        >(headCommand);
 
         throw new Error(`Key ${key} is already exists.`);
       } catch (error: unknown) {
@@ -851,7 +1039,7 @@ export class AwsS3Service implements IAwsS3Service {
     });
     const expiresIn = options?.expired ?? this.presignExpired;
 
-    const presignUrl = await getSignedUrl(this.client, command, {
+    const presignUrl = await getSignedUrl(this.s3Client, command, {
       expiresIn,
     });
 
@@ -865,21 +1053,31 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Generates a presigned URL for uploading a part of a multipart upload to S3.
-   * @param {AwsS3PresignPartRequestDto} request - Object containing key, size, uploadId, and partNumber information
-   * @param {IAwsS3PresignPutItemPartOptions} [options] - Optional configuration including expiration time, and access level
-   * @returns {Promise<AwsS3PresignPartDto>} Promise that resolves to a presigned URL and part metadata
+   * Generates a presigned URL for uploading a single part within a multipart upload session.
+   * Returns `null` immediately if the service is not initialized.
+   * @param {AwsS3PresignPartRequestDto} dto - DTO containing the key, size, upload ID, and part number
+   * @param {IAwsS3PresignPutItemPartOptions} [options] - Optional expiration time and access level
+   * @returns {Promise<AwsS3PresignPartDto>} Presigned URL with part metadata, or `null` if not initialized
+   * @throws {Error} If the key starts with "/"
    */
   async presignPutItemPart(
     { key, size, uploadId, partNumber }: AwsS3PresignPartRequestDto,
-    options?: IAwsS3PresignPutItemPartOptions,
-  ): Promise<AwsS3PresignPartDto> {
+    options?: IAwsS3PresignPutItemPartOptions
+  ): Promise<AwsS3PresignPartDto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
     }
 
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const uploadPartCommand: UploadPartCommand = new UploadPartCommand({
@@ -891,7 +1089,7 @@ export class AwsS3Service implements IAwsS3Service {
 
     const { extension, mime } = this.getFileInfoFromKey(key);
     const expiresIn = options?.expired ?? this.presignExpired;
-    const presignUrl = await getSignedUrl(this.client, uploadPartCommand, {
+    const presignUrl = await getSignedUrl(this.s3Client, uploadPartCommand, {
       expiresIn,
     });
 
@@ -907,14 +1105,17 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Maps presign request data to an AwsS3Dto object without actually creating a presigned URL.
-   * @param {AwsS3PresignRequestDto} request - Object containing key and size information
+   * Builds an `AwsS3Dto` from a presign request without making any S3 API calls.
+   * Useful for constructing object metadata from a known key before the file is actually uploaded.
+   * Does not require the S3 client to be initialized.
+   * @param {AwsS3PresignRequestDto} dto - DTO containing the target key and optional size
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
-   * @returns {AwsS3Dto} AwsS3Dto object with file information and URLs
+   * @returns {AwsS3Dto} Object metadata derived from the key and bucket configuration
+   * @throws {Error} If the key starts with "/"
    */
   mapPresign(
     { key, size }: AwsS3PresignRequestDto,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): AwsS3Dto {
     if (key.startsWith('/')) {
       throw new Error('Key should not start with "/"');
@@ -940,18 +1141,28 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Moves an S3 object from its current location to a new destination path.
-   * Supports cross-bucket moves by specifying different source and destination buckets.
-   * @param {AwsS3Dto} source - The source AwsS3Dto object containing the current file information
-   * @param {string} destination - The destination path where the file should be moved
-   * @param {IAwsS3MoveItemOptions} [options] - Optional configuration for source and destination bucket access levels
-   * @returns {Promise<AwsS3Dto>} Promise that resolves to an AwsS3Dto with the new file location
+   * Copies an S3 object to a new destination path, then returns the new object's metadata.
+   * Supports cross-bucket moves by specifying different source and destination access levels.
+   * Returns `null` immediately if the service is not initialized.
+   * @param {AwsS3Dto} source - Source object metadata (must have a key not starting with "/")
+   * @param {string} destination - Destination path prefix (must not start with "/")
+   * @param {IAwsS3MoveItemOptions} [options] - Optional source and destination bucket access levels
+   * @returns {Promise<AwsS3Dto>} New object metadata at the destination, or `null` if not initialized
+   * @throws {Error} If the source key or destination starts with "/"
    */
   async moveItem(
     source: AwsS3Dto,
     destination: string,
-    options?: IAwsS3MoveItemOptions,
-  ): Promise<AwsS3Dto> {
+    options?: IAwsS3MoveItemOptions
+  ): Promise<AwsS3Dto | null> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return null;
+    }
+
     if (source.key.startsWith('/')) {
       throw new Error('Source key should not start with "/"');
     }
@@ -961,10 +1172,10 @@ export class AwsS3Service implements IAwsS3Service {
     }
 
     const configTo = this.config.get(
-      options?.accessTo ?? EnumAwsS3Accessibility.public,
+      options?.accessTo ?? EnumAwsS3Accessibility.public
     );
     const configFrom = this.config.get(
-      options?.accessFrom ?? EnumAwsS3Accessibility.public,
+      options?.accessFrom ?? EnumAwsS3Accessibility.public
     );
 
     const destinationKey = `${destination}/${source.key.split('/').pop()}`;
@@ -976,8 +1187,8 @@ export class AwsS3Service implements IAwsS3Service {
       ServerSideEncryption: 'AES256',
     });
 
-    await this.client.send<CopyObjectCommandInput, CopyObjectCommandOutput>(
-      copyCommand,
+    await this.s3Client.send<CopyObjectCommandInput, CopyObjectCommandOutput>(
+      copyCommand
     );
 
     const { pathWithFilename, extension, mime } =
@@ -999,18 +1210,28 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Moves multiple S3 objects from their current locations to a new destination path.
-   * @param {AwsS3Dto[]} sources - Array of source AwsS3Dto objects containing the current file information
-   * @param {string} destination - The destination path where the files should be moved
+   * Copies multiple S3 objects to a new destination path in parallel.
+   * Returns an empty array immediately if the service is not initialized.
+   * @param {AwsS3Dto[]} sources - Source objects to move (none may have a key starting with "/")
+   * @param {string} destination - Destination path prefix (must not start with "/")
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
-   * @returns {Promise<AwsS3Dto[]>} Promise that resolves to an array of AwsS3Dto objects with the new file locations
+   * @returns {Promise<AwsS3Dto[]>} New object metadata for all moved files, or `[]` if not initialized
+   * @throws {Error} If any source key or the destination starts with "/"
    */
   async moveItems(
     sources: AwsS3Dto[],
     destination: string,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<AwsS3Dto[]> {
-    if (sources.some((e) => e.key.startsWith('/'))) {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return [];
+    }
+
+    if (sources.some(e => e.key.startsWith('/'))) {
       throw new Error('Source keys should not start with "/"');
     }
 
@@ -1025,7 +1246,7 @@ export class AwsS3Service implements IAwsS3Service {
         this.moveItem(source, destination, {
           accessTo: options?.access,
           accessFrom: source.access,
-        }),
+        })
       );
     }
 
@@ -1034,15 +1255,25 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Sets a lifecycle configuration on the bucket to automatically delete incomplete multipart uploads and expired objects.
+   * Applies a lifecycle rule to the bucket that auto-deletes incomplete multipart uploads
+   * after the configured expiry period and removes expired object delete markers.
+   * Returns immediately if the service is not initialized.
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
    */
   async settingBucketExpiredObjectLifecycle(
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const config = this.config.get(
-      options?.access ?? EnumAwsS3Accessibility.public,
+      options?.access ?? EnumAwsS3Accessibility.public
     );
 
     const command: PutBucketLifecycleConfigurationCommand =
@@ -1067,22 +1298,29 @@ export class AwsS3Service implements IAwsS3Service {
         },
       });
 
-    await this.client.send<
+    await this.s3Client.send<
       PutBucketLifecycleConfigurationCommandInput,
       PutBucketLifecycleConfigurationCommandOutput
     >(command);
   }
 
   /**
-   * Sets the S3 bucket policy to allow or restrict access based on the bucket's accessibility.
-   *
-   * For public buckets, grants public read access (s3:GetObject) to all objects in the bucket and ensures full access for the configured IAM user.
-   * For private buckets, removes any existing bucket policy to restrict public access.
-   *
-   * @param {IAwsS3Options} [options] - Optional configuration to specify the bucket access level (public or private).
-   * @returns {Promise<void>} Resolves when the bucket policy is updated.
+   * Configures the S3 bucket policy based on accessibility level.
+   * For public buckets: grants `s3:GetObject` to everyone and full access to the configured IAM user.
+   * For private buckets: removes any existing bucket policy.
+   * Returns immediately if the service is not initialized.
+   * @param {IAwsS3Options} [options] - Optional configuration to specify the bucket access level (public or private)
+   * @returns {Promise<void>}
    */
   async settingBucketPolicy(options?: IAwsS3Options): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const accessibility = options?.access ?? EnumAwsS3Accessibility.public;
     const config = this.config.get(accessibility);
 
@@ -1120,7 +1358,7 @@ export class AwsS3Service implements IAwsS3Service {
         Policy: JSON.stringify(bucketPolicy),
       });
 
-      await this.client.send<
+      await this.s3Client.send<
         PutBucketPolicyCommandInput,
         PutBucketPolicyCommandOutput
       >(command);
@@ -1129,7 +1367,7 @@ export class AwsS3Service implements IAwsS3Service {
         Bucket: config.bucket,
       });
 
-      await this.client.send<
+      await this.s3Client.send<
         DeleteBucketPolicyCommandInput,
         DeleteBucketPolicyCommandOutput
       >(command);
@@ -1137,11 +1375,21 @@ export class AwsS3Service implements IAwsS3Service {
   }
 
   /**
-   * Sets the CORS configuration for the S3 bucket based on access level.
+   * Applies CORS rules to the S3 bucket based on its access level.
+   * Public buckets allow GET/HEAD from all origins; private buckets restrict to configured allowed origins.
+   * Returns immediately if the service is not initialized.
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
    */
   async settingCorsConfiguration(options?: IAwsS3Options): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const accessibility = options?.access ?? EnumAwsS3Accessibility.public;
     const config = this.config.get(accessibility);
 
@@ -1197,18 +1445,27 @@ export class AwsS3Service implements IAwsS3Service {
       });
     }
 
-    await this.client.send<
+    await this.s3Client.send<
       PutBucketCorsCommandInput,
       PutBucketCorsCommandOutput
     >(command);
   }
 
   /**
-   * Disables ACLs on the bucket by enforcing bucket owner ownership controls.
+   * Disables ACLs on the bucket by setting ownership controls to `BucketOwnerEnforced`.
+   * Returns immediately if the service is not initialized.
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
    */
   async settingDisableAclConfiguration(options?: IAwsS3Options): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const accessibility = options?.access ?? EnumAwsS3Accessibility.public;
     const config = this.config.get(accessibility);
 
@@ -1224,20 +1481,30 @@ export class AwsS3Service implements IAwsS3Service {
         },
       });
 
-    await this.client.send<
+    await this.s3Client.send<
       PutBucketOwnershipControlsCommandInput,
       PutBucketOwnershipControlsCommandOutput
     >(command);
   }
 
   /**
-   * Sets the public access block configuration for the S3 bucket.
+   * Configures public access blocking on the S3 bucket.
+   * Public buckets allow policy-based access but block ACLs; private buckets block all public access.
+   * Returns immediately if the service is not initialized.
    * @param {IAwsS3Options} [options] - Optional configuration for bucket access level
    * @returns {Promise<void>}
    */
   async settingBlockPublicAccessConfiguration(
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<void> {
+    if (!this.isInitialized()) {
+      this.logger.warn(
+        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+      );
+
+      return;
+    }
+
     const accessibility = options?.access ?? EnumAwsS3Accessibility.public;
     const config = this.config.get(accessibility);
 
@@ -1264,7 +1531,7 @@ export class AwsS3Service implements IAwsS3Service {
       });
     }
 
-    await this.client.send<
+    await this.s3Client.send<
       PutPublicAccessBlockCommandInput,
       PutPublicAccessBlockCommandOutput
     >(command);

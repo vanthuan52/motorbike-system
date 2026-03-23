@@ -1,3 +1,4 @@
 export enum EnumMessageLanguage {
-    en = 'en',
+  en = 'en',
+  vi = 'vi',
 }

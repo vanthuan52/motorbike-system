@@ -10,13 +10,13 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Response } from 'express';
 import { Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import { MessageService } from '@/common/message/services/message.service';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ResponseMessagePathMetaKey } from '@/common/response/constants/response.constant';
 import {
   ResponsePagingDto,
   ResponsePagingMetadataDto,
 } from '@/common/response/dtos/response.paging.dto';
-import { MessageService } from '@/common/message/services/message.service';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { IMessageProperties } from '@/common/message/interfaces/message.interface';
@@ -40,7 +40,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
     private readonly reflector: Reflector,
     private readonly messageService: MessageService,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {}
 
   /**
@@ -64,7 +64,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
    */
   intercept(
     context: ExecutionContext,
-    next: CallHandler,
+    next: CallHandler
   ): Observable<Promise<ResponsePagingDto<T>>> {
     if (context.getType() === 'http') {
       return next.handle().pipe(
@@ -75,7 +75,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
 
           let messagePath: string = this.reflector.get<string>(
             ResponseMessagePathMetaKey,
-            context.getHandler(),
+            context.getHandler()
           );
 
           let data: T[] = [];
@@ -146,7 +146,6 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
             search: request.__pagination.search,
             filters: request.__pagination.filters,
             orderBy: request.__pagination.orderBy,
-            orderDirection: request.__pagination.orderDirection,
             availableSearch: request.__pagination.availableSearch,
             availableOrderBy: request.__pagination.availableOrderBy,
           };
@@ -165,7 +164,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
             metadata: finalMetadata,
             data,
           };
-        }),
+        })
       );
     }
 
@@ -185,7 +184,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
    * @returns ResponsePagingMetadataDto containing base metadata for the response with default OFFSET type
    */
   private createPagingResponseMetadata(
-    request: IRequestApp,
+    request: IRequestApp
   ): ResponsePagingMetadataDto {
     const today = this.helperService.dateCreate();
     const xLanguage: EnumMessageLanguage =
@@ -212,7 +211,6 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
       page: 0,
       perPage: 0,
       orderBy: undefined,
-      orderDirection: undefined,
       availableSearch: undefined,
       availableOrderBy: undefined,
       nextPage: undefined,
@@ -239,7 +237,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
    * @throws Error when data field is not an array
    */
   private validatePaginationResponse(
-    responseData: IResponsePagingReturn<T>,
+    responseData: IResponsePagingReturn<T>
   ): void {
     if (!responseData) {
       throw new Error('ResponsePaging must instanceof IResponsePaging');
@@ -269,7 +267,7 @@ export class ResponsePagingInterceptor<T> implements NestInterceptor {
    */
   private setResponseHeaders(
     response: Response,
-    metadata: ResponsePagingMetadataDto,
+    metadata: ResponsePagingMetadataDto
   ): void {
     response.setHeader('x-custom-lang', metadata.language);
     response.setHeader('x-timestamp', metadata.timestamp);

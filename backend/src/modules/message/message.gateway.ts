@@ -11,12 +11,12 @@ import { Server, Socket } from 'socket.io';
 import { MessageService } from './services/message.service';
 import { JoinConversationDto } from './dtos/request/join-conversation.dto';
 import { SendMessageDto } from './dtos/request/send-message.dto';
-import { MessageEntity } from './entities/message.entity';
-import { ENUM_MESSAGE_GW_EVENTS } from './enums/message.gateway-events.enum';
+import { EnumMessageGwEvents } from './enums/message.gateway-events.enum';
 import { emitSocketError } from './utils/socket-error.util';
-import { ENUM_CHAT_STATUS_CODE_ERROR } from './enums/message-status-code.enum';
+import { EnumChatStatusCodeError } from './enums/message-status-code.enum';
 import { ReadMessageDto } from './dtos/request/read-message.dto';
 import { ConversationService } from './services/conversation.service';
+import { Message } from '@/generated/prisma-client';
 
 @WebSocketGateway(5002, {
   cors: {
@@ -33,14 +33,14 @@ export class MessageGateway
 
   constructor(
     private readonly messageService: MessageService,
-    private readonly conversationService: ConversationService,
+    private readonly conversationService: ConversationService
   ) {}
 
   async handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
     if (userId) {
       this.onlineUsers.set(userId, client.id);
-      this.server.emit(ENUM_MESSAGE_GW_EVENTS.USER_STATUS, {
+      this.server.emit(EnumMessageGwEvents.userStatus, {
         userId,
         isOnline: true,
       });
@@ -52,70 +52,68 @@ export class MessageGateway
     const userId = client.data?.userId;
     if (userId) {
       this.onlineUsers.delete(userId);
-      this.server.emit(ENUM_MESSAGE_GW_EVENTS.USER_STATUS, {
+      this.server.emit(EnumMessageGwEvents.userStatus, {
         userId,
         isOnline: false,
       });
     }
   }
 
-  @SubscribeMessage(ENUM_MESSAGE_GW_EVENTS.JOIN_CONVERSATION)
+  @SubscribeMessage(EnumMessageGwEvents.joinConversation)
   handleJoinConversation(
     @MessageBody() payload: JoinConversationDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     client.join(payload.conversationId);
-    client.emit(ENUM_MESSAGE_GW_EVENTS.JOINED_CONVERSATION, {
+    client.emit(EnumMessageGwEvents.joinedConversation, {
       conversationId: payload.conversationId,
     });
   }
 
-  @SubscribeMessage(ENUM_MESSAGE_GW_EVENTS.SEND_MESSAGE)
+  @SubscribeMessage(EnumMessageGwEvents.sendMessage)
   async handleSendMessage(
     @MessageBody() payload: SendMessageDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
-    const conversation = await this.conversationService.findOneConversation(
-      payload.conversation,
+    const conversation = await this.conversationService.findOne(
+      payload.conversation
     );
 
     if (!conversation) {
       emitSocketError(
         client,
-        ENUM_CHAT_STATUS_CODE_ERROR.INVALID_CONVERSATION,
-        'conversation.error.invalidConversation',
+        EnumChatStatusCodeError.invalidConversation,
+        'conversation.error.invalidConversation'
       );
       return;
     }
 
-    const savedMessage: MessageEntity = await this.messageService.sendMessage(
+    const savedMessage: Message = await this.messageService.sendMessage(
       conversation,
-      payload,
+      payload
     );
 
     client.broadcast
       .to(payload.conversation)
-      .emit(ENUM_MESSAGE_GW_EVENTS.NEW_MESSAGE, savedMessage);
+      .emit(EnumMessageGwEvents.newMessage, savedMessage);
 
-    client.emit(ENUM_MESSAGE_GW_EVENTS.NEW_MESSAGE, savedMessage);
+    client.emit(EnumMessageGwEvents.newMessage, savedMessage);
 
     return savedMessage;
   }
 
-  @SubscribeMessage(ENUM_MESSAGE_GW_EVENTS.READ_MESSAGE)
+  @SubscribeMessage(EnumMessageGwEvents.readMessage)
   async handleReadMessage(
     @MessageBody() payload: ReadMessageDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     const messages = await this.messageService.findAllMessages(
-      payload.conversationId,
+      payload.conversationId
     );
 
-    const targetMsg = messages?.find(
-      (m) => m._id.toString() === payload.messageId,
-    );
+    const targetMsg = messages?.find(m => m.id === payload.messageId);
     if (!targetMsg) {
-      client.emit(ENUM_MESSAGE_GW_EVENTS.ERROR, {
+      client.emit(EnumMessageGwEvents.error, {
         message: 'Message not found',
       });
       return;
@@ -123,18 +121,18 @@ export class MessageGateway
 
     const readerId = client.data?.userId;
     if (!readerId) {
-      client.emit(ENUM_MESSAGE_GW_EVENTS.ERROR, { message: 'User ID missing' });
+      client.emit(EnumMessageGwEvents.error, { message: 'User ID missing' });
       return;
     }
 
     const updated = await this.messageService.markMessageRead(
       targetMsg,
-      readerId,
+      readerId
     );
 
     this.server
       .to(payload.conversationId)
-      .emit(ENUM_MESSAGE_GW_EVENTS.MESSAGE_READ, {
+      .emit(EnumMessageGwEvents.messageRead, {
         messageId: payload.messageId,
         conversationId: payload.conversationId,
         readerId,
@@ -142,15 +140,15 @@ export class MessageGateway
 
     return updated;
   }
-  @SubscribeMessage(ENUM_MESSAGE_GW_EVENTS.TYPING)
+  @SubscribeMessage(EnumMessageGwEvents.typing)
   handleTyping(
     @MessageBody() payload: { conversationId: string; isTyping: boolean },
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: Socket
   ) {
     const userId = client.data?.userId;
     this.server
       .to(payload.conversationId)
-      .emit(ENUM_MESSAGE_GW_EVENTS.TYPING_STATUS, {
+      .emit(EnumMessageGwEvents.typingStatus, {
         conversationId: payload.conversationId,
         userId,
         isTyping: payload.isTyping,

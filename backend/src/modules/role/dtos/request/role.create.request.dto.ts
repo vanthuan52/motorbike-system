@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsAlphanumeric,
   IsNotEmpty,
@@ -7,8 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { RoleUpdateRequestDto } from '../request/role.update.request.dto';
-import { Transform } from 'class-transformer';
+import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
 
 export class RoleCreateRequestDto extends RoleUpdateRequestDto {
   @ApiProperty({

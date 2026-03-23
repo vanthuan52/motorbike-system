@@ -78,7 +78,7 @@ export class CareRecordConditionAdminController {
     const filters: Record<string, any> = {};
 
     if (careRecordId) {
-      filters['careRecord._id'] = careRecordId;
+      filters['careRecordId'] = careRecordId;
     }
 
     const { data, total } = await this.careRecordConditionService.getListOffset(

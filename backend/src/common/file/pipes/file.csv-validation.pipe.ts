@@ -1,8 +1,8 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { ClassConstructor, plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
 import { PipeTransform } from '@nestjs/common/interfaces';
+import { validate } from 'class-validator';
 import { EnumFileStatusCodeError } from '@/common/file/enums/file.status-code.enum';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { IMessageValidationImportErrorParam } from '@/common/message/interfaces/message.interface';
 import { FileImportException } from '@/common/file/exceptions/file.import.exception';
 import { FileMaxDataImport } from '@/common/file/constants/file.constant';
@@ -65,7 +65,7 @@ export class FilCsvValidationPipe<
 
       const validator: TDto = plainToInstance(
         this.dto as ClassConstructor<TDto>,
-        item,
+        item
       );
       const validationErrors = await validate(validator, {
         skipMissingProperties: false,

@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UserService } from './services/user.service';
-import { UserRepositoryModule } from './repository/user.repository.module';
-import { MediaModule } from '@/modules/media/media.module';
-import { RoleModule } from '../role/role.module';
-import { SessionModule } from '../session/session.module';
-import { UserUtil } from './utils/user.util';
+import { UserService } from '@/modules/user/services/user.service';
+import { AwsModule } from '@/common/aws/aws.module';
+import { UserRepository } from '@/modules/user/repositories/user.repository';
+import { UserUtil } from '@/modules/user/utils/user.util';
 
 @Module({
-  imports: [UserRepositoryModule, RoleModule, SessionModule, MediaModule],
-  exports: [UserService, UserUtil],
-  providers: [UserService, UserUtil],
+  imports: [AwsModule],
+  exports: [UserService, UserRepository, UserUtil],
+  providers: [UserService, UserRepository, UserUtil],
   controllers: [],
 })
 export class UserModule {}

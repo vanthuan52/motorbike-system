@@ -5,48 +5,60 @@ import {
 } from '@nestjs/common';
 import { ServiceCategoryRepository } from '../repository/service-category.repository';
 import { IServiceCategoryService } from '../interfaces/service-category.service.interface';
-import {
-  ServiceCategoryDoc,
-  ServiceCategoryEntity,
-} from '../entities/service-category.entity';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { ServiceCategoryCreateRequestDto } from '../dtos/request/service-category.create.request.dto';
 import { ServiceCategoryUpdateRequestDto } from '../dtos/request/service-category.update.request.dto';
-import { ENUM_SERVICE_CATEGORY_STATUS } from '../enums/service-category.enum';
+import { EnumServiceCategoryStatus } from '../enums/service-category.enum';
 import { ServiceCategoryUpdateStatusRequestDto } from '../dtos/request/service-category.update-status.request.dto';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR } from '../enums/service-category.status-code.enum';
+import { EnumServiceCategoryStatusCodeError } from '../enums/service-category.status-code.enum';
+import { ServiceCategory, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ServiceCategoryService implements IServiceCategoryService {
   constructor(
-    private readonly serviceCategoryRepository: ServiceCategoryRepository,
+    private readonly serviceCategoryRepository: ServiceCategoryRepository
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceCategoryDoc[]; total: number }> {
-    const find: Record<string, any> = {
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<{ data: ServiceCategory[]; total: number }> {
+    const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,
       ...filters,
     };
 
     const [serviceCategories, total] = await Promise.all([
-      this.serviceCategoryRepository.findAll<ServiceCategoryDoc>(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-      }),
-      this.serviceCategoryRepository.getTotal(find),
+      this.serviceCategoryRepository.findAll(
+        {
+          limit,
+          skip,
+          where: mergedWhere,
+          orderBy,
+        },
+        filters
+      ),
+      this.serviceCategoryRepository.getTotal(
+        {
+          limit,
+          skip,
+          where: mergedWhere,
+          orderBy,
+        },
+        filters
+      ),
     ]);
 
     return {
@@ -63,187 +75,163 @@ export class ServiceCategoryService implements IServiceCategoryService {
       cursor,
       cursorField,
       includeCount,
-    }: IPaginationQueryCursorParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceCategoryDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...filters };
+    }: IPaginationQueryCursorParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: ServiceCategory[]; total?: number }> {
+    const mergedWhere: Prisma.ServiceCategoryWhereInput = {
+      ...where,
+      ...filters,
+    };
 
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
-    }
+    const { data, count } =
+      await this.serviceCategoryRepository.findWithPaginationCursor({
+        limit,
+        where: mergedWhere,
+        orderBy,
+        cursor,
+        cursorField,
+        includeCount,
+      });
 
-    const [data, count] = await Promise.all([
-      this.serviceCategoryRepository.findAllCursor<ServiceCategoryDoc>(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
-        },
-      }),
-      includeCount
-        ? this.serviceCategoryRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
-
-    const items = data.slice(0, limit);
-
-    return { data: items, total: count };
+    return { data, total: count };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceCategoryDoc> {
-    const serviceCategory = await this.findOneByIdOrFail(id, options);
-    return serviceCategory;
-  }
-
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceCategoryDoc> {
+  async findOneById(id: string): Promise<ServiceCategory> {
     const serviceCategory =
-      await this.serviceCategoryRepository.findOne<ServiceCategoryDoc>(
-        find,
-        options,
-      );
-    if (!serviceCategory) {
-      return null as any;
-    }
-    return serviceCategory;
-  }
-
-  async findBySlug(slug: string): Promise<ServiceCategoryDoc> {
-    const serviceCategory =
-      await this.serviceCategoryRepository.findOneBySlug(slug);
+      await this.serviceCategoryRepository.findOneById(id);
     if (!serviceCategory) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
         message: 'service-category.error.notFound',
       });
     }
     return serviceCategory;
   }
 
-  async create(
-    { name, slug, description, order }: ServiceCategoryCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<ServiceCategoryDoc> {
+  async findOne(find: Record<string, any>): Promise<ServiceCategory | null> {
+    const serviceCategory = await this.serviceCategoryRepository.findOne(find);
+    return serviceCategory;
+  }
+
+  async findBySlug(slug: string): Promise<ServiceCategory> {
+    const serviceCategory =
+      await this.serviceCategoryRepository.findOneBySlug(slug);
+    if (!serviceCategory) {
+      throw new NotFoundException({
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
+        message: 'service-category.error.notFound',
+      });
+    }
+    return serviceCategory;
+  }
+
+  async create({
+    name,
+    slug,
+    description,
+    orderBy,
+  }: ServiceCategoryCreateRequestDto): Promise<{ id: string }> {
     // Check slug conflict
     const existingSlug =
       await this.serviceCategoryRepository.findOneBySlug(slug);
     if (existingSlug) {
       throw new ConflictException({
-        statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.SLUG_EXISTED,
+        statusCode: EnumServiceCategoryStatusCodeError.slugExisted,
         message: 'service-category.error.slugExisted',
       });
     }
 
-    const create: ServiceCategoryEntity = new ServiceCategoryEntity();
-    create.name = name;
-    create.slug = slug.toLowerCase();
-    create.description = description;
-    create.order = order;
-    create.status = ENUM_SERVICE_CATEGORY_STATUS.ACTIVE;
+    const data: Prisma.ServiceCategoryCreateInput = {
+      name,
+      slug: slug.toLowerCase(),
+      description: description ?? null,
+      orderBy: orderBy ?? '0',
+      status: EnumServiceCategoryStatus.active,
+    };
 
-    const created =
-      await this.serviceCategoryRepository.create<ServiceCategoryEntity>(
-        create,
-        options,
-      );
+    const created = await this.serviceCategoryRepository.create(data);
 
-    return created;
+    return { id: created.id };
   }
 
   async update(
     id: string,
-    { name, slug, description, order }: ServiceCategoryUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
+    { name, slug, description, orderBy }: ServiceCategoryUpdateRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
+    const serviceCategory =
+      await this.serviceCategoryRepository.findOneById(id);
+    if (!serviceCategory) {
+      throw new NotFoundException({
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
+        message: 'service-category.error.notFound',
+      });
+    }
 
     // Check slug conflict if slug is being updated
-    if (slug && slug !== repository.slug) {
+    if (slug && slug !== serviceCategory.slug) {
       const existingSlug =
         await this.serviceCategoryRepository.findOneBySlug(slug);
-      if (existingSlug && existingSlug._id.toString() !== id) {
+      if (existingSlug && existingSlug.id !== id) {
         throw new ConflictException({
-          statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumServiceCategoryStatusCodeError.slugExisted,
           message: 'service-category.error.slugExisted',
         });
       }
     }
 
-    repository.name = name ?? repository.name;
-    repository.slug = slug ?? repository.slug;
-    repository.description = description;
-    repository.order = order;
+    const data: Prisma.ServiceCategoryUpdateInput = {
+      name: name ?? undefined,
+      slug: slug ? slug.toLowerCase() : undefined,
+      description: description ?? undefined,
+      orderBy: orderBy ?? undefined,
+    };
 
-    await this.serviceCategoryRepository.save(repository, options);
+    await this.serviceCategoryRepository.update(id, data);
   }
 
   async updateStatus(
     id: string,
-    { status }: ServiceCategoryUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
+    { status }: ServiceCategoryUpdateStatusRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.status = status;
-
-    await this.serviceCategoryRepository.save(repository, options);
-  }
-
-  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    await this.serviceCategoryRepository.softDelete(repository, options);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.serviceCategoryRepository.deleteMany(find, options);
-    return true;
-  }
-
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const exist = await this.serviceCategoryRepository.exists(
-      { name },
-      options,
-    );
-    return exist;
-  }
-
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const exist = await this.serviceCategoryRepository.exists(
-      { slug },
-      options,
-    );
-    return exist;
-  }
-
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceCategoryDoc> {
     const serviceCategory =
-      await this.serviceCategoryRepository.findOneById<ServiceCategoryDoc>(
-        id,
-        options,
-      );
+      await this.serviceCategoryRepository.findOneById(id);
     if (!serviceCategory) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
         message: 'service-category.error.notFound',
       });
     }
-    return serviceCategory;
+
+    await this.serviceCategoryRepository.update(id, { status });
+  }
+
+  async delete(id: string): Promise<void> {
+    const serviceCategory =
+      await this.serviceCategoryRepository.findOneById(id);
+    if (!serviceCategory) {
+      throw new NotFoundException({
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
+        message: 'service-category.error.notFound',
+      });
+    }
+
+    await this.serviceCategoryRepository.delete(id);
+  }
+
+  async existByName(name: string): Promise<boolean> {
+    const serviceCategory = await this.serviceCategoryRepository.findOne({
+      name,
+    });
+    return !!serviceCategory;
+  }
+
+  async existBySlug(slug: string): Promise<boolean> {
+    const serviceCategory = await this.serviceCategoryRepository.findOneBySlug(
+      slug
+    );
+    return !!serviceCategory;
   }
 }

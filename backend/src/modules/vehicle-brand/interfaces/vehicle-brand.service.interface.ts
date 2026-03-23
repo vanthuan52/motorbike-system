@@ -1,83 +1,54 @@
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { VehicleBrandDoc } from '../entities/vehicle-brand.entity';
+import { VehicleBrand, Prisma } from '@/generated/prisma-client';
 import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.create.request.dto';
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
-import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
-import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IVehicleBrandService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleBrandDoc[]>;
+  findAll(find?: Prisma.VehicleBrandWhereInput): Promise<VehicleBrand[]>;
 
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: VehicleBrandDoc[]; total: number }>;
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleBrandSelect,
+      Prisma.VehicleBrandWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>,
+  ): Promise<{ data: VehicleBrand[]; total: number }>;
 
   getListCursor(
-    pagination: IPaginationQueryCursorParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: VehicleBrandDoc[]; total?: number }>;
+    pagination: IPaginationQueryCursorParams<
+      Prisma.VehicleBrandSelect,
+      Prisma.VehicleBrandWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>,
+  ): Promise<{ data: VehicleBrand[]; total?: number }>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleBrandDoc>;
+  findOneById(id: string): Promise<VehicleBrand>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleBrandDoc>;
+  findOne(find: Prisma.VehicleBrandWhereInput): Promise<VehicleBrand>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  getTotal(find?: Prisma.VehicleBrandWhereInput): Promise<number>;
 
-  create(
-    payload: VehicleBrandCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<VehicleBrandDoc>;
+  create(payload: VehicleBrandCreateRequestDto): Promise<VehicleBrand>;
 
-  update(
-    id: string,
-    payload: VehicleBrandUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
+  update(id: string, payload: VehicleBrandUpdateRequestDto): Promise<void>;
 
   updateStatus(
     id: string,
     payload: VehicleBrandUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
   ): Promise<void>;
 
-  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
+  deleteMany(find?: Prisma.VehicleBrandWhereInput): Promise<boolean>;
 
-  findBySlug(slug: string): Promise<VehicleBrandDoc>;
+  findBySlug(slug: string): Promise<VehicleBrand>;
 
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
+  existByName(name: string): Promise<boolean>;
 
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
+  existBySlug(slug: string): Promise<boolean>;
 }

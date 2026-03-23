@@ -1,14 +1,15 @@
-import { HelperService } from '@/common/helper/services/helper.service';
-import { SessionCacheProvider } from '@/modules/session/constants/session.constant';
-import { SessionDto } from '@/modules/session/dtos/session.dto';
-import {
-  ISessionDoc,
-  ISessionCache,
-} from '@/modules/session/interfaces/session.interface';
 import { Cache } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
+import { HelperService } from '@/common/helper/services/helper.service';
+import { SessionCacheProvider } from '@/modules/session/constants/session.constant';
+import { SessionResponseDto } from '@/modules/session/dtos/response/session.response.dto';
+import {
+  ISession,
+  ISessionCache,
+} from '@/modules/session/interfaces/session.interface';
+import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 
 /**
  * Session Management Utility Service
@@ -25,7 +26,7 @@ export class SessionUtil {
   constructor(
     @Inject(SessionCacheProvider) private cacheManager: Cache,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
     this.keyPattern = this.configService.get<string>('session.keyPattern')!;
   }
@@ -42,7 +43,7 @@ export class SessionUtil {
    */
   async getLogin(
     userId: string,
-    sessionId: string,
+    sessionId: string
   ): Promise<ISessionCache | null> {
     const key = this.keyPattern
       .replace('{userId}', userId)
@@ -68,13 +69,13 @@ export class SessionUtil {
     userId: string,
     sessionId: string,
     jti: string,
-    expiredAt: Date,
+    expiredAt: Date
   ): Promise<void> {
     const key = this.keyPattern
       .replace('{userId}', userId)
       .replace('{sessionId}', sessionId);
     const ttl = Math.floor(
-      expiredAt.getTime() - this.helperService.dateCreate().getTime(),
+      expiredAt.getTime() - this.helperService.dateCreate().getTime()
     );
 
     await this.cacheManager.set<ISessionCache>(
@@ -85,7 +86,7 @@ export class SessionUtil {
         expiredAt,
         jti,
       },
-      ttl,
+      ttl
     );
 
     return;
@@ -111,7 +112,7 @@ export class SessionUtil {
     sessionId: string,
     session: ISessionCache,
     jti: string,
-    expiredInMs: number,
+    expiredInMs: number
   ): Promise<void> {
     const key = this.keyPattern
       .replace('{userId}', userId)
@@ -123,7 +124,7 @@ export class SessionUtil {
         ...session,
         jti,
       },
-      expiredInMs,
+      expiredInMs
     );
 
     return;
@@ -160,30 +161,17 @@ export class SessionUtil {
    */
   async deleteAllLogins(
     userId: string,
-    sessions: { _id: string }[],
+    sessions: { id: string }[]
   ): Promise<void> {
     if (sessions.length > 0) {
-      const keys = sessions.map((session) =>
+      const keys = sessions.map(session =>
         this.keyPattern
           .replace('{userId}', userId)
-          .replace('{sessionId}', session._id),
+          .replace('{sessionId}', session.id)
       );
       await this.cacheManager.mdel(keys);
     }
 
-    return;
-  }
-
-  /**
-   * Clears all session data from the cache.
-   *
-   * Removes all cached sessions across all users. Use with caution as this will
-   * invalidate all active sessions in the application.
-   *
-   * @returns Promise resolving when the cache has been cleared
-   */
-  async flushAll(): Promise<void> {
-    await this.cacheManager.clear();
     return;
   }
 
@@ -198,11 +186,27 @@ export class SessionUtil {
    *
    * @see {@link SessionResponseDto} for the response DTO structure
    */
-  mapList(sessions: ISessionDoc[]): SessionDto[] {
-    return plainToInstance(SessionDto, sessions);
+  mapList(sessions: ISession[]): SessionResponseDto[] {
+    return plainToInstance(SessionResponseDto, sessions);
   }
 
-  mapOne(session: ISessionDoc): SessionDto {
-    return plainToInstance(SessionDto, session);
+  /**
+   * Extracts activity log metadata from a session entity.
+   *
+   * Transforms session information into a structured activity log metadata object
+   * containing session ID, user ID, username, and timestamp for audit trail purposes.
+   *
+   * @param session - The session entity containing user and timestamp information
+   * @returns Activity log metadata object with session, user, and timestamp information
+   *
+   * @see {@link IActivityLogMetadata} for the metadata structure
+   */
+  mapActivityLogMetadata(session: ISession): IActivityLogMetadata {
+    return {
+      sessionId: session.id,
+      userId: session.userId,
+      userUsername: session.user.username,
+      timestamp: session.updatedAt ?? session.createdAt,
+    };
   }
 }

@@ -25,7 +25,6 @@ import {
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
@@ -53,18 +52,15 @@ import {
 import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 import { AppointmentUtil } from '../utils/appointment.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 
 @ApiTags('modules.admin.appointment')
 @Controller({
@@ -75,7 +71,7 @@ export class AppointmentAdminController {
   constructor(
     private readonly appointmentService: AppointmentService,
     private readonly appointmentUtil: AppointmentUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @AppointmentAdminListDoc()
@@ -95,11 +91,11 @@ export class AppointmentAdminController {
     })
     pagination: IPaginationQueryOffsetParams,
     @PaginationQueryFilterInEnum('status', APPOINTMENTS_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<AppointmentListResponseDto>> {
     const { data, total } = await this.appointmentService.getListOffset(
       pagination,
-      status,
+      status
     );
     const mapped = this.appointmentUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -116,7 +112,7 @@ export class AppointmentAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<AppointmentGetFullResponseDto>> {
     const appointment =
       await this.appointmentService.findOneWithRelationsById(id);
@@ -136,12 +132,10 @@ export class AppointmentAdminController {
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() body: AppointmentCreateRequestDto,
+    @Body() body: AppointmentCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.appointmentService.create(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
-    return { data: { _id: created._id } };
+    const created = await this.appointmentService.create(body);
+    return { data: { id: created._id } };
   }
 
   @AppointmentAdminUpdateDoc()
@@ -157,11 +151,9 @@ export class AppointmentAdminController {
   async update(
     @Param('id', RequestRequiredPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: AppointmentUpdateRequestDto,
+    @Body() body: AppointmentUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.update(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.appointmentService.update(id, body);
     return {};
   }
 
@@ -176,13 +168,11 @@ export class AppointmentAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: AppointmentUpdateStatusRequestDto,
+    @Body() body: AppointmentUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.updateStatus(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.appointmentService.updateStatus(id, body);
     return {};
   }
 
@@ -197,12 +187,10 @@ export class AppointmentAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('user') updatedBy: string
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.delete(id, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.appointmentService.delete(id);
     return {};
   }
 }

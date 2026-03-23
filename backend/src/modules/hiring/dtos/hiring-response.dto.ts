@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ENUM_HIRING_STATUS, ENUM_HIRING_TYPE } from '../enums/hiring.enum';
+import { EnumHiringStatus, EnumHiringJobType } from '../enums/hiring.enum';
 
 export class HiringResponseDto {
   @ApiProperty({ type: String })
@@ -31,15 +31,15 @@ export class HiringResponseDto {
 
   @ApiProperty({
     required: true,
-    enum: ENUM_HIRING_TYPE,
+    enum: EnumHiringJobType,
   })
-  jobType: ENUM_HIRING_TYPE;
+  jobType: EnumHiringJobType;
 
   @ApiProperty({
     required: true,
-    enum: ENUM_HIRING_STATUS,
+    enum: EnumHiringStatus,
   })
-  status: ENUM_HIRING_STATUS;
+  status: EnumHiringStatus;
 
   @ApiProperty({ type: Date })
   createdAt: Date;

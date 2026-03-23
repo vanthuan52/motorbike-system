@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
-import { ENUM_VEHICLE_BRAND_STATUS } from '../enums/vehicle-brand.enum';
+import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
 
 export class VehicleBrandDto extends DatabaseDto {
   @ApiProperty({ example: 'Yamaha' })
@@ -17,20 +17,17 @@ export class VehicleBrandDto extends DatabaseDto {
   description?: string;
 
   @ApiPropertyOptional({ example: 'Nhật Bản' })
-  @Expose()
-  country?: string;
-
   @ApiPropertyOptional({
-    example: 0,
+    type: String,
     description: 'Thứ tự hiển thị',
   })
   @Expose()
-  order?: number;
+  orderBy?: string;
 
   @ApiProperty({
-    example: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
-    enum: () => ENUM_VEHICLE_BRAND_STATUS,
+    example: EnumVehicleBrandStatus.active,
+    enum: EnumVehicleBrandStatus,
   })
   @Expose()
-  status: ENUM_VEHICLE_BRAND_STATUS;
+  status: EnumVehicleBrandStatus;
 }

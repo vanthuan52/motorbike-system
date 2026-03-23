@@ -64,6 +64,9 @@ tmp/
 .turbo/
 .parcel-cache/
 
+# Source
+package-lock.json
+
 # Claude Code - cache data
 .claude/agent-memory/
 .claude/*.local.md

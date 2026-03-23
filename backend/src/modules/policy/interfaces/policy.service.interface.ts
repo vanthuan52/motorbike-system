@@ -4,6 +4,6 @@ import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.
 export interface IPolicyService {
   validatePolicyGuard(
     request: IRequestApp,
-    requiredAbilities: RoleAbilityRequestDto[],
+    requiredAbilities: RoleAbilityRequestDto[]
   ): Promise<boolean>;
 }

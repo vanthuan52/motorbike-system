@@ -31,7 +31,7 @@ export class UserLoginVerifyTwoFactorRequestDto {
     example: '654321',
     required: false,
   })
-  @ValidateIf((o) => o.method === EnumAuthTwoFactorMethod.code)
+  @ValidateIf(o => o.method === EnumAuthTwoFactorMethod.code)
   @IsString()
   @IsNotEmpty()
   @IsTwoFactorCode()
@@ -42,7 +42,7 @@ export class UserLoginVerifyTwoFactorRequestDto {
     example: 'ABCD1234EF',
     required: false,
   })
-  @ValidateIf((o) => o.method === EnumAuthTwoFactorMethod.backupCodes)
+  @ValidateIf(o => o.method === EnumAuthTwoFactorMethod.backupCodes)
   @IsString()
   @IsNotEmpty()
   @IsTwoFactorBackupCode()

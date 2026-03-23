@@ -1,12 +1,12 @@
-export enum ENUM_CARE_RECORD_CHECKLIST_RESULT {
-  UNCHECKED = 'unchecked',
-  CHECKED = 'checked',
-  REPLACED = 'replaced',
-  SKIPPED = 'skipped',
+export enum EnumCareRecordChecklistResult {
+  unchecked = 'unchecked',
+  checked = 'checked',
+  replaced = 'replaced',
+  skipped = 'skipped',
 }
 
-export enum ENUM_CARE_RECORD_CHECKLIST_STATUS {
-  PENDING = 'pending',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
+export enum EnumCareRecordChecklistStatus {
+  pending = 'pending',
+  inProgress = 'inProgress',
+  completed = 'completed',
 }

@@ -22,5 +22,5 @@ export default registerAs(
       prefix: 'FG',
       length: 25,
     },
-  }),
+  })
 );

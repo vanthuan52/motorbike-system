@@ -6,7 +6,7 @@ import {
   DocRequest,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ActivityLogDto } from '../dtos/activity-log.dto';
+import { ActivityLogResponseDto } from '@/modules/activity-log/dtos/response/activity-log.response.dto';
 import { UserDocParamsId } from '@/modules/user/constants/user.doc.constant';
 
 export function ActivityLogAdminListDoc(): MethodDecorator {
@@ -21,9 +21,9 @@ export function ActivityLogAdminListDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
-    DocResponsePaging<ActivityLogDto>('activityLog.list', {
-      dto: ActivityLogDto,
-    }),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
+    DocResponsePaging<ActivityLogResponseDto>('activityLog.list', {
+      dto: ActivityLogResponseDto,
+    })
   );
 }

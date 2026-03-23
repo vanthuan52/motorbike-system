@@ -2,23 +2,25 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { ResponsePaging } from '@/common/response/decorators/response.decorator';
 import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
-import { ActivityLogAdminListDoc } from '../docs/activity-log.admin.doc';
-import { ActivityLogDto } from '../dtos/activity-log.dto';
-import { ActivityLogService } from '../services/activity-log.service';
+import { ActivityLogAdminListDoc } from '@/modules/activity-log/docs/activity-log.admin.doc';
+import { ActivityLogResponseDto } from '@/modules/activity-log/dtos/response/activity-log.response.dto';
+import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
 import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
   EnumPolicySubject,
-  EnumRoleType,
 } from '@/modules/policy/enums/policy.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { ActivityLogUtil } from '../utils/activity-log.util';
+import { EnumRoleType, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user.activityLog')
 @Controller({
@@ -26,7 +28,11 @@ import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-
   path: '/user/:userId/activity-log',
 })
 export class ActivityLogAdminController {
-  constructor(private readonly activityLogService: ActivityLogService) {}
+  constructor(
+    private readonly activityLogService: ActivityLogService,
+    private readonly paginationUtil: PaginationUtil,
+    private readonly activityLogUtil: ActivityLogUtil
+  ) {}
 
   @ActivityLogAdminListDoc()
   @ResponsePaging('activityLog.list')
@@ -38,7 +44,7 @@ export class ActivityLogAdminController {
     {
       subject: EnumPolicySubject.activityLog,
       action: [EnumPolicyAction.read],
-    },
+    }
   )
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -47,10 +53,18 @@ export class ActivityLogAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery()
-    pagination: IPaginationQueryOffsetParams,
-    @Param('userId', RequestRequiredPipe, RequestIsValidUuidPipe)
-    userId: string,
-  ): Promise<IResponsePagingReturn<ActivityLogDto>> {
-    return this.activityLogService.getListOffset(userId, pagination);
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ActivityLogSelect,
+      Prisma.ActivityLogWhereInput
+    >,
+    @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    userId: string
+  ): Promise<IResponsePagingReturn<ActivityLogResponseDto>> {
+    const { data, total } = await this.activityLogService.getListOffset(
+      userId,
+      pagination
+    );
+    const mapped = this.activityLogUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 }

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
-import { ENUM_SERVICE_CATEGORY_STATUS } from '../enums/service-category.enum';
+import { EnumServiceCategoryStatus } from '../enums/service-category.enum';
 
 export class ServiceCategoryDto extends DatabaseDto {
   @ApiProperty({
@@ -30,13 +30,13 @@ export class ServiceCategoryDto extends DatabaseDto {
     description: 'Thứ tự',
   })
   @Expose()
-  order?: number;
+  orderBy?: number;
 
   @ApiPropertyOptional({
     description: 'Trạng thái',
-    example: ENUM_SERVICE_CATEGORY_STATUS.ACTIVE,
-    enum: ENUM_SERVICE_CATEGORY_STATUS,
+    example: EnumServiceCategoryStatus.active,
+    enum: EnumServiceCategoryStatus,
   })
   @Expose()
-  status?: ENUM_SERVICE_CATEGORY_STATUS;
+  status?: EnumServiceCategoryStatus;
 }

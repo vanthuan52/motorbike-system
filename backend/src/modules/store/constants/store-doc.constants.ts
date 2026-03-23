@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_STORE_STATUS } from '../enums/store.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
 
 export const StoreDocParamsId: ApiParamOptions[] = [
@@ -28,7 +28,7 @@ export const StoreDocQueryStatus: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_STORE_STATUS).join(','),
+    example: Object.values(EnumStoreStatus).join(','),
     description: "value with ',' delimiter",
   },
 ];
@@ -39,7 +39,7 @@ export const StoreDocQueryList: ApiQueryOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_STORE_STATUS).join(','),
+    example: Object.values(EnumStoreStatus).join(','),
     description: "value with ',' delimiter",
   },
 ];

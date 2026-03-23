@@ -1,6 +1,5 @@
 export enum EnumAppEnvironment {
   production = 'production',
-  migration = 'migration',
   staging = 'staging',
   development = 'development',
   local = 'local',

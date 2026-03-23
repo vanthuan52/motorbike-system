@@ -53,7 +53,7 @@ export class IsCustomEmailConstraint implements ValidatorConstraintInterface {
     }
 
     const validationResult = this.helperService.checkEmail(
-      validationArguments.value,
+      validationArguments.value
     );
     return validationResult.messagePath ?? 'request.error.email.invalid';
   }
@@ -75,7 +75,7 @@ export class IsCustomEmailConstraint implements ValidatorConstraintInterface {
    * @returns True if the property is optional, false otherwise
    */
   private isPropertyOptional(
-    validationArguments?: ValidationArguments,
+    validationArguments?: ValidationArguments
   ): boolean {
     if (!validationArguments?.object || !validationArguments?.property) {
       return false;
@@ -87,14 +87,14 @@ export class IsCustomEmailConstraint implements ValidatorConstraintInterface {
           validationArguments.object.constructor,
           '',
           false,
-          false,
+          false
         );
 
       return validationMetadatas.some(
-        (metadata) =>
+        metadata =>
           metadata.propertyName === validationArguments.property &&
           (metadata.type === 'conditionalValidation' ||
-            metadata.type === 'isOptional'),
+            metadata.type === 'isOptional')
       );
     } catch (_error) {
       return false;

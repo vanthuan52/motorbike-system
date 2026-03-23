@@ -1,42 +1,115 @@
-import { Model } from 'mongoose';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
-import { MediaDoc, MediaEntity } from '../entities/media.entity';
-import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@/common/database/services/database.service';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { Media, Prisma } from '@/generated/prisma-client';
 
-/**
- * Media repository
- * @description Handles database operations for media entities
- */
-export class MediaRepository extends DatabaseRepositoryBase<
-  MediaEntity,
-  MediaDoc
-> {
+@Injectable()
+export class MediaRepository {
   constructor(
-    @InjectDatabaseModel(MediaEntity.name)
-    private readonly mediaModel: Model<MediaEntity>,
-  ) {
-    super(mediaModel);
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService
+  ) {}
+
+  async findWithPaginationOffset(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.MediaSelect,
+      Prisma.MediaWhereInput
+    >
+  ): Promise<{
+    data: Media[];
+    count: number;
+    page: number;
+    totalPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nextPage?: number;
+    previousPage?: number;
+  }> {
+    return this.paginationService.offsetRaw<Media>(
+      this.databaseService.media,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+      }
+    );
   }
 
-  /**
-   * Find media by S3 key
-   * @param key S3 object key
-   * @returns Media document or null
-   */
-  async findOneByKey(key: string): Promise<MediaDoc | null> {
-    return this.mediaModel.findOne({ key, deleted: false }).exec();
+  async findWithPaginationCursor(
+    {
+      where,
+      ...params
+    }: IPaginationQueryCursorParams<
+      Prisma.MediaSelect,
+      Prisma.MediaWhereInput
+    >
+  ): Promise<{
+    data: Media[];
+    count?: number;
+    cursor?: string;
+    hasNext: boolean;
+  }> {
+    return this.paginationService.cursorRaw<Media>(
+      this.databaseService.media,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        includeCount: true,
+      }
+    );
   }
 
-  /**
-   * Find all media by owner
-   * @param ownerId Owner entity ID
-   * @param ownerType Owner entity type
-   * @returns Array of media documents
-   */
-  async findByOwner(ownerId: string, ownerType: string): Promise<MediaDoc[]> {
-    return this.mediaModel
-      .find({ ownerId, ownerType, deleted: false })
-      .sort({ createdAt: -1 })
-      .exec();
+  async findOneById(id: string): Promise<Media | null> {
+    return this.databaseService.media.findUnique({
+      where: { id },
+    });
+  }
+
+  async findOne(
+    where: Prisma.MediaWhereInput
+  ): Promise<Media | null> {
+    return this.databaseService.media.findFirst({
+      where,
+    });
+  }
+
+  async findByKey(key: string): Promise<Media | null> {
+    return this.databaseService.media.findFirst({
+      where: { key },
+    });
+  }
+
+  async create(data: Prisma.MediaCreateInput): Promise<Media> {
+    return this.databaseService.media.create({
+      data,
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.MediaUpdateInput
+  ): Promise<Media> {
+    return this.databaseService.media.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async delete(id: string): Promise<Media> {
+    return this.databaseService.media.delete({
+      where: { id },
+    });
+  }
+}
   }
 }

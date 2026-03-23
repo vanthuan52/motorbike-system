@@ -1,5 +1,5 @@
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
-import { ENUM_VEHICLE_BRAND_STATUS } from '../enums/vehicle-brand.enum';
+import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
 import {
   DatabaseEntity,
   DatabaseProp,
@@ -40,7 +40,7 @@ export class VehicleBrandEntity extends DatabaseEntityBase {
     required: false,
     default: '0',
   })
-  order?: string;
+  orderBy?: string;
 
   @DatabaseProp({
     required: false,
@@ -50,12 +50,12 @@ export class VehicleBrandEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    default: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
+    default: EnumVehicleBrandStatus.active,
     index: true,
     type: String,
-    enum: ENUM_VEHICLE_BRAND_STATUS,
+    enum: EnumVehicleBrandStatus,
   })
-  status: ENUM_VEHICLE_BRAND_STATUS;
+  status: EnumVehicleBrandStatus;
 
   @DatabaseProp({
     required: false,

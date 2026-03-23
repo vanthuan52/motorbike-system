@@ -1,15 +1,7 @@
-import {
-  ActivityLogDoc,
-  ActivityLogEntity,
-} from '../entities/activity-log.entity';
-import { UserDoc, UserEntity } from '@/modules/user/entities/user.entity';
+import { ActivityLog, User } from '@/generated/prisma-client';
 
-export interface IActivityLogEntity extends Omit<ActivityLogEntity, 'user'> {
-  user?: UserEntity;
-}
-
-export interface IActivityLogDoc extends Omit<ActivityLogDoc, 'user'> {
-  user?: UserDoc;
+export interface IActivityLog extends ActivityLog {
+  user: User;
 }
 
 export type IActivityLogMetadata = Record<string, string | number | Date>;

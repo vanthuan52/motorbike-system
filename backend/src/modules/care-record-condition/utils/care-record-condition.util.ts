@@ -1,28 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { CareRecordConditionDoc } from '../entities/care-record-condition.entity';
+import { CareRecordCondition } from '@prisma/client';
 import { CareRecordConditionDto } from '../dtos/care-record-condition.dto';
 
 @Injectable()
 export class CareRecordConditionUtil {
   mapList(
-    careRecordConditions: CareRecordConditionDoc[],
+    careRecordConditions: CareRecordCondition[]
   ): CareRecordConditionDto[] {
-    return plainToInstance(
-      CareRecordConditionDto,
-      careRecordConditions.map((c: CareRecordConditionDoc) =>
-        c instanceof Document ? c.toObject() : c,
-      ),
-    );
+    return plainToInstance(CareRecordConditionDto, careRecordConditions);
   }
 
-  mapGet(careRecordCondition: CareRecordConditionDoc): CareRecordConditionDto {
-    return plainToInstance(
-      CareRecordConditionDto,
-      careRecordCondition instanceof Document
-        ? careRecordCondition.toObject()
-        : careRecordCondition,
-    );
+  mapGet(careRecordCondition: CareRecordCondition): CareRecordConditionDto {
+    return plainToInstance(CareRecordConditionDto, careRecordCondition);
   }
 }

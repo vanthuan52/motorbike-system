@@ -22,6 +22,7 @@ import {
   EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { Prisma } from '@/generated/prisma-client';
 import {
   PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
@@ -30,7 +31,7 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_STORE_STATUS } from '../enums/store.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
 import {
   IResponseReturn,
   IResponsePagingReturn,
@@ -82,10 +83,13 @@ export class StoreAdminController {
     @PaginationOffsetQuery({
       availableSearch: ['name', 'status'],
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', [
-      ENUM_STORE_STATUS.ACTIVE,
-      ENUM_STORE_STATUS.INACTIVE,
+      EnumStoreStatus.active,
+      EnumStoreStatus.inactive,
     ])
     status: Record<string, IPaginationIn>,
   ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
@@ -127,9 +131,9 @@ export class StoreAdminController {
   @Post('/create')
   async create(
     @Body() body: StoreCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+  ): Promise<IResponseReturn<{ id: string }>> {
     const created = await this.storeService.create(body);
-    return { data: { _id: created._id } };
+    return { data: created };
   }
 
   @StoreAdminUpdateDoc()

@@ -1,16 +1,30 @@
-import { IFileRandomFilenameOptions } from '@/common/file/interfaces/file.interface';
-import { FileService } from '@/common/file/services/file.service';
-import { HelperService } from '@/common/helper/services/helper.service';
-import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
-import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
-import { UserDto } from '../dtos/user.dto';
-import { IUserEntity, IUserDoc } from '../interfaces/user.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
 import { Duration } from 'luxon';
-import { Document } from 'mongoose';
-import { UserDoc } from '../entities/user.entity';
+import { Profanity } from '@2toad/profanity';
+import { IFileRandomFilenameOptions } from '@/common/file/interfaces/file.interface';
+import { FileService } from '@/common/file/services/file.service';
+import { HelperService } from '@/common/helper/services/helper.service';
+import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
+import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
+import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
+import { UserDto } from '@/modules/user/dtos/user.dto';
+import { UserMobileNumberResponseDto } from '@/modules/user/dtos/user.mobile-number.dto';
+import {
+  IUser,
+  IUserForgotPasswordCreate,
+  IUserMobileNumber,
+  IUserProfile,
+  IUserVerificationCreate,
+} from '@/modules/user/interfaces/user.interface';
+import { UserTwoFactorStatusResponseDto } from '@/modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserExportResponseDto } from '@/modules/user/dtos/response/user.export.response.dto';
+import {
+  EnumVerificationType,
+  TwoFactor,
+  User,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class UserUtil {
@@ -35,70 +49,78 @@ export class UserUtil {
   private readonly verificationResendInMinutes: number;
   private readonly verificationLinkBaseUrl: string;
 
+  private readonly profanity: Profanity;
+
   constructor(
     private readonly configService: ConfigService,
     private readonly helperService: HelperService,
-    private readonly fileService: FileService,
+    private readonly fileService: FileService
   ) {
     this.usernamePrefix = this.configService.get<string>('user.usernamePrefix');
     this.usernamePattern = this.configService.get<RegExp>(
-      'user.usernamePattern',
+      'user.usernamePattern'
     );
     this.uploadPhotoProfilePath = this.configService.get<string>(
-      'user.uploadPhotoProfilePath',
+      'user.uploadPhotoProfilePath'
     );
 
-    this.homeUrl = this.configService.get('app.homeUrl');
+    this.homeUrl = this.configService.get('home.url');
 
     this.forgotPasswordReferencePrefix = this.configService.get(
-      'forgotPassword.reference.prefix',
+      'forgotPassword.reference.prefix'
     );
     this.forgotPasswordReferenceLength = this.configService.get(
-      'forgotPassword.reference.length',
+      'forgotPassword.reference.length'
     );
     this.forgotExpiredInMinutes = this.configService.get(
-      'forgotPassword.expiredInMinutes',
+      'forgotPassword.expiredInMinutes'
     );
     this.forgotTokenLength = this.configService.get(
-      'forgotPassword.tokenLength',
+      'forgotPassword.tokenLength'
     );
     this.forgotResendInMinutes = this.configService.get(
-      'forgotPassword.resendInMinutes',
+      'forgotPassword.resendInMinutes'
     );
     this.forgotLinkBaseUrl = this.configService.get(
-      'forgotPassword.linkBaseUrl',
+      'forgotPassword.linkBaseUrl'
     );
 
     this.verificationReferencePrefix = this.configService.get(
-      'verification.reference.prefix',
+      'verification.reference.prefix'
     );
     this.verificationReferenceLength = this.configService.get(
-      'verification.reference.length',
+      'verification.reference.length'
     );
     this.verificationOtpLength = this.configService.get(
-      'verification.otpLength',
+      'verification.otpLength'
     );
     this.verificationExpiredInMinutes = this.configService.get(
-      'verification.expiredInMinutes',
+      'verification.expiredInMinutes'
     );
     this.verificationTokenLength = this.configService.get(
-      'verification.tokenLength',
+      'verification.tokenLength'
     );
     this.verificationResendInMinutes = this.configService.get(
-      'verification.resendInMinutes',
+      'verification.resendInMinutes'
     );
     this.verificationLinkBaseUrl = this.configService.get(
-      'verification.linkBaseUrl',
+      'verification.linkBaseUrl'
     );
 
     const availableLanguages = this.configService.get<string[]>(
-      'message.availableLanguage',
+      'message.availableLanguage'
     );
+    this.profanity = new Profanity({
+      languages: availableLanguages,
+      wholeWord: false,
+      grawlix: '*****',
+      grawlixChar: '*',
+    });
   }
 
   createRandomFilenamePhotoProfileWithPath(
     user: string,
-    { extension }: IFileRandomFilenameOptions,
+    { extension }: IFileRandomFilenameOptions
   ): string {
     const path: string = this.uploadPhotoProfilePath.replace('{userId}', user);
     return this.fileService.createRandomFilename({
@@ -118,38 +140,61 @@ export class UserUtil {
     return !!username.search(this.usernamePattern);
   }
 
-  mapList(
-    users: IUserDoc[] | IUserEntity[] | UserDoc[],
-  ): UserListResponseDto[] {
-    return plainToInstance(
-      UserListResponseDto,
-      users.map((u: IUserDoc | IUserEntity | UserDoc) =>
-        u instanceof Document ? u.toObject() : u,
-      ),
-    );
+  async checkBadWord(str: string): Promise<boolean> {
+    return this.profanity.exists(str);
   }
 
-  mapOne(user: IUserDoc | IUserEntity | UserDoc): UserDto {
-    return plainToInstance(
-      UserDto,
-      user instanceof Document ? user.toObject() : user,
-    );
+  mapList(users: IUser[]): UserListResponseDto[] {
+    return plainToInstance(UserListResponseDto, users);
   }
 
-  mapProfile(user: IUserDoc | IUserEntity | UserDoc): UserProfileResponseDto {
-    return plainToInstance(
-      UserProfileResponseDto,
-      user instanceof Document ? user.toObject() : user,
-    );
+  mapExport(users: IUser[]): UserExportResponseDto[] {
+    return plainToInstance(UserExportResponseDto, users);
+  }
+
+  mapOne(user: User): UserDto {
+    return plainToInstance(UserDto, user);
+  }
+
+  mapProfile(user: IUserProfile): UserProfileResponseDto {
+    return plainToInstance(UserProfileResponseDto, user);
+  }
+
+  mapMobileNumber(
+    mobileNumber: IUserMobileNumber
+  ): UserMobileNumberResponseDto {
+    return plainToInstance(UserMobileNumberResponseDto, mobileNumber);
+  }
+
+  mapTwoFactor(twoFactor: TwoFactor): UserTwoFactorStatusResponseDto {
+    return {
+      isEnabled: twoFactor.enabled,
+      isPendingConfirmation:
+        !twoFactor.enabled &&
+        !!twoFactor.secret &&
+        !!twoFactor.iv &&
+        !twoFactor.confirmedAt,
+      backupCodesRemaining: twoFactor.backupCodes.length,
+      confirmedAt: twoFactor.confirmedAt,
+      lastUsedAt: twoFactor.lastUsedAt,
+    };
   }
 
   checkMobileNumber(phoneCodes: string[], phoneCode: string): boolean {
     return phoneCodes.includes(phoneCode);
   }
 
+  mapActivityLogMetadata(user: User): IActivityLogMetadata {
+    return {
+      userId: user.id,
+      userUsername: user.username,
+      timestamp: user.updatedAt ?? user.createdAt,
+    };
+  }
+
   forgotPasswordCreateReference(): string {
     const random = this.helperService.randomString(
-      this.forgotPasswordReferenceLength,
+      this.forgotPasswordReferenceLength
     );
 
     return `${this.forgotPasswordReferencePrefix}-${random}`;
@@ -160,17 +205,35 @@ export class UserUtil {
   }
 
   forgotPasswordSetExpiredDate(): Date {
-    const now = new Date();
+    const now = this.helperService.dateCreate();
 
     return this.helperService.dateForward(
       now,
-      Duration.fromObject({ minutes: this.forgotExpiredInMinutes }),
+      Duration.fromObject({ minutes: this.forgotExpiredInMinutes })
     );
+  }
+
+  forgotPasswordCreate(userId: string): IUserForgotPasswordCreate {
+    const token = this.forgotPasswordCreateToken();
+    const hashedToken = this.helperService.sha256Hash(token);
+    const link = `${this.homeUrl}/${this.forgotLinkBaseUrl}/${token}`;
+    const encryptedLink = this.encryptedLink(userId, link);
+
+    return {
+      reference: this.forgotPasswordCreateReference(),
+      expiredAt: this.forgotPasswordSetExpiredDate(),
+      token,
+      hashedToken,
+      expiredInMinutes: this.forgotExpiredInMinutes,
+      resendInMinutes: this.forgotResendInMinutes,
+      link,
+      encryptedLink,
+    };
   }
 
   verificationCreateReference(): string {
     const random = this.helperService.randomString(
-      this.verificationReferenceLength,
+      this.verificationReferenceLength
     );
 
     return `${this.verificationReferencePrefix}-${random}`;
@@ -185,19 +248,54 @@ export class UserUtil {
   }
 
   verificationSetExpiredDate(): Date {
-    const now = new Date();
+    const now = this.helperService.dateCreate();
 
     return this.helperService.dateForward(
       now,
-      Duration.fromObject({ minutes: this.verificationExpiredInMinutes }),
+      Duration.fromObject({ minutes: this.verificationExpiredInMinutes })
     );
   }
 
-  createTempEmail(temp: string): string {
-    return `temp_${temp}@antmotor.vn`;
+  verificationCreateVerification(
+    userId: string,
+    type: EnumVerificationType
+  ): IUserVerificationCreate {
+    const token =
+      type === EnumVerificationType.mobileNumber
+        ? this.verificationCreateOtp()
+        : this.verificationCreateToken();
+    const hashedToken = this.hashedToken(token);
+    const link =
+      type === EnumVerificationType.mobileNumber
+        ? null
+        : `${this.homeUrl}/${this.verificationLinkBaseUrl}/${token}`;
+    const encryptedLink =
+      type === EnumVerificationType.mobileNumber
+        ? null
+        : this.encryptedLink(userId, link);
+
+    return {
+      reference: this.verificationCreateReference(),
+      expiredAt: this.verificationSetExpiredDate(),
+      type,
+      token,
+      hashedToken,
+      expiredInMinutes: this.verificationExpiredInMinutes,
+      link,
+      encryptedLink,
+      resendInMinutes: this.verificationResendInMinutes,
+    };
   }
 
-  createDefaultPassword(): string {
-    return this.helperService.randomString(8);
+  hashedToken(token: string): string {
+    return this.helperService.sha256Hash(token);
+  }
+
+  encryptedLink(userId: string, token: string): string {
+    return this.helperService.aes256EncryptSimple(token, userId);
+  }
+
+  decryptedLink(userId: string, encoded: string): string {
+    return this.helperService.aes256DecryptSimple(encoded, userId);
   }
 }

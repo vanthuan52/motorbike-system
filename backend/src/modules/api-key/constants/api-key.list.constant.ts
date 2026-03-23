@@ -1,4 +1,4 @@
-import { EnumApiKeyType } from '../enums/api-key.enum';
+import { EnumApiKeyType } from '@/generated/prisma-client';
 
 export const ApiKeyDefaultAvailableSearch = ['name'];
 export const ApiKeyDefaultType = Object.values(EnumApiKeyType);

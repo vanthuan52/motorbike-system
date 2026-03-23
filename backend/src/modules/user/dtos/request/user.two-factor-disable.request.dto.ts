@@ -3,5 +3,5 @@ import { UserLoginVerifyTwoFactorRequestDto } from '@/modules/user/dtos/request/
 
 export class UserTwoFactorDisableRequestDto extends OmitType(
   UserLoginVerifyTwoFactorRequestDto,
-  ['challengeToken'] as const,
+  ['challengeToken'] as const
 ) {}

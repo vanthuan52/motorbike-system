@@ -21,7 +21,7 @@ import { FileService } from '@/common/file/services/file.service';
  * @throws {UnsupportedMediaTypeException} If file extension is not allowed
  */
 export function FileExtensionPipe(
-  allowedExtensions: EnumFileExtension[],
+  allowedExtensions: EnumFileExtension[]
 ): Type<PipeTransform> {
   /**
    * Pipe class for validating file extensions using the allowed list.
@@ -37,7 +37,7 @@ export function FileExtensionPipe(
      * @readonly
      */
     private readonly extensions: ReadonlySet<string> = new Set(
-      allowedExtensions,
+      allowedExtensions
     );
 
     /**

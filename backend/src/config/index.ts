@@ -1,37 +1,41 @@
-import databaseConfig from '@/config/database.config';
-import appConfig from './app.config';
-import authConfig from './auth.config';
-import docConfig from './doc.config';
-import helperConfig from './helper.config';
-import messageConfig from './message.config';
-import userConfig from './user.config';
-import awsConfig from './aws.config';
-import vehicleServiceConfig from './vehicle-service.config';
-import loggerConfig from './logger.config';
-import emailConfig from './email.config';
-import featureFlagConfig from './feature-flag.config';
-import forgotPasswordConfig from './forgot-password.config';
-import redisConfig from './redis.config';
-import requestConfig from './request.config';
-import responseConfig from './response.config';
-import sessionConfig from './session.config';
+import AppConfig from '@/config/app.config';
+import AuthConfig from '@/config/auth.config';
+import DatabaseConfig from '@/config/database.config';
+import AwsConfig from '@/config/aws.config';
+import UserConfig from '@/config/user.config';
+import RequestConfig from '@/config/request.config';
+import DocConfig from '@/config/doc.config';
+import MessageConfig from '@/config/message.config';
+import EmailConfig from '@/config/email.config';
+import RedisConfig from '@/config/redis.config';
+import ForgotPasswordConfig from '@/config/forgot-password.config';
+import VerificationConfig from '@/config/verification.config';
+import HomeConfig from '@/config/home.config';
+import LoggerConfig from '@/config/logger.config';
+import SessionConfig from '@/config/session.config';
+import TermPolicyConfig from '@/config/term-policy.config';
+import FeatureFlagConfig from '@/config/feature-flag.config';
+import ResponseConfig from '@/config/response.config';
+import FirebaseConfig from '@/config/firebase.config';
 
 export default [
-  appConfig,
-  databaseConfig,
-  authConfig,
-  docConfig,
-  awsConfig,
-  helperConfig,
-  loggerConfig,
-  emailConfig,
-  featureFlagConfig,
-  forgotPasswordConfig,
-  redisConfig,
-  requestConfig,
-  responseConfig,
-  sessionConfig,
-  messageConfig,
-  userConfig,
-  vehicleServiceConfig,
+  AppConfig,
+  AuthConfig,
+  DatabaseConfig,
+  AwsConfig,
+  UserConfig,
+  RequestConfig,
+  DocConfig,
+  MessageConfig,
+  EmailConfig,
+  RedisConfig,
+  LoggerConfig,
+  ForgotPasswordConfig,
+  VerificationConfig,
+  HomeConfig,
+  SessionConfig,
+  TermPolicyConfig,
+  FeatureFlagConfig,
+  ResponseConfig,
+  FirebaseConfig,
 ];

@@ -7,7 +7,6 @@ import {
   Patch,
   Delete,
   Param,
-  ConflictException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ServiceCategoryService } from '../services/service-category.services';
@@ -42,8 +41,7 @@ import {
   ServiceCategoryAdminUpdateDoc,
   ServiceCategoryAdminUpdateStatusDoc,
 } from '../docs/service-category.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
-import { ENUM_SERVICE_CATEGORY_STATUS_CODE_ERROR } from '../enums/service-category.status-code.enum';
+import { EnumServiceCategoryStatusCodeError } from '../enums/service-category.status-code.enum';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
@@ -60,6 +58,7 @@ import {
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-category')
 @Controller({
@@ -70,7 +69,7 @@ export class ServiceCategoryAdminController {
   constructor(
     private readonly serviceCategoryService: ServiceCategoryService,
     private readonly serviceCategoryUtil: ServiceCategoryUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @ServiceCategoryAdminListDoc()
@@ -88,13 +87,16 @@ export class ServiceCategoryAdminController {
       availableSearch: SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', SERVICE_CATEGORY_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
     const { data, total } = await this.serviceCategoryService.getListOffset(
       pagination,
-      status,
+      status
     );
     const mapped = this.serviceCategoryUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -111,7 +113,7 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
   ): Promise<IResponseReturn<ServiceCategoryDto>> {
     const serviceCategory = await this.serviceCategoryService.findOneById(id);
     const mapped = this.serviceCategoryUtil.mapGet(serviceCategory);
@@ -129,10 +131,10 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: ServiceCategoryCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    @Body() body: ServiceCategoryCreateRequestDto
+  ): Promise<IResponseReturn<{ id: string }>> {
     const created = await this.serviceCategoryService.create(body);
-    return { data: { _id: created._id } };
+    return { data: created };
   }
 
   @ServiceCategoryAdminUpdateDoc()
@@ -147,7 +149,7 @@ export class ServiceCategoryAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: ServiceCategoryUpdateRequestDto,
+    @Body() body: ServiceCategoryUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.serviceCategoryService.update(id, body);
     return {};
@@ -165,7 +167,7 @@ export class ServiceCategoryAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: ServiceCategoryUpdateStatusRequestDto,
+    @Body() body: ServiceCategoryUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.serviceCategoryService.updateStatus(id, body);
     return {};
@@ -182,7 +184,7 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
   ): Promise<IResponseReturn<void>> {
     await this.serviceCategoryService.delete(id);
     return {};

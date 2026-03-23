@@ -14,10 +14,10 @@ export class RequestCustomLanguageMiddleware implements NestMiddleware {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
     this.availableLanguage = this.configService.get<string[]>(
-      'message.availableLanguage',
+      'message.availableLanguage'
     );
   }
 
@@ -31,7 +31,7 @@ export class RequestCustomLanguageMiddleware implements NestMiddleware {
   async use(
     req: IRequestApp,
     _res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     let customLang: string = this.configService.get<string>('message.language');
 
@@ -59,7 +59,7 @@ export class RequestCustomLanguageMiddleware implements NestMiddleware {
   private filterLanguage(customLanguage: string): string[] {
     return this.helperService.arrayIntersection(
       [customLanguage],
-      this.availableLanguage,
+      this.availableLanguage
     );
   }
 }

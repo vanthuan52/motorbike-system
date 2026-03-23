@@ -4,890 +4,142 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IUserService } from '../interfaces/user.service.interface';
-import { UserRepository } from '../repository/user.repository';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
-  IDatabaseSoftDeleteOptions,
-  IDatabaseUpdateOptions,
-} from '@/common/database/interfaces/database.interface';
-import { UserDoc, UserEntity } from '../entities/user.entity';
-import { DatabaseHelperQueryContain } from '@/common/database/decorators/database.decorator';
-import {
-  EnumUserLoginFrom,
-  EnumUserLoginWith,
-  EnumUserSignUpFrom,
-  EnumUserSignUpWith,
-  EnumUserStatus,
-} from '../enums/user.enum';
-import { IUserDoc, IUserLogin } from '../interfaces/user.interface';
-import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
-import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
-import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
-import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
-import { UserCreateBySignUpRequestDto } from '../dtos/request/user.create-by-sign-up.request.dto';
-import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
-import { AwsS3PresignDto } from '@/common/aws/dtos/aws.s3-presign.dto';
-import { AwsS3Service } from '@/common/aws/services/aws.s3.service';
-import { UserUtil } from '../utils/user.util';
-import { UserGeneratePhotoProfileRequestDto } from '../dtos/request/user.generate-photo-profile.request.dto';
+import { ConfigService } from '@nestjs/config';
+import { Duration } from 'luxon';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
+import { AwsS3PresignDto } from '@/common/aws/dtos/aws.s3-presign.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { AwsS3Service } from '@/common/aws/services/aws.s3.service';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import {
+  EnumFileExtensionDocument,
+  EnumFileExtensionImage,
+} from '@/common/file/enums/file.enum';
+import { IFile } from '@/common/file/interfaces/file.interface';
+import { FileService } from '@/common/file/services/file.service';
+import { HelperService } from '@/common/helper/services/helper.service';
+import {
+  IPaginationEqual,
+  IPaginationIn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import {
   IRequestApp,
   IRequestLog,
 } from '@/common/request/interfaces/request.interface';
-import { IFile } from '@/common/file/interfaces/file.interface';
-import { EnumFileExtensionImage } from '@/common/file/enums/file.enum';
-import { FileService } from '@/common/file/services/file.service';
-import { MediaService } from '@/modules/media/services/media.service';
-import { EnumMediaPurpose } from '@/modules/media/enums/media.enum';
-import { EnumUserStatusCodeError } from '../enums/user.status-code.enum';
+import {
+  IResponseFileReturn,
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
+import {
+  IAuthJwtRefreshTokenPayload,
+  IAuthPassword,
+  IAuthTwoFactorVerify,
+  IAuthTwoFactorVerifyResult,
+} from '@/modules/auth/interfaces/auth.interface';
 import { AuthUtil } from '@/modules/auth/utils/auth.util';
 import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.enum';
-import { RoleService } from '@/modules/role/services/role.service';
-import { UserCreateSocialRequestDto } from '../dtos/request/user.create-social.request.dto';
-
+import { RoleRepository } from '@/modules/role/repositories/role.repository';
+import { SessionRepository } from '@/modules/session/repositories/session.repository';
+import { SessionUtil } from '@/modules/session/utils/session.util';
+import { UserChangePasswordRequestDto } from '@/modules/user/dtos/request/user.change-password.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationIn,
-  IPaginationEqual,
-} from '@/common/pagination/interfaces/pagination.interface';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
-import { UserUpdateProfileRequestDto } from '../dtos/request/user.update-profile.request.dto';
-import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
-import { UserCreateShadowUserRequestDto } from '../dtos/request/user.create-shadow-user.request.dto';
-
+  UserCheckEmailRequestDto,
+  UserCheckUsernameRequestDto,
+} from '@/modules/user/dtos/request/user.check.request.dto';
+import { UserClaimUsernameRequestDto } from '@/modules/user/dtos/request/user.claim-username.request.dto';
+import { UserCreateSocialRequestDto } from '@/modules/user/dtos/request/user.create-social.request.dto';
+import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
+import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
+import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
+import { UserGeneratePhotoProfileRequestDto } from '@/modules/user/dtos/request/user.generate-photo-profile.request.dto';
+import { UserLoginRequestDto } from '@/modules/user/dtos/request/user.login.request.dto';
+import { UserAddMobileNumberRequestDto } from '@/modules/user/dtos/request/user.mobile-number.request.dto';
+import {
+  UserUpdateProfilePhotoRequestDto,
+  UserUpdateProfileRequestDto,
+} from '@/modules/user/dtos/request/user.profile.request.dto';
+import { UserSendEmailVerificationRequestDto } from '@/modules/user/dtos/request/user.send-email-verification.request.dto';
+import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
+import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
+import { UserVerifyEmailRequestDto } from '@/modules/user/dtos/request/user.verify-email.request.dto';
+import {
+  UserCheckEmailResponseDto,
+  UserCheckUsernameResponseDto,
+} from '@/modules/user/dtos/response/user.check.response.dto';
+import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
+import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
+import { UserLoginResponseDto } from '@/modules/user/dtos/response/user.login.response.dto';
+import { UserTwoFactorSetupResponseDto } from '@/modules/user/dtos/response/user.two-factor-setup.response.dto';
+import { UserTwoFactorStatusResponseDto } from '@/modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserMobileNumberResponseDto } from '@/modules/user/dtos/user.mobile-number.dto';
+import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
+import { IUser } from '@/modules/user/interfaces/user.interface';
+import { IUserService } from '@/modules/user/interfaces/user.service.interface';
+import { UserRepository } from '@/modules/user/repositories/user.repository';
+import { UserUtil } from '@/modules/user/utils/user.util';
+import { AuthTwoFactorUtil } from '@/modules/auth/utils/auth.two-factor.util';
+import { UserTwoFactorDisableRequestDto } from '@/modules/user/dtos/request/user.two-factor-disable.request.dto';
+import { UserTwoFactorEnableRequestDto } from '@/modules/user/dtos/request/user.two-factor-enable.request.dto';
+import { UserTwoFactorEnableResponseDto } from '@/modules/user/dtos/response/user.two-factor-enable.response.dto';
+import { UserLoginVerifyTwoFactorRequestDto } from '@/modules/user/dtos/request/user.login-verify-two-factor.request.dto';
+import { EnumAuthTwoFactorMethod } from '@/modules/auth/enums/auth.enum';
+import { AuthTokenResponseDto } from '@/modules/auth/dtos/response/auth.token.response.dto';
+import { RequestTooManyException } from '@/common/request/exceptions/request.too-many.exception';
+import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
+import { UserExportResponseDto } from '@/modules/user/dtos/response/user.export.response.dto';
+import { UserLoginSetupTwoFactorRequestDto } from '@/modules/user/dtos/request/user.login-setup-two-factor.request.dto';
+import { NotificationUtil } from '@/modules/notification/utils/notification.util';
+import { EnumAwsStatusCodeError } from '@/common/aws/enums/aws.status-code.enum';
+import { DatabaseUtil } from '@/common/database/utils/database.util';
+import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
+import {
+  EnumUserLoginFrom,
+  EnumUserLoginWith,
+  EnumUserStatus,
+  EnumVerificationType,
+  Prisma,
+} from '@/generated/prisma-client';
 @Injectable()
 export class UserService implements IUserService {
-  private readonly userRoleName: string = EnumRoleType.user.toString();
+  private readonly logger = new Logger(UserService.name);
+
+  private readonly userRoleName: string;
+  private readonly userCountryName: string;
 
   constructor(
-    private readonly userRepository: UserRepository,
-    private readonly roleService: RoleService,
-    private readonly fileService: FileService,
-    private readonly awsS3Service: AwsS3Service,
-    private readonly mediaService: MediaService,
     private readonly userUtil: UserUtil,
+    private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository,
+    private readonly awsS3Service: AwsS3Service,
+    private readonly helperService: HelperService,
+    private readonly fileService: FileService,
+    private readonly notificationUtil: NotificationUtil,
     private readonly authUtil: AuthUtil,
-  ) {}
-
-  async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-  ): Promise<{ data: IUserDoc[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...status,
-      ...role,
-    };
-
-    const [data, total] = await Promise.all([
-      this.userRepository.findAll<IUserDoc>(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-        join: {
-          path: 'role',
-        },
-      }),
-      this.userRepository.getTotal(find),
-    ]);
-
-    return { data, total };
-  }
-
-  async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-  ): Promise<{ data: IUserDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...status, ...role };
-
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
-    }
-
-    const [data, total] = await Promise.all([
-      this.userRepository.findAllCursor<IUserDoc>(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
-        },
-        join: {
-          path: 'role',
-        },
-      }),
-      includeCount
-        ? this.userRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
-
-    const items = data.slice(0, limit);
-
-    return { data: items, total };
-  }
-
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc> {
-    const user = await this.userRepository.findOne<UserDoc>(find, options);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    return user;
-  }
-
-  async findOneWithRole(
-    find?: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IUserDoc> {
-    const actualFind = find ?? {};
-
-    const user: IUserDoc = await this.userRepository.findOne<IUserDoc>(
-      actualFind,
-      {
-        ...options,
-        join: true,
-      },
-    );
-
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    return user;
-  }
-
-  async findOneById(_id: string, options?: IDatabaseOptions): Promise<UserDoc> {
-    const user: UserDoc = await this.userRepository.findOneById<UserDoc>(
-      _id,
-      options,
-    );
-
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    return user;
-  }
-
-  async findOneWithRoleById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IUserDoc> {
-    const user: IUserDoc = await this.userRepository.findOneWithRoleById(_id, {
-      ...options,
-      join: true,
-    });
-
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    return user;
-  }
-
-  async findOneByPhone(
-    phone: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc> {
-    const user: UserDoc = await this.userRepository.findOne<UserDoc>(
-      {
-        phone,
-      },
-      options,
-    );
-
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    return user;
-  }
-
-  async findOneByEmail(
-    email: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc> {
-    const user: UserDoc = await this.userRepository.findOne<UserDoc>(
-      DatabaseHelperQueryContain('email', email, { fullWord: true }),
-      options,
-    );
-
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    return user;
-  }
-
-  async existByEmail(
-    email: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const exist = await this.userRepository.exists(
-      DatabaseHelperQueryContain('email', email, { fullWord: true }),
-      options,
-    );
-
-    return exist;
-  }
-
-  async existByPhone(
-    phone: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const exist = await this.userRepository.exists(
-      DatabaseHelperQueryContain('phone', phone, { fullWord: true }),
-      options,
-    );
-
-    return exist;
-  }
-
-  async create(
-    data: UserCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc> {
-    const create: UserEntity = new UserEntity();
-    create.name = data.name;
-    create.email = data.email;
-    create.role = data.role;
-    create.phone = data.phone;
-    create.gender = data.gender;
-    create.status = data.status;
-    create.isVerified = data.isVerified;
-    create.password = data.password;
-    create.signUpFrom = data.signUpFrom;
-    create.signUpWith = data.signUpWith;
-    create.signUpDate = new Date();
-
-    const created = await this.userRepository.create<UserEntity>(
-      create,
-      options,
-    );
-
-    return created;
-  }
-
-  async createByAdmin(
-    data: UserCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc> {
-    // Create password
-    const [role, emailExist] = await Promise.all([
-      this.roleService.findOneById(data.role),
-      this.existByEmail(data.email),
-    ]);
-
-    // Validate role exists
-    if (!role) {
-      throw new NotFoundException({
-        statusCode: EnumRoleStatusCodeError.notFound,
-        message: 'role.error.notFound',
-      });
-    }
-
-    // Validate email not taken
-    if (emailExist) {
-      throw new ConflictException({
-        statusCode: EnumUserStatusCodeError.emailExist,
-        message: 'user.error.emailExist',
-      });
-    }
-
-    // Create password
-    const passwordString = this.userUtil.createDefaultPassword();
-    const password: IAuthPassword = this.authUtil.createPassword(
-      passwordString,
-      { temporary: true },
-    );
-
-    const dataToCreate: UserCreateRequestDto = {
-      name: data.name,
-      email: data.email,
-      role: role._id,
-      phone: data.phone,
-      gender: data.gender,
-      status: data.status,
-      isVerified: true,
-      password: password.passwordHash,
-      signUpFrom: EnumUserSignUpFrom.admin,
-      signUpWith: EnumUserSignUpWith.credential,
-      signUpDate: new Date(),
-    };
-
-    return this.create(dataToCreate, options);
-  }
-
-  async createUserByAdmin(
-    data: UserCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc> {
-    // Create password
-    const [role, emailExist] = await Promise.all([
-      this.roleService.findOneByName(this.userRoleName),
-      this.existByEmail(data.email),
-    ]);
-
-    // Validate role exists
-    if (!role) {
-      throw new NotFoundException({
-        statusCode: EnumRoleStatusCodeError.notFound,
-        message: 'role.error.notFound',
-      });
-    }
-
-    // Validate email not taken
-    if (emailExist) {
-      throw new ConflictException({
-        statusCode: EnumUserStatusCodeError.emailExist,
-        message: 'user.error.emailExist',
-      });
-    }
-
-    // Create password
-    const passwordString = this.userUtil.createDefaultPassword();
-    const password: IAuthPassword = this.authUtil.createPassword(
-      passwordString,
-      { temporary: true },
-    );
-
-    const dataToCreate: UserCreateRequestDto = {
-      name: data.name,
-      email: data.email,
-      role: role._id,
-      phone: data.phone,
-      gender: data.gender,
-      status: data.status,
-      isVerified: true,
-      password: password.passwordHash,
-      signUpFrom: EnumUserSignUpFrom.admin,
-      signUpWith: EnumUserSignUpWith.credential,
-      signUpDate: new Date(),
-    };
-
-    return this.create(dataToCreate, options);
-  }
-
-  async createShadowUser(
-    { name, phone }: UserCreateShadowUserRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc> {
-    const [role, phoneExist] = await Promise.all([
-      this.roleService.findOneByName(this.userRoleName),
-      this.existByPhone(phone),
-    ]);
-
-    if (!role) {
-      throw new NotFoundException({
-        statusCode: EnumRoleStatusCodeError.notFound,
-        message: 'role.error.notFound',
-      });
-    }
-    if (phoneExist) {
-      throw new ConflictException({
-        statusCode: EnumUserStatusCodeError.mobileNumberExist,
-        message: 'user.error.phoneExist',
-      });
-    }
-
-    const passwordString = this.userUtil.createDefaultPassword();
-    const password = this.authUtil.createPassword(passwordString);
-
-    const dataToCreate: UserCreateRequestDto = {
-      name,
-      email: this.userUtil.createTempEmail(phone),
-      role: role._id,
-      phone,
-      status: EnumUserStatus.active,
-      password: password.passwordHash,
-      signUpFrom: EnumUserSignUpFrom.system,
-      signUpWith: EnumUserSignUpWith.credential,
-      signUpDate: new Date(),
-    };
-
-    return this.create(dataToCreate, options);
-  }
-
-  async createBySignUp(
-    data: UserCreateBySignUpRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc> {
-    const dataToCreate: UserCreateRequestDto = {
-      name: data.name,
-      email: data.email.toLowerCase(),
-      phone: data.phone,
-      password: data.passwordHash,
-      role: data.roleId,
-      status: EnumUserStatus.active,
-      isVerified: false,
-      signUpFrom: data.signUpFrom,
-      signUpWith: data.signUpWith,
-      signUpDate: new Date(),
-    };
-
-    return this.create(dataToCreate, options);
-  }
-
-  async update(
-    id: string,
-    data: UserUpdateRequestDto,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    if (data.name) user.name = data.name;
-    if (data.phone) user.phone = data.phone;
-    if (data.role) user.role = data.role;
-    if (data.status) user.status = data.status;
-    if (data.gender) user.gender = data.gender;
-
-    await this.userRepository.save(user, options);
-  }
-
-  async updateProfile(
-    id: string,
-    { name, phone, gender }: UserUpdateProfileRequestDto,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    user.name = name;
-    user.phone = phone;
-    user.gender = gender;
-
-    await this.userRepository.save(user, options);
-  }
-
-  async updateStatus(
-    id: string,
-    { status }: UserUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void> {
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    user.status = status;
-    await this.userRepository.save(user, options);
-  }
-
-  /**
-   * Mark user email as verified or unverified
-   * @param id User ID
-   * @param options Database options
-   */
-  async updateVerify(
-    id: string,
-    isVerified: boolean,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
-    await this.userRepository.updateRaw(
-      { _id: id },
-      {
-        $set: {
-          isVerified: isVerified,
-          verifiedAt: isVerified ? new Date() : undefined,
-          updatedBy: id,
-        },
-      },
-      options,
+    private readonly sessionUtil: SessionUtil,
+    private readonly sessionRepository: SessionRepository,
+    private readonly authTwoFactorUtil: AuthTwoFactorUtil,
+    private readonly configService: ConfigService,
+    private readonly databaseUtil: DatabaseUtil
+  ) {
+    this.userRoleName = this.configService.get<string>('user.default.role');
+    this.userCountryName = this.configService.get<string>(
+      'user.default.country'
     );
   }
 
-  async updatePassword(
-    id: string,
-    newPassword: string,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void> {
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    if (user.status === EnumUserStatus.blocked) {
-      throw new BadRequestException({
-        statusCode: EnumUserStatusCodeError.statusInvalid,
-        message: 'user.error.statusInvalid',
-        messageProperties: {
-          status: user.status.toLowerCase(),
-        },
-      });
-    }
-
-    const { passwordHash } = this.authUtil.createPassword(newPassword, {
-      temporary: true,
-    });
-
-    user.password = passwordHash;
-
-    await this.userRepository.save(user, {
-      ...options,
-    } as IDatabaseSaveOptions);
-  }
-
-  async generatePhotoProfilePresign(
-    id: string,
-    { extension, size }: UserGeneratePhotoProfileRequestDto,
-  ): Promise<AwsS3PresignDto> {
-    const key: string = this.userUtil.createRandomFilenamePhotoProfileWithPath(
-      id,
-      {
-        extension,
-      },
-    );
-
-    const aws: AwsS3PresignDto = await this.awsS3Service.presignPutItem(
-      {
-        key,
-        size,
-      },
-      {
-        forceUpdate: true,
-      },
-    );
-
-    return aws;
-  }
-
-  /**
-   * Confirm photo profile upload after client uploads via presigned URL
-   * @param id User ID
-   * @param key S3 object key returned from presign endpoint
-   * @returns Updated user profile response
-   */
-  async confirmPhotoProfile(id: string, key: string): Promise<void> {
-    try {
-      // 1. Get user
-      const user = await this.userRepository.findOneById(id);
-      if (!user) {
-        throw new NotFoundException({
-          statusCode: EnumUserStatusCodeError.notFound,
-          message: 'user.error.notFound',
-        });
-      }
-
-      // 2. Verify file exists in S3
-      const s3Data: AwsS3Dto = await this.awsS3Service.checkItem(key);
-
-      // 3. Extract filename from key
-      const filename = key.split('/').pop() || 'photo';
-
-      // 4. Create media record
-      const media = await this.mediaService.createFromS3(
-        s3Data,
-        filename,
-        EnumMediaPurpose.ProfilePhoto,
-        id,
-        'user',
-      );
-
-      // 5. Activate media
-      await this.mediaService.activate(media);
-
-      // 6. Update user.photo with embedded media data
-      user.photo = this.mediaService.mapToEmbedded(media);
-      await this.userRepository.save(user);
-
-      return;
-    } catch (err: unknown) {
-      if (err instanceof NotFoundException) {
-        throw err;
-      }
-      throw new InternalServerErrorException({
-        statusCode: EnumAppStatusCodeError.unknown,
-        message: 'http.serverError.internalServerError',
-        _error: err,
-      });
-    }
-  }
-
-  async uploadPhotoProfile(
-    id: string,
-    file: IFile,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
-    const extension: EnumFileExtensionImage =
-      this.fileService.extractExtensionFromFilename(
-        file.originalname,
-      ) as EnumFileExtensionImage;
-
-    const key: string = this.userUtil.createRandomFilenamePhotoProfileWithPath(
-      id,
-      {
-        extension,
-      },
-    );
-
-    const aws: AwsS3Dto = await this.awsS3Service.putItem({
-      key,
-      size: file.size,
-      file: file.buffer,
-    });
-
-    // Create media record and update user
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    const filename = key.split('/').pop() || 'photo';
-    const media = await this.mediaService.createFromS3(
-      aws,
-      filename,
-      EnumMediaPurpose.ProfilePhoto,
-      id,
-      'user',
-    );
-    await this.mediaService.activate(media);
-
-    user.photo = this.mediaService.mapToEmbedded(media);
-    await this.userRepository.save(user, options);
-
-    return;
-  }
-
-  async delete(id: string, options?: IDatabaseDeleteOptions): Promise<void> {
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    await this.userRepository.delete({ _id: id }, options);
-  }
-
-  async softDelete(
-    id: string,
-    options?: IDatabaseSoftDeleteOptions,
-  ): Promise<void> {
-    const user = await this.userRepository.findOneById(id);
-    if (!user) {
-      throw new NotFoundException({
-        statusCode: EnumUserStatusCodeError.notFound,
-        message: 'user.error.notFound',
-      });
-    }
-
-    await this.userRepository.softDelete(user, options);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<void> {
-    await this.userRepository.deleteMany(find, options);
-  }
-
-  /**
-   * Update user login information
-   * @param id User ID
-   * @param loginData Login session data
-   * @param requestLog Request logging info
-   * @param options Database options
-   */
-  async updateLogin(
-    id: string,
-    { loginFrom, loginWith, sessionId, expiredAt, jti }: IUserLogin,
-    { ipAddress, userAgent }: IRequestLog,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
-    await this.userRepository.updateRaw(
-      { _id: id },
-      {
-        $set: {
-          lastLoginAt: new Date(),
-          lastIPAddress: ipAddress,
-          lastLoginFrom: loginFrom,
-          lastLoginWith: loginWith,
-          updatedBy: id,
-        },
-      },
-      options,
-    );
-  }
-
-  /**
-   * Create user via social login (Google/Apple)
-   * @param email User email from social provider
-   * @param roleId Role ID to assign
-   * @param loginWith Social login method (google/apple)
-   * @param socialData Social registration data
-   * @param requestLog Request logging info
-   * @param options Database options
-   */
-  async createBySocial(
-    email: string,
-    roleId: string,
-    loginWith: EnumUserLoginWith,
-    { name, from }: UserCreateSocialRequestDto,
-    { ipAddress, userAgent }: IRequestLog,
-    options?: IDatabaseCreateOptions,
-  ): Promise<IUserDoc> {
-    const signUpWith =
-      loginWith === EnumUserLoginWith.apple
-        ? EnumUserSignUpWith.apple
-        : EnumUserSignUpWith.google;
-
-    // Map login from to sign up from
-    const signUpFrom =
-      from === EnumUserLoginFrom.mobile
-        ? EnumUserSignUpFrom.mobile
-        : EnumUserSignUpFrom.website;
-
-    const create: UserEntity = new UserEntity();
-    create.email = email.toLowerCase();
-    create.name = name;
-    create.role = roleId;
-    create.signUpFrom = signUpFrom;
-    create.signUpWith = signUpWith;
-    create.signUpDate = new Date();
-    create.isVerified = true;
-    create.verifiedAt = new Date();
-    create.status = EnumUserStatus.active;
-    create.lastLoginAt = new Date();
-    create.lastIPAddress = ipAddress;
-    create.lastLoginFrom = from;
-    create.lastLoginWith = loginWith;
-
-    const user = await this.userRepository.create<UserEntity>(create, options);
-
-    return this.userRepository.join(user, this.userRepository._join!);
-  }
-
-  /**
-   * Increment user password attempt counter
-   * @param id User ID
-   */
-  async incrementUserPasswordAttempt(id: string): Promise<void> {
-    await this.userRepository.incrementPasswordAttempt(id);
-  }
-
-  /**
-   * Reset user password attempt counter
-   * @param id User ID
-   */
-  async resetUserPasswordAttempt(id: string): Promise<void> {
-    await this.userRepository.resetPasswordAttempt(id);
-  }
-
-  /**
-   * Find existing user or create new one via social login
-   * @param email User's email from social provider
-   * @param loginWith Social login method (google/apple)
-   * @param socialData Social registration data
-   * @param requestLog Request logging info
-   * @returns User document with role populated
-   */
-  async findOrCreateUserBySocial(
-    email: string,
-    loginWith: EnumUserLoginWith,
-    { from, ...others }: UserCreateSocialRequestDto,
-    requestLog: IRequestLog,
-  ): Promise<IUserDoc> {
-    let user = await this.userRepository.findOneWithRole({ email });
-
-    if (!user) {
-      const role = await this.roleService.findOneByName(this.userRoleName);
-      if (!role) {
-        throw new NotFoundException({
-          statusCode: EnumRoleStatusCodeError.notFound,
-          message: 'role.error.notFound',
-        });
-      }
-
-      user = await this.createBySocial(
-        email,
-        role._id,
-        loginWith,
-        { from, ...others },
-        requestLog,
-      );
-    }
-
-    return user;
-  }
-
-  /**
-   * Validates user for protected routes guard.
-   *
-   * Verifies request contains user info, fetches user with role from database,
-   * and validates password expiration and email verification status.
-   *
-   * @param request - The HTTP request object containing user info from JWT
-   * @param requiredVerified - Whether email verification is required
-   * @returns Promise resolving to the user document if validation succeeds
-   * @throws {UnauthorizedException} When request has no user info
-   * @throws {ForbiddenException} When user not found, inactive, password expired, or email not verified
-   */
   async validateUserGuard(
     request: IRequestApp,
-    requiredVerified: boolean,
-  ): Promise<UserDoc> {
+    requiredVerified: boolean
+  ): Promise<IUser> {
     if (!request.user) {
       throw new UnauthorizedException({
         statusCode: EnumAuthStatusCodeError.jwtAccessTokenInvalid,
@@ -896,10 +148,26 @@ export class UserService implements IUserService {
     }
 
     const { userId } = request.user;
-    const user: UserDoc = await this.userRepository.findOneById(userId);
+    const user = await this.userRepository.findOneWithRoleById(userId);
+    if (!user) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status === EnumUserStatus.blocked) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.blockedForbidden,
+        message: 'user.error.blocked',
+      });
+    } else if (user.status !== EnumUserStatus.active) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.inactiveForbidden,
+        message: 'user.error.inactive',
+      });
+    }
 
     const checkPasswordExpired: boolean = this.authUtil.checkPasswordExpired(
-      user.passwordExpired,
+      user.passwordExpired
     );
     if (checkPasswordExpired) {
       throw new ForbiddenException({
@@ -916,11 +184,1970 @@ export class UserService implements IUserService {
     return user;
   }
 
-  async incrementPasswordAttempt(_id: string): Promise<void> {
-    await this.userRepository.incrementPasswordAttempt(_id);
+  async getListOffsetByAdmin(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.UserSelect,
+      Prisma.UserWhereInput
+    >,
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+    country?: Record<string, IPaginationEqual>
+  ): Promise<IResponsePagingReturn<UserListResponseDto>> {
+    const { data, ...others } =
+      await this.userRepository.findWithPaginationOffset(
+        pagination,
+        status,
+        role,
+        country
+      );
+
+    const users: UserListResponseDto[] = this.userUtil.mapList(data);
+    return {
+      data: users,
+      ...others,
+    };
   }
 
-  async resetPasswordAttempt(_id: string): Promise<void> {
-    await this.userRepository.resetPasswordAttempt(_id);
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.UserSelect,
+      Prisma.UserWhereInput
+    >,
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+    country?: Record<string, IPaginationEqual>
+  ): Promise<IResponsePagingReturn<UserListResponseDto>> {
+    const { data, ...others } =
+      await this.userRepository.findWithPaginationCursor(
+        pagination,
+        status,
+        role,
+        country
+      );
+
+    const users: UserListResponseDto[] = this.userUtil.mapList(data);
+    return {
+      data: users,
+      ...others,
+    };
+  }
+
+  async getOne(id: string): Promise<IResponseReturn<UserProfileResponseDto>> {
+    const user = await this.userRepository.findOneProfileById(id);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    }
+
+    return { data: this.userUtil.mapProfile(user) };
+  }
+
+  async createByAdmin(
+    { countryId, email, name, roleId }: UserCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const [checkRole, emailExist, checkCountry] = await Promise.all([
+      this.roleRepository.existById(roleId),
+      this.userRepository.existByEmail(email),
+      this.countryRepository.existById(countryId),
+    ]);
+
+    if (!checkRole) {
+      throw new NotFoundException({
+        statusCode: EnumRoleStatusCodeError.notFound,
+        message: 'role.error.notFound',
+      });
+    } else if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    } else if (emailExist) {
+      throw new ConflictException({
+        statusCode: EnumUserStatusCodeError.emailExist,
+        message: 'user.error.emailExist',
+      });
+    }
+
+    try {
+      const userId = this.databaseUtil.createId();
+      const passwordString = this.authUtil.createPasswordRandom();
+      const password: IAuthPassword = this.authUtil.createPassword(
+        userId,
+        passwordString,
+        {
+          temporary: true,
+        }
+      );
+      const randomUsername = this.userUtil.createRandomUsername();
+      const created = await this.userRepository.createByAdmin(
+        userId,
+        randomUsername,
+        {
+          countryId,
+          email,
+          name,
+          roleId,
+        },
+        password,
+        checkRole,
+        requestLog,
+        createdBy
+      );
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendWelcomeByAdmin(
+        created.id,
+        {
+          password: password.passwordEncrypted,
+          passwordCreatedAt: this.helperService.dateFormatToIso(
+            password.passwordCreated
+          ),
+          passwordExpiredAt: this.helperService.dateFormatToIso(
+            password.passwordExpired
+          ),
+        },
+        createdBy
+      );
+
+      return {
+        data: { id: created.id },
+        metadataActivityLog: this.userUtil.mapActivityLogMetadata(created),
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async updateStatusByAdmin(
+    userId: string,
+    { status }: UserUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<void>> {
+    if (userId === updatedBy) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.notSelf,
+        message: 'user.error.notSelf',
+      });
+    }
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status === EnumUserStatus.blocked) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.blockedInvalid,
+        message: 'user.error.blockedInvalid',
+      });
+    }
+
+    try {
+      const updated = await this.userRepository.updateStatusByAdmin(
+        userId,
+        { status },
+        requestLog,
+        updatedBy
+      );
+
+      return {
+        metadataActivityLog: this.userUtil.mapActivityLogMetadata(updated),
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+
+    return;
+  }
+
+  async checkUsername({
+    username,
+  }: UserCheckUsernameRequestDto): Promise<
+    IResponseReturn<UserCheckUsernameResponseDto>
+  > {
+    const [checkUsername, checkBadWord, isExist] = await Promise.all([
+      this.userUtil.checkUsernamePattern(username),
+      this.userUtil.checkBadWord(username),
+      this.userRepository.existByUsername(username),
+    ]);
+
+    return {
+      data: {
+        badWord: checkBadWord,
+        exist: !!isExist,
+        pattern: checkUsername,
+      },
+    };
+  }
+
+  async checkEmail({
+    email,
+  }: UserCheckEmailRequestDto): Promise<
+    IResponseReturn<UserCheckEmailResponseDto>
+  > {
+    const [checkBadWord, isExist] = await Promise.all([
+      this.userUtil.checkBadWord(email),
+      this.userRepository.existByEmail(email),
+    ]);
+
+    return {
+      data: {
+        badWord: checkBadWord,
+        exist: !!isExist,
+      },
+    };
+  }
+
+  async getProfile(
+    userId: string
+  ): Promise<IResponseReturn<UserProfileResponseDto>> {
+    const user = await this.userRepository.findOneActiveProfileById(userId);
+    const mapped = this.userUtil.mapProfile(user);
+
+    return {
+      data: mapped,
+    };
+  }
+
+  async updateProfile(
+    userId: string,
+    { countryId, ...data }: UserUpdateProfileRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const checkCountry = await this.countryRepository.existById(countryId);
+    if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    }
+
+    try {
+      await this.userRepository.updateProfile(
+        userId,
+        {
+          countryId,
+          ...data,
+        },
+        requestLog
+      );
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async generatePhotoProfilePresign(
+    userId: string,
+    { extension, size }: UserGeneratePhotoProfileRequestDto
+  ): Promise<IResponseReturn<AwsS3PresignDto>> {
+    const key: string = this.userUtil.createRandomFilenamePhotoProfileWithPath(
+      userId,
+      {
+        extension,
+      }
+    );
+
+    const aws: AwsS3PresignDto | null = await this.awsS3Service.presignPutItem(
+      {
+        key,
+        size,
+      },
+      {
+        forceUpdate: true,
+      }
+    );
+
+    if (!aws) {
+      throw new ServiceUnavailableException({
+        statusCode: EnumAwsStatusCodeError.serviceUnavailable,
+        message: 'aws.error.serviceUnavailable',
+      });
+    }
+
+    return { data: aws };
+  }
+
+  async updatePhotoProfile(
+    userId: string,
+    { photoKey, size }: UserUpdateProfilePhotoRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    try {
+      const aws: AwsS3Dto = this.awsS3Service.mapPresign({
+        key: photoKey,
+        size,
+      });
+
+      await this.userRepository.updatePhotoProfile(userId, aws, requestLog);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async deleteSelf(
+    userId: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    try {
+      const sessions = await this.sessionRepository.findActive(userId);
+      await Promise.all([
+        this.userRepository.deleteSelf(userId, requestLog),
+        this.sessionUtil.deleteAllLogins(userId, sessions),
+      ]);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async addMobileNumber(
+    userId: string,
+    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
+    const checkCountry = await this.countryRepository.findOneById(countryId);
+    if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    }
+
+    const [checkValidMobileNumber, checkExist] = await Promise.all([
+      this.userUtil.checkMobileNumber(checkCountry.phoneCode, phoneCode),
+      this.userRepository.existMobileNumber(userId, {
+        number,
+        countryId: checkCountry.id,
+        phoneCode,
+      }),
+    ]);
+    if (!checkValidMobileNumber) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.mobileNumberInvalid,
+        message: 'user.error.mobileNumberInvalid',
+      });
+    } else if (checkExist) {
+      throw new ConflictException({
+        statusCode: EnumUserStatusCodeError.mobileNumberExist,
+        message: 'user.error.mobileNumberExist',
+      });
+    }
+
+    try {
+      const updated = await this.userRepository.addMobileNumber(
+        userId,
+        {
+          number,
+          countryId,
+          phoneCode,
+        },
+        requestLog
+      );
+
+      const mapped = this.userUtil.mapMobileNumber(updated);
+
+      return {
+        data: mapped,
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async updateMobileNumber(
+    userId: string,
+    mobileNumberId: string,
+    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
+    const [checkMobileNumberExist, checkCountry] = await Promise.all([
+      this.userRepository.findOneMobileNumber(userId, mobileNumberId),
+      this.countryRepository.findOneById(countryId),
+    ]);
+    if (!checkMobileNumberExist) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.mobileNumberNotFound,
+        message: 'user.error.mobileNumberNotFound',
+      });
+    } else if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    }
+
+    const checkExist = await this.userRepository.existMobileNumber(
+      userId,
+      { number, countryId, phoneCode },
+      mobileNumberId
+    );
+    if (checkExist) {
+      throw new ConflictException({
+        statusCode: EnumUserStatusCodeError.mobileNumberExist,
+        message: 'user.error.mobileNumberExist',
+      });
+    }
+
+    const checkValidMobileNumber = this.userUtil.checkMobileNumber(
+      checkCountry.phoneCode,
+      phoneCode
+    );
+    if (!checkValidMobileNumber) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.mobileNumberInvalid,
+        message: 'user.error.mobileNumberInvalid',
+      });
+    }
+
+    try {
+      const updated = await this.userRepository.updateMobileNumber(
+        userId,
+        checkMobileNumberExist,
+        {
+          number,
+          countryId,
+          phoneCode,
+        },
+        requestLog
+      );
+
+      const mapped = this.userUtil.mapMobileNumber(updated);
+
+      return {
+        data: mapped,
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async deleteMobileNumber(
+    userId: string,
+    mobileNumberId: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
+    const checkExist = await this.userRepository.findOneMobileNumber(
+      userId,
+      mobileNumberId
+    );
+    if (!checkExist) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.mobileNumberNotFound,
+        message: 'user.error.mobileNumberNotFound',
+      });
+    }
+
+    try {
+      const updated = await this.userRepository.deleteMobileNumber(
+        userId,
+        mobileNumberId,
+        requestLog
+      );
+
+      const mapped = this.userUtil.mapMobileNumber(updated);
+
+      return {
+        data: mapped,
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async claimUsername(
+    userId: string,
+    { username }: UserClaimUsernameRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const [checkUsername, checkBadWord, exist] = await Promise.all([
+      this.userUtil.checkUsernamePattern(username),
+      this.userUtil.checkBadWord(username),
+      this.userRepository.existByUsername(username),
+    ]);
+    if (checkUsername) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.usernameNotAllowed,
+        message: 'user.error.usernameNotAllowed',
+      });
+    } else if (checkBadWord) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.usernameContainBadWord,
+        message: 'user.error.usernameContainBadWord',
+      });
+    } else if (exist) {
+      throw new ConflictException({
+        statusCode: EnumUserStatusCodeError.usernameExist,
+        message: 'user.error.usernameExist',
+      });
+    }
+
+    try {
+      await this.userRepository.claimUsername(userId, { username }, requestLog);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async uploadPhotoProfile(
+    userId: string,
+    file: IFile,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    try {
+      const extension: EnumFileExtensionImage =
+        this.fileService.extractExtensionFromFilename(
+          file.originalname
+        ) as EnumFileExtensionImage;
+
+      const key: string =
+        this.userUtil.createRandomFilenamePhotoProfileWithPath(userId, {
+          extension,
+        });
+
+      const aws: AwsS3Dto | null = await this.awsS3Service.putItem({
+        key,
+        size: file.size,
+        file: file.buffer,
+      });
+
+      if (aws) {
+        this.logger.debug(
+          {
+            userId,
+            fileSize: file.size,
+            awsKey: aws.key,
+            awsBucket: aws.bucket,
+          },
+          `Photo profile uploaded to S3 with key: ${key}`
+        );
+
+        await this.userRepository.updatePhotoProfile(userId, aws, requestLog);
+      }
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async updatePasswordByAdmin(
+    userId: string,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<void>> {
+    if (userId === updatedBy) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.notSelf,
+        message: 'user.error.notSelf',
+      });
+    }
+
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status === EnumUserStatus.blocked) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.blockedInvalid,
+        message: 'user.error.blockedInvalid',
+      });
+    }
+
+    try {
+      const passwordString = this.authUtil.createPasswordRandom();
+      const password = this.authUtil.createPassword(userId, passwordString, {
+        temporary: true,
+      });
+
+      const sessions = await this.sessionRepository.findActive(userId);
+      const [updated] = await Promise.all([
+        this.userRepository.updatePasswordByAdmin(
+          userId,
+          password,
+          requestLog,
+          updatedBy
+        ),
+        this.sessionUtil.deleteAllLogins(userId, sessions),
+      ]);
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendTemporaryPasswordByAdmin(
+        updated.id,
+        {
+          password: password.passwordEncrypted,
+          passwordCreatedAt: this.helperService.dateFormatToIso(
+            password.passwordCreated
+          ),
+          passwordExpiredAt: this.helperService.dateFormatToIso(
+            password.passwordExpired
+          ),
+        },
+        updatedBy
+      );
+
+      return {
+        metadataActivityLog: this.userUtil.mapActivityLogMetadata(updated),
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async changePassword(
+    user: IUser,
+    {
+      newPassword,
+      oldPassword,
+      backupCode,
+      code,
+      method,
+    }: UserChangePasswordRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    if (this.authUtil.checkPasswordAttempt(user)) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.passwordAttemptMax,
+        message: 'auth.error.passwordAttemptMax',
+      });
+    } else if (!this.authUtil.validatePassword(oldPassword, user.password)) {
+      await this.userRepository.increasePasswordAttempt(user.id);
+
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordNotMatch,
+        message: 'auth.error.passwordNotMatch',
+      });
+    }
+
+    await this.userRepository.resetPasswordAttempt(user.id);
+
+    const passwordHistories =
+      await this.passwordHistoryRepository.findActiveUser(user.id);
+    const passwordCheck = this.authUtil.checkPasswordPeriod(
+      passwordHistories,
+      newPassword
+    );
+    if (passwordCheck) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordMustNew,
+        message: 'auth.error.passwordMustNew',
+        messageProperties: {
+          period: this.helperService.dateFormatToRFC2822(
+            passwordCheck.expiredAt
+          ),
+        },
+      });
+    }
+
+    let twoFactorVerified: IAuthTwoFactorVerifyResult | undefined;
+    if (user.twoFactor.enabled) {
+      twoFactorVerified = await this.handleTwoFactorValidation(user, {
+        code,
+        backupCode,
+        method,
+      });
+    }
+
+    try {
+      const sessions = await this.sessionRepository.findActive(user.id);
+      const password = this.authUtil.createPassword(user.id, newPassword);
+
+      await Promise.all([
+        this.userRepository.changePassword(user.id, password, requestLog),
+        this.sessionUtil.deleteAllLogins(user.id, sessions),
+        twoFactorVerified
+          ? this.userRepository.verifyTwoFactor(
+              user.id,
+              twoFactorVerified,
+              requestLog
+            )
+          : Promise.resolve(),
+      ]);
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendChangePassword(user.id);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async loginCredential(
+    { email, password, from, device }: UserLoginRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+    const user = await this.userRepository.findOneWithRoleByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status !== EnumUserStatus.active) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.inactiveForbidden,
+        message: 'user.error.inactive',
+      });
+    } else if (!user.password) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordNotSet,
+        message: 'auth.error.passwordNotSet',
+      });
+    }
+
+    if (this.authUtil.checkPasswordAttempt(user)) {
+      await this.userRepository.reachMaxPasswordAttempt(user.id, requestLog);
+
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.passwordAttemptMax,
+        message: 'auth.error.passwordAttemptMax',
+      });
+    } else if (!this.authUtil.validatePassword(password, user.password)) {
+      await this.userRepository.increasePasswordAttempt(user.id);
+
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordNotMatch,
+        message: 'auth.error.passwordNotMatch',
+      });
+    }
+
+    await this.userRepository.resetPasswordAttempt(user.id);
+
+    const checkPasswordExpired: boolean = this.authUtil.checkPasswordExpired(
+      user.passwordExpired
+    );
+    if (checkPasswordExpired) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.passwordExpired,
+        message: 'auth.error.passwordExpired',
+      });
+    }
+
+    return this.handleLogin(
+      user,
+      device,
+      from,
+      EnumUserLoginWith.credential,
+      this.helperService.dateCreate(),
+      requestLog
+    );
+  }
+
+  async loginWithSocial(
+    email: string,
+    loginWith: EnumUserLoginWith,
+    { from, device, ...others }: UserCreateSocialRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+    const featureFlag = await this.featureFlagUtil.getMetadataByKeyAndCache<{
+      signUpAllowed: boolean;
+    }>(
+      loginWith === EnumUserLoginWith.socialGoogle
+        ? 'loginWithGoogle'
+        : 'loginWithApple'
+    );
+    let user = await this.userRepository.findOneWithRoleByEmail(email);
+
+    if (!user && featureFlag.signUpAllowed) {
+      const role = await this.roleRepository.existByName(this.userRoleName);
+      if (!role) {
+        throw new NotFoundException({
+          statusCode: EnumRoleStatusCodeError.notFound,
+          message: 'role.error.notFound',
+        });
+      }
+
+      const randomUsername = this.userUtil.createRandomUsername();
+      user = await this.userRepository.createBySocial(
+        email,
+        randomUsername,
+        role.id,
+        loginWith,
+        { from, device, ...others },
+        requestLog
+      );
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendWelcomeSocial(user.id);
+    }
+
+    if (user.status !== EnumUserStatus.active) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.inactiveForbidden,
+        message: 'user.error.inactive',
+      });
+    }
+
+    if (!user.isVerified) {
+      const updatedUser = await this.userRepository.verify(user.id, requestLog);
+      user.isVerified = updatedUser.isVerified;
+    }
+
+    return this.handleLogin(
+      user,
+      device,
+      from,
+      loginWith,
+      this.helperService.dateCreate(),
+      requestLog
+    );
+  }
+
+  async refresh(
+    user: IUser,
+    refreshToken: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<AuthTokenResponseDto>> {
+    const {
+      sessionId,
+      userId,
+      jti: oldJti,
+      loginFrom,
+      loginWith,
+    } = this.authUtil.payloadToken<IAuthJwtRefreshTokenPayload>(refreshToken);
+
+    const session = await this.sessionUtil.getLogin(userId, sessionId);
+    if (session.jti !== oldJti) {
+      throw new UnauthorizedException({
+        statusCode: EnumAuthStatusCodeError.jwtRefreshTokenInvalid,
+        message: 'auth.error.refreshTokenInvalid',
+      });
+    }
+
+    try {
+      const {
+        jti: newJti,
+        tokens,
+        expiredInMs,
+      } = this.authUtil.refreshToken(user, refreshToken);
+
+      await Promise.all([
+        this.sessionUtil.updateLogin(
+          userId,
+          sessionId,
+          session,
+          newJti,
+          expiredInMs
+        ),
+        this.userRepository.refresh(
+          userId,
+          {
+            sessionId,
+            jti: newJti,
+            expiredAt: session.expiredAt,
+            loginFrom: loginFrom,
+            loginWith: loginWith,
+          },
+          requestLog
+        ),
+      ]);
+
+      return {
+        data: tokens,
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async signUp(
+    {
+      countryId,
+      email,
+      password: passwordString,
+      ...others
+    }: UserSignUpRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const [role, emailExist, checkCountry] = await Promise.all([
+      this.roleRepository.existByName(this.userRoleName),
+      this.userRepository.existByEmail(email),
+      this.countryRepository.existById(countryId),
+    ]);
+    if (!role) {
+      throw new NotFoundException({
+        statusCode: EnumRoleStatusCodeError.notFound,
+        message: 'role.error.notFound',
+      });
+    } else if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    } else if (emailExist) {
+      throw new ConflictException({
+        statusCode: EnumUserStatusCodeError.emailExist,
+        message: 'user.error.emailExist',
+      });
+    }
+
+    try {
+      const userId = this.databaseUtil.createId();
+      const password = this.authUtil.createPassword(userId, passwordString);
+      const randomUsername = this.userUtil.createRandomUsername();
+      const emailVerification = this.userUtil.verificationCreateVerification(
+        userId,
+        EnumVerificationType.email
+      );
+
+      const created = await this.userRepository.signUp(
+        userId,
+        randomUsername,
+        role.id,
+        {
+          countryId,
+          email,
+          password: passwordString,
+          ...others,
+        },
+        password,
+        emailVerification,
+        requestLog
+      );
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendWelcome(created.id, {
+        expiredAt: this.helperService.dateFormatToIso(
+          emailVerification.expiredAt
+        ),
+        reference: emailVerification.reference,
+        link: emailVerification.encryptedLink,
+        expiredInMinutes: emailVerification.expiredInMinutes,
+      });
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async verifyEmail(
+    { token }: UserVerifyEmailRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const hashedToken = this.userUtil.hashedToken(token);
+    const verification =
+      await this.userRepository.findOneActiveByVerificationEmailToken(
+        hashedToken
+      );
+    if (!verification) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.tokenInvalid,
+        message: 'user.error.verificationTokenInvalid',
+      });
+    }
+
+    try {
+      await this.userRepository.verifyEmail(
+        verification.id,
+        verification.userId,
+        requestLog
+      );
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendVerifiedEmail(verification.userId, {
+        reference: verification.reference,
+      });
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async sendVerificationEmail(
+    { email }: UserSendEmailVerificationRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const user = await this.userRepository.findOneActiveByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.isVerified) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.emailAlreadyVerified,
+        message: 'user.error.emailAlreadyVerified',
+      });
+    }
+
+    const lastVerification =
+      await this.userRepository.findOneLatestByVerificationEmail(user.id);
+    if (lastVerification) {
+      const today = this.helperService.dateCreate();
+      const canResendAt = this.helperService.dateForward(
+        lastVerification.createdAt,
+        Duration.fromObject({
+          minutes: this.userUtil.verificationExpiredInMinutes,
+        })
+      );
+
+      if (today < canResendAt) {
+        throw new BadRequestException({
+          statusCode:
+            EnumUserStatusCodeError.verificationEmailResendLimitExceeded,
+          message: 'user.error.verificationEmailResendLimitExceeded',
+          messageProperties: {
+            resendIn: this.helperService.dateDiff(today, canResendAt).minutes,
+          },
+        });
+      }
+    }
+
+    try {
+      const emailVerification = this.userUtil.verificationCreateVerification(
+        user.id,
+        EnumVerificationType.email
+      );
+
+      await this.userRepository.requestVerificationEmail(
+        user.id,
+        user.email,
+        emailVerification,
+        requestLog
+      );
+
+      await this.notificationUtil.sendVerificationEmail(user.id, {
+        expiredAt: this.helperService.dateFormatToIso(
+          emailVerification.expiredAt
+        ),
+        reference: emailVerification.reference,
+        link: emailVerification.encryptedLink,
+        expiredInMinutes: emailVerification.expiredInMinutes,
+      });
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async forgotPassword(
+    { email }: UserForgotPasswordRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const user = await this.userRepository.findOneActiveByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    }
+
+    const lastForgotPassword =
+      await this.userRepository.findOneLatestByForgotPassword(user.id);
+    if (lastForgotPassword) {
+      const today = this.helperService.dateCreate();
+      const canResendAt = this.helperService.dateForward(
+        lastForgotPassword.createdAt,
+        Duration.fromObject({
+          minutes: this.userUtil.forgotResendInMinutes,
+        })
+      );
+
+      if (today < canResendAt) {
+        throw new BadRequestException({
+          statusCode:
+            EnumUserStatusCodeError.forgotPasswordRequestLimitExceeded,
+          message: 'user.error.forgotPasswordRequestLimitExceeded',
+          messageProperties: {
+            resendIn: this.helperService.dateDiff(today, canResendAt).minutes,
+          },
+        });
+      }
+    }
+
+    try {
+      const resetPassword = this.userUtil.forgotPasswordCreate(user.id);
+
+      await this.userRepository.forgotPassword(
+        user.id,
+        email,
+        resetPassword,
+        requestLog
+      );
+
+      await this.notificationUtil.sendForgotPassword(user.id, {
+        expiredAt: this.helperService.dateFormatToIso(resetPassword.expiredAt),
+        link: resetPassword.encryptedLink,
+        reference: resetPassword.reference,
+        expiredInMinutes: resetPassword.expiredInMinutes,
+        resendInMinutes: resetPassword.resendInMinutes,
+      });
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async resetPassword(
+    {
+      newPassword,
+      token,
+      backupCode,
+      code,
+      method,
+    }: UserForgotPasswordResetRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const hashedToken = this.userUtil.hashedToken(token);
+    const resetPassword =
+      await this.userRepository.findOneActiveByForgotPasswordToken(hashedToken);
+    if (!resetPassword) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    }
+
+    const passwordHistories =
+      await this.passwordHistoryRepository.findActiveUser(resetPassword.userId);
+    const passwordCheck = this.authUtil.checkPasswordPeriod(
+      passwordHistories,
+      newPassword
+    );
+    if (passwordCheck) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordMustNew,
+        message: 'auth.error.passwordMustNew',
+        messageProperties: {
+          period: this.authUtil.getPasswordPeriodInDays(),
+        },
+      });
+    }
+
+    let twoFactorVerified: IAuthTwoFactorVerifyResult | undefined;
+    if (resetPassword.user.twoFactor.enabled) {
+      twoFactorVerified = await this.handleTwoFactorValidation(
+        resetPassword.user,
+        {
+          code,
+          backupCode,
+          method,
+        }
+      );
+    }
+
+    try {
+      const sessions = await this.sessionRepository.findActive(
+        resetPassword.userId
+      );
+      const password = this.authUtil.createPassword(
+        resetPassword.userId,
+        newPassword
+      );
+
+      await Promise.all([
+        this.userRepository.resetPassword(
+          resetPassword.userId,
+          resetPassword.id,
+          password,
+          requestLog
+        ),
+        this.sessionUtil.deleteAllLogins(resetPassword.userId, sessions),
+        twoFactorVerified
+          ? this.userRepository.verifyTwoFactor(
+              resetPassword.userId,
+              twoFactorVerified,
+              requestLog
+            )
+          : Promise.resolve(),
+      ]);
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendResetPassword(resetPassword.userId);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  private async createTokenAndSession(
+    user: IUser,
+    device: DeviceRequestDto,
+    loginFrom: EnumUserLoginFrom,
+    loginWith: EnumUserLoginWith,
+    loginAt: Date,
+    requestLog: IRequestLog
+  ): Promise<AuthTokenResponseDto> {
+    const { tokens, sessionId, jti } = this.authUtil.createTokens(
+      user,
+      loginFrom,
+      loginWith
+    );
+    const expiredAt = this.helperService.dateForward(
+      loginAt,
+      Duration.fromObject({
+        seconds: this.authUtil.jwtRefreshTokenExpirationTimeInSeconds,
+      })
+    );
+
+    const { isNewDevice, sessionShouldBeInactive } =
+      await this.userRepository.login(
+        user.id,
+        device,
+        {
+          loginFrom,
+          loginWith,
+          jti,
+          sessionId,
+          expiredAt,
+        },
+        requestLog
+      );
+
+    const promises = [
+      this.sessionUtil.setLogin(user.id, sessionId, jti, expiredAt),
+    ];
+
+    if (sessionShouldBeInactive.length > 0) {
+      promises.push(
+        this.sessionUtil.deleteAllLogins(user.id, sessionShouldBeInactive)
+      );
+    }
+
+    if (isNewDevice) {
+      promises.push(
+        this.notificationUtil.sendNewDeviceLogin(user.id, {
+          requestLog,
+          loginFrom,
+          loginWith,
+          loginAt: this.helperService.dateFormatToIso(loginAt),
+        })
+      );
+    }
+
+    await Promise.all(promises);
+
+    return tokens;
+  }
+
+  private async handleLogin(
+    user: IUser,
+    device: DeviceRequestDto,
+    loginFrom: EnumUserLoginFrom,
+    loginWith: EnumUserLoginWith,
+    loginAt: Date,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+    if (!user.isVerified) {
+      const emailVerification = this.userUtil.verificationCreateVerification(
+        user.id,
+        EnumVerificationType.email
+      );
+
+      await this.userRepository.requestVerificationEmail(
+        user.id,
+        user.email,
+        emailVerification,
+        requestLog
+      );
+
+      // send notification after all creation
+      await this.notificationUtil.sendVerificationEmail(user.id, {
+        expiredAt: this.helperService.dateFormatToIso(
+          emailVerification.expiredAt
+        ),
+        reference: emailVerification.reference,
+        link: emailVerification.encryptedLink,
+        expiredInMinutes: emailVerification.expiredInMinutes,
+      });
+
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.emailNotVerified,
+        message: 'user.error.emailNotVerified',
+      });
+    }
+
+    if (!user.twoFactor.enabled) {
+      const tokens = await this.createTokenAndSession(
+        user,
+        device,
+        loginFrom,
+        loginWith,
+        loginAt,
+        requestLog
+      );
+
+      return {
+        data: {
+          isTwoFactorEnable: false,
+          tokens,
+        },
+      };
+    }
+
+    const { challengeToken, expiresInMs } =
+      await this.authTwoFactorUtil.createChallenge({
+        userId: user.id,
+        device,
+        loginFrom,
+        loginWith,
+      });
+    if (user.twoFactor.requiredSetup) {
+      const { encryptedSecret, otpauthUrl, secret, iv } =
+        await this.authTwoFactorUtil.setupTwoFactor(user.email);
+      await this.userRepository.setupTwoFactor(
+        user.id,
+        encryptedSecret,
+        iv,
+        requestLog
+      );
+
+      return {
+        data: {
+          isTwoFactorEnable: true,
+          twoFactor: {
+            isRequiredSetup: true,
+            challengeToken,
+            challengeExpiresInMs: expiresInMs,
+            backupCodesRemaining: user.twoFactor.backupCodes.length ?? 0,
+            otpauthUrl,
+            secret,
+          },
+        },
+      };
+    }
+
+    return {
+      data: {
+        isTwoFactorEnable: true,
+        twoFactor: {
+          isRequiredSetup: false,
+          challengeToken,
+          challengeExpiresInMs: expiresInMs,
+          backupCodesRemaining: user.twoFactor.backupCodes.length ?? 0,
+        },
+      },
+    };
+  }
+
+  private async handleTwoFactorValidation(
+    user: IUser,
+    { method, code, backupCode }: IAuthTwoFactorVerify
+  ): Promise<IAuthTwoFactorVerifyResult> {
+    const retryAfterMs =
+      await this.authTwoFactorUtil.getLockTwoFactorAttempt(user);
+    if (retryAfterMs > 0) {
+      throw new RequestTooManyException({
+        statusCode: EnumAuthStatusCodeError.twoFactorAttemptTemporaryLock,
+        message: 'auth.error.twoFactorAttemptTemporaryLock',
+        messageProperties: {
+          retryAfterSeconds: retryAfterMs / 1000,
+        },
+      });
+    }
+
+    const verified = await this.authTwoFactorUtil.verifyTwoFactor(
+      user.twoFactor,
+      {
+        method,
+        code,
+        backupCode,
+      }
+    );
+    if (!verified.isValid) {
+      await this.userRepository.increaseTwoFactorAttempt(user.id);
+
+      if (this.authTwoFactorUtil.checkAttempt(user)) {
+        await this.authTwoFactorUtil.lockTwoFactorAttempt(user);
+      }
+
+      throw new UnauthorizedException({
+        statusCode: EnumAuthStatusCodeError.twoFactorInvalid,
+        message: 'auth.error.twoFactorInvalid',
+      });
+    }
+
+    await this.userRepository.resetTwoFactorAttempt(user.id);
+
+    return verified;
+  }
+
+  async loginVerifyTwoFactor(
+    {
+      challengeToken,
+      code,
+      backupCode,
+      method,
+    }: UserLoginVerifyTwoFactorRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<AuthTokenResponseDto>> {
+    const challenge = await this.authTwoFactorUtil.getChallenge(challengeToken);
+    if (!challenge) {
+      throw new UnauthorizedException({
+        statusCode: EnumAuthStatusCodeError.twoFactorChallengeInvalid,
+        message: 'auth.error.twoFactorChallengeInvalid',
+      });
+    }
+
+    const user = await this.userRepository.findOneWithRoleById(
+      challenge.userId
+    );
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status !== EnumUserStatus.active) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.inactiveForbidden,
+        message: 'user.error.inactive',
+      });
+    } else if (!user.isVerified) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.emailNotVerified,
+        message: 'user.error.emailNotVerified',
+      });
+    } else if (!user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+        message: 'auth.error.twoFactorNotEnabled',
+      });
+    } else if (user.twoFactor.requiredSetup) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorRequiredSetup,
+        message: 'auth.error.twoFactorRequiredSetup',
+      });
+    }
+
+    const twoFactorVerified = await this.handleTwoFactorValidation(user, {
+      method,
+      code,
+      backupCode,
+    });
+
+    try {
+      const loginAt = this.helperService.dateCreate();
+      const [tokens] = await Promise.all([
+        this.createTokenAndSession(
+          user,
+          challenge.device,
+          challenge.loginFrom,
+          challenge.loginWith,
+          loginAt,
+          requestLog
+        ),
+        this.authTwoFactorUtil.clearChallenge(challengeToken),
+        this.userRepository.verifyTwoFactor(
+          user.id,
+          twoFactorVerified,
+          requestLog
+        ),
+      ]);
+
+      return {
+        data: tokens,
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async loginSetupTwoFactor(
+    { code, challengeToken }: UserLoginSetupTwoFactorRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>> {
+    const challenge = await this.authTwoFactorUtil.getChallenge(challengeToken);
+    if (!challenge) {
+      throw new UnauthorizedException({
+        statusCode: EnumAuthStatusCodeError.twoFactorChallengeInvalid,
+        message: 'auth.error.twoFactorChallengeInvalid',
+      });
+    }
+
+    const user = await this.userRepository.findOneWithRoleById(
+      challenge.userId
+    );
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status !== EnumUserStatus.active) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.inactiveForbidden,
+        message: 'user.error.inactive',
+      });
+    } else if (!user.isVerified) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.emailNotVerified,
+        message: 'user.error.emailNotVerified',
+      });
+    } else if (!user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+        message: 'auth.error.twoFactorNotEnabled',
+      });
+    } else if (!user.twoFactor.requiredSetup) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotRequiredSetup,
+        message: 'auth.error.twoFactorNotRequiredSetup',
+      });
+    }
+
+    await this.handleTwoFactorValidation(user, {
+      method: EnumAuthTwoFactorMethod.code,
+      code,
+    });
+
+    try {
+      const backupCodes = this.authTwoFactorUtil.generateBackupCodes();
+      await this.userRepository.enableTwoFactor(
+        user.id,
+        backupCodes.hashes,
+        requestLog
+      );
+
+      return {
+        data: {
+          backupCodes: backupCodes.codes,
+        },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async getTwoFactorStatus(
+    user: IUser
+  ): Promise<IResponseReturn<UserTwoFactorStatusResponseDto>> {
+    return {
+      data: this.userUtil.mapTwoFactor(user.twoFactor),
+    };
+  }
+
+  async setupTwoFactor(
+    user: IUser,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorSetupResponseDto>> {
+    if (user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorAlreadyEnabled,
+        message: 'auth.error.twoFactorAlreadyEnabled',
+      });
+    }
+
+    try {
+      const { encryptedSecret, otpauthUrl, secret, iv } =
+        await this.authTwoFactorUtil.setupTwoFactor(user.email);
+      await this.userRepository.setupTwoFactor(
+        user.id,
+        encryptedSecret,
+        iv,
+        requestLog
+      );
+
+      return {
+        data: {
+          secret,
+          otpauthUrl,
+        },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async enableTwoFactor(
+    user: IUser,
+    { code }: UserTwoFactorEnableRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>> {
+    if (user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorAlreadyEnabled,
+        message: 'auth.error.twoFactorAlreadyEnabled',
+      });
+    } else if (!user.twoFactor.iv || !user.twoFactor.secret) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+        message: 'auth.error.twoFactorSetupRequired',
+      });
+    }
+
+    const secret = this.authTwoFactorUtil.decryptSecret(
+      user.twoFactor.secret,
+      user.twoFactor.iv
+    );
+    const isValidCode = this.authTwoFactorUtil.verifyCode(secret, code);
+    if (!isValidCode) {
+      throw new UnauthorizedException({
+        statusCode: EnumAuthStatusCodeError.twoFactorInvalid,
+        message: 'auth.error.twoFactorInvalid',
+      });
+    }
+
+    try {
+      const backupCodes = this.authTwoFactorUtil.generateBackupCodes();
+      await this.userRepository.enableTwoFactor(
+        user.id,
+        backupCodes.hashes,
+        requestLog
+      );
+
+      return {
+        data: {
+          backupCodes: backupCodes.codes,
+        },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async disableTwoFactor(
+    user: IUser,
+    { code, backupCode, method }: UserTwoFactorDisableRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    if (!user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+        message: 'auth.error.twoFactorNotEnabled',
+      });
+    }
+
+    const verified = await this.authTwoFactorUtil.verifyTwoFactor(
+      user.twoFactor,
+      {
+        method,
+        code,
+        backupCode,
+      }
+    );
+    if (!verified.isValid) {
+      await this.userRepository.increaseTwoFactorAttempt(user.id);
+
+      throw new UnauthorizedException({
+        statusCode: EnumAuthStatusCodeError.twoFactorInvalid,
+        message: 'auth.error.twoFactorInvalid',
+      });
+    }
+
+    try {
+      const sessions = await this.sessionRepository.findActive(user.id);
+
+      await Promise.all([
+        this.userRepository.disableTwoFactor(user.id, requestLog),
+        this.sessionUtil.deleteAllLogins(user.id, sessions),
+      ]);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async regenerateTwoFactorBackupCodes(
+    user: IUser,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>> {
+    if (!user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+        message: 'auth.error.twoFactorNotEnabled',
+      });
+    }
+
+    try {
+      const backupCodes = this.authTwoFactorUtil.generateBackupCodes();
+      await this.userRepository.regenerateTwoFactorBackupCodes(
+        user.id,
+        backupCodes.hashes,
+        requestLog
+      );
+
+      return {
+        data: {
+          backupCodes: backupCodes.codes,
+        },
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async resetTwoFactorByAdmin(
+    userId: string,
+    updatedBy: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    if (userId === updatedBy) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.notSelf,
+        message: 'user.error.notSelf',
+      });
+    }
+
+    const user = await this.userRepository.findOneWithRoleById(userId);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.status === EnumUserStatus.blocked) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.blockedInvalid,
+        message: 'user.error.blockedInvalid',
+      });
+    } else if (!user.twoFactor.enabled) {
+      throw new BadRequestException({
+        statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+        message: 'auth.error.twoFactorNotEnabled',
+      });
+    }
+
+    try {
+      const sessions = await this.sessionRepository.findActive(userId);
+
+      await Promise.all([
+        this.userRepository.resetTwoFactorByAdmin(
+          userId,
+          updatedBy,
+          requestLog
+        ),
+        this.sessionUtil.deleteAllLogins(userId, sessions),
+      ]);
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendResetTwoFactorByAdmin(user.id, updatedBy);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async importByAdmin(
+    data: UserImportRequestDto[],
+    createdBy: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    // TODO: Optimize by doing
+    // - in background job with bullmq, also before create check username uniqueness
+    // - when upload file, upload using presign
+    // - load data from s3, and not process all in one time
+    // - think about how to show progress status to user with bullmq
+
+    const emails = data.map(item => item.email);
+    const [checkRole, checkCountry, existingUsers] = await Promise.all([
+      this.roleRepository.existByName(this.userRoleName),
+      this.countryRepository.existByAlpha2Code(this.userCountryName),
+      this.userRepository.findByEmails(emails),
+    ]);
+
+    if (existingUsers.length > 0) {
+      throw new ConflictException({
+        statusCode: EnumUserStatusCodeError.emailExist,
+        message: 'user.error.importEmailExist',
+        messageProperties: {
+          emails: existingUsers.map(user => user.email).join(', '),
+        },
+      });
+    } else if (!checkRole) {
+      throw new NotFoundException({
+        statusCode: EnumRoleStatusCodeError.notFound,
+        message: 'role.error.notFound',
+      });
+    } else if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    }
+
+    try {
+      const totalData = data.length;
+      const userIds = Array(totalData)
+        .fill(0)
+        .map(() => this.databaseUtil.createId());
+      const usernames = Array(totalData)
+        .fill(0)
+        .map(() => this.userUtil.createRandomUsername());
+      const passwords = Array(totalData)
+        .fill(0)
+        .map(() => this.authUtil.createPasswordRandom());
+      const passwordHasheds = userIds.map((e, i) =>
+        this.authUtil.createPassword(e, passwords[i])
+      );
+
+      const newUsers = await this.userRepository.importByAdmin(
+        data,
+        usernames,
+        passwordHasheds,
+        checkCountry.id,
+        checkRole,
+        requestLog,
+        createdBy
+      );
+
+      // @note: send email after all creation
+      const sendEmailPromises = [];
+      for (const [index, newUser] of newUsers.entries()) {
+        sendEmailPromises.push(
+          this.notificationUtil.sendWelcomeByAdmin(
+            newUser.id,
+            {
+              password: passwordHasheds[index].passwordEncrypted,
+              passwordCreatedAt: this.helperService.dateFormatToIso(
+                passwordHasheds[index].passwordCreated
+              ),
+              passwordExpiredAt: this.helperService.dateFormatToIso(
+                passwordHasheds[index].passwordExpired
+              ),
+            },
+            createdBy
+          )
+        );
+      }
+
+      await Promise.all(sendEmailPromises);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async exportByAdmin(
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+    country?: Record<string, IPaginationEqual>
+  ): Promise<IResponseFileReturn> {
+    // TODO: Optimize by doing
+    // - in background job with bullmq
+    // - return aws s3 link
+    // - think about how to show progress status to user with bullmq
+
+    const data = await this.userRepository.findExport(status, role, country);
+
+    const users: UserExportResponseDto[] = this.userUtil.mapExport(data);
+    const csvString = this.fileService.writeCsv<UserExportResponseDto>(users);
+
+    return {
+      data: csvString,
+      extension: EnumFileExtensionDocument.csv,
+    };
   }
 }

@@ -21,7 +21,7 @@ export class RequestCompressionMiddleware implements NestMiddleware {
   async use(
     _req: IRequestApp,
     _res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     compression();
     next();

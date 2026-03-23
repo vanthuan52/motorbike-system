@@ -1,16 +1,10 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { DatabaseOptionService } from './services/database.options.service';
-import { DatabaseService } from './services/database.service';
-import { DatabaseUtil } from './utils/database.util';
+import { DatabaseService } from '@/common/database/services/database.service';
+import { DatabaseUtil } from '@/common/database/utils/database.util';
 
-@Module({
-  providers: [DatabaseOptionService],
-  exports: [DatabaseOptionService],
-  imports: [],
-  controllers: [],
-})
-export class DatabaseOptionModule {}
-
+/**
+ * Global database module that provides database services throughout the application.
+ */
 @Global()
 @Module({})
 export class DatabaseModule {

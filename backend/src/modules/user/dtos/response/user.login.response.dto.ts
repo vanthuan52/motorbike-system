@@ -10,7 +10,7 @@ export class UserLoginResponseDto {
     example: false,
     required: true,
   })
-  isTwoFactorEnable?: boolean;
+  isTwoFactorEnable: boolean;
 
   @ApiProperty({
     required: false,

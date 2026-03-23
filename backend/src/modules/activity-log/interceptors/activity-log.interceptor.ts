@@ -4,45 +4,48 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Reflector } from '@nestjs/core';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import geoIp from 'geoip-lite';
 import { UAParser } from 'ua-parser-js';
 import { getClientIp } from '@supercharge/request-ip';
-import { ActivityLogRepository } from '../repositories/activity-log.repository';
+import { ActivityLogRepository } from '@/modules/activity-log/repositories/activity-log.repository';
 import {
   ActivityLogActionMetaKey,
   ActivityLogMetadataMetaKey,
-} from '../constants/activity-log.constant';
-import { EnumActivityLogAction } from '../enums/activity-log.enum';
-import { IActivityLogMetadata } from '../interfaces/activity-log.interface';
-import { Response } from 'express';
+} from '@/modules/activity-log/constants/activity-log.constant';
+import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { IResponseActivityLogReturn } from '@/common/response/interfaces/response.interface';
+import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import { EnumActivityLogAction, UserAgent } from '@/generated/prisma-client';
 
 /**
  * Interceptor that automatically logs user activities to the database.
- * Captures user actions, IP addresses, user agents, and metadata for audit trail purposes.
+ * Captures user actions, IP addresses, user agents, geolocation, and metadata for audit trail purposes.
+ * Runs after successful response and asynchronously saves activity logs without blocking the response.
  */
 @Injectable()
 export class ActivityLogInterceptor implements NestInterceptor {
   constructor(
     private readonly reflector: Reflector,
-    private readonly activityRepository: ActivityLogRepository,
+    private readonly activityRepository: ActivityLogRepository
   ) {}
 
   /**
    * Intercepts HTTP requests to log user activities after successful responses.
-   * Extracts user information, IP address, user agent, and action metadata to create activity log entries.
+   * Extracts user info, IP address, user agent, geolocation, and action metadata from decorators.
+   * Activity is saved asynchronously so it doesn't block the response.
    *
-   * @param {ExecutionContext} context - The execution context containing request information
-   * @param {CallHandler} next - The next handler in the chain
-   * @returns {Observable<Promise<Response>>} Observable of the response with activity logging
+   * @param context - Execution context containing request/response information
+   * @param next - The next handler in the chain
+   * @returns Observable that emits the response with background activity logging
    */
   intercept(
     context: ExecutionContext,
-    next: CallHandler,
+    next: CallHandler
   ): Observable<Promise<Response>> {
     if (context.getType() === 'http') {
       return next.handle().pipe(
@@ -57,38 +60,50 @@ export class ActivityLogInterceptor implements NestInterceptor {
             metadataActivityLog = metadataActivityLog ?? {};
 
             const { userId } = user;
-            const userAgent = UAParser(headers['user-agent']);
+            const userAgent = UAParser(headers['user-agent']) as UserAgent;
             const ipAddress = getClientIp(request);
+            const geo = ipAddress ? geoIp.lookup(ipAddress) : null;
+            const geoLocation =
+              geo && ipAddress
+                ? {
+                    latitude: geo.ll[0],
+                    longitude: geo.ll[1],
+                    country: geo.country,
+                    region: geo.region,
+                    city: geo.city,
+                  }
+                : null;
 
             const action: EnumActivityLogAction =
               this.reflector.get<EnumActivityLogAction>(
                 ActivityLogActionMetaKey,
-                context.getHandler(),
+                context.getHandler()
               );
             const metadata: IActivityLogMetadata =
               this.reflector.get<IActivityLogMetadata>(
                 ActivityLogMetadataMetaKey,
-                context.getHandler(),
+                context.getHandler()
               ) ?? {};
 
             try {
-              await this.activityRepository.createLog(
+              await this.activityRepository.create(
                 userId,
                 action,
                 {
                   ipAddress,
                   userAgent,
+                  geoLocation,
                 },
                 {
                   ...metadata,
                   ...metadataActivityLog,
-                },
+                }
               );
             } catch {}
           }
 
           return;
-        }),
+        })
       );
     }
 

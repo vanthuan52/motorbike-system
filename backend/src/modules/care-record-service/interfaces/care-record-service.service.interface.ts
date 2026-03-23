@@ -1,69 +1,48 @@
 import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
-import { CareRecordServiceDoc } from '../entities/care-record-service.entity';
-import { CareRecordChecklistDoc } from '@/modules/care-record-checklist/entities/care-record-checklist.entity';
+import { CareRecordService } from '@prisma/client';
 
 export interface ICareRecordServiceService {
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: CareRecordServiceDoc[]; total: number }>;
+    { where, ...params }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordService[]; total: number }>;
+
+  getListCursor(
+    { where, ...params }: IPaginationQueryCursorParams,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordService[]; total?: number }>;
 
   getListOffsetWithChecklists(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
+    { where, ...params }: IPaginationQueryOffsetParams,
+    filters?: Record<string, any>
   ): Promise<{
     data: {
-      service: CareRecordServiceDoc;
-      checklists: CareRecordChecklistDoc[];
+      service: CareRecordService;
+      checklists: any[];
     }[];
     total: number;
   }>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordServiceDoc>;
+  findOneById(id: string): Promise<CareRecordService>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordServiceDoc>;
+  create(payload: CareRecordServiceCreateRequestDto): Promise<{ _id: string }>;
 
-  create(
-    payload: CareRecordServiceCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordServiceDoc>;
-
-  update(
-    id: string,
-    payload: CareRecordServiceUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
+  update(id: string, payload: CareRecordServiceUpdateRequestDto): Promise<void>;
 
   updateStatus(
     id: string,
-    payload: CareRecordServiceUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
+    payload: CareRecordServiceUpdateStatusRequestDto
   ): Promise<void>;
 
-  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  createMany(
-    dtos: CareRecordServiceCreateRequestDto[],
-    options?: IDatabaseCreateOptions,
-  ): Promise<boolean>;
+  createMany(dtos: CareRecordServiceCreateRequestDto[]): Promise<boolean>;
 
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
+  deleteMany(find?: Record<string, any>): Promise<boolean>;
 }

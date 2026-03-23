@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { CareRecordServiceDoc } from '../entities/care-record-service.entity';
-import { ICareRecordServiceEntity } from '../interfaces/care-record-service.interface';
+import { CareRecordService } from '@prisma/client';
 import { CareRecordServiceListResponseDto } from '../dtos/response/care-record-service.list.response.dto';
 import { CareRecordServiceDto } from '../dtos/care-record-service.dto';
 import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
@@ -11,42 +9,30 @@ import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/car
 @Injectable()
 export class CareRecordServiceUtil {
   mapList(
-    careRecordServices: CareRecordServiceDoc[] | ICareRecordServiceEntity[],
+    careRecordServices: CareRecordService[]
   ): CareRecordServiceListResponseDto[] {
     return plainToInstance(
       CareRecordServiceListResponseDto,
-      careRecordServices.map(
-        (c: CareRecordServiceDoc | ICareRecordServiceEntity) =>
-          c instanceof Document ? c.toObject() : c,
-      ),
+      careRecordServices
     );
   }
 
-  mapGet(
-    careRecordService: CareRecordServiceDoc | ICareRecordServiceEntity,
-  ): CareRecordServiceDto {
-    return plainToInstance(
-      CareRecordServiceDto,
-      careRecordService instanceof Document
-        ? careRecordService.toObject()
-        : careRecordService,
-    );
+  mapGet(careRecordService: CareRecordService): CareRecordServiceDto {
+    return plainToInstance(CareRecordServiceDto, careRecordService);
   }
 
   mapGetFull(
-    careRecordService: CareRecordServiceDoc | ICareRecordServiceEntity,
+    careRecordService: CareRecordService
   ): CareRecordServiceGetFullResponseDto {
     return plainToInstance(
       CareRecordServiceGetFullResponseDto,
-      careRecordService instanceof Document
-        ? careRecordService.toObject()
-        : careRecordService,
+      careRecordService
     );
   }
 
   mapWithChecklists(
     serviceData: any,
-    checklists: any[],
+    checklists: any[]
   ): CareRecordServiceWithChecklistsResponseDto {
     return plainToInstance(CareRecordServiceWithChecklistsResponseDto, {
       ...serviceData,

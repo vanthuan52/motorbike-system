@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsEmail,
   IsEnum,
   IsIP,
   IsInt,
@@ -9,8 +10,10 @@ import {
   IsOptional,
   IsString,
   Matches,
+  MaxLength,
   Min,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { EnumAppEnvironment } from '@/app/enums/app.enum';
 import { EnumMessageLanguage } from '@/common/message/enums/message.enum';
@@ -48,12 +51,45 @@ export class AppEnvDto {
   APP_LANGUAGE: EnumMessageLanguage;
 
   /**
+   * The secret key used for encryption in the application
+   */
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(32)
+  @MaxLength(64)
+  APP_ENCRYPTION_SECRET_KEY: string;
+
+  /**
    * The default timezone for the application
    */
   @IsString()
   @IsNotEmpty()
   @IsEnum(EnumRequestTimezone)
   APP_TIMEZONE: EnumRequestTimezone;
+
+  /**
+   * Email address used for sending no-reply emails
+   */
+  @IsString()
+  @IsOptional()
+  @IsEmail()
+  EMAIL_NO_REPLY: string;
+
+  /**
+   * Email address for customer support contact
+   */
+  @IsString()
+  @IsOptional()
+  @IsEmail()
+  EMAIL_SUPPORT: string;
+
+  /**
+   * Email address for administrative contact
+   */
+  @IsString()
+  @IsOptional()
+  @IsEmail()
+  EMAIL_ADMIN: string;
 
   /**
    * The name of the home/organization
@@ -133,12 +169,12 @@ export class AppEnvDto {
   LOGGER_AUTO: boolean;
 
   /**
-   * CORS origin configuration for the middleware
+   * The allowed origin(s) for CORS
    */
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
-  MIDDLEWARE_CORS_ORIGIN: string;
+  CORS_ALLOWED_ORIGIN: string;
 
   /**
    * Whether URL versioning is enabled for the API
@@ -276,23 +312,75 @@ export class AppEnvDto {
   AUTH_JWT_REFRESH_TOKEN_EXPIRED: string;
 
   /**
+   * Two-factor authentication issuer (TOTP label)
+   */
+  @IsNotEmpty()
+  @IsString()
+  AUTH_TWO_FACTOR_ISSUER: string;
+
+  /**
+   * Two-factor encryption key
+   */
+  @IsNotEmpty()
+  @IsString()
+  AUTH_TWO_FACTOR_ENCRYPTION_KEY: string;
+
+  /**
+   * Google OAuth client ID for social authentication (optional)
+   */
+  @IsOptional()
+  @IsString()
+  AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
+
+  /**
+   * Google OAuth client secret for social authentication (optional)
+   */
+  @IsOptional()
+  @IsString()
+  AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
+
+  /**
+   * Apple OAuth client ID for social authentication (optional)
+   */
+  @IsOptional()
+  @IsString()
+  AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
+
+  /**
+   * Apple Sign In client ID for social authentication (optional)
+   */
+  @IsOptional()
+  @IsString()
+  AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
+
+  /**
    * AWS S3 access key for authentication
    */
   @IsOptional()
   @IsString()
-  AWS_S3_CREDENTIAL_KEY?: string;
+  AWS_S3_IAM_CREDENTIAL_KEY?: string;
 
   /**
    * AWS S3 secret key for authentication
    */
   @IsOptional()
   @IsString()
-  AWS_S3_CREDENTIAL_SECRET?: string;
+  AWS_S3_IAM_CREDENTIAL_SECRET?: string;
+
+  /**
+   * AWS S3 IAM Role ARN for authentication (optional)
+   */
+  @IsNotEmpty()
+  @IsString()
+  @ValidateIf(
+    o => o.AWS_S3_IAM_CREDENTIAL_KEY || o.AWS_S3_IAM_CREDENTIAL_SECRET
+  )
+  AWS_S3_IAM_ARN?: string;
 
   /**
    * AWS S3 region where the buckets are located
    */
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   AWS_S3_REGION?: string;
 
@@ -329,14 +417,24 @@ export class AppEnvDto {
    */
   @IsOptional()
   @IsString()
-  AWS_SES_CREDENTIAL_KEY?: string;
+  AWS_SES_IAM_CREDENTIAL_KEY?: string;
 
   /**
    * AWS SES secret key for email service authentication
    */
   @IsOptional()
   @IsString()
-  AWS_SES_CREDENTIAL_SECRET?: string;
+  AWS_SES_IAM_CREDENTIAL_SECRET?: string;
+
+  /**
+   * AWS SES IAM Role ARN for email service authentication (optional)
+   */
+  @IsNotEmpty()
+  @IsString()
+  @ValidateIf(
+    o => o.AWS_SES_IAM_CREDENTIAL_KEY || o.AWS_SES_IAM_CREDENTIAL_SECRET
+  )
+  AWS_SES_IAM_ARN?: string;
 
   /**
    * AWS SES region for email service
@@ -344,34 +442,6 @@ export class AppEnvDto {
   @IsOptional()
   @IsString()
   AWS_SES_REGION?: string;
-
-  /**
-   * Google OAuth client ID for social authentication (optional)
-   */
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
-
-  /**
-   * Google OAuth client secret for social authentication (optional)
-   */
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
-
-  /**
-   * Apple OAuth client ID for social authentication (optional)
-   */
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
-
-  /**
-   * Apple Sign In client ID for social authentication (optional)
-   */
-  @IsOptional()
-  @IsString()
-  AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
 
   /**
    * Redis server URL for caching
@@ -393,4 +463,25 @@ export class AppEnvDto {
   @IsOptional()
   @IsString()
   SENTRY_DSN?: string;
+
+  /**
+   * Firebase project ID for Firebase integration (optional)
+   */
+  @IsOptional()
+  @IsString()
+  FIREBASE_PROJECT_ID?: string;
+
+  /**
+   * Firebase client email for Firebase integration (optional)
+   */
+  @IsOptional()
+  @IsString()
+  FIREBASE_CLIENT_EMAIL?: string;
+
+  /**
+   * Firebase private key for Firebase integration (optional)
+   */
+  @IsOptional()
+  @IsString()
+  FIREBASE_PRIVATE_KEY?: string;
 }

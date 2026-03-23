@@ -13,7 +13,7 @@ import {
  * @returns {Type<PipeTransform>} Configured pipe class for searching
  */
 export function PaginationSearchPipe(
-  availableSearch: string[] = [],
+  availableSearch: string[] = []
 ): Type<PipeTransform> {
   @Injectable({ scope: Scope.REQUEST })
   class MixinPaginationSearchPipe implements PipeTransform {
@@ -29,7 +29,7 @@ export function PaginationSearchPipe(
       value: { search: string } & (
         | IPaginationQueryOffsetParams
         | IPaginationQueryCursorParams
-      ),
+      )
     ): Promise<IPaginationQueryOffsetParams | IPaginationQueryCursorParams> {
       if (!value || !value?.search || availableSearch.length === 0) {
         return value;
@@ -48,15 +48,15 @@ export function PaginationSearchPipe(
      * Builds search object for database query
      * @param {string} search - Search string
      * @param {string[]} availableSearch - Array of searchable fields
-     * @returns {{ $or: Record<string, { $regex: RegExp; $options: string }>[] }} Query object for search
+     * @returns {{ or: Record<string, { contains: string }>[] }} Query object for search
      */
     private buildSearchObject(
       search: string,
-      availableSearch: string[],
-    ): { $or: Record<string, { $regex: RegExp; $options: string }>[] } {
+      availableSearch: string[]
+    ): { or: Record<string, { contains: string }>[] } {
       return {
-        $or: availableSearch.map((field) => ({
-          [field]: { $regex: new RegExp(search), $options: 'i' },
+        or: availableSearch.map(field => ({
+          [field]: { contains: search },
         })),
       };
     }
@@ -69,7 +69,7 @@ export function PaginationSearchPipe(
      */
     private addToRequestInstance(
       search: string,
-      availableSearch: string[],
+      availableSearch: string[]
     ): void {
       this.request.__pagination = {
         ...this.request.__pagination,

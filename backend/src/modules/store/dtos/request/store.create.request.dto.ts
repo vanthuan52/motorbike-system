@@ -6,7 +6,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { ENUM_STORE_STATUS } from '../../enums/store.enum';
+import { EnumStoreStatus } from '../../enums/store.enum';
 
 export class StoreCreateRequestDto {
   @ApiProperty({
@@ -65,13 +65,13 @@ export class StoreCreateRequestDto {
   slug: string;
 
   @ApiProperty({
-    example: ENUM_STORE_STATUS.ACTIVE,
+    example: EnumStoreStatus.active,
     description: 'Trạng thái của cửa hàng',
     required: true, // cần xem lại
-    enum: ENUM_STORE_STATUS,
-    default: ENUM_STORE_STATUS.ACTIVE,
+    enum: EnumStoreStatus,
+    default: EnumStoreStatus.active,
   })
-  @IsIn(Object.values(ENUM_STORE_STATUS))
+  @IsIn(Object.values(EnumStoreStatus))
   @IsString()
-  status: ENUM_STORE_STATUS;
+  status: EnumStoreStatus;
 }

@@ -1,29 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { ActivityLogDto } from '../dtos/activity-log.dto';
-import {
-  ActivityLogDoc,
-  ActivityLogEntity,
-} from '../entities/activity-log.entity';
+import { ActivityLogResponseDto } from '@/modules/activity-log/dtos/response/activity-log.response.dto';
+import { IActivityLog } from '@/modules/activity-log/interfaces/activity-log.interface';
 
 @Injectable()
 export class ActivityLogUtil {
-  mapList(
-    activityLogs: ActivityLogDoc[] | ActivityLogEntity[],
-  ): ActivityLogDto[] {
-    return plainToInstance(
-      ActivityLogDto,
-      activityLogs.map((a: ActivityLogDoc | ActivityLogEntity) =>
-        a instanceof Document ? a.toObject() : a,
-      ),
-    );
-  }
-
-  mapOne(activityLog: ActivityLogDoc | ActivityLogEntity): ActivityLogDto {
-    return plainToInstance(
-      ActivityLogDto,
-      activityLog instanceof Document ? activityLog.toObject() : activityLog,
-    );
+  mapList(activityLogs: IActivityLog[]): ActivityLogResponseDto[] {
+    return plainToInstance(ActivityLogResponseDto, activityLogs);
   }
 }

@@ -3,5 +3,5 @@ import { UserLoginRequestDto } from '@/modules/user/dtos/request/user.login.requ
 
 export class UserForgotPasswordRequestDto extends PickType(
   UserLoginRequestDto,
-  ['email'] as const,
+  ['email'] as const
 ) {}

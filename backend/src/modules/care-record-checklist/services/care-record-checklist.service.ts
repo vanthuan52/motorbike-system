@@ -1,159 +1,118 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { ICareRecordChecklistService } from '../interfaces/care-record-checklist.service.interface';
 import { CareRecordChecklistRepository } from '../respository/care-record-checklist.repository';
-import {
-  CareRecordChecklistDoc,
-  CareRecordChecklistEntity,
-} from '../entities/care-record-checklist.entity';
-import { ICareRecordChecklistEntity } from '../interfaces/care-record-checklist.interface';
-import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record-checklist.list.response.dto';
-import { CareRecordChecklistDto } from '../dtos/care-record-checklist.dto';
 import { CareRecordChecklistCreateRequestDto } from '../dtos/request/care-record-checklist.create.request.dto';
 import { CareRecordChecklistUpdateRequestDto } from '../dtos/request/care-record-checklist.update.request.dto';
 import {
-  ENUM_CARE_RECORD_CHECKLIST_RESULT,
-  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+  EnumCareRecordChecklistResult,
+  EnumCareRecordChecklistStatus,
 } from '../enums/care-record-checklist.enum';
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
 import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-record-checklist.update-note.request.dto';
 import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/request/care-record-checklist.update-wear-percentage.request.dto';
 import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
-import { CareRecordChecklistUtil } from '../utils/care-record-checklist.util';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
-import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
-import { ENUM_CARE_RECORD_CHECKLIST_STATUS_CODE_ERROR } from '../enums/care-record-checklist.status-code.enum';
-import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { EnumCareRecordChecklistStatusCodeError } from '../enums/care-record-checklist.status-code.enum';
+import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 @Injectable()
 export class CareRecordChecklistService implements ICareRecordChecklistService {
   constructor(
-    private readonly careRecordChecklistRepository: CareRecordChecklistRepository,
-    private readonly careRecordChecklistUtil: CareRecordChecklistUtil,
+    private readonly careRecordChecklistRepository: CareRecordChecklistRepository
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<IResponsePagingReturn<CareRecordChecklistListResponseDto>> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
-
-    const [careRecordChecklists, total] = await Promise.all([
-      this.careRecordChecklistRepository.findAll<ICareRecordChecklistEntity>(
-        find,
-        {
-          paging: { limit, offset: skip },
-          order: orderBy,
-          join: true,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordChecklistSelect,
+      Prisma.CareRecordChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordChecklist[]; total: number }> {
+    const { data, count } =
+      await this.careRecordChecklistRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
         },
-      ),
-      this.careRecordChecklistRepository.getTotal(find),
-    ]);
+      });
 
-    const mapped = this.careRecordChecklistUtil.mapList(careRecordChecklists);
-    const totalPage = Math.ceil(total / limit);
-    const page = Math.floor(skip / limit) + 1;
-    const hasNext = page < totalPage;
-    const hasPrevious = page > 1;
-
-    return {
-      type: EnumPaginationType.offset,
-      count: total,
-      perPage: limit,
-      page,
-      totalPage,
-      hasNext,
-      hasPrevious,
-      nextPage: hasNext ? page + 1 : undefined,
-      previousPage: hasPrevious ? page - 1 : undefined,
-      data: mapped,
-    };
+    const careRecordChecklists: CareRecordChecklist[] = data;
+    return { data: careRecordChecklists, total: count || 0 };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>> {
-    const careRecordChecklist = await this.findOneByIdOrFail(id, {
-      ...options,
-      join: true,
-    });
-    return {
-      data: this.careRecordChecklistUtil.mapGetFull(careRecordChecklist),
-    };
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordChecklistSelect,
+      Prisma.CareRecordChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordChecklist[]; total?: number }> {
+    const { data, count } =
+      await this.careRecordChecklistRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    const careRecordChecklists: CareRecordChecklist[] = data;
+    return { data: careRecordChecklists, total: count || 0 };
   }
 
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>> {
-    const careRecordChecklist =
-      await this.careRecordChecklistRepository.findOne<CareRecordChecklistDoc>(
-        find,
-        options,
-      );
-    return {
-      data: this.careRecordChecklistUtil.mapGetFull(careRecordChecklist),
-    };
+  async findOneById(id: string): Promise<CareRecordChecklist> {
+    return this.findOneByIdOrFail(id);
   }
 
-  async create(
-    {
-      careRecordService,
-      serviceChecklist,
+  async create({
+    careRecordService,
+    serviceChecklist,
+    name,
+    wearPercentage,
+  }: CareRecordChecklistCreateRequestDto): Promise<DatabaseIdDto> {
+    const created = await this.careRecordChecklistRepository.create({
       name,
-      wearPercentage,
-    }: CareRecordChecklistCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<IResponseReturn<{ _id: string }>> {
-    const create: CareRecordChecklistEntity = new CareRecordChecklistEntity();
+      wearPercentage: wearPercentage ?? undefined,
+      result: EnumCareRecordChecklistResult.unchecked,
+      status: EnumCareRecordChecklistStatus.pending,
+      careRecordService: {
+        connect: { id: careRecordService },
+      },
+      ...(serviceChecklist && {
+        serviceChecklist: {
+          connect: { id: serviceChecklist },
+        },
+      }),
+    });
 
-    create.careRecordService = careRecordService;
-    create.serviceChecklist = serviceChecklist;
-    create.name = name;
-    create.wearPercentage = wearPercentage;
-    create.result = ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED;
-    create.status = ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING;
-
-    const created =
-      await this.careRecordChecklistRepository.create<CareRecordChecklistEntity>(
-        create,
-        options,
-      );
-
-    return { data: { _id: created._id } };
+    return { _id: created.id };
   }
 
   async createMany(
-    dtos: CareRecordChecklistCreateRequestDto[],
-    options?: IDatabaseCreateOptions,
+    dtos: CareRecordChecklistCreateRequestDto[]
   ): Promise<boolean> {
-    const entities = dtos.map((dto) => {
-      const create: CareRecordChecklistEntity = new CareRecordChecklistEntity();
-      create.careRecordService = dto.careRecordService;
-      create.serviceChecklist = dto.serviceChecklist;
-      create.name = dto.name;
-      create.wearPercentage = dto.wearPercentage;
-      create.result = ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED;
-      create.status = ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING;
-      return create;
-    });
-
-    await this.careRecordChecklistRepository.createMany<CareRecordChecklistEntity>(
-      entities,
-      options,
+    await Promise.all(
+      dtos.map(dto =>
+        this.careRecordChecklistRepository.create({
+          name: dto.name,
+          wearPercentage: dto.wearPercentage ?? undefined,
+          result: EnumCareRecordChecklistResult.unchecked,
+          status: EnumCareRecordChecklistStatus.pending,
+          careRecordService: {
+            connect: { id: dto.careRecordService },
+          },
+          ...(dto.serviceChecklist && {
+            serviceChecklist: {
+              connect: { id: dto.serviceChecklist },
+            },
+          }),
+        })
+      )
     );
 
     return true;
@@ -166,115 +125,68 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       result,
       note,
       wearPercentage,
-      parts,
-    }: CareRecordChecklistUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<void>> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.status =
-      (status as ENUM_CARE_RECORD_CHECKLIST_STATUS) ?? repository.status;
-    repository.result =
-      (result as ENUM_CARE_RECORD_CHECKLIST_RESULT) ?? repository.result;
-    repository.note = note ?? repository.note;
-    repository.wearPercentage = wearPercentage ?? repository.wearPercentage;
-    repository.parts = parts ?? repository.parts;
+    }: CareRecordChecklistUpdateRequestDto
+  ): Promise<void> {
+    const record = await this.findOneByIdOrFail(id);
 
-    await this.careRecordChecklistRepository.save(repository, options);
-    return {};
+    const updateData: any = {};
+    if (status !== undefined) updateData.status = status;
+    if (result !== undefined) updateData.result = result;
+    if (note !== undefined) updateData.note = note;
+    if (wearPercentage !== undefined) updateData.wearPercentage = wearPercentage;
+
+    if (Object.keys(updateData).length > 0) {
+      await this.careRecordChecklistRepository.update(id, updateData);
+    }
   }
 
   async updateStatus(
     id: string,
-    { status }: CareRecordChecklistUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<void>> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.status = status;
-
-    await this.careRecordChecklistRepository.save(repository, options);
-    return {
-      metadata: {
-        messageProperties: {
-          status: status.toLowerCase(),
-        },
-      },
-    };
+    { status }: CareRecordChecklistUpdateStatusRequestDto
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.update(id, { status });
   }
 
   async updateResult(
     id: string,
-    { result }: CareRecordChecklistUpdateResultRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<void>> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.result = result;
-
-    await this.careRecordChecklistRepository.save(repository, options);
-    return {
-      metadata: {
-        messageProperties: {
-          result: result.toLowerCase(),
-        },
-      },
-    };
+    { result }: CareRecordChecklistUpdateResultRequestDto
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.update(id, { result });
   }
 
   async updateNote(
     id: string,
-    { note }: CareRecordChecklistUpdateNoteRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<void>> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.note = note;
-
-    await this.careRecordChecklistRepository.save(repository, options);
-    return {};
+    { note }: CareRecordChecklistUpdateNoteRequestDto
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.update(id, { note });
   }
 
   async updateWearPercentage(
     id: string,
-    { wearPercentage }: CareRecordChecklistUpdateWearPercentageRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<void>> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.wearPercentage = wearPercentage;
-
-    await this.careRecordChecklistRepository.save(repository, options);
-    return {};
+    { wearPercentage }: CareRecordChecklistUpdateWearPercentageRequestDto
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.update(id, { wearPercentage });
   }
 
-  async delete(
-    id: string,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<void>> {
-    const repository = await this.findOneByIdOrFail(id);
-    await this.careRecordChecklistRepository.softDelete(repository, options);
-    return {};
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.delete(id);
   }
 
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.careRecordChecklistRepository.deleteMany(find, options);
-    return true;
-  }
+  private async findOneByIdOrFail(id: string): Promise<CareRecordChecklist> {
+    const careRecordChecklist = await this.careRecordChecklistRepository.findOneById(id);
 
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordChecklistDoc> {
-    const careRecordChecklist =
-      await this.careRecordChecklistRepository.findOneById<CareRecordChecklistDoc>(
-        id,
-        options,
-      );
     if (!careRecordChecklist) {
       throw new NotFoundException({
-        statusCode: ENUM_CARE_RECORD_CHECKLIST_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumCareRecordChecklistStatusCodeError.notFound,
         message: 'care-record-checklist.error.notFound',
       });
     }
+
     return careRecordChecklist;
   }
 }

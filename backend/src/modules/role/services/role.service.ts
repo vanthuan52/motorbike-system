@@ -5,144 +5,76 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Document } from 'mongoose';
-import { plainToInstance } from 'class-transformer';
-import { IRoleService } from '../interfaces/role.service.interface';
-import { RoleRepository } from '../repositories/role.repository';
-import {
-  IDatabaseCreateManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import {
   IPaginationIn,
-  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import {
   IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
-import { RoleDoc, RoleEntity } from '../entities/role.entity';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
-import { DatabaseHelperQueryContain } from '@/common/database/decorators/database.decorator';
-import { RoleCreateRequestDto } from '../dtos/request/role.create.request.dto';
-import { RoleUpdateRequestDto } from '../dtos/request/role.update.request.dto';
-import { RoleListResponseDto } from '../dtos/response/role.list.response.dto';
-import { RoleDto } from '../dtos/role.dto';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { RoleAbilityDto } from '../dtos/role.ability.dto';
 import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
-import { EnumRoleStatusCodeError } from '../enums/role.status-code.enum';
-import { RoleUtil } from '../utils/role.util';
-import { RoleAbilitiesResponseDto } from '../dtos/response/role.abilities.response.dto';
+import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
+import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
+import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
+import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
+import { RoleAbilityDto } from '@/modules/role/dtos/role.ability.dto';
+import { RoleDto } from '@/modules/role/dtos/role.dto';
+import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.enum';
+import { IRoleService } from '@/modules/role/interfaces/role.service.interface';
+import { RoleRepository } from '@/modules/role/repositories/role.repository';
+import { RoleUtil } from '@/modules/role/utils/role.util';
+import { EnumRoleType, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class RoleService implements IRoleService {
   constructor(
     private readonly roleRepository: RoleRepository,
-    private readonly roleUtil: RoleUtil,
+    private readonly roleUtil: RoleUtil
   ) {}
 
-  /**
-   * Retrieves a paginated list of roles using offset-based pagination.
-   */
-  async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    type?: Record<string, IPaginationIn>,
+  async getListOffsetByAdmin(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.RoleSelect,
+      Prisma.RoleWhereInput
+    >,
+    type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    const find: Record<string, any> = {
-      ...where,
-      ...type,
-    };
+    const { data, ...others } =
+      await this.roleRepository.findWithPaginationOffsetByAdmin(
+        pagination,
+        type
+      );
 
-    const [roles, total] = await Promise.all([
-      this.roleRepository.findAll(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-      }),
-      this.roleRepository.getTotal(find),
-    ]);
-
-    const mapped = this.roleUtil.mapList(roles);
-    const totalPage = Math.ceil(total / limit);
-    const page = Math.floor(skip / limit) + 1;
-    const hasNext = page < totalPage;
-    const hasPrevious = page > 1;
+    const roles: RoleListResponseDto[] = this.roleUtil.mapList(data);
 
     return {
-      type: EnumPaginationType.offset,
-      count: total,
-      perPage: limit,
-      page,
-      totalPage,
-      hasNext,
-      hasPrevious,
-      nextPage: hasNext ? page + 1 : undefined,
-      previousPage: hasPrevious ? page - 1 : undefined,
-      data: mapped,
+      data: roles,
+      ...others,
     };
   }
 
-  /**
-   * Get paginated list of roles with cursor pagination
-   */
   async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams,
-    type?: Record<string, IPaginationIn>,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.RoleSelect,
+      Prisma.RoleWhereInput
+    >,
+    type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    const find: Record<string, any> = {
-      ...where,
-      ...type,
-    };
+    const { data, ...others } =
+      await this.roleRepository.findWithPaginationCursor(pagination, type);
 
-    const [data, count] = await Promise.all([
-      this.roleRepository.findAllCursor(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
-        },
-      }),
-      includeCount
-        ? this.roleRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
-
-    // Calculate cursor pagination metadata
-    const hasNext = data.length > limit;
-    const items = hasNext ? data.slice(0, limit) : data;
-    const nextCursor =
-      hasNext && items.length > 0 && cursorField
-        ? String((items[items.length - 1] as any)[cursorField])
-        : undefined;
-    const mapped = this.roleUtil.mapList(items);
+    const roles: RoleListResponseDto[] = this.roleUtil.mapList(data);
 
     return {
-      type: EnumPaginationType.cursor,
-      count,
-      perPage: limit,
-      hasNext,
-      cursor: nextCursor,
-      data: mapped,
+      data: roles,
+      ...others,
     };
   }
 
-  async findOneById(id: string): Promise<RoleDoc> {
+  async getOne(id: string): Promise<IResponseReturn<RoleDto>> {
     const role = await this.roleRepository.findOneById(id);
     if (!role) {
       throw new NotFoundException({
@@ -151,10 +83,12 @@ export class RoleService implements IRoleService {
       });
     }
 
-    return role;
+    return { data: this.roleUtil.mapOne(role) };
   }
 
-  async getAbilities(id: string): Promise<RoleAbilitiesResponseDto> {
+  async getAbilities(
+    id: string
+  ): Promise<IResponseReturn<RoleAbilitiesResponseDto>> {
     const role = await this.roleRepository.findOneById(id);
     if (!role) {
       throw new NotFoundException({
@@ -163,11 +97,14 @@ export class RoleService implements IRoleService {
       });
     }
 
-    return this.roleUtil.mapAbilities(role);
+    return { data: this.roleUtil.mapAbilities(role) };
   }
 
-  async create(data: RoleCreateRequestDto): Promise<RoleDoc> {
-    const exist: boolean = await this.roleRepository.existByName(data.name);
+  async createByAdmin({
+    name,
+    ...others
+  }: RoleCreateRequestDto): Promise<IResponseReturn<RoleDto>> {
+    const exist = await this.roleRepository.existByName(name);
     if (exist) {
       throw new ConflictException({
         statusCode: EnumRoleStatusCodeError.exist,
@@ -175,21 +112,18 @@ export class RoleService implements IRoleService {
       });
     }
 
-    const { name, description, type, abilities } = data;
-    const create: RoleEntity = new RoleEntity();
-    create.name = name;
-    create.description = description;
-    create.type = type;
-    create.abilities = abilities;
-    create.isActive = true;
-
-    const role = await this.roleRepository.create<RoleEntity>(create);
-
-    return role;
+    const created = await this.roleRepository.create({ name, ...others });
+    return {
+      data: this.roleUtil.mapOne(created),
+      metadataActivityLog: this.roleUtil.mapActivityLogMetadata(created),
+    };
   }
 
-  async update(id: string, data: RoleUpdateRequestDto): Promise<RoleDoc> {
-    const role = await this.roleRepository.findOneById(id);
+  async updateByAdmin(
+    id: string,
+    data: RoleUpdateRequestDto
+  ): Promise<IResponseReturn<RoleDto>> {
+    const role = await this.roleRepository.existById(id);
     if (!role) {
       throw new NotFoundException({
         statusCode: EnumRoleStatusCodeError.notFound,
@@ -197,33 +131,41 @@ export class RoleService implements IRoleService {
       });
     }
 
-    const { abilities, type, description } = data;
-    role.description = description;
-    role.type = type;
-    role.abilities = abilities;
-
-    const updated = await this.roleRepository.save(role);
-
-    return updated;
+    const updated = await this.roleRepository.update(id, data);
+    return {
+      data: this.roleUtil.mapOne(updated),
+      metadataActivityLog: this.roleUtil.mapActivityLogMetadata(updated),
+    };
   }
 
-  async delete(id: string): Promise<void> {
-    const role = await this.roleRepository.findOneById(id);
+  async deleteByAdmin(id: string): Promise<IResponseReturn<void>> {
+    const [role, roleUsed] = await Promise.all([
+      this.roleRepository.existById(id),
+      this.roleRepository.used(id),
+    ]);
+
     if (!role) {
       throw new NotFoundException({
         statusCode: EnumRoleStatusCodeError.notFound,
         message: 'role.error.notFound',
       });
+    } else if (roleUsed) {
+      throw new ConflictException({
+        statusCode: EnumRoleStatusCodeError.used,
+        message: 'role.error.used',
+      });
     }
 
-    await this.roleRepository.delete({ _id: role._id });
+    const deleted = await this.roleRepository.delete(id);
 
-    return;
+    return {
+      metadataActivityLog: this.roleUtil.mapActivityLogMetadata(deleted),
+    };
   }
 
   async validateRoleGuard(
     request: IRequestApp,
-    requiredRoles: EnumRoleType[],
+    requiredRoles: EnumRoleType[]
   ): Promise<RoleAbilityDto[]> {
     const { __user, user } = request;
     if (!__user || !user) {
@@ -250,11 +192,5 @@ export class RoleService implements IRoleService {
     }
 
     return this.roleUtil.mapOne(__user.role).abilities;
-  }
-
-  async findOneByName(name: string): Promise<RoleDto> {
-    const role = await this.roleRepository.findOne<RoleDoc>({ name });
-    if (!role) return null;
-    return this.roleUtil.mapOne(role);
   }
 }

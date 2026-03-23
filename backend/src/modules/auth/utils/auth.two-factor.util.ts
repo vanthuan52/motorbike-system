@@ -2,7 +2,13 @@ import { Cache } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'crypto';
-import { authenticator } from 'otplib';
+import {
+  HashAlgorithm,
+  OTPStrategy,
+  generateSecret,
+  generateURI,
+  verifySync,
+} from 'otplib';
 import { CacheMainProvider } from '@/common/cache/constants/cache.constant';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { EnumAuthTwoFactorMethod } from '@/modules/auth/enums/auth.enum';
@@ -15,7 +21,8 @@ import {
   IAuthTwoFactorVerify,
   IAuthTwoFactorVerifyResult,
 } from '@/modules/auth/interfaces/auth.interface';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
+import { IUser } from '@/modules/user/interfaces/user.interface';
+import { TwoFactor } from '@/generated/prisma-client';
 
 /**
  * Utility class for Two-Factor Authentication (2FA) operations.
@@ -27,9 +34,11 @@ import { IUserDoc } from '@/modules/user/interfaces/user.interface';
  */
 @Injectable()
 export class AuthTwoFactorUtil {
+  private readonly strategy: OTPStrategy;
+  private readonly algorithm: HashAlgorithm;
   private readonly issuer: string;
   private readonly digits: number;
-  private readonly step: number;
+  private readonly periodInSeconds: number;
   private readonly window: number;
   private readonly secretLength: number;
   private readonly challengeTtlInMs: number;
@@ -43,42 +52,44 @@ export class AuthTwoFactorUtil {
   constructor(
     @Inject(CacheMainProvider) private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
+    this.strategy = this.configService.get<OTPStrategy>(
+      'auth.twoFactor.strategy'
+    );
+    this.algorithm = this.configService.get<HashAlgorithm>(
+      'auth.twoFactor.algorithm'
+    );
     this.issuer = this.configService.get<string>('auth.twoFactor.issuer');
     this.digits = this.configService.get<number>('auth.twoFactor.digits');
-    this.step = this.configService.get<number>('auth.twoFactor.step');
+    this.periodInSeconds = this.configService.get<number>(
+      'auth.twoFactor.periodInSeconds'
+    );
     this.window = this.configService.get<number>('auth.twoFactor.window');
     this.secretLength = this.configService.get<number>(
-      'auth.twoFactor.secretLength',
+      'auth.twoFactor.secretLength'
     );
     this.challengeTtlInMs = this.configService.get<number>(
-      'auth.twoFactor.challengeTtlInMs',
+      'auth.twoFactor.challengeTtlInMs'
     );
     this.cachePrefixKey = this.configService.get<string>(
-      'auth.twoFactor.cachePrefixKey',
+      'auth.twoFactor.cachePrefixKey'
     );
     this.backupCodesCount = this.configService.get<number>(
-      'auth.twoFactor.backupCodes.count',
+      'auth.twoFactor.backupCodes.count'
     );
     this.backupCodesLength = this.configService.get<number>(
-      'auth.twoFactor.backupCodes.length',
+      'auth.twoFactor.backupCodes.length'
     );
     this.encryptionKey = this.configService.get<string>(
-      'auth.twoFactor.encryption.key',
+      'auth.twoFactor.encryption.key'
     );
     this.maxAttempt = this.configService.get<number>(
-      'auth.twoFactor.maxAttempt',
+      'auth.twoFactor.maxAttempt'
     );
     this.lockAttemptDuration = this.configService.get<number>(
-      'auth.twoFactor.lockAttemptDuration',
+      'auth.twoFactor.lockAttemptDuration'
     );
-
-    authenticator.options = {
-      step: this.step,
-      digits: this.digits,
-      window: this.window,
-    };
   }
 
   /**
@@ -86,7 +97,9 @@ export class AuthTwoFactorUtil {
    * @returns {string} Secret string
    */
   generateSecret(): string {
-    return authenticator.generateSecret(this.secretLength);
+    return generateSecret({
+      length: this.secretLength,
+    });
   }
 
   /**
@@ -96,7 +109,15 @@ export class AuthTwoFactorUtil {
    * @returns Key URI
    */
   createKeyUri(email: string, secret: string): string {
-    return authenticator.keyuri(email, this.issuer, secret);
+    return generateURI({
+      issuer: this.issuer,
+      label: `${this.issuer}:${email}`,
+      secret,
+      digits: this.digits,
+      period: this.periodInSeconds,
+      strategy: this.strategy,
+      algorithm: this.algorithm,
+    });
   }
 
   /**
@@ -106,7 +127,17 @@ export class AuthTwoFactorUtil {
    * @returns True if valid
    */
   verifyCode(secret: string, code: string): boolean {
-    return authenticator.check(code, secret);
+    const verified = verifySync({
+      token: code,
+      secret,
+      algorithm: this.algorithm,
+      strategy: this.strategy,
+      digits: this.digits,
+      period: this.periodInSeconds,
+      epochTolerance: [this.window * this.periodInSeconds, 0],
+    });
+
+    return verified.valid;
   }
 
   /**
@@ -144,12 +175,12 @@ export class AuthTwoFactorUtil {
    */
   generateBackupCodes(): IAuthTwoFactorBackupCodes {
     const codes = Array.from({ length: this.backupCodesCount }, () =>
-      this.helperService.randomString(this.backupCodesLength).toUpperCase(),
+      this.helperService.randomString(this.backupCodesLength).toUpperCase()
     );
 
     return {
       codes,
-      hashes: codes.map((code) => this.helperService.sha256Hash(code)),
+      hashes: codes.map(code => this.helperService.sha256Hash(code)),
     };
   }
 
@@ -161,11 +192,11 @@ export class AuthTwoFactorUtil {
    */
   verifyBackupCode(
     backupCodes: string[],
-    input: string,
+    input: string
   ): IAuthTwoFactorBackupCodesVerifyResult {
     const codeHash = this.helperService.sha256Hash(input);
-    const index = backupCodes.findIndex((hash) =>
-      this.helperService.sha256Compare(hash, codeHash),
+    const index = backupCodes.findIndex(hash =>
+      this.helperService.sha256Compare(hash, codeHash)
     );
 
     return {
@@ -180,14 +211,14 @@ export class AuthTwoFactorUtil {
    * @returns ChallengeToken and expiry
    */
   async createChallenge(
-    cachePayload: IAuthTwoFactorChallengeCache,
+    cachePayload: IAuthTwoFactorChallengeCache
   ): Promise<IAuthTwoFactorChallenge> {
     const challengeToken = this.helperService.randomString(48);
     const key = `${this.cachePrefixKey}:${challengeToken}`;
     await this.cacheManager.set<IAuthTwoFactorChallengeCache>(
       key,
       cachePayload,
-      this.challengeTtlInMs,
+      this.challengeTtlInMs
     );
 
     return { challengeToken, expiresInMs: this.challengeTtlInMs };
@@ -199,7 +230,7 @@ export class AuthTwoFactorUtil {
    * @returns Challenge payload or null
    */
   async getChallenge(
-    token: string,
+    token: string
   ): Promise<IAuthTwoFactorChallengeCache | null> {
     const key = `${this.cachePrefixKey}:${token}`;
     const cached =
@@ -252,7 +283,7 @@ export class AuthTwoFactorUtil {
    */
   async verifyTwoFactor(
     twoFactor: TwoFactor,
-    { method, code, backupCode }: IAuthTwoFactorVerify,
+    { method, code, backupCode }: IAuthTwoFactorVerify
   ): Promise<IAuthTwoFactorVerifyResult> {
     const normalizedCode =
       method === EnumAuthTwoFactorMethod.code
@@ -291,7 +322,7 @@ export class AuthTwoFactorUtil {
 
     const backupValidation = this.verifyBackupCode(
       twoFactor.backupCodes,
-      normalizedCode,
+      normalizedCode
     );
     if (!backupValidation.isValid) {
       return {
@@ -336,7 +367,7 @@ export class AuthTwoFactorUtil {
    * @param user - The user to check 2FA attempts for
    * @returns True if attempts >= maxAttempt, otherwise false
    */
-  checkAttempt(user: IUserDoc): boolean {
+  checkAttempt(user: IUser): boolean {
     return user.twoFactor.attempt >= this.maxAttempt;
   }
 
@@ -353,7 +384,7 @@ export class AuthTwoFactorUtil {
    * @param user - The user whose 2FA attempts should be locked
    * @returns Promise<void>
    */
-  async lockTwoFactorAttempt(user: IUserDoc): Promise<void> {
+  async lockTwoFactorAttempt(user: IUser): Promise<void> {
     const key = `${this.cachePrefixKey}:lock:${user.id}`;
     const ttlExponentialInMs =
       Math.pow(2, user.twoFactor.attempt / this.maxAttempt) *
@@ -373,7 +404,7 @@ export class AuthTwoFactorUtil {
    * @param user - The user whose 2FA lock status is being checked
    * @returns Promise<number> Remaining lock duration in milliseconds, or 0 if not locked
    */
-  async getLockTwoFactorAttempt(user: IUserDoc): Promise<number> {
+  async getLockTwoFactorAttempt(user: IUser): Promise<number> {
     const key = `${this.cachePrefixKey}:lock:${user.id}`;
     const isLocked = await this.cacheManager.get<boolean>(key);
     const retryAfterMs = await this.cacheManager.ttl(key);

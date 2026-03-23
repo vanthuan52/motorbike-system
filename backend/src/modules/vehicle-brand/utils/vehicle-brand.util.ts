@@ -1,37 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { VehicleBrandDoc } from '../entities/vehicle-brand.entity';
-import { IVehicleBrandEntity } from '../interfaces/vehicle-brand.interface';
+import slugify from 'slugify';
+import { VehicleBrand } from '@/generated/prisma-client';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
 import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 
 @Injectable()
 export class VehicleBrandUtil {
-  mapList(
-    vehicleBrands: VehicleBrandDoc[] | IVehicleBrandEntity[],
-  ): VehicleBrandListResponseDto[] {
-    return plainToInstance(
-      VehicleBrandListResponseDto,
-      vehicleBrands.map((c: VehicleBrandDoc | IVehicleBrandEntity) =>
-        c instanceof Document ? c.toObject() : c,
-      ),
-    );
+  mapList(vehicleBrands: VehicleBrand[]): VehicleBrandListResponseDto[] {
+    return plainToInstance(VehicleBrandListResponseDto, vehicleBrands);
   }
 
-  mapGet(vehicleBrand: VehicleBrandDoc | IVehicleBrandEntity): VehicleBrandDto {
-    return plainToInstance(
-      VehicleBrandDto,
-      vehicleBrand instanceof Document ? vehicleBrand.toObject() : vehicleBrand,
-    );
+  mapGet(vehicleBrand: VehicleBrand): VehicleBrandDto {
+    return plainToInstance(VehicleBrandDto, vehicleBrand);
   }
 
   createSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
+    return slugify(name, {
+      lower: true,
+      strict: true,
+      locale: 'vi',
+    });
   }
 }

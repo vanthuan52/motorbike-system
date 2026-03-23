@@ -1,117 +1,93 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CareAreaRepository } from '../repository/care-area.repository';
 import { ICareAreaService } from '../interfaces/care-area.service.interface';
-import {
-  IDatabaseCreateManyOptions,
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
 import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { EnumCareAreaStatusCodeError } from '../enums/care-area.status-code.enum';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
-import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
-import { ENUM_CARE_AREA_STATUS_CODE_ERROR } from '../enums/care-area.status-code.enum';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { DatabaseHelperQueryContain } from '@/common/database/decorators/database.decorator';
-import { CareAreaDoc, CareAreaEntity } from '../entities/care-area.entity';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { CareAreaUtil } from '../utils/care-area.util';
+import { CareArea, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareAreaService implements ICareAreaService {
   constructor(
     private readonly careAreaRepository: CareAreaRepository,
     private readonly serviceChecklistService: ServiceChecklistService,
+    private readonly careAreaUtil: CareAreaUtil,
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
     filters?: Record<string, any>,
-  ): Promise<{ data: CareAreaDoc[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
-
-    const [careAreas, total] = await Promise.all([
-      this.careAreaRepository.findAll<CareAreaDoc>(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-      }),
-      this.careAreaRepository.getTotal(find),
-    ]);
+  ): Promise<{ data: CareArea[]; total: number }> {
+    const { data, count } = await this.careAreaRepository.findWithPaginationOffset(
+      {
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      }
+    );
 
     return {
-      data: careAreas,
-      total,
+      data,
+      total: count || 0,
     };
   }
 
   async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
     filters?: Record<string, any>,
-  ): Promise<{ data: CareAreaDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...filters };
-
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
-    }
-
-    const [data, count] = await Promise.all([
-      this.careAreaRepository.findAllCursor(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
+  ): Promise<{ data: CareArea[]; total?: number }> {
+    const { data, count } = await this.careAreaRepository.findWithPaginationCursor(
+      {
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
         },
-      }),
-      includeCount
-        ? this.careAreaRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
+      }
+    );
 
     return { data, total: count };
   }
 
   async getListOffsetWithServiceChecklists(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
+    vehicleType?: EnumVehicleModelType,
   ): Promise<{
-    data: CareAreaDoc[];
+    data: CareArea[];
     total: number;
     checklistMap: Map<string, any[]>;
   }> {
-    const find: Record<string, any> = {
-      ...where,
-    };
-
-    const careAreas = await this.careAreaRepository.findAll<CareAreaDoc>(find, {
-      paging: { limit, offset: skip },
-      order: { order: EnumPaginationOrderDirectionType.asc },
-    });
+    const { data: careAreas, count: total } =
+      await this.careAreaRepository.findWithPaginationOffset(pagination);
 
     const checklistMap = new Map<string, any[]>();
 
     for (const careArea of careAreas) {
       const serviceChecklistFind: Record<string, any> = {
-        careArea: careArea._id,
+        careAreaId: careArea.id,
       };
 
       if (vehicleType) {
-        serviceChecklistFind.vehicleType = { $in: [vehicleType] };
+        serviceChecklistFind.vehicleType = vehicleType;
       }
 
       const { data: serviceChecklists } =
@@ -119,145 +95,90 @@ export class CareAreaService implements ICareAreaService {
           limit: 1000,
           skip: 0,
           where: serviceChecklistFind,
-          orderBy: { order: EnumPaginationOrderDirectionType.asc },
-          include: undefined,
+          orderBy: [{ orderBy: EnumPaginationOrderDirectionType.asc }],
         });
 
-      checklistMap.set(
-        careArea._id.toString(),
-        serviceChecklists as unknown as any[],
-      );
+      checklistMap.set(careArea.id, serviceChecklists as unknown as any[]);
     }
-
-    const total = await this.careAreaRepository.getTotal(find);
 
     return {
       data: careAreas,
-      total,
+      total: total || 0,
       checklistMap,
     };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareAreaDoc> {
-    const careArea = await this.findOneByIdOrFail(id, options);
-    return careArea;
+  async findOneById(id: string): Promise<CareArea> {
+    return this.findOneByIdOrFail(id);
   }
 
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareAreaDoc> {
-    const careArea = await this.careAreaRepository.findOne<CareAreaDoc>(
-      find,
-      options,
-    );
-    return careArea;
+  async findOne(where: Prisma.CareAreaWhereInput): Promise<CareArea | null> {
+    return this.careAreaRepository.findOne(where);
   }
 
   async create(
-    { name, description, order }: CareAreaCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto> {
-    const create: CareAreaEntity = new CareAreaEntity();
-    create.name = name;
-    create.description = description;
-    create.order = order;
+    { name, description, orderBy }: CareAreaCreateRequestDto,
+  ): Promise<{ id: string }> {
+    const created = await this.careAreaRepository.create({
+      name,
+      description,
+      orderBy,
+    });
 
-    const created = await this.careAreaRepository.create<CareAreaEntity>(
-      create,
-      options,
-    );
-
-    return { _id: created._id };
+    return { id: created.id };
   }
 
   async update(
     id: string,
-    { name, description, order }: CareAreaUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
+    { name, description, orderBy }: CareAreaUpdateRequestDto,
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.name = name ?? repository.name;
-    repository.description = description ?? repository.description;
-    repository.order = order ?? repository.order;
-    await this.careAreaRepository.save(repository, options);
+    const careArea = await this.findOneByIdOrFail(id);
+
+    await this.careAreaRepository.update(id, {
+      name: name ?? careArea.name,
+      description: description ?? careArea.description,
+      orderBy: orderBy ?? (careArea.orderBy as string),
+    });
   }
 
-  async softDelete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    await this.careAreaRepository.softDelete(repository, options);
-  }
-
-  async delete(id: string, options?: IDatabaseDeleteOptions): Promise<void> {
-    await this.careAreaRepository.delete({ _id: id }, options);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.careAreaRepository.deleteMany(find, options);
-    return true;
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careAreaRepository.delete(id);
   }
 
   async createMany(
     data: CareAreaCreateRequestDto[],
-    options?: IDatabaseCreateManyOptions,
   ): Promise<boolean> {
-    const create = data.map((item) => {
-      const doc: any = {
-        name: item.name,
-        description: item.description,
-        order: item.order,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        deleted: false,
-        __v: 0,
-      };
-
-      if ('_id' in item && (item as any)._id) {
-        doc._id = (item as any)._id;
-      }
-
-      return doc;
-    });
-
-    await this.careAreaRepository['_repository'].insertMany(create, {
-      ordered: false,
-    });
-
+    await Promise.all(
+      data.map((item) =>
+        this.careAreaRepository.create({
+          name: item.name,
+          description: item.description,
+          orderBy: item.orderBy,
+        }),
+      ),
+    );
     return true;
   }
 
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareAreaDoc> {
-    const careArea = await this.careAreaRepository.findOneById<CareAreaDoc>(
-      id,
-      options,
-    );
+  private async findOneByIdOrFail(id: string): Promise<CareArea> {
+    const careArea = await this.careAreaRepository.findOneById(id);
     if (!careArea) {
       throw new NotFoundException({
-        statusCode: ENUM_CARE_AREA_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumCareAreaStatusCodeError.notFound,
         message: 'care-area.error.notFound',
       });
     }
     return careArea;
   }
 
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const exist = await this.careAreaRepository.exists(
-      DatabaseHelperQueryContain('name', name, { fullWord: true }),
-      options,
-    );
-
-    return exist;
+  async existByName(name: string): Promise<boolean> {
+    const careArea = await this.careAreaRepository.findOne({
+      name: {
+        equals: name,
+        mode: 'insensitive',
+      },
+    });
+    return !!careArea;
   }
 }

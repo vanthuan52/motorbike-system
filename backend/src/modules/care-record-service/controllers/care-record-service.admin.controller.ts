@@ -40,7 +40,7 @@ import {
   CareRecordServiceAdminUpdateDoc,
   CareRecordServiceAdminUpdateStatusDoc,
 } from '../docs/care-record-service.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -58,17 +58,13 @@ import {
   CARE_RECORD_SERVICE_DEFAULT_STATUS,
 } from '../constants/care-record-service.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
 import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/care-record-service.with-checklists.response.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordServiceUtil } from '../utils/care-record-service.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 
 @ApiTags('modules.admin.care-record-service')
 @Controller({
@@ -79,7 +75,7 @@ export class CareRecordServiceAdminController {
   constructor(
     private readonly careRecordServiceService: CareRecordServiceService,
     private readonly careRecordServiceUtil: CareRecordServiceUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @CareRecordServiceAdminListDoc()
@@ -100,20 +96,20 @@ export class CareRecordServiceAdminController {
     pagination: IPaginationQueryOffsetParams,
     @PaginationQueryFilterInEnum('status', CARE_RECORD_SERVICE_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
-    @Query('careRecord', RequestOptionalParseUUIDPipe)
-    careRecordId: string,
+    @Query('careRecord', RequestOptionalParseObjectIdPipe)
+    careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordServiceListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
     };
 
     if (careRecordId) {
-      filters['careRecord'] = careRecordId;
+      filters['careRecordId'] = careRecordId;
     }
 
     const { data, total } = await this.careRecordServiceService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.careRecordServiceUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -133,8 +129,8 @@ export class CareRecordServiceAdminController {
     pagination: IPaginationQueryOffsetParams,
     @PaginationQueryFilterInEnum('status', CARE_RECORD_SERVICE_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
-    @Query('careRecord', RequestOptionalParseUUIDPipe)
-    careRecordId: string,
+    @Query('careRecord', RequestOptionalParseObjectIdPipe)
+    careRecordId: string
   ): Promise<
     IResponsePagingReturn<CareRecordServiceWithChecklistsResponseDto>
   > {
@@ -143,25 +139,21 @@ export class CareRecordServiceAdminController {
     };
 
     if (careRecordId) {
-      filters['careRecord'] = careRecordId;
+      filters['careRecordId'] = careRecordId;
     }
 
     const { data, total } =
       await this.careRecordServiceService.getListOffsetWithChecklists(
         pagination,
-        filters,
+        filters
       );
 
-    const mapped = data.map((item) => {
-      const serviceData =
-        typeof (item.service as any).toObject === 'function'
-          ? (item.service as any).toObject()
-          : item.service;
-      return this.careRecordServiceUtil.mapWithChecklists(
-        serviceData,
-        item.checklists,
-      );
-    });
+    const mapped = data.map(item =>
+      this.careRecordServiceUtil.mapWithChecklists(
+        item.service,
+        item.checklists
+      )
+    );
 
     return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
@@ -173,7 +165,7 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<CareRecordServiceGetFullResponseDto>> {
     const careRecordService =
       await this.careRecordServiceService.findOneById(id);
@@ -190,17 +182,10 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
-    @Body() body: CareRecordServiceCreateRequestDto,
+    @Body() body: CareRecordServiceCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordServiceService.create(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
-    return {
-      data: {
-        _id: created._id,
-      },
-    };
+    const created = await this.careRecordServiceService.create(body);
+    return { data: { id: created.id } };
   }
 
   @CareRecordServiceAdminUpdateDoc()
@@ -210,13 +195,10 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordServiceUpdateRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: CareRecordServiceUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordServiceService.update(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordServiceService.update(id, body);
     return {};
   }
 
@@ -227,13 +209,10 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordServiceUpdateStatusRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: CareRecordServiceUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordServiceService.updateStatus(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordServiceService.updateStatus(id, body);
     return {};
   }
 
@@ -244,12 +223,9 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') actionBy: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordServiceService.delete(id, {
-      actionBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordServiceService.delete(id);
     return {};
   }
 }

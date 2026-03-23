@@ -1,8 +1,8 @@
-export enum ENUM_CARE_AREA_STATUS_CODE_ERROR {
-  NOT_FOUND = 6500,
-  EXIST = 6501,
-  IS_ACTIVE = 6502,
-  USED = 6503,
-  INACTIVE_FORBIDDEN = 6504,
-  NAME_EXISTED = 6505,
+export enum EnumCareAreaStatusCodeError {
+  notFound = 6500,
+  exist = 6501,
+  isActive = 6502,
+  used = 6503,
+  inactiveForbidden = 6504,
+  nameExisted = 6505,
 }

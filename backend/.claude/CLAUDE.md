@@ -3,6 +3,7 @@
 ## Project Overview
 
 ACK NestJS Boilerplate (v8.2.0+) is an enterprise-grade authentication and authorization service built with:
+
 - **NestJS v11** + **TypeScript** (strict)
 - **Prisma ORM** → MongoDB (replica set required for transactions)
 - **Redis** → cache + session store (`db:0`) and BullMQ queues (`db:1`)
@@ -12,6 +13,7 @@ ACK NestJS Boilerplate (v8.2.0+) is an enterprise-grade authentication and autho
 ## Architecture
 
 ### Repository Design Pattern
+
 - `Repository` → data access only, injects `DatabaseService` directly (no `@Inject`)
 - `Service` → business logic only, injects repository as class (no interface for repo)
 - `Service` always implements an **interface** (`IUserService`)
@@ -21,18 +23,19 @@ ACK NestJS Boilerplate (v8.2.0+) is an enterprise-grade authentication and autho
 // ✅ Repository — no interface needed
 @Injectable()
 export class UserRepository {
-    constructor(private readonly databaseService: DatabaseService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 }
 
 // ✅ Service — always has interface, injects repo as class
 export class UserService implements IUserService {
-    constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository) {}
 }
 ```
 
 ### Module Structure
 
 Every feature module follows:
+
 ```
 module/
 ├── controllers/    dtos/        entities/     enums/
@@ -42,6 +45,7 @@ module/
 ```
 
 ### Path Aliases (always use, never relative paths)
+
 ```
 @app/*      → src/app/*
 @common/*   → src/common/*
@@ -55,15 +59,15 @@ module/
 
 ## Naming Conventions
 
-| Type | Convention | Example |
-|---|---|---|
-| Class | PascalCase | `UserService` |
-| Interface | `I` + PascalCase | `IUserService` |
-| Enum | `Enum` + PascalCase | `EnumUserStatus` |
-| Enum keys/values | camelCase | `active`, `inactive` |
-| Files | kebab-case | `user.service.ts` |
-| Methods/Variables | camelCase | `findById`, `userId` |
-| DTO suffix | `RequestDto` / `ResponseDto` | `CreateUserRequestDto` |
+| Type              | Convention                   | Example                |
+| ----------------- | ---------------------------- | ---------------------- |
+| Class             | PascalCase                   | `UserService`          |
+| Interface         | `I` + PascalCase             | `IUserService`         |
+| Enum              | `Enum` + PascalCase          | `EnumUserStatus`       |
+| Enum keys/values  | camelCase                    | `active`, `inactive`   |
+| Files             | kebab-case                   | `user.service.ts`      |
+| Methods/Variables | camelCase                    | `findById`, `userId`   |
+| DTO suffix        | `RequestDto` / `ResponseDto` | `CreateUserRequestDto` |
 
 ## Decorator Order (EXACT — never change)
 
@@ -91,6 +95,7 @@ async method() {}
 - Always invalidate sessions on: password change, password reset, logout, device removal
 
 ### Session Lifecycle
+
 1. Login → create session in Redis + DB, linked to `DeviceOwnership`
 2. Every request → verify signature → check Redis → match `jti`
 3. Refresh → verify → rotate `jti` in Redis + DB → issue new tokens
@@ -106,6 +111,7 @@ async method() {}
 - Notification: `fcm` (android), `apns` (ios), none (web)
 
 ### Remove Device Flow
+
 ```
 DELETE /user/device/remove/:deviceId
 → DeviceOwnership: isRevoked = true (retained for audit)
@@ -116,6 +122,7 @@ DELETE /user/device/remove/:deviceId
 ```
 
 ### Device List API Behavior
+
 - User endpoint → return `isRevoked = false` only
 - Admin endpoint → default `isRevoked = false`, support `?includeRevoked=true` for audit
 
@@ -138,20 +145,21 @@ DELETE /user/device/remove/:deviceId
 
 ```typescript
 // ✅ Complex logic — callback
-await this.databaseService.$transaction(async (tx) => {
-    const user = await tx.user.create({ data });
-    if (condition) await tx.profile.create({ data: profileData });
-    return user;
+await this.databaseService.$transaction(async tx => {
+  const user = await tx.user.create({ data });
+  if (condition) await tx.profile.create({ data: profileData });
+  return user;
 });
 
 // ✅ Simple sequential — array
 await this.databaseService.$transaction([
-    this.databaseService.user.create({ data }),
-    this.databaseService.log.create({ data: logData }),
+  this.databaseService.user.create({ data }),
+  this.databaseService.log.create({ data: logData }),
 ]);
 ```
 
 ### Scripts
+
 ```bash
 pnpm db:migrate        # Sync schema to MongoDB
 pnpm db:generate       # Regenerate Prisma client (after schema changes)
@@ -194,10 +202,10 @@ return {
 
 ```typescript
 throw new NotFoundException({
-    statusCode: EnumUserStatusCodeError.notFound,
-    message: 'user.error.notFound',          // i18n key
-    messageProperties: { id: userId },       // optional interpolation
-    data: { userId },                        // optional debug context
+  statusCode: EnumUserStatusCodeError.notFound,
+  message: 'user.error.notFound', // i18n key
+  messageProperties: { id: userId }, // optional interpolation
+  data: { userId }, // optional debug context
 });
 ```
 
@@ -255,6 +263,7 @@ Sensitive data (password, token, apiKey, etc.) auto-redacted by Pino.
 ## Third-Party Services (No-Op Mode)
 
 All external services operate in **no-op mode** when credentials are missing:
+
 - AWS S3: check `isInitialized()` before S3 operations
 - AWS SES: check `isInitialized()` before sending email
 - Firebase: leave env vars empty to disable push

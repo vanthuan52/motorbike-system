@@ -1,28 +1,30 @@
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Connection } from 'mongoose';
 import {
   DiskHealthIndicator,
   HealthCheck,
   HealthCheckService,
   MemoryHealthIndicator,
-  MongooseHealthIndicator,
 } from '@nestjs/terminus';
-import { HealthAwsS3BucketIndicator } from '../indicators/health.aws-s3.indicator';
-import { InjectDatabaseConnection } from '@/common/database/decorators/database.decorator';
+import { ApiKeySystemProtected } from '@/modules/api-key/decorators/api-key.decorator';
+import { Response } from '@/common/response/decorators/response.decorator';
+import { HealthAwsResponseDto } from '@/modules/health/dtos/response/health.aws.response.dto';
+import { HealthDatabaseResponseDto } from '@/modules/health/dtos/response/health.database.response.dto';
 import {
   HealthSystemCheckAwsDoc,
   HealthSystemCheckDatabaseDoc,
   HealthSystemCheckInstanceDoc,
-} from '../docs/health.system.doc';
-import { Response } from '@/common/response/decorators/response.decorator';
-import { ApiKeySystemProtected } from '@/modules/api-key/decorators/api-key.decorator';
+  HealthSystemCheckThirdPartyDoc,
+} from '@/modules/health/docs/health.system.doc';
+import { HealthInstanceResponseDto } from '@/modules/health/dtos/response/health.instance.response.dto';
+import { HealthAwsSESIndicator } from '@/modules/health/indicators/health.aws-ses.indicator';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
-import { HealthAwsResponseDto } from '../dtos/response/health.aws.response.dto';
-import { HealthDatabaseResponseDto } from '../dtos/response/health.database.response.dto';
-import { HealthInstanceResponseDto } from '../dtos/response/health.instance.response.dto';
-import { HealthRedisIndicator } from '../indicators/health.redis.indicator';
+import { HealthAwsS3BucketIndicator } from '@/modules/health/indicators/health.aws-s3.indicator';
 import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
+import { HealthDatabaseIndicator } from '@/modules/health/indicators/health.database.indicator';
+import { HealthRedisIndicator } from '@/modules/health/indicators/health.redis.indicator';
+import { HealthSentryIndicator } from '@/modules/health/indicators/health.sentry.indicator';
+import { HealthThirdPartyResponseDto } from '@/modules/health/dtos/response/health.sentry.response.dto';
 
 @ApiTags('modules.system.health')
 @Controller({
@@ -31,13 +33,14 @@ import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 })
 export class HealthSystemController {
   constructor(
-    @InjectDatabaseConnection() private readonly databaseConnection: Connection,
     private readonly health: HealthCheckService,
     private readonly memoryHealthIndicator: MemoryHealthIndicator,
     private readonly diskHealthIndicator: DiskHealthIndicator,
     private readonly awsS3BucketIndicator: HealthAwsS3BucketIndicator,
-    private readonly mongooseIndicator: MongooseHealthIndicator,
+    private readonly awsSESIndicator: HealthAwsSESIndicator,
+    private readonly databaseIndicator: HealthDatabaseIndicator,
     private readonly redisIndicator: HealthRedisIndicator,
+    private readonly sentryIndicator: HealthSentryIndicator
   ) {}
 
   @HealthSystemCheckAwsDoc()
@@ -50,13 +53,14 @@ export class HealthSystemController {
       () =>
         this.awsS3BucketIndicator.isHealthy(
           's3PublicBucket',
-          EnumAwsS3Accessibility.public,
+          EnumAwsS3Accessibility.public
         ),
       () =>
         this.awsS3BucketIndicator.isHealthy(
           's3PrivateBucket',
-          EnumAwsS3Accessibility.private,
+          EnumAwsS3Accessibility.private
         ),
+      () => this.awsSESIndicator.isHealthy('ses'),
     ]);
 
     return {
@@ -71,11 +75,24 @@ export class HealthSystemController {
   @Get('/database')
   async checkDatabase(): Promise<IResponseReturn<HealthDatabaseResponseDto>> {
     const data = await this.health.check([
-      () =>
-        this.mongooseIndicator.pingCheck('database', {
-          connection: this.databaseConnection,
-        }),
+      () => this.databaseIndicator.isHealthy('database'),
       () => this.redisIndicator.isHealthy('redis'),
+    ]);
+    return {
+      data,
+    };
+  }
+
+  @HealthSystemCheckThirdPartyDoc()
+  @Response('health.checkThirdParty')
+  @HealthCheck()
+  @ApiKeySystemProtected()
+  @Get('/third-party')
+  async checkThirdParty(): Promise<
+    IResponseReturn<HealthThirdPartyResponseDto>
+  > {
+    const data = await this.health.check([
+      () => this.sentryIndicator.isHealthy('sentry'),
     ]);
     return {
       data,

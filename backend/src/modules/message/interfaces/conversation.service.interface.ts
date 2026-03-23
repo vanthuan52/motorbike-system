@@ -1,26 +1,15 @@
-import {
-  IDatabaseCreateOptions,
-  IDatabaseFindAllOptions,
-} from '@/common/database/interfaces/database.interface';
-import { ConversationDoc } from '../entities/conversation.entity';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
+import { Conversation, Prisma } from '@/generated/prisma-client';
 
 export interface IConversationService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<ConversationDoc[] | null>;
+  findAll(where?: Prisma.ConversationWhereInput): Promise<Conversation[]>;
 
-  findOne(conversationId: string): Promise<ConversationDoc | null>;
+  findOne(conversationId: string): Promise<Conversation | null>;
 
-  findByParticipants(participants: string[]): Promise<ConversationDoc | null>;
+  findByParticipants(participants: string[]): Promise<Conversation | null>;
 
-  getConversationsByUser(user: IUserDoc): Promise<ConversationDoc[]>;
+  getConversationsByUser(userId: string): Promise<Conversation[]>;
 
-  create(
-    participants: string[],
-    options?: IDatabaseCreateOptions,
-  ): Promise<ConversationDoc>;
+  create(participants: string[]): Promise<Conversation>;
 
-  mapConversations(conversation: ConversationDoc, user: IUserDoc): Promise<any>;
+  mapConversations(conversation: Conversation, userId: string): Promise<any>;
 }

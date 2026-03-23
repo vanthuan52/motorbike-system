@@ -1,9 +1,4 @@
-import {
-  ApiProperty,
-  OmitType,
-  PickType,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
@@ -143,19 +138,26 @@ export class AwsSESSendBulkRecipientsDto extends PickType(AwsSESSendDto, [
  * DTO for sending bulk emails through AWS SES.
  * Allows sending to multiple recipients with individual template data for each recipient.
  */
-export class AwsSESSendBulkDto extends OmitType(AwsSESSendDto, [
+export class AwsSESSendBulkDto<T = unknown> extends OmitType(AwsSESSendDto, [
   'recipients',
   'templateData',
 ]) {
   @ApiProperty({
     required: true,
     isArray: true,
-    type: AwsSESSendBulkRecipientsDto,
-    oneOf: [{ $ref: getSchemaPath(AwsSESSendBulkRecipientsDto) }],
+    type: [AwsSESSendBulkRecipientsDto],
   })
   @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
   @Type(() => AwsSESSendBulkRecipientsDto)
   recipients: AwsSESSendBulkRecipientsDto[];
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsObject()
+  @IsNotEmptyObject()
+  defaultTemplateData?: T;
 }

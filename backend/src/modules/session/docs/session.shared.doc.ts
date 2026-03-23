@@ -7,31 +7,31 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { SessionListResponseDto } from '@/modules/session/dtos/response/session.list.response.dto';
+import { SessionResponseDto } from '@/modules/session/dtos/response/session.response.dto';
 import { SessionDocParamsId } from '@/modules/session/constants/session.doc.constant';
 import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
 
 export function SessionSharedListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get all user sessions',
+      summary: 'get all user Sessions',
     }),
     DocAuth({
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({}),
-    DocResponsePaging<SessionListResponseDto>('session.list', {
-      dto: SessionListResponseDto,
+    DocGuard({ termPolicy: true }),
+    DocResponsePaging<SessionResponseDto>('session.list', {
+      dto: SessionResponseDto,
       type: EnumPaginationType.cursor,
-    }),
+    })
   );
 }
 
 export function SessionSharedRevokeDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'revoke user session',
+      summary: 'revoke user Session',
     }),
     DocRequest({
       params: SessionDocParamsId,
@@ -40,7 +40,7 @@ export function SessionSharedRevokeDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({}),
-    DocResponse('session.revoke'),
+    DocGuard({ termPolicy: true }),
+    DocResponse('session.revoke')
   );
 }

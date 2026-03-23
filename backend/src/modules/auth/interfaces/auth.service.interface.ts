@@ -26,59 +26,59 @@ export interface IAuthService {
   createTokens(
     user: IUserDoc,
     loginFrom: EnumUserLoginFrom,
-    loginWith: EnumUserLoginWith,
+    loginWith: EnumUserLoginWith
   ): IAuthAccessTokenGenerate;
   validateJwtAccessStrategy(
-    payload: IAuthJwtAccessTokenPayload,
+    payload: IAuthJwtAccessTokenPayload
   ): Promise<IAuthJwtAccessTokenPayload>;
   validateJwtAccessGuard(
     err: Error,
     user: IAuthJwtAccessTokenPayload,
-    info: Error,
+    info: Error
   ): Promise<IAuthJwtAccessTokenPayload>;
   validateJwtRefreshStrategy(
-    payload: IAuthJwtRefreshTokenPayload,
+    payload: IAuthJwtRefreshTokenPayload
   ): Promise<IAuthJwtRefreshTokenPayload>;
   validateJwtRefreshGuard(
     err: Error,
     user: IAuthJwtRefreshTokenPayload,
-    info: Error,
+    info: Error
   ): Promise<IAuthJwtRefreshTokenPayload>;
   validateOAuthAppleGuard(
-    request: IRequestApp<IAuthSocialPayload>,
+    request: IRequestApp<IAuthSocialPayload>
   ): Promise<boolean>;
   validateOAuthGoogleGuard(
-    request: IRequestApp<IAuthSocialPayload>,
+    request: IRequestApp<IAuthSocialPayload>
   ): Promise<boolean>;
   // API service
   loginCredential(
     data: UserLoginRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   loginWithSocial(
     email: string,
     loginWith: EnumUserLoginWith,
     socialData: UserCreateSocialRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   refreshToken(
     user: IUserDoc,
     refreshToken: string,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   signUp(data: AuthSignUpRequestDto, requestLog: IRequestLog): Promise<void>;
   changePassword(
     user: IUserDoc,
     data: AuthChangePasswordRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void>;
 
   forgotPassword(
     data: UserForgotPasswordRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void>;
   resetPassword(
     data: UserForgotPasswordResetRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void>;
 }

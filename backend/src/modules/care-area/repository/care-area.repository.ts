@@ -1,18 +1,147 @@
-import { Model, PopulateOptions } from 'mongoose';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
-import { CareAreaDoc, CareAreaEntity } from '../entities/care-area.entity';
-import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@/common/database/services/database.service';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { CareArea, Prisma } from '@/generated/prisma-client';
 
-export class CareAreaRepository extends DatabaseRepositoryBase<
-  CareAreaEntity,
-  CareAreaDoc
-> {
-  readonly _joinActive: PopulateOptions[] = [];
-
+@Injectable()
+export class CareAreaRepository {
   constructor(
-    @InjectDatabaseModel(CareAreaEntity.name)
-    private readonly careAreaModel: Model<CareAreaEntity>,
-  ) {
-    super(careAreaModel);
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService
+  ) {}
+
+  async findAll(
+    {
+      where: baseWhere,
+      skip,
+      limit,
+      orderBy,
+      ...rest
+    }: IPaginationQueryOffsetParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<CareArea[]> {
+    const mergedWhere: Prisma.CareAreaWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.careArea.findMany({
+      where: mergedWhere,
+      skip,
+      take: limit,
+      orderBy: orderBy || { createdAt: 'desc' },
+      ...rest,
+    });
+  }
+
+  async getTotal(
+    {
+      where: baseWhere,
+    }: IPaginationQueryOffsetParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<number> {
+    const mergedWhere: Prisma.CareAreaWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.careArea.count({
+      where: mergedWhere,
+    });
+  }
+
+  async findWithPaginationOffset({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.CareAreaSelect,
+    Prisma.CareAreaWhereInput
+  >): Promise<{
+    data: CareArea[];
+    count: number;
+    page: number;
+    totalPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nextPage?: number;
+    previousPage?: number;
+  }> {
+    return this.paginationService.offsetRaw<CareArea>(
+      this.databaseService.careArea,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+      }
+    );
+  }
+
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.CareAreaSelect,
+    Prisma.CareAreaWhereInput
+  >): Promise<{
+    data: CareArea[];
+    count?: number;
+    cursor?: string;
+    hasNext: boolean;
+  }> {
+    return this.paginationService.cursorRaw<CareArea>(
+      this.databaseService.careArea,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        includeCount: true,
+      }
+    );
+  }
+
+  async findOneById(id: string): Promise<CareArea | null> {
+    return this.databaseService.careArea.findUnique({
+      where: { id },
+    });
+  }
+
+  async findOne(where: Prisma.CareAreaWhereInput): Promise<CareArea | null> {
+    return this.databaseService.careArea.findFirst({
+      where,
+    });
+  }
+
+  async create(data: Prisma.CareAreaCreateInput): Promise<CareArea> {
+    return this.databaseService.careArea.create({
+      data,
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.CareAreaUpdateInput
+  ): Promise<CareArea> {
+    return this.databaseService.careArea.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async delete(id: string): Promise<CareArea> {
+    return this.databaseService.careArea.delete({
+      where: { id },
+    });
   }
 }

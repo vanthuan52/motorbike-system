@@ -1,4 +1,4 @@
-export enum ENUM_PART_STATUS {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+export enum EnumPartStatus {
+  active = 'active',
+  inactive = 'inactive',
 }

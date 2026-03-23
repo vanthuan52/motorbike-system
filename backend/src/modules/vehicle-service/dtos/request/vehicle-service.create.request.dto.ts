@@ -9,7 +9,7 @@ import {
   IsArray,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
-import { ENUM_VEHICLE_SERVICE_STATUS } from '../../enums/vehicle-service.enum';
+import { EnumVehicleServiceStatus } from '../../enums/vehicle-service.enum';
 
 export class VehicleServiceCreateRequestDto {
   @ApiProperty({
@@ -54,18 +54,18 @@ export class VehicleServiceCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_VEHICLE_SERVICE_STATUS))
+  @IsIn(Object.values(EnumVehicleServiceStatus))
   @ApiProperty({
-    example: ENUM_VEHICLE_SERVICE_STATUS.ACTIVE,
+    example: EnumVehicleServiceStatus.active,
     description: 'Trạng thái hoạt động (active/inactive)',
     required: false,
-    enum: ENUM_VEHICLE_SERVICE_STATUS,
-    default: ENUM_VEHICLE_SERVICE_STATUS.ACTIVE,
+    enum: EnumVehicleServiceStatus,
+    default: EnumVehicleServiceStatus.active,
   })
-  status?: ENUM_VEHICLE_SERVICE_STATUS;
+  status?: EnumVehicleServiceStatus;
 
   @ApiProperty({
     example: faker.string.uuid(),

@@ -22,11 +22,6 @@ import {
   IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
 import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record-checklist.list.response.dto';
-import { CareRecordChecklistDto } from '../dtos/care-record-checklist.dto';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import {
   PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
@@ -44,7 +39,7 @@ import {
   CareRecordChecklistUpdateStatusDoc,
   CareRecordChecklistUpdateResultDoc,
 } from '../docs/care-record-checklist.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -58,12 +53,14 @@ import {
   CARE_RECORD_CHECKLIST_DEFAULT_STATUS,
 } from '../constants/care-record-checklist.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { CareRecordChecklistUpdateStatusRequestDto } from '../dtos/request/care-record-checklist.update-status.request.dto';
 import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
+import { CareRecordChecklistUtil } from '../utils/care-record-checklist.util';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.care-record-checklist')
 @Controller({
@@ -73,6 +70,8 @@ import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-rec
 export class CareRecordChecklistController {
   constructor(
     private readonly careRecordChecklistService: CareRecordChecklistService,
+    private readonly careRecordChecklistUtil: CareRecordChecklistUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @CareRecordChecklistListDoc()
@@ -80,7 +79,7 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -95,8 +94,8 @@ export class CareRecordChecklistController {
     status: Record<string, IPaginationIn>,
     @PaginationQueryFilterInEnum('result', CARE_RECORD_CHECKLIST_DEFAULT_RESULT)
     result: Record<string, IPaginationIn>,
-    @Query('careRecordService', OptionalParseUUIDPipe)
-    careRecordServiceId: string,
+    @Query('careRecordService', RequestOptionalParseObjectIdPipe)
+    careRecordServiceId: string
   ): Promise<IResponsePagingReturn<CareRecordChecklistListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
@@ -104,10 +103,15 @@ export class CareRecordChecklistController {
     };
 
     if (careRecordServiceId) {
-      filters['careRecordService._id'] = careRecordServiceId;
+      filters['careRecordServiceId'] = careRecordServiceId;
     }
 
-    return this.careRecordChecklistService.getListOffset(pagination, filters);
+    const { data, total } = await this.careRecordChecklistService.getListOffset(
+      pagination,
+      filters
+    );
+    const mapped = this.careRecordChecklistUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 
   @CareRecordChecklistParamsIdDoc()
@@ -115,15 +119,18 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>> {
-    return this.careRecordChecklistService.findOneById(id);
+    const careRecordChecklist =
+      await this.careRecordChecklistService.findOneById(id);
+    const mapped = this.careRecordChecklistUtil.mapGetFull(careRecordChecklist);
+    return { data: mapped };
   }
 
   @CareRecordChecklistCreateDoc()
@@ -131,18 +138,17 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() body: CareRecordChecklistCreateRequestDto,
+    @Body() body: CareRecordChecklistCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    return this.careRecordChecklistService.create(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
+    const created = await this.careRecordChecklistService.create(body);
+    return { data: { id: created.id } };
   }
 
   @CareRecordChecklistUpdateDoc()
@@ -150,19 +156,18 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordChecklistUpdateRequestDto,
+    @Body() body: CareRecordChecklistUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    return this.careRecordChecklistService.update(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordChecklistService.update(id, body);
+    return;
   }
 
   @CareRecordChecklistUpdateStatusDoc()
@@ -170,19 +175,18 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordChecklistUpdateStatusRequestDto,
+    @Body() body: CareRecordChecklistUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    return this.careRecordChecklistService.updateStatus(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordChecklistService.updateStatus(id, body);
+    return;
   }
 
   @CareRecordChecklistUpdateResultDoc()
@@ -190,19 +194,18 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/result')
   async updateResult(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordChecklistUpdateResultRequestDto,
+    @Body() body: CareRecordChecklistUpdateResultRequestDto
   ): Promise<IResponseReturn<void>> {
-    return this.careRecordChecklistService.updateResult(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordChecklistService.updateResult(id, body);
+    return;
   }
 
   @CareRecordChecklistDeleteDoc()
@@ -210,17 +213,16 @@ export class CareRecordChecklistController {
   @RoleProtected(
     EnumRoleType.admin,
     EnumRoleType.manager,
-    EnumRoleType.technician,
+    EnumRoleType.technician
   )
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') actionBy: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('user') actionBy: string
   ): Promise<IResponseReturn<void>> {
-    return this.careRecordChecklistService.delete(id, {
-      actionBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordChecklistService.delete(id);
+    return;
   }
 }

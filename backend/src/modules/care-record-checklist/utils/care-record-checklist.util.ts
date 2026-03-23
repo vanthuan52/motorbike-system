@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { CareRecordChecklistDoc } from '../entities/care-record-checklist.entity';
-import { ICareRecordChecklistEntity } from '../interfaces/care-record-checklist.interface';
+import { CareRecordChecklist } from '@prisma/client';
 import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record-checklist.list.response.dto';
 import { CareRecordChecklistDto } from '../dtos/care-record-checklist.dto';
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
@@ -10,38 +8,24 @@ import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-rec
 @Injectable()
 export class CareRecordChecklistUtil {
   mapList(
-    careRecordChecklists:
-      | CareRecordChecklistDoc[]
-      | ICareRecordChecklistEntity[],
+    careRecordChecklists: CareRecordChecklist[]
   ): CareRecordChecklistListResponseDto[] {
     return plainToInstance(
       CareRecordChecklistListResponseDto,
-      careRecordChecklists.map(
-        (c: CareRecordChecklistDoc | ICareRecordChecklistEntity) =>
-          c instanceof Document ? c.toObject() : c,
-      ),
+      careRecordChecklists
     );
   }
 
-  mapGet(
-    careRecordChecklist: CareRecordChecklistDoc | ICareRecordChecklistEntity,
-  ): CareRecordChecklistDto {
-    return plainToInstance(
-      CareRecordChecklistDto,
-      careRecordChecklist instanceof Document
-        ? careRecordChecklist.toObject()
-        : careRecordChecklist,
-    );
+  mapGet(careRecordChecklist: CareRecordChecklist): CareRecordChecklistDto {
+    return plainToInstance(CareRecordChecklistDto, careRecordChecklist);
   }
 
   mapGetFull(
-    careRecordChecklist: CareRecordChecklistDoc | ICareRecordChecklistEntity,
+    careRecordChecklist: CareRecordChecklist
   ): CareRecordChecklistGetFullResponseDto {
     return plainToInstance(
       CareRecordChecklistGetFullResponseDto,
-      careRecordChecklist instanceof Document
-        ? careRecordChecklist.toObject()
-        : careRecordChecklist,
+      careRecordChecklist
     );
   }
 }

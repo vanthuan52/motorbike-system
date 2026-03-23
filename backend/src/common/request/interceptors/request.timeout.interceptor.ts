@@ -26,7 +26,7 @@ export class RequestTimeoutInterceptor implements NestInterceptor {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly reflector: Reflector,
+    private readonly reflector: Reflector
   ) {
     this.maxTimeoutInMs = this.configService.get<number>('request.timeoutInMs');
   }
@@ -41,18 +41,18 @@ export class RequestTimeoutInterceptor implements NestInterceptor {
     if (context.getType() === 'http') {
       const customTimeout = this.reflector.get<boolean>(
         RequestCustomTimeoutMetaKey,
-        context.getHandler(),
+        context.getHandler()
       );
 
       if (customTimeout === true) {
         const timeoutValue: ms.StringValue = this.reflector.get<ms.StringValue>(
           RequestCustomTimeoutValueMetaKey,
-          context.getHandler(),
+          context.getHandler()
         );
 
         return this.handleTimeoutRequest(
           next,
-          ms(timeoutValue as ms.StringValue),
+          ms(timeoutValue as ms.StringValue)
         );
       } else {
         return this.handleTimeoutRequest(next, this.maxTimeoutInMs);
@@ -70,11 +70,11 @@ export class RequestTimeoutInterceptor implements NestInterceptor {
    */
   private handleTimeoutRequest(
     next: CallHandler,
-    timeoutMs: number,
+    timeoutMs: number
   ): Observable<unknown> {
     return next.handle().pipe(
       timeout(timeoutMs),
-      catchError((err) => {
+      catchError(err => {
         if (err instanceof TimeoutError) {
           throw new RequestTimeoutException({
             statusCode: EnumRequestStatusCodeError.timeout,
@@ -82,7 +82,7 @@ export class RequestTimeoutInterceptor implements NestInterceptor {
           });
         }
         return throwError(() => err);
-      }),
+      })
     );
   }
 }

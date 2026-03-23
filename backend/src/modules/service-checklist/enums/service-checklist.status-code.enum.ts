@@ -1,8 +1,8 @@
-export enum ENUM_SERVICE_CHECKLIST_STATUS_CODE_ERROR {
-  NOT_FOUND = 5900,
-  EXIST = 5901,
-  IS_ACTIVE = 5902,
-  USED = 5903,
-  INACTIVE_FORBIDDEN = 5904,
-  NAME_EXISTED = 5906,
+export enum EnumServiceChecklistStatusCodeError {
+  notFound = 5900,
+  exist = 5901,
+  isActive = 5902,
+  used = 5903,
+  inactiveForbidden = 5904,
+  nameExisted = 5906,
 }

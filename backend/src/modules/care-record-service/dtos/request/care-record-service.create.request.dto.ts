@@ -7,7 +7,7 @@ import {
   IsString,
   IsEnum,
 } from 'class-validator';
-import { ENUM_CARE_RECORD_SERVICE_TYPE } from '../../enums/care-record-service.enum';
+import { EnumCareRecordServiceType } from '../../enums/care-record-service.enum';
 
 export class CareRecordServiceCreateRequestDto {
   @ApiProperty({
@@ -39,10 +39,10 @@ export class CareRecordServiceCreateRequestDto {
 
   @ApiProperty({
     required: true,
-    example: ENUM_CARE_RECORD_SERVICE_TYPE.SERVICE,
-    enum: ENUM_CARE_RECORD_SERVICE_TYPE,
+    example: EnumCareRecordServiceType.service,
+    enum: EnumCareRecordServiceType,
   })
-  @IsEnum(ENUM_CARE_RECORD_SERVICE_TYPE)
+  @IsEnum(EnumCareRecordServiceType)
   @IsNotEmpty()
-  type: ENUM_CARE_RECORD_SERVICE_TYPE;
+  type: EnumCareRecordServiceType;
 }
