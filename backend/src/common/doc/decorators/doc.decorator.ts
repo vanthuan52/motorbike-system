@@ -1,4 +1,5 @@
 import { HttpStatus, applyDecorators } from '@nestjs/common';
+import { faker } from '@faker-js/faker';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -13,6 +14,7 @@ import {
   ApiSecurity,
   getSchemaPath,
 } from '@nestjs/swagger';
+import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import {
   IDocAuthOptions,
   IDocDefaultOptions,
@@ -30,7 +32,6 @@ import { ResponsePagingDto } from '@/common/response/dtos/response.paging.dto';
 import { EnumApiKeyStatusCodeError } from '@/modules/api-key/enums/api-key.status-code.enum';
 import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
 import { EnumPolicyStatusCodeError } from '@/modules/policy/enums/policy.status-code.enum';
-import { SchemaObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 import { EnumMessageLanguage } from '@/common/message/enums/message.enum';
 import {
   EnumPaginationOrderDirectionType,
@@ -39,14 +40,17 @@ import {
 import {
   DocContentTypeMapping,
   DocFileErrorResponses,
+  DocPaginationCursorErrorResponses,
   DocPaginationCursorQueries,
-  DocPaginationErrorResponses,
+  DocPaginationOffsetErrorResponses,
   DocPaginationOffsetQueries,
+  DocPaginationSharedErrorResponses,
   DocStandardErrorResponse,
 } from '@/common/doc/constants/doc.constant';
 import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.enum';
 import { EnumFileExtensionDocument } from '@/common/file/enums/file.enum';
-import { faker } from '@faker-js/faker';
+
+import { EnumTermPolicyStatusCodeError } from '@/modules/term-policy/enums/term-policy.status-code.enum';
 
 /**
  * Helper function to create a schema object with consistent structure.
@@ -118,7 +122,7 @@ export function DocDefault<T>(options: IDocDefaultOptions<T>): MethodDecorator {
       status: options.httpStatus,
       schema,
     }),
-    ...docs,
+    ...docs
   );
 }
 
@@ -155,7 +159,7 @@ export function DocOneOf(
         oneOf,
       },
     }),
-    ...docs,
+    ...docs
   );
 }
 
@@ -192,7 +196,7 @@ export function DocAnyOf(
         anyOf,
       },
     }),
-    ...docs,
+    ...docs
   );
 }
 
@@ -229,7 +233,7 @@ export function DocAllOf(
         allOf,
       },
     }),
-    ...docs,
+    ...docs
   );
 }
 
@@ -273,7 +277,7 @@ export function Doc(options?: IDocOptions): MethodDecorator {
     DocStandardErrorResponse.requestTimeout,
     DocStandardErrorResponse.validationError,
     DocStandardErrorResponse.envForbidden,
-    DocStandardErrorResponse.paramRequired,
+    DocStandardErrorResponse.paramRequired
   );
 }
 
@@ -293,11 +297,11 @@ export function DocRequest(options?: IDocRequestOptions): MethodDecorator {
   }
 
   if (options?.params?.length) {
-    docs.push(...options.params.map((param) => ApiParam(param)));
+    docs.push(...options.params.map(param => ApiParam(param)));
   }
 
   if (options?.queries?.length) {
-    docs.push(...options.queries.map((query) => ApiQuery(query)));
+    docs.push(...options.queries.map(query => ApiQuery(query)));
   }
 
   if (options?.dto) {
@@ -314,7 +318,7 @@ export function DocRequest(options?: IDocRequestOptions): MethodDecorator {
  * @returns {MethodDecorator} A method decorator that applies Swagger file upload documentation
  */
 export function DocRequestFile(
-  options?: IDocRequestFileOptions,
+  options?: IDocRequestFileOptions
 ): MethodDecorator {
   const docs: Array<ClassDecorator | MethodDecorator> = [
     DocFileErrorResponses.extensionInvalid,
@@ -323,11 +327,11 @@ export function DocRequestFile(
   ];
 
   if (options?.params?.length) {
-    docs.push(...options.params.map((param) => ApiParam(param)));
+    docs.push(...options.params.map(param => ApiParam(param)));
   }
 
   if (options?.queries?.length) {
-    docs.push(...options.queries.map((query) => ApiQuery(query)));
+    docs.push(...options.queries.map(query => ApiQuery(query)));
   }
 
   if (options?.dto) {
@@ -365,6 +369,13 @@ export function DocGuard(options?: IDocGuardOptions): MethodDecorator {
     oneOfForbidden.push({
       statusCode: EnumPolicyStatusCodeError.forbidden,
       messagePath: 'policy.error.forbidden',
+    });
+  }
+
+  if (options?.termPolicy) {
+    oneOfForbidden.push({
+      statusCode: EnumTermPolicyStatusCodeError.requiredInvalid,
+      messagePath: 'termPolicy.error.requiredInvalid',
     });
   }
 
@@ -407,7 +418,7 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
       {
         messagePath: 'auth.error.socialGoogleRequired',
         statusCode: EnumAuthStatusCodeError.socialGoogleRequired,
-      },
+      }
     );
   }
 
@@ -421,7 +432,7 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
       {
         messagePath: 'auth.error.socialAppleRequired',
         statusCode: EnumAuthStatusCodeError.socialAppleRequired,
-      },
+      }
     );
   }
 
@@ -443,13 +454,13 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
       {
         statusCode: EnumApiKeyStatusCodeError.xApiKeyForbidden,
         messagePath: 'apiKey.error.xApiKey.forbidden',
-      },
+      }
     );
   }
 
   return applyDecorators(
     ...docs,
-    DocOneOf(HttpStatus.UNAUTHORIZED, ...oneOfUnauthorized),
+    DocOneOf(HttpStatus.UNAUTHORIZED, ...oneOfUnauthorized)
   );
 }
 
@@ -463,7 +474,7 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
  */
 export function DocResponse<T = void>(
   messagePath: string,
-  options?: IDocResponseOptions<T>,
+  options?: IDocResponseOptions<T>
 ): MethodDecorator {
   const docs: IDocDefaultOptions = {
     httpStatus: options?.httpStatus ?? HttpStatus.OK,
@@ -488,6 +499,13 @@ export function DocResponse<T = void>(
  * - **OFFSET**: Uses offset-based pagination queries (page, perPage, limit, offset)
  *
  * It also supports optional search and ordering functionality.
+ *
+ * Ordering documented here reflects the request query format:
+ * - `orderBy` is a single field name
+ * - `orderDirection` is the direction for that field
+ *
+ * Internal pagination services may support richer `orderBy` structures, but this decorator
+ * documents the public HTTP query contract only.
  * @template T - Type of the DTO for paginated response data
  * @param {string} messagePath - The message path/key for internationalization
  * @param {IDocResponsePagingOptions<T>} options - Configuration for paginated response documentation
@@ -496,7 +514,7 @@ export function DocResponse<T = void>(
  */
 export function DocResponsePaging<T>(
   messagePath: string,
-  options: IDocResponsePagingOptions<T>,
+  options: IDocResponsePagingOptions<T>
 ): MethodDecorator {
   const docs = [
     ApiProduces('application/json'),
@@ -524,13 +542,16 @@ export function DocResponsePaging<T>(
         },
       },
     }),
-    ...Object.values(DocPaginationErrorResponses),
+    ...Object.values(DocPaginationSharedErrorResponses),
+    ...(options.type === EnumPaginationType.cursor
+      ? Object.values(DocPaginationCursorErrorResponses)
+      : Object.values(DocPaginationOffsetErrorResponses)),
   ];
 
   if (options.type === EnumPaginationType.cursor) {
-    docs.push(...DocPaginationCursorQueries.map((query) => ApiQuery(query)));
+    docs.push(...DocPaginationCursorQueries.map(query => ApiQuery(query)));
   } else {
-    docs.push(...DocPaginationOffsetQueries.map((query) => ApiQuery(query)));
+    docs.push(...DocPaginationOffsetQueries.map(query => ApiQuery(query)));
   }
 
   if (options.availableSearch) {
@@ -541,7 +562,7 @@ export function DocResponsePaging<T>(
         allowEmptyValue: true,
         type: 'string',
         description: `Search query, available fields: ${options.availableSearch.join(', ')}. Search is case-insensitive and support partial match.`,
-      }),
+      })
     );
   }
 
@@ -551,20 +572,11 @@ export function DocResponsePaging<T>(
         name: 'orderBy',
         required: false,
         allowEmptyValue: true,
-        example: options.availableOrder[0],
-        enum: options.availableOrder,
+        isArray: true,
+        example: `${options.availableOrder[0]}:${EnumPaginationOrderDirectionType.desc}`,
         type: 'string',
-        description: `Order by field, available fields: ${options.availableOrder.join(', ')}.`,
-      }),
-      ApiQuery({
-        name: 'orderDirection',
-        required: false,
-        allowEmptyValue: true,
-        example: EnumPaginationOrderDirectionType.asc,
-        enum: EnumPaginationOrderDirectionType,
-        type: 'string',
-        description: `Order direction, available values: ${Object.values(EnumPaginationOrderDirectionType).join(', ')}.`,
-      }),
+        description: `Order by field in \`field:direction\` format (e.g. \`createdAt:desc\`). Available fields: ${options.availableOrder.join(', ')}. Available directions: ${Object.values(EnumPaginationOrderDirectionType).join(', ')}. Repeat the parameter to sort by multiple fields.`,
+      })
     );
   }
 
@@ -578,7 +590,7 @@ export function DocResponsePaging<T>(
  * @returns {MethodDecorator} A method decorator that applies Swagger file response documentation
  */
 export function DocResponseFile(
-  options?: IDocResponseFileOptions,
+  options?: IDocResponseFileOptions
 ): MethodDecorator {
   const httpStatus: HttpStatus = options?.httpStatus ?? HttpStatus.OK;
 
@@ -587,6 +599,6 @@ export function DocResponseFile(
     ApiResponse({
       description: httpStatus.toString(),
       status: httpStatus,
-    }),
+    })
   );
 }

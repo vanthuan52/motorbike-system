@@ -33,7 +33,7 @@ import {
   CareRecordItemUpdateDoc,
   CareRecordItemUpdateApprovalDoc,
 } from '../docs/care-record-item.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
@@ -47,8 +47,8 @@ import {
   CARE_RECORD_ITEM_DEFAULT_AVAILABLE_SEARCH,
 } from '../constants/care-record-item.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordItemUtil } from '../utils/care-record-item.util';
@@ -63,7 +63,7 @@ export class CareRecordItemAdminController {
   constructor(
     private readonly careRecordItemService: CareRecordItemService,
     private readonly careRecordItemUtil: CareRecordItemUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @CareRecordItemAdminListDoc()
@@ -82,18 +82,18 @@ export class CareRecordItemAdminController {
       availableOrderBy: CARE_RECORD_ITEM_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('careRecord', RequestOptionalParseUUIDPipe)
-    careRecordId: string,
+    @Query('careRecord', RequestOptionalParseObjectIdPipe)
+    careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordItemListResponseDto>> {
     const filters: Record<string, any> = {};
 
     if (careRecordId) {
-      filters['careRecord._id'] = careRecordId;
+      filters['careRecordId'] = careRecordId;
     }
 
     const { data, total } = await this.careRecordItemService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.careRecordItemUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -110,7 +110,7 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<CareRecordItemGetFullResponseDto>> {
     const careRecordItem = await this.careRecordItemService.findOneById(id);
     const mapped = this.careRecordItemUtil.mapGetFull(careRecordItem);
@@ -128,10 +128,10 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: CareRecordItemCreateRequestDto,
+    @Body() body: CareRecordItemCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careRecordItemService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created._id } };
   }
 
   @CareRecordItemUpdateDoc()
@@ -145,8 +145,8 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: CareRecordItemUpdateRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: CareRecordItemUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.careRecordItemService.update(id, body);
     return {};
@@ -163,8 +163,8 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/approval')
   async updateApproval(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: CareRecordItemUpdateApprovalRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: CareRecordItemUpdateApprovalRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.careRecordItemService.updateApproval(id, body);
     return {};
@@ -181,7 +181,7 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<void>> {
     await this.careRecordItemService.delete(id);
     return {};

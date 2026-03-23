@@ -41,7 +41,7 @@ import {
 } from '../docs/part-type.admin.doc';
 import { PartTypeUtil } from '../utils/part-type.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
@@ -57,7 +57,7 @@ import {
 } from '../constants/part-type.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 
 @ApiTags('modules.admin.part-type')
 @Controller({
@@ -68,7 +68,7 @@ export class PartTypeAdminController {
   constructor(
     private readonly partTypeService: PartTypeService,
     private readonly partTypeUtil: PartTypeUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @PartTypeAdminListDoc()
@@ -88,11 +88,11 @@ export class PartTypeAdminController {
     })
     pagination: IPaginationQueryOffsetParams,
     @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
     const { data, total } = await this.partTypeService.getListOffset(
       pagination,
-      status,
+      status
     );
     const mapped = this.partTypeUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -109,7 +109,7 @@ export class PartTypeAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<PartTypeDto>> {
     const partType = await this.partTypeService.findOneById(id);
     const mapped = this.partTypeUtil.mapOne(partType);
@@ -127,10 +127,10 @@ export class PartTypeAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: PartTypeCreateRequestDto,
+    @Body() body: PartTypeCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.partTypeService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created.id } };
   }
 
   @PartTypeAdminUpdateDoc()
@@ -144,8 +144,8 @@ export class PartTypeAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: PartTypeUpdateRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: PartTypeUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.partTypeService.update(id, body);
     return {};
@@ -162,8 +162,8 @@ export class PartTypeAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: PartTypeUpdateStatusRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: PartTypeUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.partTypeService.updateStatus(id, body);
     return {};
@@ -180,7 +180,7 @@ export class PartTypeAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<void>> {
     await this.partTypeService.delete(id);
     return {};

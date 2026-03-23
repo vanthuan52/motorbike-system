@@ -11,16 +11,10 @@ export enum EnumPolicySubject {
   apiKey = 'apiKey',
   role = 'role',
   user = 'user',
-  auth = 'auth',
   session = 'session',
   activityLog = 'activityLog',
   passwordHistory = 'passwordHistory',
   termPolicy = 'termPolicy',
   featureFlag = 'featureFlag',
-}
-
-export enum EnumRoleType {
-  superAdmin = 'superadmin',
-  admin = 'admin',
-  user = 'user',
+  device = 'device',
 }

@@ -10,7 +10,7 @@ import {
   ArrayUnique,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
-import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export class ServiceChecklistCreateRequestDto {
   @ApiProperty({
@@ -54,7 +54,7 @@ export class ServiceChecklistCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 
   @ApiProperty({
     example: faker.string.uuid(),
@@ -67,13 +67,13 @@ export class ServiceChecklistCreateRequestDto {
   @ApiProperty({
     description: 'Danh sách các loại xe mà công việc này áp dụng.',
     required: false,
-    enum: ENUM_VEHICLE_MODEL_TYPE,
+    enum: EnumVehicleModelType,
     isArray: true,
     default: [], // Mặc định là mảng rỗng (diễn giải là áp dụng cho tất cả hoặc không có giới hạn)
   })
   @IsOptional()
   @IsArray()
   @ArrayUnique()
-  @IsIn(Object.values(ENUM_VEHICLE_MODEL_TYPE), { each: true })
-  vehicleType?: ENUM_VEHICLE_MODEL_TYPE[];
+  @IsIn(Object.values(EnumVehicleModelType), { each: true })
+  vehicleType?: EnumVehicleModelType[];
 }

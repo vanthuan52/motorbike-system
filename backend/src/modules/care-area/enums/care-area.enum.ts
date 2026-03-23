@@ -1,13 +1,13 @@
-export enum ENUM_CARE_AREA {
-  LIGHT_ELECTRIC_STARTER = 'LIGHT_ELECTRIC_STARTER', // Bộ phận Đèn - Điện - Đề
-  STEERING_SUSPENSION = 'STEERING_SUSPENSION', // Bộ phận Trục lái - Phuộc
-  BRAKE_FRONT_REAR = 'BRAKE_FRONT_REAR', // Bộ phận Thắng trước sau
-  FUEL_IGNITION = 'FUEL_IGNITION', // Bộ phận Xăng - Lửa
-  POT = 'POT', // Bộ phận Nồi
-  PULY_CLUTCH_SHAFT = 'PULY_CLUTCH_SHAFT', // Bộ phận Puly - Trục láp
-  OIL_ENGINE_COOLING_SCOOTER = 'OIL_ENGINE_COOLING_SCOOTER', // Bộ phận Nhớt - Làm mát động cơ
-  OIL_ENGINE_COOLING = 'OIL_ENGINE_COOLING', // Nhớt - Làm mát động cơ
-  STEERING_FRONT_WHEEL = 'STEERING_FRONT_WHEEL', // Trục lái - Bánh trước
-  TRANSMISSION_REAR_WHEEL = 'TRANSMISSION_REAR_WHEEL', // Truyền tải - Bánh sau
-  OTHER = 'OTHER', // Bộ phận khác
+export enum EnumCareArea {
+  lightElectricStarter = 'lightElectricStarter', // Bộ phận Đèn - Điện - Đề
+  steeringSuspension = 'steeringSuspension', // Bộ phận Trục lái - Phuộc
+  brakeFrontRear = 'brakeFrontRear', // Bộ phận Thắng trước sau
+  fuelIgnition = 'fuelIgnition', // Bộ phận Xăng - Lửa
+  pot = 'pot', // Bộ phận Nồi
+  pulyClutchShaft = 'pulyClutchShaft', // Bộ phận Puly - Trục láp
+  oilEngineCoolingScooter = 'oilEngineCoolingScooter', // Bộ phận Nhớt - Làm mát động cơ
+  oilEngineCooling = 'oilEngineCooling', // Nhớt - Làm mát động cơ
+  steeringFrontWheel = 'steeringFrontWheel', // Trục lái - Bánh trước
+  transmissionRearWheel = 'transmissionRearWheel', // Truyền tải - Bánh sau
+  other = 'other', // Bộ phận khác
 }

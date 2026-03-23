@@ -61,8 +61,8 @@ export class RequestMiddlewareModule implements NestModule {
         RequestUrlVersionMiddleware,
         RequestResponseTimeMiddleware,
         RequestCustomLanguageMiddleware,
-        RequestCompressionMiddleware,
+        RequestCompressionMiddleware
       )
-      .forRoutes('*');
+      .forRoutes('{*wildcard}');
   }
 }

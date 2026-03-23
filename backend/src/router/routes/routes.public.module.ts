@@ -26,7 +26,7 @@ import { VehicleBrandModule } from '@/modules/vehicle-brand/vehicle-brand.module
 import { VehicleModelModule } from '@/modules/vehicle-model/vehicle-model.module';
 import { ServicePricePublicController } from '@/modules/service-price/controllers/service-price.public.controller';
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
-import { AppointmentsPublicController } from '@/modules/appointment/controllers/appointment.public.controller';
+import { AppointmentPublicController } from '@/modules/appointment/controllers/appointment.public.controller';
 import { AppointmentModule } from '@/modules/appointment/appointment.module';
 import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
 import { HelloModule } from '@/modules/hello/hello.module';
@@ -49,7 +49,7 @@ import { HelloModule } from '@/modules/hello/hello.module';
     VehicleBrandPublicController,
     VehicleModelPublicController,
     ServicePricePublicController,
-    AppointmentsPublicController,
+    AppointmentPublicController,
   ],
   providers: [],
   exports: [],

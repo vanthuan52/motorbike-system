@@ -10,9 +10,9 @@ import {
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_VEHICLE_MODEL_FUEL_TYPE,
-  ENUM_VEHICLE_MODEL_STATUS,
-  ENUM_VEHICLE_MODEL_TYPE,
+  EnumVehicleModelFuelType,
+  EnumVehicleModelStatus,
+  EnumVehicleModelType,
 } from '../../enums/vehicle-model.enum';
 
 export class VehicleModelCreateRequestDto {
@@ -87,42 +87,42 @@ export class VehicleModelCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_VEHICLE_MODEL_STATUS))
+  @IsIn(Object.values(EnumVehicleModelStatus))
   @ApiProperty({
-    example: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
+    example: EnumVehicleModelStatus.active,
     description: 'Trạng thái hoạt động (active/inactive)',
     required: false,
-    enum: ENUM_VEHICLE_MODEL_STATUS,
-    default: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
+    enum: EnumVehicleModelStatus,
+    default: EnumVehicleModelStatus.active,
   })
-  status?: ENUM_VEHICLE_MODEL_STATUS;
+  status?: EnumVehicleModelStatus;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_VEHICLE_MODEL_TYPE))
+  @IsIn(Object.values(EnumVehicleModelType))
   @ApiProperty({
-    example: ENUM_VEHICLE_MODEL_TYPE.UNKNOWN,
+    example: EnumVehicleModelType.unknown,
     description:
       'Phân loại kiểu dáng của xe (unknown/scooter/manual/clutch/electric)',
     required: false,
-    enum: ENUM_VEHICLE_MODEL_TYPE,
-    default: ENUM_VEHICLE_MODEL_TYPE.UNKNOWN,
+    enum: EnumVehicleModelType,
+    default: EnumVehicleModelType.unknown,
   })
-  type?: ENUM_VEHICLE_MODEL_TYPE;
+  type?: EnumVehicleModelType;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_VEHICLE_MODEL_FUEL_TYPE))
+  @IsIn(Object.values(EnumVehicleModelFuelType))
   @ApiProperty({
-    example: ENUM_VEHICLE_MODEL_FUEL_TYPE.UNKNOWN,
+    example: EnumVehicleModelFuelType.unknown,
     description:
       'Phân loại nhiên liệu của xe (unknown/gasoline/hybrid/electric)',
     required: false,
-    enum: ENUM_VEHICLE_MODEL_FUEL_TYPE,
-    default: ENUM_VEHICLE_MODEL_FUEL_TYPE.UNKNOWN,
+    enum: EnumVehicleModelFuelType,
+    default: EnumVehicleModelFuelType.unknown,
   })
-  fuelType?: ENUM_VEHICLE_MODEL_FUEL_TYPE;
+  fuelType?: EnumVehicleModelFuelType;
 
   @ApiProperty({
     example: 2020,

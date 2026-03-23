@@ -6,15 +6,6 @@ import {
 import slugify from 'slugify';
 import { PartTypeRepository } from '../repository/part-type.repository';
 import { IPartTypeService } from '../interfaces/part-type.service.interface';
-import { PartTypeDoc, PartTypeEntity } from '../entities/part-type.entity';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSoftDeleteOptions,
-  IDatabaseUpdateOptions,
-} from '@/common/database/interfaces/database.interface';
 import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
 import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
 import { EnumPartTypeStatus } from '../enums/part-type.enum';
@@ -24,28 +15,49 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_PART_TYPE_STATUS_CODE_ERROR } from '../enums/part-type.status-code.enum';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { EnumPartTypeStatusCodeError } from '../enums/part-type.status-code.enum';
+import { PartType, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class PartTypeService implements IPartTypeService {
   constructor(private readonly partTypeRepository: PartTypeRepository) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    status?: Record<string, IPaginationIn>,
-  ): Promise<{ data: PartTypeDoc[]; total: number }> {
-    const find: Record<string, any> = {
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<
+      Prisma.PartTypeSelect,
+      Prisma.PartTypeWhereInput
+    >,
+    status?: Record<string, IPaginationIn>
+  ): Promise<{ data: PartType[]; total: number }> {
+    const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
       ...status,
     };
 
     const [partTypes, total] = await Promise.all([
-      this.partTypeRepository.findAll(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-      }),
-      this.partTypeRepository.getTotal(find),
+      this.partTypeRepository.findAll(
+        {
+          limit,
+          skip,
+          where: mergedWhere,
+          orderBy,
+        },
+        status
+      ),
+      this.partTypeRepository.getTotal(
+        {
+          limit,
+          skip,
+          where: mergedWhere,
+          orderBy,
+        },
+        status
+      ),
     ]);
 
     return {
@@ -62,102 +74,91 @@ export class PartTypeService implements IPartTypeService {
       cursor,
       cursorField,
       includeCount,
-    }: IPaginationQueryCursorParams,
-    status?: Record<string, IPaginationIn>,
-  ): Promise<{ data: PartTypeDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...status };
+    }: IPaginationQueryCursorParams<
+      Prisma.PartTypeSelect,
+      Prisma.PartTypeWhereInput
+    >,
+    status?: Record<string, IPaginationIn>
+  ): Promise<{ data: PartType[]; total?: number }> {
+    const mergedWhere: Prisma.PartTypeWhereInput = {
+      ...where,
+      ...status,
+    };
 
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
-    }
+    const { data, count } =
+      await this.partTypeRepository.findWithPaginationCursor({
+        limit,
+        where: mergedWhere,
+        orderBy,
+        cursor,
+        cursorField,
+        includeCount,
+      });
 
-    const [data, count] = await Promise.all([
-      this.partTypeRepository.findAllCursor(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
-        },
-      }),
-      includeCount
-        ? this.partTypeRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
-
-    const items = data;
-
-    return { data: items, total: count };
+    return { data, total: count };
   }
 
-  async findOneById(
-    partTypeId: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<PartTypeDoc> {
-    const partType = await this.partTypeRepository.findOneById(
-      partTypeId,
-      options,
-    );
+  async findOneById(partTypeId: string): Promise<PartType> {
+    const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartTypeStatusCodeError.notFound,
         message: 'partType.error.notFound',
       });
     }
     return partType;
   }
 
-  async findOneBySlug(slug: string): Promise<PartTypeDoc> {
+  async findOneBySlug(slug: string): Promise<PartType> {
     const partType = await this.partTypeRepository.findOneBySlug(slug);
     if (!partType) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartTypeStatusCodeError.notFound,
         message: 'partType.error.notFound',
       });
     }
     return partType;
   }
 
-  async create(
-    payload: PartTypeCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto> {
+  async create(payload: PartTypeCreateRequestDto): Promise<{ id: string }> {
     // Validate slug uniqueness
     if (payload.slug) {
       const existingBySlug = await this.partTypeRepository.findOneBySlug(
-        payload.slug,
+        payload.slug
       );
       if (existingBySlug) {
         throw new ConflictException({
-          statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumPartTypeStatusCodeError.slugExisted,
           message: 'partType.error.slugExisted',
         });
       }
     }
 
-    const create: PartTypeEntity = new PartTypeEntity();
-    create.name = payload.name;
-    create.slug = payload.slug
+    const slug = payload.slug
       ? payload.slug.toLowerCase()
       : slugify(payload.name, { lower: true, strict: true, locale: 'vi' });
-    create.description = payload.description;
-    create.status = EnumPartTypeStatus.active;
-    create.photo = payload.photo;
 
-    const created = await this.partTypeRepository.create(create, options);
+    const data: Prisma.PartTypeCreateInput = {
+      name: payload.name,
+      slug,
+      description: payload.description,
+      status: EnumPartTypeStatus.active,
+      photo: payload.photo ?? null,
+    };
 
-    return { _id: created._id };
+    const created = await this.partTypeRepository.create(data);
+
+    return { id: created.id };
   }
 
   async update(
     partTypeId: string,
-    payload: PartTypeUpdateRequestDto,
-    options?: IDatabaseUpdateOptions,
+    payload: PartTypeUpdateRequestDto
   ): Promise<void> {
     const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartTypeStatusCodeError.notFound,
         message: 'partType.error.notFound',
       });
     }
@@ -165,86 +166,52 @@ export class PartTypeService implements IPartTypeService {
     // Validate slug uniqueness if changing
     if (payload.slug && payload.slug !== partType.slug) {
       const existingBySlug = await this.partTypeRepository.findOneBySlug(
-        payload.slug,
+        payload.slug
       );
-      if (existingBySlug && existingBySlug._id.toString() !== partTypeId) {
+      if (existingBySlug && existingBySlug.id !== partTypeId) {
         throw new ConflictException({
-          statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumPartTypeStatusCodeError.slugExisted,
           message: 'partType.error.slugExisted',
         });
       }
     }
 
-    partType.name = payload.name ?? partType.name;
-    partType.slug = payload.slug ?? partType.slug;
-    partType.description = payload.description;
-    partType.photo = payload.photo;
+    const slug = payload.slug ? payload.slug.toLowerCase() : partType.slug;
 
-    await this.partTypeRepository.save(partType, options);
+    const data: Prisma.PartTypeUpdateInput = {
+      name: payload.name ?? undefined,
+      slug: slug,
+      description: payload.description ?? undefined,
+      photo: payload.photo ?? undefined,
+    };
+
+    await this.partTypeRepository.update(partTypeId, data);
   }
 
   async updateStatus(
     partTypeId: string,
-    { status }: PartTypeUpdateStatusRequestDto,
-    options?: IDatabaseUpdateOptions,
+    { status }: PartTypeUpdateStatusRequestDto
   ): Promise<void> {
     const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartTypeStatusCodeError.notFound,
         message: 'partType.error.notFound',
       });
     }
 
-    partType.status = status;
-    await this.partTypeRepository.save(partType, options);
+    await this.partTypeRepository.update(partTypeId, { status });
   }
 
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<{ exist: boolean }> {
-    const exist = await this.partTypeRepository.exists({ slug }, options);
-    return {
-      exist,
-    };
-  }
-
-  async delete(
-    partTypeId: string,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
+  async delete(partTypeId: string): Promise<void> {
     const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartTypeStatusCodeError.notFound,
         message: 'partType.error.notFound',
       });
     }
 
-    await this.partTypeRepository.delete({ _id: partTypeId }, options);
-  }
-
-  async softDelete(
-    partTypeId: string,
-    options?: IDatabaseSoftDeleteOptions,
-  ): Promise<void> {
-    const partType = await this.partTypeRepository.findOneById(partTypeId);
-    if (!partType) {
-      throw new NotFoundException({
-        statusCode: ENUM_PART_TYPE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'partType.error.notFound',
-      });
-    }
-
-    await this.partTypeRepository.softDelete(partType, options);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.partTypeRepository.deleteMany(find, options);
-    return true;
+    await this.partTypeRepository.delete(partTypeId);
   }
 }

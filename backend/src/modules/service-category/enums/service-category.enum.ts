@@ -1,4 +1,4 @@
-export enum ENUM_SERVICE_CATEGORY_STATUS {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+export enum EnumServiceCategoryStatus {
+  active = 'active',
+  inactive = 'inactive',
 }

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { CareRecordMediaDoc } from '../entities/care-record-media.entity';
-import { ICareRecordMediaEntity } from '../interfaces/care-record-media.interface';
+import { CareRecordMedia } from '@prisma/client';
 import { CareRecordMediaListResponseDto } from '../dtos/response/care-record-media.list.response.dto';
 import { CareRecordMediaDto } from '../dtos/care-record-media.dto';
 import { CareRecordMediaGetFullResponseDto } from '../dtos/response/care-record-media.full.response.dto';
@@ -10,35 +8,18 @@ import { CareRecordMediaGetFullResponseDto } from '../dtos/response/care-record-
 @Injectable()
 export class CareRecordMediaUtil {
   mapList(
-    careRecordMedias: CareRecordMediaDoc[] | ICareRecordMediaEntity[],
+    careRecordMedias: CareRecordMedia[]
   ): CareRecordMediaListResponseDto[] {
-    return plainToInstance(
-      CareRecordMediaListResponseDto,
-      careRecordMedias.map((c: CareRecordMediaDoc | ICareRecordMediaEntity) =>
-        c instanceof Document ? c.toObject() : c,
-      ),
-    );
+    return plainToInstance(CareRecordMediaListResponseDto, careRecordMedias);
   }
 
-  mapGet(
-    careRecordMedia: CareRecordMediaDoc | ICareRecordMediaEntity,
-  ): CareRecordMediaDto {
-    return plainToInstance(
-      CareRecordMediaDto,
-      careRecordMedia instanceof Document
-        ? careRecordMedia.toObject()
-        : careRecordMedia,
-    );
+  mapGet(careRecordMedia: CareRecordMedia): CareRecordMediaDto {
+    return plainToInstance(CareRecordMediaDto, careRecordMedia);
   }
 
   mapGetFull(
-    careRecordMedia: CareRecordMediaDoc | ICareRecordMediaEntity,
+    careRecordMedia: CareRecordMedia
   ): CareRecordMediaGetFullResponseDto {
-    return plainToInstance(
-      CareRecordMediaGetFullResponseDto,
-      careRecordMedia instanceof Document
-        ? careRecordMedia.toObject()
-        : careRecordMedia,
-    );
+    return plainToInstance(CareRecordMediaGetFullResponseDto, careRecordMedia);
   }
 }

@@ -5,36 +5,18 @@ import {
 } from '@nestjs/common';
 import { VehicleBrandRepository } from '../repository/vehicle-brand.repository';
 import { IVehicleBrandService } from '../interfaces/vehicle-brand.service.interface';
-import {
-  VehicleBrandDoc,
-  VehicleBrandEntity,
-} from '../entities/vehicle-brand.entity';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
+import { VehicleBrand, Prisma } from '@/generated/prisma-client';
 import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.create.request.dto';
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
-import { ENUM_VEHICLE_BRAND_STATUS } from '../enums/vehicle-brand.enum';
-import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
+import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
-import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
-import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
-import { ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR } from '../enums/vehicle-brand.status-code.enum';
+import { EnumVehicleBrandStatusCodeError } from '../enums/vehicle-brand.status-code.enum';
 
 @Injectable()
 export class VehicleBrandService implements IVehicleBrandService {
@@ -43,225 +25,158 @@ export class VehicleBrandService implements IVehicleBrandService {
     private readonly vehicleBrandUtil: VehicleBrandUtil,
   ) {}
 
-  async existByName(
-    name: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const vehicleBrand = await this.vehicleBrandRepository.findOne(
-      { name },
-      options,
-    );
+  async existByName(name: string): Promise<boolean> {
+    const vehicleBrand = await this.vehicleBrandRepository.findOne({ name });
     return !!vehicleBrand;
   }
 
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    const vehicleBrand = await this.vehicleBrandRepository.findOne(
-      { slug },
-      options,
-    );
+  async existBySlug(slug: string): Promise<boolean> {
+    const vehicleBrand = await this.vehicleBrandRepository.findOne({ slug });
     return !!vehicleBrand;
   }
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleBrandDoc[]> {
-    return this.vehicleBrandRepository.findAll<VehicleBrandDoc>(find, options);
+  async findAll(find?: Prisma.VehicleBrandWhereInput): Promise<VehicleBrand[]> {
+    return this.vehicleBrandRepository.findAll({ where: find } as any);
   }
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: VehicleBrandDoc[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
-
-    const [vehicleBrands, total] = await Promise.all([
-      this.vehicleBrandRepository.findAll<VehicleBrandDoc>(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-      }),
-      this.vehicleBrandRepository.getTotal(find),
-    ]);
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleBrandSelect,
+      Prisma.VehicleBrandWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>,
+  ): Promise<{ data: VehicleBrand[]; total: number }> {
+    const { data, count } =
+      await this.vehicleBrandRepository.findWithPaginationOffset(
+        pagination,
+        filters,
+      );
 
     return {
-      data: vehicleBrands,
-      total,
+      data,
+      total: count,
     };
   }
 
   async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: VehicleBrandDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...filters };
+    pagination: IPaginationQueryCursorParams<
+      Prisma.VehicleBrandSelect,
+      Prisma.VehicleBrandWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>,
+  ): Promise<{ data: VehicleBrand[]; total?: number }> {
+    const { data, count } =
+      await this.vehicleBrandRepository.findWithPaginationCursor(
+        pagination,
+        filters,
+      );
 
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
-    }
-
-    const [data, count] = await Promise.all([
-      this.vehicleBrandRepository.findAllCursor<VehicleBrandDoc>(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
-        },
-      }),
-      includeCount
-        ? this.vehicleBrandRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
-
-    const items = data.slice(0, limit);
-
-    return { data: items, total: count };
+    return { data, total: count };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleBrandDoc> {
-    const vehicleBrand = await this.findOneByIdOrFail(id, options);
+  async findOneById(id: string): Promise<VehicleBrand> {
+    const vehicleBrand = await this.findOneByIdOrFail(id);
     return vehicleBrand;
   }
 
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleBrandDoc> {
-    const vehicleBrand =
-      await this.vehicleBrandRepository.findOne<VehicleBrandDoc>(find, options);
+  async findOne(find: Prisma.VehicleBrandWhereInput): Promise<VehicleBrand> {
+    const vehicleBrand = await this.vehicleBrandRepository.findOne(find);
     if (!vehicleBrand) {
       return null as any;
     }
     return vehicleBrand;
   }
 
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.vehicleBrandRepository.getTotal(find, options);
+  async getTotal(find?: Prisma.VehicleBrandWhereInput): Promise<number> {
+    return this.vehicleBrandRepository.getTotal({ where: find } as any);
   }
 
-  async create(
-    { name, slug, description, order, country }: VehicleBrandCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<VehicleBrandDoc> {
+  async create(payload: VehicleBrandCreateRequestDto): Promise<VehicleBrand> {
     // Check slug conflict
-    const existingSlug = await this.vehicleBrandRepository.findOne({ slug });
+    const existingSlug = await this.vehicleBrandRepository.findOne({
+      slug: payload.slug,
+    });
     if (existingSlug) {
       throw new ConflictException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.SLUG_EXISTED,
+        statusCode: EnumVehicleBrandStatusCodeError.slugExisted,
         message: 'vehicle-brand.error.slugExisted',
       });
     }
 
-    const create: VehicleBrandEntity = new VehicleBrandEntity();
-    create.name = name;
-    create.slug = slug.toLowerCase();
-    create.country = country;
-    create.description = description;
-    create.order = order;
-    create.status = ENUM_VEHICLE_BRAND_STATUS.ACTIVE;
-
-    const created =
-      await this.vehicleBrandRepository.create<VehicleBrandEntity>(
-        create,
-        options,
-      );
+    const created = await this.vehicleBrandRepository.create({
+      name: payload.name,
+      slug: payload.slug.toLowerCase(),
+      country: payload.country ?? null,
+      description: payload.description ?? null,
+      orderBy: payload.orderBy,
+      status: EnumVehicleBrandStatus.active,
+    });
 
     return created;
   }
 
   async update(
     id: string,
-    { name, slug, description, order, country }: VehicleBrandUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
+    payload: VehicleBrandUpdateRequestDto,
   ): Promise<void> {
     const repository = await this.findOneByIdOrFail(id);
 
-    // Check slug conflict if slug is being updated
-    if (slug && slug !== repository.slug) {
-      const existingSlug = await this.vehicleBrandRepository.findOne({ slug });
-      if (existingSlug && existingSlug._id.toString() !== id) {
+    if (payload.slug && payload.slug !== repository.slug) {
+      const existingSlug = await this.vehicleBrandRepository.findOne({
+        slug: payload.slug,
+      });
+      if (existingSlug && existingSlug.id !== id) {
         throw new ConflictException({
-          statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumVehicleBrandStatusCodeError.slugExisted,
           message: 'vehicle-brand.error.slugExisted',
         });
       }
     }
 
-    repository.name = name ?? repository.name;
-    repository.slug = slug ?? repository.slug;
-    repository.description = description;
-    repository.order = order;
-    repository.country = country;
-
-    await this.vehicleBrandRepository.save(repository, options);
+    await this.vehicleBrandRepository.update(id, {
+      name: payload.name ?? undefined,
+      slug: payload.slug ? payload.slug.toLowerCase() : undefined,
+      description: payload.description ?? undefined,
+      orderBy: payload.orderBy ?? undefined,
+      country: payload.country ?? undefined,
+    });
   }
 
   async updateStatus(
     id: string,
     { status }: VehicleBrandUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
   ): Promise<void> {
     const repository = await this.findOneByIdOrFail(id);
-    repository.status = status;
 
-    await this.vehicleBrandRepository.save(repository, options);
+    await this.vehicleBrandRepository.update(id, { status });
   }
 
-  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
+  async delete(id: string): Promise<void> {
     const repository = await this.findOneByIdOrFail(id);
-    await this.vehicleBrandRepository.softDelete(repository, options);
+    await this.vehicleBrandRepository.delete(id);
   }
 
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.vehicleBrandRepository.deleteMany(find, options);
+  async deleteMany(find?: Prisma.VehicleBrandWhereInput): Promise<boolean> {
+    await this.vehicleBrandRepository.deleteMany(find || {});
     return true;
   }
 
-  async findBySlug(slug: string): Promise<VehicleBrandDoc> {
-    const vehicleBrand = await this.vehicleBrandRepository.findOneBySlug(slug);
+  async findBySlug(slug: string): Promise<VehicleBrand> {
+    const vehicleBrand = await this.vehicleBrandRepository.findOne({ slug });
     if (!vehicleBrand) {
       throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumVehicleBrandStatusCodeError.notFound,
         message: 'vehicle-brand.error.notFound',
       });
     }
     return vehicleBrand;
   }
 
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleBrandDoc> {
-    const vehicleBrand =
-      await this.vehicleBrandRepository.findOneById<VehicleBrandDoc>(
-        id,
-        options,
-      );
+  private async findOneByIdOrFail(id: string): Promise<VehicleBrand> {
+    const vehicleBrand = await this.vehicleBrandRepository.findOneById(id);
     if (!vehicleBrand) {
       throw new NotFoundException({
-        statusCode: ENUM_VEHICLE_BRAND_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumVehicleBrandStatusCodeError.notFound,
         message: 'vehicle-brand.error.notFound',
       });
     }

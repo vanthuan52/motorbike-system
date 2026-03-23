@@ -1,37 +1,182 @@
-import { Model, PopulateOptions } from 'mongoose';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  ServiceChecklistDoc,
-  ServiceChecklistEntity,
-} from '../entities/service-checklist.entity';
-import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
-import { CareAreaEntity } from '@/modules/care-area/entities/care-area.entity';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
 
-export class ServiceChecklistRepository extends DatabaseRepositoryBase<
-  ServiceChecklistEntity,
-  ServiceChecklistDoc
-> {
-  readonly _joinActive: PopulateOptions[] = [
-    {
-      path: 'careArea',
-      localField: 'careArea',
-      foreignField: '_id',
-      model: CareAreaEntity.name,
-      justOne: true,
-    },
-  ];
+@Injectable()
+export class ServiceChecklistRepository {
   constructor(
-    @InjectDatabaseModel(ServiceChecklistEntity.name)
-    private readonly serviceChecklistModel: Model<ServiceChecklistEntity>,
-  ) {
-    super(serviceChecklistModel, [
-      {
-        path: 'careArea',
-        localField: 'careArea',
-        foreignField: '_id',
-        model: CareAreaEntity.name,
-        justOne: true,
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService
+  ) {}
+
+  async findAll(
+    {
+      where: baseWhere,
+      skip,
+      limit,
+      orderBy,
+      ...rest
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<ServiceChecklist[]> {
+    const mergedWhere: Prisma.ServiceChecklistWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.serviceChecklist.findMany({
+      where: mergedWhere,
+      skip,
+      take: limit,
+      orderBy: orderBy || { createdAt: 'desc' },
+      include: {
+        careArea: true,
       },
-    ]);
+      ...rest,
+    });
+  }
+
+  async getTotal(
+    {
+      where: baseWhere,
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<number> {
+    const mergedWhere: Prisma.ServiceChecklistWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.serviceChecklist.count({
+      where: mergedWhere,
+    });
+  }
+
+  async findWithPaginationOffset({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.ServiceChecklistSelect,
+    Prisma.ServiceChecklistWhereInput
+  >): Promise<{
+    data: ServiceChecklist[];
+    count: number;
+    page: number;
+    totalPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nextPage?: number;
+    previousPage?: number;
+  }> {
+    return this.paginationService.offsetRaw<ServiceChecklist>(
+      this.databaseService.serviceChecklist,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          careArea: true,
+        },
+      }
+    );
+  }
+
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.ServiceChecklistSelect,
+    Prisma.ServiceChecklistWhereInput
+  >): Promise<{
+    data: ServiceChecklist[];
+    count?: number;
+    cursor?: string;
+    hasNext: boolean;
+  }> {
+    return this.paginationService.cursorRaw<ServiceChecklist>(
+      this.databaseService.serviceChecklist,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          careArea: true,
+        },
+        includeCount: true,
+      }
+    );
+  }
+
+  async findOneById(id: string): Promise<ServiceChecklist | null> {
+    return this.databaseService.serviceChecklist.findUnique({
+      where: { id },
+      include: {
+        careArea: true,
+      },
+    });
+  }
+
+  async findOne(
+    where: Prisma.ServiceChecklistWhereInput
+  ): Promise<ServiceChecklist | null> {
+    return this.databaseService.serviceChecklist.findFirst({
+      where,
+      include: {
+        careArea: true,
+      },
+    });
+  }
+
+  async create(data: Prisma.ServiceChecklistCreateInput): Promise<ServiceChecklist> {
+    return this.databaseService.serviceChecklist.create({
+      data,
+      include: {
+        careArea: true,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.ServiceChecklistUpdateInput
+  ): Promise<ServiceChecklist> {
+    return this.databaseService.serviceChecklist.update({
+      where: { id },
+      data,
+      include: {
+        careArea: true,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<ServiceChecklist> {
+    return this.databaseService.serviceChecklist.delete({
+      where: { id },
+      include: {
+        careArea: true,
+      },
+    });
+  }
+
+  async createMany(
+    data: Prisma.ServiceChecklistCreateInput[]
+  ): Promise<number> {
+    const result = await this.databaseService.serviceChecklist.createMany({
+      data,
+    });
+    return result.count;
   }
 }

@@ -9,8 +9,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Response } from 'express';
-import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { MessageService } from '@/common/message/services/message.service';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ResponseMessagePathMetaKey } from '@/common/response/constants/response.constant';
@@ -40,7 +40,7 @@ export class ResponseInterceptor<T> implements NestInterceptor {
     private readonly reflector: Reflector,
     private readonly messageService: MessageService,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {}
 
   /**
@@ -56,7 +56,7 @@ export class ResponseInterceptor<T> implements NestInterceptor {
    */
   intercept(
     context: ExecutionContext,
-    next: CallHandler,
+    next: CallHandler
   ): Observable<Promise<ResponseDto<T>>> {
     if (context.getType() === 'http') {
       return next.handle().pipe(
@@ -67,7 +67,7 @@ export class ResponseInterceptor<T> implements NestInterceptor {
 
           let messagePath: string = this.reflector.get<string>(
             ResponseMessagePathMetaKey,
-            context.getHandler(),
+            context.getHandler()
           );
           let messageProperties: IMessageProperties;
 
@@ -103,7 +103,7 @@ export class ResponseInterceptor<T> implements NestInterceptor {
             metadata,
             data,
           };
-        }),
+        })
       );
     }
 
@@ -149,7 +149,7 @@ export class ResponseInterceptor<T> implements NestInterceptor {
    */
   private setResponseHeaders(
     response: Response,
-    metadata: ResponseMetadataDto,
+    metadata: ResponseMetadataDto
   ): void {
     response.setHeader('x-custom-lang', metadata.language);
     response.setHeader('x-timestamp', metadata.timestamp);

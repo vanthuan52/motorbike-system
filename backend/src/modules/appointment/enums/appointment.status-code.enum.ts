@@ -1,9 +1,9 @@
-export enum ENUM_APPOINTMENT_STATUS_CODE_ERROR {
-  NOT_FOUND = 5600,
-  EXIST = 5601,
-  IS_ACTIVE = 5602,
-  USED = 5603,
-  INACTIVE_FORBIDDEN = 5604,
-  SLUG_EXISTED = 5605,
-  NAME_EXISTED = 5606,
+export enum EnumAppointmentStatusCodeError {
+  notFound = 5600,
+  exist = 5601,
+  isActive = 5602,
+  used = 5603,
+  inactiveForbidden = 5604,
+  slugExisted = 5605,
+  nameExisted = 5606,
 }

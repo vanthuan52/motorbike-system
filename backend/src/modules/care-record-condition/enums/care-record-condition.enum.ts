@@ -1,27 +1,27 @@
-export enum ENUM_OIL_LEVEL {
-  FULL = 'full',
-  LOW = 'low',
-  EMPTY = 'empty',
+export enum EnumOilLevel {
+  full = 'full',
+  low = 'low',
+  empty = 'empty',
 }
 
-export enum ENUM_REARVIEW_MIRROR_CONDITION {
-  PRESENT = 'present', // Có
-  ABSENT = 'absent', // Không
+export enum EnumMirrorCondition {
+  present = 'present',
+  absent = 'absent',
 }
 
-export enum ENUM_SEAT_CONDITION {
-  OK = 'ok',
-  TORN = 'torn', // Rách
+export enum EnumSeatCondition {
+  ok = 'ok',
+  torn = 'torn',
 }
 
-export enum ENUM_BODY_CONDITION {
-  OK = 'ok',
-  SCRATCHED = 'scratched', // Trầy
-  BROKEN = 'broken', // Bể
+export enum EnumBodyCondition {
+  ok = 'ok',
+  scratched = 'scratched',
+  broken = 'broken',
 }
 
-export enum ENUM_EXHAUST_COVER_CONDITION {
-  PRESENT = 'present', // Có
-  ABSENT = 'absent', // Không
-  BROKEN = 'broken', // Bể
+export enum EnumExhaustCoverCondition {
+  present = 'present',
+  absent = 'absent',
+  broken = 'broken',
 }

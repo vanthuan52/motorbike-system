@@ -1,33 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
 import slugify from 'slugify';
-import { IStoreDoc, IStoreEntity } from '../interfaces/store.interface';
-import { StoreDoc } from '../entities/store.entity';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { StoreDto } from '../dtos/store.dto';
+import { Store } from '@/generated/prisma-client';
 
 @Injectable()
 export class StoreUtil {
   constructor(private readonly configService: ConfigService) {}
 
-  mapList(
-    stores: IStoreDoc[] | IStoreEntity[] | StoreDoc[],
-  ): StoreListResponseDto[] {
-    return plainToInstance(
-      StoreListResponseDto,
-      stores.map((s: IStoreDoc | IStoreEntity | StoreDoc) =>
-        s instanceof Document ? s.toObject() : s,
-      ),
-    );
+  mapList(stores: Store[]): StoreListResponseDto[] {
+    return plainToInstance(StoreListResponseDto, stores);
   }
 
-  mapOne(store: IStoreDoc | IStoreEntity | StoreDoc): StoreDto {
-    return plainToInstance(
-      StoreDto,
-      store instanceof Document ? store.toObject() : store,
-    );
+  mapOne(store: Store): StoreDto {
+    return plainToInstance(StoreDto, store);
   }
 
   createSlug(name: string): string {

@@ -5,9 +5,11 @@ import {
   applyDecorators,
   createParamDecorator,
 } from '@nestjs/common';
-import { RealIp } from 'nestjs-real-ip';
 import ms from 'ms';
+import { RealIp } from 'nestjs-real-ip';
 import { UAParser } from 'ua-parser-js';
+import { getClientIp } from '@supercharge/request-ip';
+import geoIp from 'geoip-lite';
 import {
   RequestCustomTimeoutMetaKey,
   RequestCustomTimeoutValueMetaKey,
@@ -16,6 +18,7 @@ import {
 import { RequestEnvGuard } from '@/common/request/guards/request.env.guard';
 import { EnumAppEnvironment } from '@/app/enums/app.enum';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import { GeoLocation } from '@generated/prisma-client';
 
 /**
  * Request timeout decorator for route handlers.
@@ -26,7 +29,7 @@ import { IRequestApp } from '@/common/request/interfaces/request.interface';
 export function RequestTimeout(seconds: ms.StringValue): MethodDecorator {
   return applyDecorators(
     SetMetadata(RequestCustomTimeoutMetaKey, true),
-    SetMetadata(RequestCustomTimeoutValueMetaKey, seconds),
+    SetMetadata(RequestCustomTimeoutValueMetaKey, seconds)
   );
 }
 
@@ -41,7 +44,7 @@ export function RequestEnvProtected(
 ): MethodDecorator {
   return applyDecorators(
     UseGuards(RequestEnvGuard),
-    SetMetadata(RequestEnvMetaKey, envs),
+    SetMetadata(RequestEnvMetaKey, envs)
   );
 }
 
@@ -51,6 +54,38 @@ export function RequestEnvProtected(
  * @returns The IP address as a string
  */
 export const RequestIPAddress = RealIp;
+
+/**
+ * Parameter decorator to extract geolocation information based on the request's IP address
+ * Uses the geoip-lite package to look up geolocation data.
+ *
+ * @param _ - Unused parameter
+ * @param ctx - Execution context containing the request information
+ * @returns The geolocation information as a GeoLocation object or null if not found
+ */
+export const RequestGeoLocation = createParamDecorator(
+  (_: unknown, ctx: ExecutionContext): GeoLocation | null => {
+    const request = ctx.switchToHttp().getRequest<IRequestApp>();
+    const ip = getClientIp(request);
+
+    if (!ip) {
+      return null;
+    }
+
+    const geo = geoIp.lookup(ip);
+    if (!geo) {
+      return null;
+    }
+
+    return {
+      latitude: geo.ll[0],
+      longitude: geo.ll[1],
+      country: geo.country,
+      region: geo.region,
+      city: geo.city,
+    };
+  }
+);
 
 /**
  * Parameter decorator to extract and parse the User-Agent header from the request
@@ -65,5 +100,5 @@ export const RequestUserAgent = createParamDecorator(
     const { headers } = ctx.switchToHttp().getRequest<IRequestApp>();
     const userAgent = headers['user-agent'];
     return UAParser(userAgent);
-  },
+  }
 );

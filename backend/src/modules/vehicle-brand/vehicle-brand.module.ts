@@ -1,16 +1,12 @@
 import { Module } from '@nestjs/common';
-import { VehicleBrandRepositoryModule } from './repository/vehicle-brand.repository.module';
+import { VehicleBrandRepository } from './repository/vehicle-brand.repository';
 import { VehicleBrandService } from './services/vehicle-brand.service';
 import { VehicleBrandUtil } from './utils/vehicle-brand.util';
 
 @Module({
-  imports: [VehicleBrandRepositoryModule],
+  imports: [],
   controllers: [],
-  providers: [VehicleBrandService, VehicleBrandUtil],
-  exports: [
-    VehicleBrandRepositoryModule,
-    VehicleBrandService,
-    VehicleBrandUtil,
-  ],
+  providers: [VehicleBrandRepository, VehicleBrandService, VehicleBrandUtil],
+  exports: [VehicleBrandRepository, VehicleBrandService, VehicleBrandUtil],
 })
 export class VehicleBrandModule {}

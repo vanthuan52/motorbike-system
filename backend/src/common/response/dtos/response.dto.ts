@@ -55,17 +55,8 @@ export class ResponseMetadataDto {
   })
   repoVersion: string;
 
-  [key: string]:
-    | string
-    | number
-    | string[]
-    | number[]
-    | boolean
-    | boolean[]
-    | Record<
-        string,
-        string | number | boolean | Array<string | number | boolean> | Date
-      >;
+  /* Allow additional properties for extensibility in metadata */
+  [key: string]: unknown;
 }
 
 /**
@@ -102,7 +93,7 @@ export class ResponseDto<T> {
     example: {
       language: 'en',
       timestamp: 1660190937231,
-      timezone: 'Asia/Ho_Chi_Minh',
+      timezone: 'Asia/Jakarta',
       path: '/api/v1/test/hello',
       version: '1',
       repoVersion: '1.0.0',

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
-import { EnumUserStatus } from '../enums/user.enum';
+import { EnumUserStatus } from '@/generated/prisma-client';
 
 export const UserDocParamsId: ApiParamOptions[] = [
   {
@@ -8,18 +8,17 @@ export const UserDocParamsId: ApiParamOptions[] = [
     allowEmptyValue: false,
     required: true,
     type: 'string',
-    example: faker.string.uuid(),
+    example: faker.database.mongodbObjectId(),
   },
 ];
 
-export const UserDocQueryStatus: ApiParamOptions[] = [
+export const UserDocParamsMobileNumberId: ApiParamOptions[] = [
   {
-    name: 'status',
-    allowEmptyValue: true,
-    required: false,
+    name: 'mobileNumberId',
+    allowEmptyValue: false,
+    required: true,
     type: 'string',
-    example: faker.string.uuid(),
-    description: 'uuid value',
+    example: faker.database.mongodbObjectId(),
   },
 ];
 
@@ -29,8 +28,15 @@ export const UserDocQueryList: ApiQueryOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: faker.string.uuid(),
+    example: faker.database.mongodbObjectId(),
     description: 'Filter by roleId',
+  },
+  {
+    name: 'countryId',
+    allowEmptyValue: true,
+    required: false,
+    type: 'string',
+    example: faker.database.mongodbObjectId(),
   },
   {
     name: 'status',

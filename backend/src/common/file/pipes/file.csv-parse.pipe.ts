@@ -69,7 +69,7 @@ export class FileCsvParsePipe<T> implements PipeTransform {
     }
 
     const extension = this.fileService.extractExtensionFromFilename(
-      value.originalname,
+      value.originalname
     );
 
     if (

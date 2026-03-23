@@ -1,64 +1,47 @@
+import { Prisma, ServiceCategory } from '@/generated/prisma-client';
 import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { ServiceCategoryCreateRequestDto } from '../dtos/request/service-category.create.request.dto';
 import { ServiceCategoryUpdateRequestDto } from '../dtos/request/service-category.update.request.dto';
-import { ServiceCategoryDoc } from '../entities/service-category.entity';
 import { ServiceCategoryUpdateStatusRequestDto } from '../dtos/request/service-category.update-status.request.dto';
 
 export interface IServiceCategoryService {
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceCategoryDoc[]; total: number }>;
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: ServiceCategory[]; total: number }>;
 
   getListCursor(
-    pagination: IPaginationQueryCursorParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceCategoryDoc[]; total?: number }>;
+    pagination: IPaginationQueryCursorParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: ServiceCategory[]; total?: number }>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceCategoryDoc>;
+  findOneById(id: string): Promise<ServiceCategory>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceCategoryDoc>;
+  findOne(find: Record<string, any>): Promise<ServiceCategory | null>;
 
-  findBySlug(slug: string): Promise<ServiceCategoryDoc>;
+  findBySlug(slug: string): Promise<ServiceCategory | null>;
 
-  create(
-    payload: ServiceCategoryCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<ServiceCategoryDoc>;
+  create(payload: ServiceCategoryCreateRequestDto): Promise<{ id: string }>;
 
-  update(
-    id: string,
-    payload: ServiceCategoryUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
+  update(id: string, payload: ServiceCategoryUpdateRequestDto): Promise<void>;
 
   updateStatus(
     id: string,
-    payload: ServiceCategoryUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
+    payload: ServiceCategoryUpdateStatusRequestDto
   ): Promise<void>;
 
-  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+  delete(id: string): Promise<void>;
 
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
+  existByName(name: string): Promise<boolean>;
 
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
+  existBySlug(slug: string): Promise<boolean>;
 }

@@ -9,7 +9,7 @@ import { AwsSESService } from '@/common/aws/services/aws.ses.service';
 export class HealthAwsSESIndicator {
   constructor(
     private readonly awsSESService: AwsSESService,
-    private readonly healthIndicatorService: HealthIndicatorService,
+    private readonly healthIndicatorService: HealthIndicatorService
   ) {}
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
@@ -20,7 +20,7 @@ export class HealthAwsSESIndicator {
 
       if (!connection) {
         return indicator.down(
-          `HealthAwsSESIndicator Failed - Connection to AWS SES failed`,
+          `HealthAwsSESIndicator Failed - Connection to AWS SES failed`
         );
       }
 

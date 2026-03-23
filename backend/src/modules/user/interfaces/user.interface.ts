@@ -1,22 +1,56 @@
-import { RoleDoc, RoleEntity } from '@/modules/role/entities/role.entity';
-import { UserDoc, UserEntity } from '../entities/user.entity';
-import { EnumUserLoginFrom, EnumUserLoginWith } from '../enums/user.enum';
+import {
+  Device,
+  DeviceOwnership,
+  EnumUserLoginFrom,
+  EnumUserLoginWith,
+  EnumVerificationType,
+  Role,
+  TwoFactor,
+  User,
+} from '@/generated/prisma-client';
 
-export interface IUserEntity extends Omit<UserEntity, 'role'> {
-  role: RoleEntity;
+export interface IUser extends User {
+  role: Role;
+  twoFactor: TwoFactor;
 }
 
-export interface IUserDoc extends Omit<UserDoc, 'role'> {
-  role: RoleDoc;
-}
+export interface IUserProfile extends IUser {}
 
-/**
- * Interface for user login data
- */
 export interface IUserLogin {
   loginFrom: EnumUserLoginFrom;
   loginWith: EnumUserLoginWith;
-  sessionId: string;
-  jti: string;
   expiredAt: Date;
+  jti: string;
+  sessionId: string;
+}
+
+export interface IUserLoginResult {
+  user: User;
+  device: Device;
+  deviceOwnership: DeviceOwnership;
+  isNewDevice: boolean;
+  sessionShouldBeInactive?: { id: string }[];
+}
+
+export interface IUserForgotPasswordCreate {
+  expiredAt: Date;
+  expiredInMinutes: number;
+  resendInMinutes: number;
+  reference: string;
+  token: string;
+  hashedToken: string;
+  link: string;
+  encryptedLink: string;
+}
+
+export interface IUserVerificationCreate {
+  type: EnumVerificationType;
+  expiredAt: Date;
+  expiredInMinutes: number;
+  resendInMinutes: number;
+  reference: string;
+  token: string;
+  hashedToken: string;
+  link?: string;
+  encryptedLink?: string;
 }

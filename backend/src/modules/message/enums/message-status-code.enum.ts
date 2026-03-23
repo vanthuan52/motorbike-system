@@ -1,6 +1,6 @@
-export enum ENUM_CHAT_STATUS_CODE_ERROR {
-  NOT_FOUND = 6200,
-  INVALID_CONVERSATION = '6201',
-  MESSAGE_NOT_FOUND = '6202',
-  MISSING_USER_ID = '6203',
+export enum EnumChatStatusCodeError {
+  notFound = 6200,
+  invalidConversation = '6201',
+  messageNotFound = '6202',
+  missingUserId = '6203',
 }

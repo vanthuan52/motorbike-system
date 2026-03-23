@@ -1,7 +1,7 @@
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { UserGuardIsVerifiedMetaKey } from '../constants/user.constant';
-import { UserGuard } from '../guards/user.guard';
-import { IUserDoc } from '../interfaces/user.interface';
+import { UserGuardIsVerifiedMetaKey } from '@/modules/user/constants/user.constant';
+import { UserGuard } from '@/modules/user/guards/user.guard';
+import { IUser } from '@/modules/user/interfaces/user.interface';
 import {
   ExecutionContext,
   SetMetadata,
@@ -20,7 +20,7 @@ import {
 export function UserProtected(isVerified: boolean = true): MethodDecorator {
   return applyDecorators(
     UseGuards(UserGuard),
-    SetMetadata(UserGuardIsVerifiedMetaKey, isVerified),
+    SetMetadata(UserGuardIsVerifiedMetaKey, isVerified)
   );
 }
 
@@ -32,8 +32,8 @@ export function UserProtected(isVerified: boolean = true): MethodDecorator {
  * @returns {IUser | undefined} The current user object or undefined if not found
  */
 export const UserCurrent = createParamDecorator(
-  (_: unknown, ctx: ExecutionContext): IUserDoc | undefined => {
+  (_: unknown, ctx: ExecutionContext): IUser | undefined => {
     const { __user } = ctx.switchToHttp().getRequest<IRequestApp>();
     return __user;
-  },
+  }
 );

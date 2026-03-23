@@ -13,6 +13,6 @@ export function PolicyAbilityProtected(
 ): MethodDecorator {
   return applyDecorators(
     UseGuards(PolicyAbilityGuard),
-    SetMetadata(PolicyRequiredAbilityMetaKey, requiredAbilities),
+    SetMetadata(PolicyRequiredAbilityMetaKey, requiredAbilities)
   );
 }

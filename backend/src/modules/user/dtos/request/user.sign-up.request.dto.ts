@@ -4,17 +4,16 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { IsPassword } from '@/common/request/validations/request.is-password.validation';
 import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
-import { EnumUserSignUpFrom } from '../../enums/user.enum';
+import { EnumUserSignUpFrom } from '@/generated/prisma-client';
 
 export class UserSignUpRequestDto extends OmitType(UserCreateRequestDto, [
-  'role',
+  'roleId',
 ] as const) {
   @ApiProperty({
     description: 'string password',
@@ -34,29 +33,29 @@ export class UserSignUpRequestDto extends OmitType(UserCreateRequestDto, [
   @ApiProperty({
     description: 'boolean marketing',
     example: true,
-    required: false,
+    required: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsBoolean()
-  marketing?: boolean;
+  marketing: boolean;
 
   @ApiProperty({
     description: 'boolean cookies',
     example: true,
-    required: false,
+    required: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsBoolean()
-  cookies?: boolean;
+  cookies: boolean;
 
   @ApiProperty({
     description: 'enum user sign up from',
     example: EnumUserSignUpFrom.mobile,
-    required: false,
+    required: true,
     enum: [EnumUserSignUpFrom.mobile, EnumUserSignUpFrom.website],
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   @IsEnum([EnumUserSignUpFrom.mobile, EnumUserSignUpFrom.website])
-  from?: EnumUserSignUpFrom;
+  from: EnumUserSignUpFrom;
 }

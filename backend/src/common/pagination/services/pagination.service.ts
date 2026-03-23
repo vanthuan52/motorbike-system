@@ -1,22 +1,20 @@
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
   PaginationDefaultCursorField,
-  PaginationMaxCursorLength,
+  PaginationDefaultOrderBy,
 } from '@/common/pagination/constants/pagination.constant';
-import {
-  EnumPaginationOrderDirectionType,
-  EnumPaginationType,
-} from '@/common/pagination/enums/pagination.enum';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
 import { EnumPaginationStatusCodeError } from '@/common/pagination/enums/pagination.status-code.enum';
 import {
   IPaginationCursorReturn,
   IPaginationCursorValue,
   IPaginationOffsetReturn,
+  IPaginationOrderBy,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationRepository,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IPaginationService } from '@/common/pagination/interfaces/pagination.service.interface';
-import { BadRequestException, Injectable } from '@nestjs/common';
 
 /**
  * Service for handling pagination operations with offset and cursor-based pagination.
@@ -32,10 +30,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 @Injectable()
 export class PaginationService implements IPaginationService {
   /**
-   * Performs offset-based pagination using page number and limit approach.
+   * Performs offset-based pagination using page number and limit approach - returns raw data.
    *
    * **Default Values:**
-   * - orderBy: `{ createdAt: 'desc' }` - Results are sorted by creation date in descending order
+   * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
+   * - orderBy accepts an ordered array of order objects
+   * - if orderBy is omitted, the default is always an array with a single order object
    *
    * **Assumptions:**
    * Input parameters are assumed to be valid as they are validated by PaginationOffsetPipe before reaching this service.
@@ -43,32 +43,38 @@ export class PaginationService implements IPaginationService {
    * @template TReturn - The type of items being paginated
    * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
    * @param {IPaginationQueryOffsetParams} args - Pagination parameters (validated by pipe).
-   * @returns {Promise<IPaginationOffsetReturn<TReturn>>} Promise that resolves to paginated result with items, metadata (count, page, totalPage, hasNext, hasPrevious, nextPage, previousPage)
-   * @throws {BadRequestException} If data integrity issues are detected (unexpected condition)
+   * @returns {Promise<{data, count, page, totalPage, hasNext, hasPrevious, nextPage, previousPage, perPage}>} Promise that resolves to raw paginated result
    */
-  async offset<TReturn>(
+  async offsetRaw<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
     repository: IPaginationRepository,
-    args: IPaginationQueryOffsetParams,
-  ): Promise<IPaginationOffsetReturn<TReturn>> {
-    const {
-      limit,
-      skip,
-      orderBy = {
-        createdAt: EnumPaginationOrderDirectionType.desc,
-      },
-      where,
-      select,
-    } = args;
+    args: IPaginationQueryOffsetParams<TArgsSelect, TArgsWhere>
+  ): Promise<{
+    data: TReturn[];
+    count: number;
+    page: number;
+    totalPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nextPage?: number;
+    previousPage?: number;
+    perPage: number;
+  }> {
+    const { limit, skip, where, select, include } = args;
+    const orderBy = this.resolveOrderBy(args.orderBy);
 
     const currentPage = Math.floor(skip / limit) + 1;
 
-    // Use Promise.all to run count and find in parallel
     const [count, items] = await Promise.all([
-      repository.getTotal(where),
-      repository.findAll(where, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-        select: select as any,
+      repository.count({
+        where,
+      }),
+      repository.findMany({
+        where,
+        skip,
+        take: limit,
+        select,
+        orderBy,
+        include,
       }),
     ]);
 
@@ -79,29 +85,62 @@ export class PaginationService implements IPaginationService {
     const previousPage = hasPrevious ? currentPage - 1 : undefined;
 
     return {
-      type: EnumPaginationType.offset,
+      data: items as TReturn[],
       count,
       perPage: limit,
       page: currentPage,
       totalPage,
       hasNext,
       hasPrevious,
-      data: items as TReturn[],
       ...(nextPage && { nextPage }),
       ...(previousPage && { previousPage }),
     };
   }
 
   /**
-   * Performs cursor-based pagination using cursor tokens for efficient traversal.
+   * Performs offset-based pagination using page number and limit approach.
    *
    * **Default Values:**
-   * - orderBy: `{ createdAt: 'desc' }` - Results are sorted by creation date in descending order
+   * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
+   * - orderBy accepts an ordered array of order objects
+   * - if orderBy is omitted, the default is always an array with a single order object
+   *
+   * **Assumptions:**
+   * Input parameters are assumed to be valid as they are validated by PaginationOffsetPipe before reaching this service.
+   *
+   * @template TReturn - The type of items being paginated
+   * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
+   * @param {IPaginationQueryOffsetParams} args - Pagination parameters (validated by pipe).
+   * @returns {Promise<IPaginationOffsetReturn<TReturn>>} Promise that resolves to paginated result with items, metadata (count, page, totalPage, hasNext, hasPrevious, nextPage, previousPage)
+   */
+  async offset<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
+    repository: IPaginationRepository,
+    args: IPaginationQueryOffsetParams<TArgsSelect, TArgsWhere>
+  ): Promise<IPaginationOffsetReturn<TReturn>> {
+    const raw = await this.offsetRaw<TReturn, TArgsSelect, TArgsWhere>(
+      repository,
+      args
+    );
+
+    return {
+      type: EnumPaginationType.offset,
+      ...raw,
+    };
+  }
+
+  /**
+   * Performs cursor-based pagination using cursor tokens for efficient traversal - returns raw data.
+   *
+   * **Default Values:**
+   * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
+   * - orderBy accepts an ordered array of order objects
+   * - if orderBy is omitted, the default is always an array with a single order object
    * - cursorField: `PaginationDefaultCursorField` - Field used for cursor positioning
    *
    * **Cursor Behavior:**
    * - The cursor is encoded using URL-safe base64 encoding
    * - If cursor is invalid or conditions changed, returns error (see Point 8)
+   * - The exact orderBy payload is stored in the cursor and must match on the next request
    * - Fetches `limit + 1` items to determine if there are more results
    *
    * **Assumptions:**
@@ -110,23 +149,28 @@ export class PaginationService implements IPaginationService {
    * @template TReturn - The type of items being paginated
    * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
    * @param {IPaginationQueryCursorParams} args - Cursor pagination parameters (validated by pipe)
-   * @returns {Promise<IPaginationCursorReturn<TReturn>>} Promise that resolves to cursor paginated result with items, cursor token, hasNext flag, and optional count
-   * @throws {BadRequestException} If pagination conditions have changed
+   * @returns {Promise<{data, cursor, hasNext, perPage, count}>} Promise that resolves to raw cursor paginated result
+   * @throws {UnprocessableEntityException} If pagination conditions have changed
    */
-  async cursor<TReturn>(
+  async cursorRaw<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
     repository: IPaginationRepository,
-    args: IPaginationQueryCursorParams,
-  ): Promise<IPaginationCursorReturn<TReturn>> {
+    args: IPaginationQueryCursorParams<TArgsSelect, TArgsWhere>
+  ): Promise<{
+    data: TReturn[];
+    cursor?: string;
+    hasNext: boolean;
+    perPage: number;
+    count?: number;
+  }> {
     const {
       limit,
-      orderBy = {
-        createdAt: EnumPaginationOrderDirectionType.desc,
-      },
       where,
       select,
+      include,
       cursorField = PaginationDefaultCursorField,
       includeCount,
     } = args;
+    const orderBy = this.resolveOrderBy(args.orderBy);
 
     const { cursor } = args;
 
@@ -137,7 +181,7 @@ export class PaginationService implements IPaginationService {
       try {
         decodedCursor = this.decodeCursor(cursor);
       } catch {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.invalidCursorFormat,
           message: 'pagination.error.invalidCursorFormat',
         });
@@ -146,12 +190,12 @@ export class PaginationService implements IPaginationService {
       if (decodedCursor) {
         const orderByChanged = !this.isDeepEqual(
           decodedCursor.orderBy,
-          orderBy,
+          orderBy
         );
         const whereChanged = !this.isDeepEqual(decodedCursor.where, where);
 
         if (orderByChanged || whereChanged) {
-          throw new BadRequestException({
+          throw new UnprocessableEntityException({
             statusCode:
               EnumPaginationStatusCodeError.invalidCursorPaginationParams,
             message: 'pagination.error.invalidCursorPaginationParams',
@@ -162,19 +206,22 @@ export class PaginationService implements IPaginationService {
 
     const take = limit + 1;
     const queries: Promise<unknown>[] = [
-      repository.findAllCursor(where, {
-        cursor: {
-          cursor: decodedCursor?.cursor,
-          cursorField,
-          limit: take,
-          order: orderBy,
-        },
-        select: select as any,
+      repository.findMany({
+        where,
+        take,
+        cursor:
+          cursor && decodedCursor?.cursor
+            ? { [cursorField]: decodedCursor.cursor }
+            : undefined,
+        skip: cursor ? 1 : 0,
+        select,
+        orderBy,
+        include,
       }),
     ];
 
     if (includeCount) {
-      queries.push(repository.getTotal(where));
+      queries.push(repository.count({ where }));
     }
 
     const results = await Promise.all(queries);
@@ -186,23 +233,59 @@ export class PaginationService implements IPaginationService {
 
     let nextCursor: string | undefined;
     if (hasNext) {
-      const nextItem = data[data.length - 1]; // Use the last item of the CLEAN data (before slice, but slice only removes the extra one, so last item of 'data' is correct)
-      const nextCursorValue = nextItem[cursorField];
-
+      const nextItem = data[data.length - 1];
       nextCursor = this.encodeCursor({
-        cursor: nextCursorValue,
+        cursor: nextItem[cursorField],
         orderBy,
         where,
       });
     }
 
     return {
-      type: EnumPaginationType.cursor,
-      cursor: nextCursor,
-      perPage: limit,
-      hasNext,
       data: data as TReturn[],
+      cursor: nextCursor,
+      hasNext,
+      perPage: limit,
       ...(includeCount && { count }),
+    };
+  }
+
+  /**
+   * Performs cursor-based pagination using cursor tokens for efficient traversal.
+   *
+   * **Default Values:**
+   * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
+   * - orderBy accepts an ordered array of order objects
+   * - if orderBy is omitted, the default is always an array with a single order object
+   * - cursorField: `PaginationDefaultCursorField` - Field used for cursor positioning
+   *
+   * **Cursor Behavior:**
+   * - The cursor is encoded using URL-safe base64 encoding
+   * - If cursor is invalid or conditions changed, returns error (see Point 8)
+   * - The exact orderBy payload is stored in the cursor and must match on the next request
+   * - Fetches `limit + 1` items to determine if there are more results
+   *
+   * **Assumptions:**
+   * Input parameters are assumed to be valid as they are validated by PaginationCursorPipe before reaching this service.
+   *
+   * @template TReturn - The type of items being paginated
+   * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
+   * @param {IPaginationQueryCursorParams} args - Cursor pagination parameters (validated by pipe)
+   * @returns {Promise<IPaginationCursorReturn<TReturn>>} Promise that resolves to cursor paginated result with items, cursor token, hasNext flag, and optional count
+   * @throws {UnprocessableEntityException} If pagination conditions have changed
+   */
+  async cursor<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
+    repository: IPaginationRepository,
+    args: IPaginationQueryCursorParams<TArgsSelect, TArgsWhere>
+  ): Promise<IPaginationCursorReturn<TReturn>> {
+    const raw = await this.cursorRaw<TReturn, TArgsSelect, TArgsWhere>(
+      repository,
+      args
+    );
+
+    return {
+      type: EnumPaginationType.cursor,
+      ...raw,
     };
   }
 
@@ -212,11 +295,11 @@ export class PaginationService implements IPaginationService {
    *
    * @param {IPaginationCursorValue} data - Cursor data containing cursor value, orderBy, and where conditions
    * @returns {string} URL-safe base64 encoded cursor (without padding)
-   * @throws {BadRequestException} If cursor data is invalid
+   * @throws {UnprocessableEntityException} If cursor data is invalid
    */
   private encodeCursor(data: IPaginationCursorValue): string {
     if (!data || data.cursor === undefined || data.cursor === null) {
-      throw new BadRequestException({
+      throw new UnprocessableEntityException({
         statusCode: EnumPaginationStatusCodeError.invalidCursorData,
         message: 'pagination.error.invalidCursorData',
       });
@@ -227,11 +310,11 @@ export class PaginationService implements IPaginationService {
       // Padding (=) is removed for URL safety
       return Buffer.from(JSON.stringify(data))
         .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
+        .replaceAll(/\+/g, '-')
+        .replaceAll(/\//g, '_')
+        .replaceAll(/=/g, '');
     } catch {
-      throw new BadRequestException({
+      throw new UnprocessableEntityException({
         statusCode: EnumPaginationStatusCodeError.failedToEncodeCursor,
         message: 'pagination.error.failedToEncodeCursor',
       });
@@ -244,20 +327,13 @@ export class PaginationService implements IPaginationService {
    *
    * @param {string} cursor - URL-safe base64 encoded cursor (without padding)
    * @returns {IPaginationCursorValue} Decoded cursor data
-   * @throws {BadRequestException} If cursor cannot be decoded
+   * @throws {UnprocessableEntityException} If cursor cannot be decoded
    */
   private decodeCursor(cursor: string): IPaginationCursorValue {
     if (!cursor || typeof cursor !== 'string') {
-      throw new BadRequestException({
+      throw new UnprocessableEntityException({
         statusCode: EnumPaginationStatusCodeError.invalidCursorFormat,
         message: 'pagination.error.invalidCursorFormat',
-      });
-    }
-
-    if (cursor.length > PaginationMaxCursorLength) {
-      throw new BadRequestException({
-        statusCode: EnumPaginationStatusCodeError.cursorTooLong,
-        message: 'pagination.error.cursorTooLong',
       });
     }
 
@@ -265,16 +341,12 @@ export class PaginationService implements IPaginationService {
       // Add padding back based on length
       const padded = cursor + '='.repeat((4 - (cursor.length % 4)) % 4);
       // Convert URL-safe characters back to standard base64 (- becomes +, _ becomes /)
-      const base64 = padded.replace(/-/g, '+').replace(/_/g, '/');
+      const base64 = padded.replaceAll(/-/g, '+').replaceAll(/_/g, '/');
       const decoded = JSON.parse(Buffer.from(base64, 'base64').toString());
 
       // Validate decoded cursor has required fields
-      if (
-        decoded.cursor === undefined ||
-        decoded.cursor === null ||
-        !decoded.orderBy
-      ) {
-        throw new BadRequestException({
+      if (!decoded.cursor || !decoded.orderBy) {
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.invalidCursorData,
           message: 'pagination.error.invalidCursorData',
         });
@@ -282,12 +354,12 @@ export class PaginationService implements IPaginationService {
 
       return decoded as IPaginationCursorValue;
     } catch (error) {
-      // Only re-throw if already BadRequestException
-      if (error instanceof BadRequestException) {
+      // Only re-throw if already UnprocessableEntityException
+      if (error instanceof UnprocessableEntityException) {
         throw error;
       }
 
-      throw new BadRequestException({
+      throw new UnprocessableEntityException({
         statusCode: EnumPaginationStatusCodeError.failedToDecodeCursor,
         message: 'pagination.error.failedToDecodeCursor',
       });
@@ -304,5 +376,19 @@ export class PaginationService implements IPaginationService {
    */
   private isDeepEqual(obj1: unknown, obj2: unknown): boolean {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  /**
+   * Resolves orderBy to a valid non-empty array.
+   * Falls back to PaginationDefaultOrderBy if orderBy is empty or undefined.
+   * @param {IPaginationOrderBy[]} [orderBy] - Optional orderBy array from the request
+   * @returns {IPaginationOrderBy[]} Resolved orderBy array
+   */
+  private resolveOrderBy(orderBy?: IPaginationOrderBy[]): IPaginationOrderBy[] {
+    if (!orderBy || orderBy.length === 0) {
+      return PaginationDefaultOrderBy;
+    }
+
+    return orderBy;
   }
 }

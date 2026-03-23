@@ -34,6 +34,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 
 import { VehicleModelUtil } from '../utils/vehicle-model.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.vehicle-model')
 @Controller({
@@ -66,7 +67,10 @@ export class VehicleModelPublicController {
       availableSearch: VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleModelSelect,
+      Prisma.VehicleModelWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', VEHICLE_MODEL_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
     @PaginationQueryFilterInEnum('type', VEHICLE_MODEL_DEFAULT_TYPE)
@@ -93,7 +97,7 @@ export class VehicleModelPublicController {
       filters['engineDisplacement'] = engineDisplacement;
     }
     if (vehicleBrandId) {
-      filters['vehicleBrand'] = vehicleBrandId;
+      filters['vehicleBrandId'] = vehicleBrandId;
     }
 
     const { data, total } = await this.vehicleModelService.getListOffset(

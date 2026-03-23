@@ -8,6 +8,7 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import {
   Response,
@@ -26,11 +27,10 @@ import {
   RoleSystemGetAbilitiesDoc,
   RoleSystemListDoc,
 } from '@/modules/role/docs/role.system.doc';
+import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { RoleService } from '@/modules/role/services/role.service';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import { RoleAbilitiesResponseDto } from '../dtos/response/role.abilities.response.dto';
+import { EnumRoleType, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.system.role')
 @Controller({
@@ -42,14 +42,18 @@ export class RoleSystemController {
 
   @RoleSystemListDoc()
   @ResponsePaging('role.list')
+  @ApiKeySystemProtected()
   @Get('/list')
   async list(
     @PaginationCursorQuery({
       availableSearch: RoleDefaultAvailableSearch,
     })
-    pagination: IPaginationQueryCursorParams,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.RoleSelect,
+      Prisma.RoleWhereInput
+    >,
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
-    type?: Record<string, IPaginationIn>,
+    type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
     return this.roleService.getListCursor(pagination, type);
   }
@@ -59,8 +63,8 @@ export class RoleSystemController {
   @ApiKeySystemProtected()
   @Get('/get/:roleId/abilities')
   async getAbilities(
-    @Param('roleId', RequestRequiredPipe, RequestIsValidUuidPipe)
-    roleId: string,
+    @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    roleId: string
   ): Promise<IResponseReturn<RoleAbilitiesResponseDto>> {
     return this.roleService.getAbilities(roleId);
   }

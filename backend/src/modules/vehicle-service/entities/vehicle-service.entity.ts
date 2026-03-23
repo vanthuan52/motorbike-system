@@ -1,5 +1,5 @@
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
-import { ENUM_VEHICLE_SERVICE_STATUS } from '../enums/vehicle-service.enum';
+import { EnumVehicleServiceStatus } from '../enums/vehicle-service.enum';
 import {
   DatabaseEntity,
   DatabaseProp,
@@ -41,16 +41,16 @@ export class VehicleServiceEntity extends DatabaseEntityBase {
     required: false,
     default: '0',
   })
-  order?: string;
+  orderBy?: string;
 
   @DatabaseProp({
     required: true,
-    default: ENUM_VEHICLE_SERVICE_STATUS.ACTIVE,
+    default: EnumVehicleServiceStatus.active,
     index: true,
     type: String,
-    enum: ENUM_VEHICLE_SERVICE_STATUS,
+    enum: EnumVehicleServiceStatus,
   })
-  status: ENUM_VEHICLE_SERVICE_STATUS;
+  status: EnumVehicleServiceStatus;
 
   @DatabaseProp({
     required: true,

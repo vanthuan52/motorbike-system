@@ -1,68 +1,191 @@
-import { Model, PopulateOptions } from 'mongoose';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
-import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  CareRecordDoc,
-  CareRecordEntity,
-} from '../entities/care-record.entity';
-import { AppointmentEntity } from '@/modules/appointment/entities/appointment.entity';
-import { UserVehicleEntity } from '@/modules/user-vehicle/entities/user-vehicle.entity';
-import { UserEntity } from '@/modules/user/entities/user.entity';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { CareRecord, Prisma } from '@/generated/prisma-client';
 
-export class CareRecordRepository extends DatabaseRepositoryBase<
-  CareRecordEntity,
-  CareRecordDoc
-> {
-  readonly _joinActive: PopulateOptions[] = [
-    {
-      path: 'appointment',
-      localField: 'appointment',
-      foreignField: '_id',
-      model: AppointmentEntity.name,
-      justOne: true,
-    },
-    {
-      path: 'technician',
-      localField: 'technician',
-      foreignField: '_id',
-      model: UserEntity.name,
-      justOne: true,
-    },
-    {
-      path: 'userVehicle',
-      localField: 'userVehicle',
-      foreignField: '_id',
-      model: UserVehicleEntity.name,
-      justOne: true,
-    },
-  ];
-
+@Injectable()
+export class CareRecordRepository {
   constructor(
-    @InjectDatabaseModel(CareRecordEntity.name)
-    private readonly careRecordModel: Model<CareRecordEntity>,
-  ) {
-    super(careRecordModel, [
-      {
-        path: 'appointment',
-        localField: 'appointment',
-        foreignField: '_id',
-        model: AppointmentEntity.name,
-        justOne: true,
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService
+  ) {}
+
+  async findAll(
+    {
+      where: baseWhere,
+      skip,
+      limit,
+      orderBy,
+      ...rest
+    }: IPaginationQueryOffsetParams<
+      Prisma.CareRecordSelect,
+      Prisma.CareRecordWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<CareRecord[]> {
+    const mergedWhere: Prisma.CareRecordWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.careRecord.findMany({
+      where: mergedWhere,
+      skip,
+      take: limit,
+      orderBy: orderBy || { createdAt: 'desc' },
+      include: {
+        appointment: true,
+        technician: true,
+        userVehicle: true,
+        store: true,
       },
+      ...rest,
+    });
+  }
+
+  async getTotal(
+    {
+      where: baseWhere,
+    }: IPaginationQueryOffsetParams<
+      Prisma.CareRecordSelect,
+      Prisma.CareRecordWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<number> {
+    const mergedWhere: Prisma.CareRecordWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.careRecord.count({
+      where: mergedWhere,
+    });
+  }
+
+  async findWithPaginationOffset({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.CareRecordSelect,
+    Prisma.CareRecordWhereInput
+  >): Promise<{
+    data: CareRecord[];
+    count: number;
+    page: number;
+    totalPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nextPage?: number;
+    previousPage?: number;
+  }> {
+    return this.paginationService.offsetRaw<CareRecord>(
+      this.databaseService.careRecord,
       {
-        path: 'technician',
-        localField: 'technician',
-        foreignField: '_id',
-        model: UserEntity.name,
-        justOne: true,
-      },
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          appointment: true,
+          technician: true,
+          userVehicle: true,
+          store: true,
+        },
+      }
+    );
+  }
+
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.CareRecordSelect,
+    Prisma.CareRecordWhereInput
+  >): Promise<{
+    data: CareRecord[];
+    count?: number;
+    cursor?: string;
+    hasNext: boolean;
+  }> {
+    return this.paginationService.cursorRaw<CareRecord>(
+      this.databaseService.careRecord,
       {
-        path: 'userVehicle',
-        localField: 'userVehicle',
-        foreignField: '_id',
-        model: UserVehicleEntity.name,
-        justOne: true,
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          appointment: true,
+          technician: true,
+          userVehicle: true,
+          store: true,
+        },
+        includeCount: true,
+      }
+    );
+  }
+
+  async findOneById(id: string): Promise<CareRecord | null> {
+    return this.databaseService.careRecord.findUnique({
+      where: { id },
+      include: {
+        appointment: true,
+        technician: true,
+        userVehicle: true,
+        store: true,
       },
-    ]);
+    });
+  }
+
+  async findOne(
+    where: Prisma.CareRecordWhereInput
+  ): Promise<CareRecord | null> {
+    return this.databaseService.careRecord.findFirst({
+      where,
+      include: {
+        appointment: true,
+        technician: true,
+        userVehicle: true,
+        store: true,
+      },
+    });
+  }
+
+  async create(data: Prisma.CareRecordCreateInput): Promise<CareRecord> {
+    return this.databaseService.careRecord.create({
+      data,
+      include: {
+        appointment: true,
+        technician: true,
+        userVehicle: true,
+        store: true,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.CareRecordUpdateInput
+  ): Promise<CareRecord> {
+    return this.databaseService.careRecord.update({
+      where: { id },
+      data,
+      include: {
+        appointment: true,
+        technician: true,
+        userVehicle: true,
+        store: true,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<CareRecord> {
+    return this.databaseService.careRecord.delete({
+      where: { id },
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty, IntersectionType, PickType } from '@nestjs/swagger';
-import { AwsS3MultipartPartDto } from './aws.s3-multipart.dto';
-import { AwsS3Dto } from './aws.s3.dto';
+import { AwsS3MultipartPartDto } from '@/common/aws/dtos/aws.s3-multipart.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 
 /**
  * DTO for AWS S3 presigned URL response.
@@ -43,5 +43,5 @@ export class AwsS3PresignDto extends PickType(AwsS3Dto, [
  */
 export class AwsS3PresignPartDto extends IntersectionType(
   AwsS3PresignDto,
-  PickType(AwsS3MultipartPartDto, ['size', 'partNumber'] as const),
+  PickType(AwsS3MultipartPartDto, ['size', 'partNumber'] as const)
 ) {}

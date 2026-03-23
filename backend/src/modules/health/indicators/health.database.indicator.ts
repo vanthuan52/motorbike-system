@@ -9,14 +9,14 @@ import { DatabaseService } from '@/common/database/services/database.service';
 export class HealthDatabaseIndicator {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly healthIndicatorService: HealthIndicatorService,
+    private readonly healthIndicatorService: HealthIndicatorService
   ) {}
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
     const indicator = this.healthIndicatorService.check(key);
 
     try {
-      // Do something here
+      await this.databaseService.$runCommandRaw({ ping: 1 });
 
       return indicator.up();
     } catch (err: unknown) {

@@ -3,7 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { UserService } from '@/modules/user/services/user.service';
 import { UserGuardIsVerifiedMetaKey } from '@/modules/user/constants/user.constant';
-import { IUserDoc } from '../interfaces/user.interface';
 
 /**
  * Guard that validates user authentication and verification status.
@@ -13,7 +12,7 @@ import { IUserDoc } from '../interfaces/user.interface';
 export class UserGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   /**
@@ -27,14 +26,14 @@ export class UserGuard implements CanActivate {
     const isVerified =
       this.reflector.get<boolean>(
         UserGuardIsVerifiedMetaKey,
-        context.getHandler(),
+        context.getHandler()
       ) ?? false;
 
     const request = context.switchToHttp().getRequest<IRequestApp>();
 
     const user = await this.userService.validateUserGuard(request, isVerified);
 
-    request.__user = user as IUserDoc;
+    request.__user = user;
 
     return true;
   }

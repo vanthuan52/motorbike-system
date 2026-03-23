@@ -1,8 +1,8 @@
-export enum ENUM_HIRING_STATUS_CODE_ERROR {
-  NOT_FOUND = 5300,
-  EXIST = 5301,
-  IS_ACTIVE = 5302,
-  USED = 5303,
-  INACTIVE_FORBIDDEN = 5304,
-  SLUG_EXISTED = 5305,
+export enum EnumHiringStatusCodeError {
+  notFound = 5300,
+  exist = 5301,
+  isActive = 5302,
+  used = 5303,
+  inactiveForbidden = 5304,
+  slugExisted = 5305,
 }

@@ -1,11 +1,21 @@
-export enum ENUM_HIRING_STATUS {
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-  ARCHIVED = 'archived',
+export enum EnumHiringJobType {
+  fullTime = 'fullTime',
+  partTime = 'partTime',
+  contract = 'contract',
+  etc = 'etc',
 }
-export enum ENUM_HIRING_TYPE {
-  FULL_TIME = 'full_time',
-  PART_TIME = 'part_time',
-  CONTRACT = 'contract',
-  ETC = 'etc',
+
+export enum EnumHiringStatus {
+  draft = 'draft',
+  published = 'published',
+  archived = 'archived',
+}
+
+export enum EnumCandidateStatus {
+  new = 'new',
+  reviewed = 'reviewed',
+  interviewScheduled = 'interviewScheduled',
+  interviewing = 'interviewing',
+  hired = 'hired',
+  rejected = 'rejected',
 }

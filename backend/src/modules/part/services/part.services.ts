@@ -4,20 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import slugify from 'slugify';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSoftDeleteOptions,
-  IDatabaseUpdateOptions,
-} from '@/common/database/interfaces/database.interface';
 import { IPartService } from '../interfaces/part.service.interface';
 import { PartRepository } from '../respository/part.repository';
-import { PartDoc, PartEntity } from '../entities/part.entity';
-import { IPartDoc } from '../interfaces/part.interface';
 import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
-import { ENUM_PART_STATUS } from '../enums/part.enum';
+import { EnumPartStatus } from '../enums/part.enum';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
 import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
 import {
@@ -25,8 +15,8 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_PART_STATUS_CODE_ERROR } from '../enums/part.status-code.enum';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { EnumPartStatusCodeError } from '../enums/part.status-code.enum';
+import { Part, Prisma } from '@/generated/prisma-client';
 import { PartTypeService } from '@/modules/part-type/services/part-type.services';
 import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
 
@@ -35,34 +25,51 @@ export class PartService implements IPartService {
   constructor(
     private readonly partRepository: PartRepository,
     private readonly partTypeService: PartTypeService,
-    private readonly vehicleBrandService: VehicleBrandService,
+    private readonly vehicleBrandService: VehicleBrandService
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<Prisma.PartSelect, Prisma.PartWhereInput>,
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
-    vehicleBrandId?: string,
-  ): Promise<{ data: PartDoc[]; total: number }> {
-    const find: Record<string, any> = {
+    vehicleBrandId?: string
+  ): Promise<{ data: Part[]; total: number }> {
+    const mergedWhere: Prisma.PartWhereInput = {
       ...where,
       ...status,
     };
 
     if (partTypeId) {
-      find.partType = partTypeId;
+      mergedWhere.partTypeId = partTypeId;
     }
     if (vehicleBrandId) {
-      find.vehicleBrand = vehicleBrandId;
+      mergedWhere.vehicleBrandId = vehicleBrandId;
     }
 
     const [parts, total] = await Promise.all([
-      this.partRepository.findAll(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-        join: true,
-      }),
-      this.partRepository.getTotal(find, { join: true }),
+      this.partRepository.findAll(
+        {
+          limit,
+          skip,
+          where: mergedWhere,
+          orderBy,
+        },
+        status
+      ),
+      this.partRepository.getTotal(
+        {
+          limit,
+          skip,
+          where: mergedWhere,
+          orderBy,
+        },
+        status
+      ),
     ]);
 
     return {
@@ -79,103 +86,77 @@ export class PartService implements IPartService {
       cursor,
       cursorField,
       includeCount,
-    }: IPaginationQueryCursorParams,
+    }: IPaginationQueryCursorParams<Prisma.PartSelect, Prisma.PartWhereInput>,
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
-    vehicleBrandId?: string,
-  ): Promise<{ data: PartDoc[]; total?: number }> {
-    const find: Record<string, any> = { ...where, ...status };
+    vehicleBrandId?: string
+  ): Promise<{ data: Part[]; total?: number }> {
+    const mergedWhere: Prisma.PartWhereInput = {
+      ...where,
+      ...status,
+    };
 
     if (partTypeId) {
-      find.partType = partTypeId;
+      mergedWhere.partTypeId = partTypeId;
     }
     if (vehicleBrandId) {
-      find.vehicleBrand = vehicleBrandId;
-    }
-    if (cursor && cursorField) {
-      find[cursorField] = { $gt: cursor };
+      mergedWhere.vehicleBrandId = vehicleBrandId;
     }
 
-    const [data, count] = await Promise.all([
-      this.partRepository.findAllCursor(find, {
-        cursor: {
-          cursor,
-          cursorField,
-          limit: limit + 1,
-          order: orderBy,
-        },
-        join: true,
-      }),
-      includeCount
-        ? this.partRepository.getTotal(find)
-        : Promise.resolve(undefined),
-    ]);
-
-    const items = data;
-
-    return { data: items, total: count };
-  }
-
-  async findOneById(
-    partId: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<PartDoc> {
-    const part = await this.partRepository.findOneById(partId, options);
-    if (!part) {
-      throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'part.error.notFound',
-      });
-    }
-    return part;
-  }
-
-  async findOneWithRelationsById(
-    partId: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<PartDoc> {
-    const part = await this.partRepository.findOneById<IPartDoc>(partId, {
-      ...options,
-      join: true,
+    const { data, count } = await this.partRepository.findWithPaginationCursor({
+      limit,
+      where: mergedWhere,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
     });
+
+    return { data, total: count };
+  }
+
+  async findOneById(partId: string): Promise<Part> {
+    const part = await this.partRepository.findOneById(partId);
     if (!part) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartStatusCodeError.notFound,
         message: 'part.error.notFound',
       });
     }
     return part;
   }
 
-  async findOneBySlug(
-    slug: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<PartDoc> {
-    const part = await this.partRepository.findOneBySlug(slug, {
-      ...options,
-      join: true,
-    });
+  async findOneWithRelationsById(partId: string): Promise<Part> {
+    const part = await this.partRepository.findOneById(partId);
     if (!part) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartStatusCodeError.notFound,
         message: 'part.error.notFound',
       });
     }
     return part;
   }
 
-  async create(
-    payload: PartCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto> {
+  async findOneBySlug(slug: string): Promise<Part> {
+    const part = await this.partRepository.findOneBySlug(slug);
+    if (!part) {
+      throw new NotFoundException({
+        statusCode: EnumPartStatusCodeError.notFound,
+        message: 'part.error.notFound',
+      });
+    }
+    return part;
+  }
+
+  async create(payload: PartCreateRequestDto): Promise<{ id: string }> {
     // Validate slug uniqueness
     if (payload.slug) {
       const existingBySlug = await this.partRepository.findOneBySlug(
-        payload.slug,
+        payload.slug
       );
       if (existingBySlug) {
         throw new ConflictException({
-          statusCode: ENUM_PART_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumPartStatusCodeError.slugExisted,
           message: 'part.error.slugExisted',
         });
       }
@@ -187,31 +168,30 @@ export class PartService implements IPartService {
     // Validate vehicleBrand exists
     await this.vehicleBrandService.findOneById(payload.vehicleBrand);
 
-    const create: PartEntity = new PartEntity();
-    create.name = payload.name;
-    create.slug = payload.slug
+    const slug = payload.slug
       ? payload.slug.toLowerCase()
       : slugify(payload.name, { lower: true, strict: true, locale: 'vi' });
-    create.vehicleBrand = payload.vehicleBrand;
-    create.partType = payload.partType;
-    create.order = payload.order;
-    create.description = payload.description;
-    create.status = payload.status ?? ENUM_PART_STATUS.ACTIVE;
 
-    const created = await this.partRepository.create(create, options);
+    const data: Prisma.PartCreateInput = {
+      name: payload.name,
+      slug,
+      vehicleBrand: { connect: { id: payload.vehicleBrand } },
+      partType: { connect: { id: payload.partType } },
+      orderBy: payload.orderBy ?? '0',
+      description: payload.description ?? null,
+      status: payload.status ?? EnumPartStatus.active,
+    };
 
-    return { _id: created._id };
+    const created = await this.partRepository.create(data);
+
+    return { id: created.id };
   }
 
-  async update(
-    partId: string,
-    payload: PartUpdateRequestDto,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
+  async update(partId: string, payload: PartUpdateRequestDto): Promise<void> {
     const part = await this.partRepository.findOneById(partId);
     if (!part) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartStatusCodeError.notFound,
         message: 'part.error.notFound',
       });
     }
@@ -219,98 +199,68 @@ export class PartService implements IPartService {
     // Validate slug uniqueness if changing
     if (payload.slug && payload.slug !== part.slug) {
       const existingBySlug = await this.partRepository.findOneBySlug(
-        payload.slug,
+        payload.slug
       );
-      if (existingBySlug && existingBySlug._id.toString() !== partId) {
+      if (existingBySlug && existingBySlug.id !== partId) {
         throw new ConflictException({
-          statusCode: ENUM_PART_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumPartStatusCodeError.slugExisted,
           message: 'part.error.slugExisted',
         });
       }
     }
 
     // Validate partType if changing
-    if (payload.partType && payload.partType !== part.partType) {
+    if (payload.partType && payload.partType !== part.partTypeId) {
       await this.partTypeService.findOneById(payload.partType);
     }
 
     // Validate vehicleBrand if changing
-    if (payload.vehicleBrand && payload.vehicleBrand !== part.vehicleBrand) {
+    if (payload.vehicleBrand && payload.vehicleBrand !== part.vehicleBrandId) {
       await this.vehicleBrandService.findOneById(payload.vehicleBrand);
     }
 
-    part.name = payload.name ?? part.name;
-    part.slug = payload.slug ?? part.slug;
-    part.order = payload.order ?? part.order;
-    part.vehicleBrand = payload.vehicleBrand ?? part.vehicleBrand;
-    part.partType = payload.partType ?? part.partType;
-    part.description = payload.description;
+    const slug = payload.slug ? payload.slug.toLowerCase() : part.slug;
 
-    await this.partRepository.save(part, options);
+    const data: Prisma.PartUpdateInput = {
+      name: payload.name ?? undefined,
+      slug: slug,
+      orderBy: payload.orderBy ?? undefined,
+      vehicleBrand: payload.vehicleBrand
+        ? { connect: { id: payload.vehicleBrand } }
+        : undefined,
+      partType: payload.partType
+        ? { connect: { id: payload.partType } }
+        : undefined,
+      description: payload.description ?? undefined,
+    };
+
+    await this.partRepository.update(partId, data);
   }
 
   async updateStatus(
     partId: string,
-    { status }: PartUpdateStatusRequestDto,
-    options?: IDatabaseUpdateOptions,
+    { status }: PartUpdateStatusRequestDto
   ): Promise<void> {
     const part = await this.partRepository.findOneById(partId);
     if (!part) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartStatusCodeError.notFound,
         message: 'part.error.notFound',
       });
     }
 
-    part.status = status;
-    await this.partRepository.save(part, options);
+    await this.partRepository.update(partId, { status });
   }
 
-  async existBySlug(
-    slug: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<{ exist: boolean }> {
-    const exist = await this.partRepository.exists({ slug }, options);
-    return {
-      exist,
-    };
-  }
-
-  async delete(
-    partId: string,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void> {
+  async delete(partId: string): Promise<void> {
     const part = await this.partRepository.findOneById(partId);
     if (!part) {
       throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumPartStatusCodeError.notFound,
         message: 'part.error.notFound',
       });
     }
 
-    await this.partRepository.delete({ _id: partId }, options);
-  }
-
-  async softDelete(
-    partId: string,
-    options?: IDatabaseSoftDeleteOptions,
-  ): Promise<void> {
-    const part = await this.partRepository.findOneById(partId);
-    if (!part) {
-      throw new NotFoundException({
-        statusCode: ENUM_PART_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'part.error.notFound',
-      });
-    }
-
-    await this.partRepository.softDelete(part, options);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.partRepository.deleteMany(find, options);
-    return true;
+    await this.partRepository.delete(partId);
   }
 }

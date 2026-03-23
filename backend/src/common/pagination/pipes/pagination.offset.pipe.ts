@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, mixin } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+  mixin,
+} from '@nestjs/common';
 import { PipeTransform, Scope, Type } from '@nestjs/common/interfaces';
 import { REQUEST } from '@nestjs/core';
 import {
@@ -15,12 +20,6 @@ import { EnumPaginationStatusCodeError } from '@/common/pagination/enums/paginat
  * @param {number} defaultPerPage - Default number of items per page (default: PaginationDefaultPerPage)
  * @returns {Type<PipeTransform>} Configured pipe class for offset pagination
  *
- * @example
- * // Usage in controller
- * @Get()
- * @UsePipes(PaginationOffsetPipe(20))
- * findAll(@Query() pagination: IPaginationQueryOffsetParams) { }
- *
  * @constraint
  * - Page: minimum 1, maximum PaginationDefaultMaxPage
  * - PerPage: minimum 1, maximum PaginationDefaultMaxPerPage
@@ -28,7 +27,7 @@ import { EnumPaginationStatusCodeError } from '@/common/pagination/enums/paginat
  * - Default perPage: PaginationDefaultPerPage or custom defaultPerPage parameter
  */
 export function PaginationOffsetPipe(
-  defaultPerPage: number = PaginationDefaultPerPage,
+  defaultPerPage: number = PaginationDefaultPerPage
 ): Type<PipeTransform> {
   @Injectable({ scope: Scope.REQUEST })
   class MixinPaginationOffsetPipe implements PipeTransform {
@@ -46,7 +45,7 @@ export function PaginationOffsetPipe(
       value: {
         page?: number | string;
         perPage?: number | string;
-      } & IPaginationQueryOffsetParams,
+      } & IPaginationQueryOffsetParams
     ): IPaginationQueryOffsetParams {
       try {
         const finalPage = this.validateAndParsePage(value.page);
@@ -61,11 +60,11 @@ export function PaginationOffsetPipe(
           skip: skip,
         };
       } catch (error) {
-        if (error instanceof BadRequestException) {
+        if (error instanceof UnprocessableEntityException) {
           throw error;
         }
 
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode:
             EnumPaginationStatusCodeError.invalidOffsetPaginationParams,
           message: 'pagination.error.invalidOffsetPaginationParams',
@@ -92,7 +91,7 @@ export function PaginationOffsetPipe(
       }
 
       if (!Number.isFinite(finalPage) || !Number.isInteger(finalPage)) {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.invalidPage,
           message: 'pagination.error.invalidPage',
           messageProperties: {
@@ -102,7 +101,7 @@ export function PaginationOffsetPipe(
       }
 
       if (finalPage > PaginationDefaultMaxPage) {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.pageExceedsMaximum,
           message: 'pagination.error.pageExceedsMaximum',
           messageProperties: {
@@ -113,7 +112,7 @@ export function PaginationOffsetPipe(
       }
 
       if (finalPage < 1) {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.pageCannotBeLessThanOne,
           message: 'pagination.error.pageCannotBeLessThanOne',
           messageProperties: {
@@ -145,7 +144,7 @@ export function PaginationOffsetPipe(
       }
 
       if (!Number.isFinite(finalPerPage) || !Number.isInteger(finalPerPage)) {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.invalidPerPage,
           message: 'pagination.error.invalidPerPage',
           messageProperties: {
@@ -155,7 +154,7 @@ export function PaginationOffsetPipe(
       }
 
       if (finalPerPage > PaginationDefaultMaxPerPage) {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.perPageExceedsMaximum,
           message: 'pagination.error.perPageExceedsMaximum',
           messageProperties: {
@@ -166,7 +165,7 @@ export function PaginationOffsetPipe(
       }
 
       if (finalPerPage < 1) {
-        throw new BadRequestException({
+        throw new UnprocessableEntityException({
           statusCode: EnumPaginationStatusCodeError.perPageCannotBeLessThanOne,
           message: 'pagination.error.perPageCannotBeLessThanOne',
           messageProperties: {

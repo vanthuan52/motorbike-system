@@ -42,7 +42,7 @@ import {
   CareRecordAdminUpdateStatusDoc,
   CareRecordAdminUpdateTechnicianDoc,
 } from '../docs/care-record.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -61,8 +61,6 @@ import {
   CARE_RECORD_DEFAULT_STATUS,
 } from '../constants/care-record.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
 import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
 import {
   CareRecordUpdatePaymentStatusRequestDto,
@@ -71,10 +69,6 @@ import {
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordUtil } from '../utils/care-record.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 
 @ApiTags('modules.admin.care-record')
 @Controller({
@@ -85,7 +79,7 @@ export class CareRecordAdminController {
   constructor(
     private readonly careRecordService: CareRecordService,
     private readonly careRecordUtil: CareRecordUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @CareRecordAdminListDoc()
@@ -104,19 +98,19 @@ export class CareRecordAdminController {
       availableOrderBy: CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('appointment', RequestOptionalParseUUIDPipe)
+    @Query('appointment')
     appointmentId: string,
     @PaginationQueryFilterInEnum('status', CARE_RECORD_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
     @PaginationQueryFilterInEnum(
       'paymentStatus',
-      CARE_RECORD_DEFAULT_PAYMENT_STATUS,
+      CARE_RECORD_DEFAULT_PAYMENT_STATUS
     )
     paymentStatus: Record<string, IPaginationIn>,
-    @Query('technician', RequestOptionalParseUUIDPipe)
+    @Query('technician')
     technicianId: string,
-    @Query('userVehicle', RequestOptionalParseUUIDPipe)
-    userVehicleId: string,
+    @Query('userVehicle')
+    userVehicleId: string
   ): Promise<IResponsePagingReturn<CareRecordListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
@@ -124,20 +118,20 @@ export class CareRecordAdminController {
     };
 
     if (appointmentId) {
-      filters['appointment._id'] = appointmentId;
+      filters['appointmentId'] = appointmentId;
     }
 
     if (technicianId) {
-      filters['technician._id'] = technicianId;
+      filters['technicianId'] = technicianId;
     }
 
     if (userVehicleId) {
-      filters['userVehicle._id'] = userVehicleId;
+      filters['userVehicleId'] = userVehicleId;
     }
 
     const { data, total } = await this.careRecordService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.careRecordUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -154,7 +148,7 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe) id: string
   ): Promise<IResponseReturn<CareRecordGetFullResponseDto>> {
     const careRecord = await this.careRecordService.findOneById(id);
     const mapped = this.careRecordUtil.mapGetFull(careRecord);
@@ -175,14 +169,15 @@ export class CareRecordAdminController {
   @Post('/create')
   async create(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() body: CareRecordCreateRequestDto,
+    @Body() body: CareRecordCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordService.createWithAppointment(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
+    const created = await this.careRecordService.createWithAppointment(
+      body,
+      createdBy
+    );
     return {
       data: {
-        _id: created._id,
+        id: created.id,
       },
     };
   }
@@ -198,13 +193,10 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordUpdateRequestDto,
+    @Param('id', RequestRequiredPipe) id: string,
+    @Body() body: CareRecordUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.update(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordService.update(id, body);
     return {};
   }
 
@@ -219,13 +211,10 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordUpdateStatusRequestDto,
+    @Param('id', RequestRequiredPipe) id: string,
+    @Body() body: CareRecordUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updateStatus(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordService.updateStatus(id, body);
     return {};
   }
 
@@ -240,13 +229,10 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/paymentStatus')
   async updatePaymentStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordUpdatePaymentStatusRequestDto,
+    @Param('id', RequestRequiredPipe) id: string,
+    @Body() body: CareRecordUpdatePaymentStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updatePaymentStatus(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordService.updatePaymentStatus(id, body);
     return {};
   }
 
@@ -261,13 +247,10 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/technician')
   async updateTechnician(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body() body: CareRecordUpdateTechnicianRequestDto,
+    @Param('id', RequestRequiredPipe) id: string,
+    @Body() body: CareRecordUpdateTechnicianRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updateTechnician(id, body, {
-      actionBy: updatedBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordService.updateTechnician(id, body);
     return {};
   }
 
@@ -282,12 +265,9 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @AuthJwtPayload('user') actionBy: string,
+    @Param('id', RequestRequiredPipe) id: string
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.softDelete(id, {
-      actionBy,
-    } as IDatabaseSaveOptions);
+    await this.careRecordService.delete(id);
     return {};
   }
 
@@ -303,14 +283,15 @@ export class CareRecordAdminController {
   @Post('/create/:id/checklist')
   async createChecklist(
     @AuthJwtPayload('user') createdBy: string,
-    @Body() body: CareRecordCreateRequestDto,
+    @Body() body: CareRecordCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordService.createWithAppointment(body, {
-      actionBy: createdBy,
-    } as IDatabaseCreateOptions);
+    const created = await this.careRecordService.createWithAppointment(
+      body,
+      createdBy
+    );
     return {
       data: {
-        _id: created._id,
+        id: created.id,
       },
     };
   }

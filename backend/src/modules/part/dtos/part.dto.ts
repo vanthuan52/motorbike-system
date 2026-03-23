@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
-import { ENUM_PART_STATUS } from '../enums/part.enum';
+import { EnumPartStatus } from '../enums/part.enum';
 
 export class PartDto extends DatabaseDto {
   @ApiProperty({
@@ -31,20 +31,20 @@ export class PartDto extends DatabaseDto {
   description?: string;
 
   @ApiProperty({
-    enum: ENUM_PART_STATUS,
+    enum: EnumPartStatus,
     required: true,
     description: 'Part status',
-    example: ENUM_PART_STATUS.ACTIVE,
+    example: EnumPartStatus.active,
   })
   @Expose()
-  status: ENUM_PART_STATUS;
+  status: EnumPartStatus;
 
   @ApiPropertyOptional({
     type: String,
     description: 'Display order',
   })
   @Expose()
-  order?: string;
+  orderBy?: string;
 
   @ApiProperty({
     type: String,

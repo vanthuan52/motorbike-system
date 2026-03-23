@@ -10,12 +10,12 @@ import { AwsS3Service } from '@/common/aws/services/aws.s3.service';
 export class HealthAwsS3BucketIndicator {
   constructor(
     private readonly awsS3Service: AwsS3Service,
-    private readonly healthIndicatorService: HealthIndicatorService,
+    private readonly healthIndicatorService: HealthIndicatorService
   ) {}
 
   async isHealthy(
     key: string,
-    access?: EnumAwsS3Accessibility,
+    access?: EnumAwsS3Accessibility
   ): Promise<HealthIndicatorResult> {
     const indicator = this.healthIndicatorService.check(key);
 

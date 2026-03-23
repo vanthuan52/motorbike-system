@@ -1,99 +1,81 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
 import { ICareRecordMediaService } from '../interfaces/care-record-media.service.interface';
 import { CareRecordMediaRepository } from '../respository/care-record-media.repository';
-import {
-  CareRecordMediaDoc,
-  CareRecordMediaEntity,
-} from '../entities/care-record-media.entity';
-import { ICareRecordMediaEntity } from '../interfaces/care-record-media.interface';
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
 import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-media.update.request.dto';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CareRecordMedia, Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordMediaService implements ICareRecordMediaService {
   constructor(
-    private readonly careRecordMediaRepository: CareRecordMediaRepository,
+    private readonly careRecordMediaRepository: CareRecordMediaRepository
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: CareRecordMediaDoc[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordMediaSelect,
+      Prisma.CareRecordMediaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordMedia[]; total: number }> {
+    const { data, count } =
+      await this.careRecordMediaRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
 
-    const [careRecordMedias, total] = await Promise.all([
-      this.careRecordMediaRepository.findAll<ICareRecordMediaEntity>(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-        join: true,
-      }),
-      this.careRecordMediaRepository.getTotal(find),
-    ]);
-
-    return {
-      data: careRecordMedias as unknown as CareRecordMediaDoc[],
-      total,
-    };
+    const careRecordMedias: CareRecordMedia[] = data;
+    return { data: careRecordMedias, total: count || 0 };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordMediaDoc> {
-    const careRecordMedia = await this.findOneByIdOrFail(id, {
-      ...options,
-      join: true,
-    });
-    return careRecordMedia;
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordMediaSelect,
+      Prisma.CareRecordMediaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecordMedia[]; total?: number }> {
+    const { data, count } =
+      await this.careRecordMediaRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    const careRecordMedias: CareRecordMedia[] = data;
+    return { data: careRecordMedias, total: count || 0 };
   }
 
-  async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordMediaDoc> {
-    const careRecordMedia =
-      await this.careRecordMediaRepository.findOne<CareRecordMediaDoc>(
-        find,
-        options,
-      );
-    return careRecordMedia;
+  async findOneById(id: string): Promise<CareRecordMedia> {
+    return this.findOneByIdOrFail(id);
   }
 
-  async create(
-    {
-      careRecord,
+  async create({
+    careRecord,
+    stage,
+    type,
+    url,
+    description,
+  }: CareRecordMediaCreateRequestDto): Promise<DatabaseIdDto> {
+    const created = await this.careRecordMediaRepository.create({
+      careRecord: { connect: { id: careRecord } },
       stage,
       type,
-      url,
-      description,
-    }: CareRecordMediaCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto> {
-    const create: CareRecordMediaEntity = new CareRecordMediaEntity();
-    create.careRecord = careRecord;
-    create.stage = stage;
-    create.type = type;
-    create.url = url;
-    create.description = description;
+      url: url ?? undefined,
+      description: description ?? undefined,
+    });
 
-    const created =
-      await this.careRecordMediaRepository.create<CareRecordMediaEntity>(
-        create,
-        options,
-      );
-
-    return { _id: created._id };
+    return { _id: created.id };
   }
 
   async update(
@@ -104,44 +86,32 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       type,
       url,
       description,
-    }: CareRecordMediaUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
+    }: CareRecordMediaUpdateRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.careRecord = careRecord ?? repository.careRecord;
-    repository.stage = stage ?? repository.stage;
-    repository.type = type ?? repository.type;
-    repository.url = url ?? repository.url;
-    repository.description = description ?? repository.description;
+    await this.findOneByIdOrFail(id);
 
-    await this.careRecordMediaRepository.save(repository, options);
+    const updateData: any = {};
+    if (careRecord !== undefined)
+      updateData.careRecord = { connect: { id: careRecord } };
+    if (stage !== undefined) updateData.stage = stage;
+    if (type !== undefined) updateData.type = type;
+    if (url !== undefined) updateData.url = url;
+    if (description !== undefined) updateData.description = description;
+
+    await this.careRecordMediaRepository.update(id, updateData);
   }
 
-  async delete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    await this.careRecordMediaRepository.softDelete(repository, options);
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordMediaRepository.delete(id);
   }
 
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.careRecordMediaRepository.deleteMany(find, options);
-    return true;
-  }
-
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordMediaDoc> {
+  private async findOneByIdOrFail(id: string): Promise<CareRecordMedia> {
     const careRecordMedia =
-      await this.careRecordMediaRepository.findOneById<CareRecordMediaDoc>(
-        id,
-        options,
-      );
+      await this.careRecordMediaRepository.findOneById(id);
     if (!careRecordMedia) {
       throw new NotFoundException({
-        statusCode: 5003,
+        statusCode: 'NOT_FOUND',
         message: 'care-record-media.error.notFound',
       });
     }

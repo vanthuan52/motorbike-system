@@ -9,7 +9,7 @@ import {
   IsEnum,
   IsArray,
 } from 'class-validator';
-import { ENUM_HIRING_STATUS, ENUM_HIRING_TYPE } from '../../enums/hiring.enum';
+import { EnumHiringStatus, EnumHiringJobType } from '../../enums/hiring.enum';
 
 export class HiringCreateRequestDto {
   @ApiProperty({
@@ -101,24 +101,24 @@ export class HiringCreateRequestDto {
   category: string;
 
   @ApiProperty({
-    example: ENUM_HIRING_TYPE.FULL_TIME,
+    example: EnumHiringJobType.fullTime,
     description: 'Loại công việc',
     required: true,
-    enum: ENUM_HIRING_TYPE,
-    default: ENUM_HIRING_TYPE.FULL_TIME,
+    enum: EnumHiringJobType,
+    default: EnumHiringJobType.fullTime,
   })
-  @IsIn(Object.values(ENUM_HIRING_TYPE))
+  @IsIn(Object.values(EnumHiringJobType))
   @IsString()
-  jobType: ENUM_HIRING_TYPE;
+  jobType: EnumHiringJobType;
 
   @ApiProperty({
-    example: ENUM_HIRING_STATUS.DRAFT,
+    example: EnumHiringStatus.draft,
     description: 'Trạng thái tuyển dụng',
     required: false,
-    enum: ENUM_HIRING_STATUS,
-    default: ENUM_HIRING_STATUS.DRAFT,
+    enum: EnumHiringStatus,
+    default: EnumHiringStatus.draft,
   })
-  @IsIn(Object.values(ENUM_HIRING_STATUS))
+  @IsIn(Object.values(EnumHiringStatus))
   @IsString()
-  status: ENUM_HIRING_STATUS;
+  status: EnumHiringStatus;
 }

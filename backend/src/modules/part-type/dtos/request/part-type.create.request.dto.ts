@@ -51,7 +51,7 @@ export class PartTypeCreateRequestDto {
   @IsOptional()
   @IsString()
   @MaxLength(20)
-  order?: string;
+  orderBy?: string;
 
   @IsOptional()
   @IsIn(Object.values(EnumPartTypeStatus))

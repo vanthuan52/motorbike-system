@@ -20,7 +20,7 @@ export class AppValidationImportFilter implements ExceptionFilter {
   constructor(
     private readonly messageService: MessageService,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {}
 
   /**
@@ -32,7 +32,7 @@ export class AppValidationImportFilter implements ExceptionFilter {
    */
   async catch(
     exception: FileImportException,
-    host: ArgumentsHost,
+    host: ArgumentsHost
   ): Promise<void> {
     const ctx: HttpArgumentsHost = host.switchToHttp();
     const response: Response = ctx.getResponse<Response>();

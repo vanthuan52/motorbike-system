@@ -1,70 +1,83 @@
-import {
-  EnumPolicyAction,
-  EnumRoleType,
-  EnumPolicySubject,
-} from '@/modules/policy/enums/policy.enum';
-import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
-import { RoleService } from '@/modules/role/services/role.service';
-import { Injectable } from '@nestjs/common';
-import { Command } from 'nestjs-command';
+import { EnumAppEnvironment } from '@app/enums/app.enum';
+import { DatabaseService } from '@common/database/services/database.service';
+import { DatabaseUtil } from '@common/database/utils/database.util';
+import { MigrationSeedBase } from '@migration/bases/migration.seed.base';
+import { migrationRoleData } from '@migration/data/migration.role.data';
+import { IMigrationSeed } from '@migration/interfaces/migration.seed.interface';
+import { RoleCreateRequestDto } from '@modules/role/dtos/request/role.create.request.dto';
+import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Command } from 'nest-commander';
 
-@Injectable()
-export class MigrationRoleSeed {
-  constructor(private readonly roleService: RoleService) {}
+@Command({
+    name: 'role',
+    description: 'Seed/Remove Roles',
+    allowUnknownOptions: false,
+})
+export class MigrationRoleSeed
+    extends MigrationSeedBase
+    implements IMigrationSeed
+{
+    private readonly logger = new Logger(MigrationRoleSeed.name);
 
-  @Command({
-    command: 'seed:role',
-    describe: 'seed roles',
-  })
-  async seeds(): Promise<void> {
-    const data: RoleCreateRequestDto[] = [
-      {
-        name: 'superadmin',
-        type: EnumRoleType.superAdmin,
-        abilities: [],
-      },
-      {
-        name: 'admin',
-        type: EnumRoleType.admin,
-        abilities: Object.values(EnumPolicySubject)
-          .filter((e) => e !== EnumPolicySubject.apiKey)
-          .map((val) => ({
-            subject: val,
-            action: [EnumPolicyAction.manage],
-          })),
-      },
-      {
-        name: 'technician',
-        type: EnumRoleType.technician,
-        abilities: [],
-      },
-      {
-        name: 'user',
-        type: EnumRoleType.user,
-        abilities: [],
-      },
-    ];
+    private readonly env: EnumAppEnvironment;
+    private readonly roles: RoleCreateRequestDto[] = [];
 
-    try {
-      await this.roleService.createMany(data);
-    } catch (err: any) {
-      throw new Error(err);
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly configService: ConfigService,
+        private readonly databaseUtil: DatabaseUtil
+    ) {
+        super();
+
+        this.env = this.configService.get<EnumAppEnvironment>('app.env');
+        this.roles = migrationRoleData[this.env];
     }
 
-    return;
-  }
+    async seed(): Promise<void> {
+        this.logger.log('Seeding Roles...');
+        this.logger.log(`Found ${this.roles.length} Roles to seed.`);
 
-  @Command({
-    command: 'remove:role',
-    describe: 'remove roles',
-  })
-  async remove(): Promise<void> {
-    try {
-      await this.roleService.deleteMany();
-    } catch (err: any) {
-      throw new Error(err);
+        try {
+            await this.databaseService.$transaction(
+                this.roles.map(role =>
+                    this.databaseService.role.upsert({
+                        where: {
+                            name: role.name.toLowerCase(),
+                        },
+                        create: {
+                            ...role,
+                            name: role.name.toLowerCase(),
+                            abilities: this.databaseUtil.toPlainArray(
+                                role.abilities
+                            ),
+                        },
+                        update: {},
+                    })
+                )
+            );
+        } catch (error: unknown) {
+            this.logger.error(error, 'Error seeding roles');
+            throw error;
+        }
+
+        this.logger.log('Roles seeded successfully.');
+
+        return;
     }
 
-    return;
-  }
+    async remove(): Promise<void> {
+        this.logger.log('Removing back Roles...');
+
+        try {
+            await this.databaseService.role.deleteMany({});
+        } catch (error: unknown) {
+            this.logger.error(error, 'Error removing roles');
+            throw error;
+        }
+
+        this.logger.log('Roles removed successfully.');
+
+        return;
+    }
 }

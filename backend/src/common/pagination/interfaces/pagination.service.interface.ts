@@ -9,10 +9,10 @@ import {
 export interface IPaginationService {
   offset<TReturn>(
     repository: IPaginationRepository,
-    args: IPaginationQueryOffsetParams,
+    args: IPaginationQueryOffsetParams
   ): Promise<IPaginationOffsetReturn<TReturn>>;
   cursor<TReturn>(
     repository: IPaginationRepository,
-    args: IPaginationQueryCursorParams,
+    args: IPaginationQueryCursorParams
   ): Promise<IPaginationCursorReturn<TReturn>>;
 }

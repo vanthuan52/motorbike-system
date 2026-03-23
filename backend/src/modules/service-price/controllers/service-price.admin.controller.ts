@@ -18,17 +18,12 @@ import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
-import {
-  IResponseReturn,
-  IResponsePagingReturn,
-} from '@/common/response/interfaces/response.interface';
-import {
-  ModelServicePriceListResponseDto,
-  ServicePriceListResponseDto,
-} from '../dtos/response/service-price.list.response.dto';
+import { IResponseReturn, IResponsePagingReturn, } from '@/common/response/interfaces/response.interface';
+import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
 import { ServicePriceDto } from '../dtos/service-price.dto';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { Prisma } from '@/generated/prisma-client';
 import {
   ServicePriceAdminCreateDoc,
   ServicePriceAdminDeleteDoc,
@@ -93,20 +88,23 @@ export class ServicePriceAdminController {
       availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
     @Query('vehicleService', RequestOptionalParseUUIDPipe)
     vehicleServiceId: string,
     @Query('vehicleModel', RequestOptionalParseUUIDPipe)
     vehicleModelId: string,
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: Prisma.ServicePriceWhereInput = {};
 
     if (vehicleServiceId) {
-      filters['vehicleService'] = vehicleServiceId;
+      filters.vehicleServiceId = vehicleServiceId;
     }
 
     if (vehicleModelId) {
-      filters['vehicleModel'] = vehicleModelId;
+      filters.vehicleModelId = vehicleModelId;
     }
 
     const { data, total } = await this.servicePriceService.getListOffset(
@@ -149,9 +147,9 @@ export class ServicePriceAdminController {
   @Post('/create')
   async create(
     @Body() body: ServicePriceCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+  ): Promise<IResponseReturn<{ id: string }>> {
     const created = await this.servicePriceService.create(body);
-    return { data: { _id: created._id } };
+    return { data: created };
   }
 
   @ServicePriceAdminUpdateDoc()

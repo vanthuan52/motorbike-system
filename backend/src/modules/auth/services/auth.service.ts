@@ -44,15 +44,13 @@ import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.r
 import { RoleService } from '@/modules/role/services/role.service';
 import { SessionService } from '@/modules/session/services/session.service';
 import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.enum';
-import { DatabaseHelperQueryContain } from '@/common/database/decorators/database.decorator';
-import { UserEntity } from '@/modules/user/entities/user.entity';
 import {
   EnumUserSignUpFrom,
   EnumUserSignUpWith,
 } from '@/modules/user/enums/user.enum';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
 import { UserCreateBySignUpRequestDto } from '@/modules/user/dtos/request/user.create-by-sign-up.request.dto';
-import { DEFAULT_SIGNUP_ROLE } from '../constants/auth.constant';
+import { DefaultRole } from '../constants/auth.constant';
 import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
 
@@ -70,139 +68,8 @@ export class AuthService implements IAuthService {
     private readonly helperService: HelperService,
     private readonly authUtil: AuthUtil,
     private readonly sessionUtil: SessionUtil,
-    private readonly databaseUtil: DatabaseUtil,
+    private readonly databaseUtil: DatabaseUtil
   ) {}
-
-  /**
-   * Creates both access and refresh tokens for a user session.
-   *
-   * Generates JWT tokens with current timestamp, unique session ID, and unique token identifier (jti)
-   * for session tracking and security validation.
-   *
-   * @param user - The user entity containing profile and role information
-   * @param loginFrom - The source/platform of the login (website, mobile, etc.)
-   * @param loginWith - The authentication method used for sign-up (email, google, apple, etc.)
-   * @returns Token response object containing access token, refresh token, expiration time, jti, and sessionId
-   */
-  createTokens(
-    user: IUserDoc,
-    loginFrom: EnumUserLoginFrom,
-    loginWith: EnumUserLoginWith,
-  ): IAuthAccessTokenGenerate {
-    const loginDate = this.helperService.dateCreate();
-
-    const sessionId = this.databaseUtil.createUUID();
-    const jti = this.authUtil.generateJti();
-    const payloadAccessToken: IAuthJwtAccessTokenPayload =
-      this.authUtil.createPayloadAccessToken(
-        user,
-        sessionId,
-        loginDate,
-        loginFrom,
-        loginWith,
-      );
-    const accessToken: string = this.authUtil.createAccessToken(
-      user._id,
-      jti,
-      payloadAccessToken,
-    );
-
-    const payloadRefreshToken: IAuthJwtRefreshTokenPayload =
-      this.authUtil.createPayloadRefreshToken(payloadAccessToken);
-    const refreshToken: string = this.authUtil.createRefreshToken(
-      user._id,
-      jti,
-      payloadRefreshToken,
-    );
-
-    const tokens: AuthTokenResponseDto = {
-      tokenType: this.authUtil.jwtPrefix,
-      roleType: user.role.type,
-      expiresIn: this.authUtil.jwtAccessTokenExpirationTimeInSeconds,
-      accessToken,
-      refreshToken,
-    };
-
-    return {
-      tokens,
-      jti,
-      sessionId,
-    };
-  }
-
-  /**
-   * Refreshes an access token using a valid refresh token.
-   *
-   * This method extracts session and user information from the provided refresh token, then generates a new access token
-   * and a new refresh token with a new token identifier (jti). The new refresh token's expiration is adjusted based on the
-   * remaining validity of the original refresh token, ensuring the session does not extend beyond its original lifetime.
-   *
-   * @param user - The user entity containing profile and role information
-   * @param refreshTokenFromRequest - The existing refresh token to extract session and expiration data from
-   * @returns IAuthRefreshTokenGenerate object containing the new access token, new refresh token (with adjusted expiry), new jti, sessionId, and remaining expiration in ms
-   */
-  generateRefreshTokens(
-    user: IUserDoc,
-    refreshTokenFromRequest: string,
-  ): IAuthRefreshTokenGenerate {
-    const {
-      sessionId,
-      loginAt,
-      loginFrom,
-      loginWith,
-      exp: oldExp,
-    } = this.authUtil.payloadToken<IAuthJwtRefreshTokenPayload>(
-      refreshTokenFromRequest,
-    );
-
-    const jti = this.authUtil.generateJti();
-    const payloadAccessToken: IAuthJwtAccessTokenPayload =
-      this.authUtil.createPayloadAccessToken(
-        user,
-        sessionId,
-        loginAt,
-        loginFrom,
-        loginWith,
-      );
-    const accessToken: string = this.authUtil.createAccessToken(
-      user.id,
-      jti,
-      payloadAccessToken,
-    );
-
-    const newPayloadRefreshToken: IAuthJwtRefreshTokenPayload =
-      this.authUtil.createPayloadRefreshToken(payloadAccessToken);
-
-    const today = this.helperService.dateCreate();
-    const expiredAt = this.helperService.dateCreateFromTimestamp(oldExp * 1000);
-
-    const newRefreshTokenExpire = this.helperService.dateDiff(expiredAt, today);
-    const newRefreshTokenExpireInSeconds = newRefreshTokenExpire.seconds
-      ? newRefreshTokenExpire.seconds
-      : Math.floor(newRefreshTokenExpire.milliseconds / 1000);
-
-    const newRefreshToken: string = this.authUtil.createRefreshToken(
-      user.id,
-      jti,
-      newPayloadRefreshToken,
-      newRefreshTokenExpireInSeconds,
-    );
-
-    const tokens: AuthTokenResponseDto = {
-      tokenType: this.authUtil.jwtPrefix,
-      roleType: user.role.type,
-      expiresIn: this.authUtil.jwtAccessTokenExpirationTimeInSeconds,
-      accessToken,
-      refreshToken: newRefreshToken,
-    };
-
-    return {
-      tokens,
-      jti,
-      sessionId,
-      expiredInMs: newRefreshTokenExpire.milliseconds,
-    };
-  }
 
   /**
    * Validates the JWT access token strategy for Passport.
@@ -217,7 +84,7 @@ export class AuthService implements IAuthService {
    * @see {@link AuthJwtAccessStrategy} for the Passport strategy that calls this method
    */
   async validateJwtAccessStrategy(
-    payload: IAuthJwtAccessTokenPayload,
+    payload: IAuthJwtAccessTokenPayload
   ): Promise<IAuthJwtAccessTokenPayload> {
     const { sub, sessionId, jti } = payload;
 
@@ -262,7 +129,7 @@ export class AuthService implements IAuthService {
   async validateJwtAccessGuard(
     err: Error,
     user: IAuthJwtAccessTokenPayload,
-    info: Error,
+    info: Error
   ): Promise<IAuthJwtAccessTokenPayload> {
     if (err || !user) {
       throw new UnauthorizedException({
@@ -288,7 +155,7 @@ export class AuthService implements IAuthService {
    * @see {@link AuthJwtRefreshStrategy} for the Passport strategy that calls this method
    */
   async validateJwtRefreshStrategy(
-    payload: IAuthJwtRefreshTokenPayload,
+    payload: IAuthJwtRefreshTokenPayload
   ): Promise<IAuthJwtRefreshTokenPayload> {
     const { sub, sessionId, jti } = payload;
     if (
@@ -331,7 +198,7 @@ export class AuthService implements IAuthService {
   async validateJwtRefreshGuard(
     err: Error,
     user: IAuthJwtRefreshTokenPayload,
-    info: Error,
+    info: Error
   ): Promise<IAuthJwtRefreshTokenPayload> {
     if (err || !user) {
       throw new UnauthorizedException({
@@ -356,7 +223,7 @@ export class AuthService implements IAuthService {
    * @throws {UnauthorizedException} When token is missing, malformed, header format is incorrect, or verification with Apple fails
    */
   async validateOAuthAppleGuard(
-    request: IRequestApp<IAuthSocialPayload>,
+    request: IRequestApp<IAuthSocialPayload>
   ): Promise<boolean> {
     const requestHeaders = this.authUtil.extractHeaderApple(request);
     if (requestHeaders.length !== 2) {
@@ -396,7 +263,7 @@ export class AuthService implements IAuthService {
    * @throws {UnauthorizedException} When token is missing, malformed, header format is incorrect, or verification with Google fails
    */
   async validateOAuthGoogleGuard(
-    request: IRequestApp<IAuthSocialPayload>,
+    request: IRequestApp<IAuthSocialPayload>
   ): Promise<boolean> {
     const requestHeaders = this.authUtil.extractHeaderGoogle(request);
 
@@ -409,7 +276,7 @@ export class AuthService implements IAuthService {
 
     try {
       const payload: TokenPayload = await this.authUtil.verifyGoogle(
-        requestHeaders[1],
+        requestHeaders[1]
       );
 
       request.user = {
@@ -425,6 +292,137 @@ export class AuthService implements IAuthService {
         _error: err,
       });
     }
+  }
+
+  /**
+   * Creates both access and refresh tokens for a user session.
+   *
+   * Generates JWT tokens with current timestamp, unique session ID, and unique token identifier (jti)
+   * for session tracking and security validation.
+   *
+   * @param user - The user entity containing profile and role information
+   * @param loginFrom - The source/platform of the login (website, mobile, etc.)
+   * @param loginWith - The authentication method used for sign-up (email, google, apple, etc.)
+   * @returns Token response object containing access token, refresh token, expiration time, jti, and sessionId
+   */
+  createTokens(
+    user: IUserDoc,
+    loginFrom: EnumUserLoginFrom,
+    loginWith: EnumUserLoginWith
+  ): IAuthAccessTokenGenerate {
+    const loginDate = this.helperService.dateCreate();
+
+    const sessionId = this.databaseUtil.createId();
+    const jti = this.authUtil.generateJti();
+    const payloadAccessToken: IAuthJwtAccessTokenPayload =
+      this.authUtil.createPayloadAccessToken(
+        user,
+        sessionId,
+        loginDate,
+        loginFrom,
+        loginWith
+      );
+    const accessToken: string = this.authUtil.createAccessToken(
+      user._id,
+      jti,
+      payloadAccessToken
+    );
+
+    const payloadRefreshToken: IAuthJwtRefreshTokenPayload =
+      this.authUtil.createPayloadRefreshToken(payloadAccessToken);
+    const refreshToken: string = this.authUtil.createRefreshToken(
+      user._id,
+      jti,
+      payloadRefreshToken
+    );
+
+    const tokens: AuthTokenResponseDto = {
+      tokenType: this.authUtil.jwtPrefix,
+      roleType: user.role.type,
+      expiresIn: this.authUtil.jwtAccessTokenExpirationTimeInSeconds,
+      accessToken,
+      refreshToken,
+    };
+
+    return {
+      tokens,
+      jti,
+      sessionId,
+    };
+  }
+
+  /**
+   * Refreshes an access token using a valid refresh token.
+   *
+   * This method extracts session and user information from the provided refresh token, then generates a new access token
+   * and a new refresh token with a new token identifier (jti). The new refresh token's expiration is adjusted based on the
+   * remaining validity of the original refresh token, ensuring the session does not extend beyond its original lifetime.
+   *
+   * @param user - The user entity containing profile and role information
+   * @param refreshTokenFromRequest - The existing refresh token to extract session and expiration data from
+   * @returns IAuthRefreshTokenGenerate object containing the new access token, new refresh token (with adjusted expiry), new jti, sessionId, and remaining expiration in ms
+   */
+  generateRefreshTokens(
+    user: IUserDoc,
+    refreshTokenFromRequest: string
+  ): IAuthRefreshTokenGenerate {
+    const {
+      sessionId,
+      loginAt,
+      loginFrom,
+      loginWith,
+      exp: oldExp,
+    } = this.authUtil.payloadToken<IAuthJwtRefreshTokenPayload>(
+      refreshTokenFromRequest
+    );
+
+    const jti = this.authUtil.generateJti();
+    const payloadAccessToken: IAuthJwtAccessTokenPayload =
+      this.authUtil.createPayloadAccessToken(
+        user,
+        sessionId,
+        loginAt,
+        loginFrom,
+        loginWith
+      );
+    const accessToken: string = this.authUtil.createAccessToken(
+      user.id,
+      jti,
+      payloadAccessToken
+    );
+
+    const newPayloadRefreshToken: IAuthJwtRefreshTokenPayload =
+      this.authUtil.createPayloadRefreshToken(payloadAccessToken);
+
+    const today = this.helperService.dateCreate();
+    const expiredAt = this.helperService.dateCreateFromTimestamp(oldExp * 1000);
+
+    const newRefreshTokenExpire = this.helperService.dateDiff(expiredAt, today);
+    const newRefreshTokenExpireInSeconds = newRefreshTokenExpire.seconds
+      ? newRefreshTokenExpire.seconds
+      : Math.floor(newRefreshTokenExpire.milliseconds / 1000);
+
+    const newRefreshToken: string = this.authUtil.createRefreshToken(
+      user.id,
+      jti,
+      newPayloadRefreshToken,
+      newRefreshTokenExpireInSeconds
+    );
+
+    const tokens: AuthTokenResponseDto = {
+      tokenType: this.authUtil.jwtPrefix,
+      roleType: user.role.type,
+      expiresIn: this.authUtil.jwtAccessTokenExpirationTimeInSeconds,
+      accessToken,
+      refreshToken: newRefreshToken,
+    };
+
+    return {
+      tokens,
+      jti,
+      sessionId,
+      expiredInMs: newRefreshTokenExpire.milliseconds,
+    };
   }
 
   // Api Service
@@ -444,7 +442,7 @@ export class AuthService implements IAuthService {
    */
   async loginCredential(
     { email, password, from }: UserLoginRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto> {
     const user: IUserDoc = await this.userService.findOneWithRole({
       email,
@@ -490,13 +488,13 @@ export class AuthService implements IAuthService {
     const { tokens, sessionId, jti } = this.createTokens(
       user,
       from,
-      EnumUserLoginWith.credential,
+      EnumUserLoginWith.credential
     );
     const expiredAt = this.helperService.dateForward(
       this.helperService.dateCreate(),
       Duration.fromObject({
         seconds: this.authUtil.jwtRefreshTokenExpirationTimeInSeconds,
-      }),
+      })
     );
 
     await Promise.all([
@@ -510,7 +508,7 @@ export class AuthService implements IAuthService {
           expiredAt,
           jti,
         },
-        requestLog,
+        requestLog
       ),
     ]);
 
@@ -533,14 +531,14 @@ export class AuthService implements IAuthService {
     email: string,
     loginWith: EnumUserLoginWith,
     { from, ...others }: UserCreateSocialRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto> {
     // Delegate user fetching/creation to UserService
     const user = await this.userService.findOrCreateUserBySocial(
       email,
       loginWith,
       { from, ...others },
-      requestLog,
+      requestLog
     );
 
     if (user.status !== EnumUserStatus.active) {
@@ -559,7 +557,7 @@ export class AuthService implements IAuthService {
       this.helperService.dateCreate(),
       Duration.fromObject({
         seconds: this.authUtil.jwtRefreshTokenExpirationTimeInSeconds,
-      }),
+      })
     );
 
     await Promise.all([
@@ -574,7 +572,7 @@ export class AuthService implements IAuthService {
           sessionId,
           expiredAt,
         },
-        requestLog,
+        requestLog
       ),
     ]);
 
@@ -583,10 +581,10 @@ export class AuthService implements IAuthService {
 
   async signUp(
     dto: AuthSignUpRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void> {
     const [role, emailExist] = await Promise.all([
-      this.roleService.findOneByName(DEFAULT_SIGNUP_ROLE),
+      this.roleService.findOneByName(DefaultRole),
       this.userService.existByEmail(dto.email),
     ]);
 
@@ -632,7 +630,7 @@ export class AuthService implements IAuthService {
   async refreshToken(
     user: IUserDoc,
     refreshToken: string,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto> {
     const {
       sessionId,
@@ -661,12 +659,12 @@ export class AuthService implements IAuthService {
       sessionId,
       session,
       newJti,
-      expiredInMs,
+      expiredInMs
     );
 
     const expiredAt = this.helperService.dateForward(
       this.helperService.dateCreate(),
-      Duration.fromObject({ milliseconds: expiredInMs }),
+      Duration.fromObject({ milliseconds: expiredInMs })
     );
     const { ipAddress, userAgent } = requestLog;
 
@@ -683,7 +681,7 @@ export class AuthService implements IAuthService {
         {
           ipAddress,
           userAgent,
-        },
+        }
       ),
       this.sessionService.updateJti(sessionId, newJti),
     ]);
@@ -694,7 +692,7 @@ export class AuthService implements IAuthService {
   async changePassword(
     user: IUserDoc,
     { newPassword, oldPassword }: AuthChangePasswordRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void> {
     // Check if password attempts exceeded
     if (this.authUtil.checkPasswordAttempt(user)) {
@@ -706,7 +704,7 @@ export class AuthService implements IAuthService {
 
     const passwordMatch = this.authUtil.validatePassword(
       oldPassword,
-      user.password,
+      user.password
     );
 
     if (!passwordMatch) {
@@ -731,11 +729,11 @@ export class AuthService implements IAuthService {
 
   async forgotPassword(
     { email }: UserForgotPasswordRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void> {}
 
   async resetPassword(
     data: UserForgotPasswordResetRequestDto,
-    requestLog: IRequestLog,
+    requestLog: IRequestLog
   ): Promise<void> {}
 }

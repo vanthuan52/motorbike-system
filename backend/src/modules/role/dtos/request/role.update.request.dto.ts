@@ -1,4 +1,4 @@
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
   IsArray,
@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/generated/prisma-client';
 
 export class RoleUpdateRequestDto {
   @ApiProperty({

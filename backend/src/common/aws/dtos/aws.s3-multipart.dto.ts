@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { ApiProperty, PickType, getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { AwsS3Dto } from './aws.s3.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 
 /**
  * DTO representing a single part in AWS S3 multipart upload.
@@ -78,12 +78,7 @@ export class AwsS3MultipartDto extends AwsS3Dto {
    */
   @ApiProperty({
     required: true,
-    oneOf: [
-      {
-        $ref: getSchemaPath(AwsS3MultipartPartDto),
-        type: 'array',
-      },
-    ],
+    type: [AwsS3MultipartPartDto],
   })
   @Type(() => AwsS3MultipartPartDto)
   parts: AwsS3MultipartPartDto[];

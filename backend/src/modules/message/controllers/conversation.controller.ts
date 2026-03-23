@@ -13,9 +13,7 @@ import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { UserActiveParsePipe } from '@/modules/user/pipes/user.parse.pipe';
 import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.interface';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { ConversationGetResponseDto } from '../dtos/response/get-conversation-response.dto';
 import {
@@ -24,11 +22,11 @@ import {
 } from '../docs/conversation.doc';
 import { UserService } from '@/modules/user/services/user.service';
 import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
-import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.num';
+import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import { ConversationCreateRequestDto } from '../dtos/request/conversation-create-request.dto';
-import { IDatabaseCreateOptions } from '@/common/database/interfaces/database.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { ConversationService } from '../services/conversation.service';
+import { User } from '@/generated/prisma-client';
 
 @ApiTags('modules.chat')
 @Controller({
@@ -38,7 +36,7 @@ import { ConversationService } from '../services/conversation.service';
 export class ConversationController {
   constructor(
     private readonly conversationService: ConversationService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   @ConversationGetDoc()
@@ -48,15 +46,16 @@ export class ConversationController {
   @Get('/get')
   async get(
     @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserActiveParsePipe)
-    user: IUserDoc,
+    user: User
   ): Promise<IResponseReturn<ConversationGetResponseDto[]>> {
-    const conversations =
-      await this.conversationService.getConversationsByUser(user);
+    const conversations = await this.conversationService.getConversationsByUser(
+      user.id
+    );
 
     const mapped = await Promise.all(
-      conversations.map((c) =>
-        this.conversationService.mapConversations(c, user),
-      ),
+      conversations.map(c =>
+        this.conversationService.mapConversations(c, user.id)
+      )
     );
 
     return { data: mapped };
@@ -68,8 +67,8 @@ export class ConversationController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async createConversation(
-    @Body() body: ConversationCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    @Body() body: ConversationCreateRequestDto
+  ): Promise<IResponseReturn<{ id: string }>> {
     const { sender, receiver } = body;
 
     if (!sender || !receiver || sender === receiver) {
@@ -80,8 +79,12 @@ export class ConversationController {
     }
 
     const participantIds = [sender, receiver];
-    const users = await this.userService.findAll({
-      _id: { $in: participantIds },
+
+    // Verify users exist
+    const users = await this.userService.find({
+      id: {
+        in: participantIds,
+      },
     });
 
     if (users.length !== 2) {
@@ -98,17 +101,12 @@ export class ConversationController {
         await this.conversationService.findByParticipants(participantsSorted);
 
       if (existingConversation) {
-        return { data: existingConversation };
+        return { data: { id: existingConversation.id } };
       }
 
-      const created = await this.conversationService.create(
-        participantsSorted,
-        {
-          actionBy: sender,
-        } as IDatabaseCreateOptions,
-      );
+      const created = await this.conversationService.create(participantsSorted);
 
-      return { data: { _id: created._id } };
+      return { data: { id: created.id } };
     } catch (err) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,

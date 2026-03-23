@@ -1,95 +1,38 @@
+import { Prisma, ServicePrice } from '@/generated/prisma-client';
 import {
-  IDatabaseAggregateOptions,
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
-import { ServicePriceDoc } from '../entities/service-price.entity';
-import {
-  IModelServicePrice,
-  IServicePriceDoc,
-  IServicePriceEntity,
-} from './service-price.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export interface IServicePriceService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<ServicePriceDoc[]>;
-
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
     filters?: Record<string, any>,
-  ): Promise<{ data: ServicePriceDoc[]; total: number }>;
+  ): Promise<{ data: ServicePrice[]; total: number }>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >,
+    filters?: Record<string, any>,
+  ): Promise<{ data: ServicePrice[]; total?: number }>;
 
-  findAllWithVehicleServiceAndVehicleModel(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IServicePriceEntity[]>;
+  findOneById(id: string): Promise<ServicePrice>;
 
-  getTotalWithVehicleServiceAndVehicleModel(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  findOne(find: Record<string, any>): Promise<ServicePrice | null>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServicePriceDoc>;
-
-  join(repository: ServicePriceDoc): Promise<IServicePriceDoc>;
-
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServicePriceDoc>;
-
-  create(
-    payload: ServicePriceCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto>;
+  create(payload: ServicePriceCreateRequestDto): Promise<{ id: string }>;
 
   update(
     id: string,
     payload: ServicePriceUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
   ): Promise<void>;
 
-  delete(id: string, options?: IDatabaseDeleteOptions): Promise<void>;
-
-  softDelete(
-    repository: ServicePriceDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<ServicePriceDoc>;
-
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
-
-  getLatestServicePrices(): Promise<IModelServicePrice[]>;
-
-  getLatestPricesForService(
-    find: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IModelServicePrice[]>;
-
-  getTotalLatestPricesForService(
-    find: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  delete(id: string): Promise<void>;
 }

@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { HelperService } from './services/helper.service';
+import { HelperService } from '@/common/helper/services/helper.service';
 
 /**
  * Global module providing helper utility services.

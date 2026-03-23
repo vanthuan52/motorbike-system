@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { ENUM_CARE_RECORD_SERVICE_STATUS } from '../../enums/care-record-service.enum';
+import { EnumCareRecordServiceStatus } from '../../enums/care-record-service.enum';
 
 export class CareRecordServiceUpdateStatusRequestDto {
   @ApiProperty({
     required: true,
-    example: ENUM_CARE_RECORD_SERVICE_STATUS.PENDING,
-    enum: ENUM_CARE_RECORD_SERVICE_STATUS,
+    example: EnumCareRecordServiceStatus.pending,
+    enum: EnumCareRecordServiceStatus,
   })
-  @IsEnum(ENUM_CARE_RECORD_SERVICE_STATUS)
+  @IsEnum(EnumCareRecordServiceStatus)
   @IsNotEmpty()
-  status: ENUM_CARE_RECORD_SERVICE_STATUS;
+  status: EnumCareRecordServiceStatus;
 }

@@ -25,8 +25,7 @@ import {
   IResponseReturn,
   IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { HiringDoc } from '../entities/hiring.entity';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   HiringAdminCreateDoc,
   HiringAdminDeleteDoc,
@@ -53,13 +52,12 @@ import {
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ENUM_HIRING_STATUS } from '../enums/hiring.enum';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
-import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { ENUM_HIRING_STATUS_CODE_ERROR } from '../enums/hiring.status-code.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { HiringUtil } from '../utils/hiring.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { HiringResponseDto } from '../dtos/hiring-response.dto';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -69,9 +67,8 @@ import { HiringResponseDto } from '../dtos/hiring-response.dto';
 export class HiringAdminController {
   constructor(
     private readonly hiringService: HiringService,
-    private readonly paginationService: PaginationService,
     private readonly hiringUtil: HiringUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @HiringAdminListDoc()
@@ -88,36 +85,27 @@ export class HiringAdminController {
     @PaginationOffsetQuery({
       availableSearch: ['title', 'status'],
     })
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.HiringSelect,
+      Prisma.HiringWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', [
       ENUM_HIRING_STATUS.PUBLISHED,
       ENUM_HIRING_STATUS.DRAFT,
       ENUM_HIRING_STATUS.ARCHIVED,
     ])
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<HiringResponseDto>> {
-    const find: Record<string, any> = {
-      ...where,
+    const filters: Record<string, any> = {
       ...status,
     };
 
-    const [hiring, total] = await Promise.all([
-      this.hiringService.findAll(find, {
-        paging: {
-          limit,
-          offset: skip,
-        },
-        order: orderBy,
-      }),
-      this.hiringService.getTotal(find),
-    ]);
-
-    const mapped = this.hiringUtil.mapList(hiring);
-
-    return this.paginationUtil.formatOffset(mapped, total, {
-      limit,
-      skip,
-    });
+    const { data, total } = await this.hiringService.getListOffset(
+      pagination,
+      filters
+    );
+    const mapped = this.hiringUtil.mapList(data);
+    return this.paginationUtil.formatOffset(mapped, total, pagination);
   }
 
   @HiringAdminParamsIdDoc()
@@ -131,7 +119,7 @@ export class HiringAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id') id: string,
+    @Param('id') id: string
   ): Promise<IResponseReturn<HiringResponseDto>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
@@ -152,7 +140,7 @@ export class HiringAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: HiringCreateRequestDto,
+    @Body() body: HiringCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     try {
       const existingHiringBySlug = await this.hiringService.findOne({
@@ -188,7 +176,7 @@ export class HiringAdminController {
   @Put('/update/:id')
   async update(
     @Param('id') id: string,
-    @Body() body: HiringUpdateRequestDto,
+    @Body() body: HiringUpdateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
@@ -261,7 +249,7 @@ export class HiringAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
-    @Body() { status }: HiringUpdateStatusRequestDto,
+    @Body() { status }: HiringUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
     const hiring = await this.hiringService.findOneById(id);
     if (!hiring) {
@@ -271,7 +259,7 @@ export class HiringAdminController {
       await this.hiringService.updateStatus(
         hiring,
         { status },
-        {} as IDatabaseSaveOptions,
+        {} as IDatabaseSaveOptions
       );
       return {
         metadata: {

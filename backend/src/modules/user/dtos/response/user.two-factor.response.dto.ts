@@ -2,7 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { UserTwoFactorSetupResponseDto } from '@/modules/user/dtos/response/user.two-factor-setup.response.dto';
 
 export class UserTwoFactorResponseDto extends PartialType(
-  UserTwoFactorSetupResponseDto,
+  UserTwoFactorSetupResponseDto
 ) {
   @ApiProperty({
     description:

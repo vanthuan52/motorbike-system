@@ -34,7 +34,7 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_CANDIDATE_STATUS } from '../enums/candidate.enum';
+import { EnumCandidateStatus } from '../enums/hiring.enum';
 import {
   IResponseReturn,
   IResponsePagingReturn,
@@ -76,11 +76,11 @@ export class CandidateAdminController {
     })
     { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
     @PaginationQueryFilterInEnum('status', [
-      ENUM_CANDIDATE_STATUS.HIRED,
-      ENUM_CANDIDATE_STATUS.INTERVIEW_SCHEDULED,
-      ENUM_CANDIDATE_STATUS.NEW,
-      ENUM_CANDIDATE_STATUS.REJECTED,
-      ENUM_CANDIDATE_STATUS.REVIEWED,
+      EnumCandidateStatus.hired,
+      EnumCandidateStatus.interviewScheduled,
+      EnumCandidateStatus.new,
+      EnumCandidateStatus.rejected,
+      EnumCandidateStatus.reviewed,
     ])
     status: Record<string, IPaginationIn>,
     @Query('hiring') hiring: string,

@@ -1,67 +1,181 @@
-import { Model, PopulateOptions } from 'mongoose';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
-import { InjectDatabaseModel } from '@/common/database/decorators/database.decorator';
+import { Injectable } from '@nestjs/common';
+import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
+import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  CareRecordChecklistDoc,
-  CareRecordChecklistEntity,
-} from '../entities/care-record-checklist.entity';
-import { CareRecordEntity } from '@/modules/care-record/entities/care-record.entity';
-import { ServiceChecklistEntity } from '@/modules/service-checklist/entities/service-checklist.entity';
-import { CareRecordServiceEntity } from '@/modules/care-record-service/entities/care-record-service.entity';
-import { PartEntity } from '@/modules/part/entities/part.entity';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { PaginationService } from '@/common/pagination/services/pagination.service';
 
-export class CareRecordChecklistRepository extends DatabaseRepositoryBase<
-  CareRecordChecklistEntity,
-  CareRecordChecklistDoc
-> {
-  readonly _joinActive: PopulateOptions[] = [
-    // {
-    //   path: 'careRecordService',
-    //   localField: 'careRecordService',
-    //   foreignField: '_id',
-    //   model: CareRecordServiceEntity.name,
-    //   justOne: true,
-    // },
-    {
-      path: 'serviceChecklist',
-      localField: 'serviceChecklist',
-      foreignField: '_id',
-      model: ServiceChecklistEntity.name,
-      justOne: true,
-    },
-    {
-      path: 'parts',
-      localField: 'parts',
-      foreignField: '_id',
-      model: PartEntity.name,
-    },
-  ];
-
+@Injectable()
+export class CareRecordChecklistRepository {
   constructor(
-    @InjectDatabaseModel(CareRecordChecklistEntity.name)
-    private readonly careRecordChecklistModel: Model<CareRecordChecklistEntity>,
-  ) {
-    super(careRecordChecklistModel, [
-      // {
-      //   path: 'careRecordService',
-      //   localField: 'careRecordService',
-      //   foreignField: '_id',
-      //   model: CareRecordServiceEntity.name,
-      //   justOne: true,
-      // },
-      {
-        path: 'serviceChecklist',
-        localField: 'serviceChecklist',
-        foreignField: '_id',
-        model: ServiceChecklistEntity.name,
-        justOne: true,
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService
+  ) {}
+
+  async findAll(
+    {
+      where: baseWhere,
+      skip,
+      limit,
+      orderBy,
+      ...rest
+    }: IPaginationQueryOffsetParams<
+      Prisma.CareRecordChecklistSelect,
+      Prisma.CareRecordChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<CareRecordChecklist[]> {
+    const mergedWhere: Prisma.CareRecordChecklistWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.careRecordChecklist.findMany({
+      where: mergedWhere,
+      skip,
+      take: limit,
+      orderBy: orderBy || { createdAt: 'desc' },
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
       },
+      ...rest,
+    });
+  }
+
+  async getTotal(
+    {
+      where: baseWhere,
+    }: IPaginationQueryOffsetParams<
+      Prisma.CareRecordChecklistSelect,
+      Prisma.CareRecordChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<number> {
+    const mergedWhere: Prisma.CareRecordChecklistWhereInput = {
+      ...baseWhere,
+      ...filters,
+    };
+
+    return this.databaseService.careRecordChecklist.count({
+      where: mergedWhere,
+    });
+  }
+
+  async findWithPaginationOffset({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.CareRecordChecklistSelect,
+    Prisma.CareRecordChecklistWhereInput
+  >): Promise<{
+    data: CareRecordChecklist[];
+    count: number;
+    page: number;
+    totalPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    nextPage?: number;
+    previousPage?: number;
+  }> {
+    return this.paginationService.offsetRaw<CareRecordChecklist>(
+      this.databaseService.careRecordChecklist,
       {
-        path: 'parts',
-        localField: 'parts',
-        foreignField: '_id',
-        model: PartEntity.name,
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          careRecordService: true,
+          serviceChecklist: true,
+        },
+      }
+    );
+  }
+
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.CareRecordChecklistSelect,
+    Prisma.CareRecordChecklistWhereInput
+  >): Promise<{
+    data: CareRecordChecklist[];
+    count?: number;
+    cursor?: string;
+    hasNext: boolean;
+  }> {
+    return this.paginationService.cursorRaw<CareRecordChecklist>(
+      this.databaseService.careRecordChecklist,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          careRecordService: true,
+          serviceChecklist: true,
+        },
+        includeCount: true,
+      }
+    );
+  }
+
+  async findOneById(id: string): Promise<CareRecordChecklist | null> {
+    return this.databaseService.careRecordChecklist.findUnique({
+      where: { id },
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
       },
-    ]);
+    });
+  }
+
+  async findOne(
+    where: Prisma.CareRecordChecklistWhereInput
+  ): Promise<CareRecordChecklist | null> {
+    return this.databaseService.careRecordChecklist.findFirst({
+      where,
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
+      },
+    });
+  }
+
+  async create(data: Prisma.CareRecordChecklistCreateInput): Promise<CareRecordChecklist> {
+    return this.databaseService.careRecordChecklist.create({
+      data,
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: Prisma.CareRecordChecklistUpdateInput
+  ): Promise<CareRecordChecklist> {
+    return this.databaseService.careRecordChecklist.update({
+      where: { id },
+      data,
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
+      },
+    });
+  }
+
+  async delete(id: string): Promise<CareRecordChecklist> {
+    return this.databaseService.careRecordChecklist.delete({
+      where: { id },
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
+      },
+    });
   }
 }

@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
-import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 
 export class ServiceChecklistDto extends DatabaseDto {
   @ApiProperty({
@@ -31,7 +31,7 @@ export class ServiceChecklistDto extends DatabaseDto {
     description: 'Thứ tự',
   })
   @Expose()
-  order?: number;
+  orderBy?: number;
 
   @ApiPropertyOptional({
     example: faker.string.uuid(),
@@ -42,9 +42,9 @@ export class ServiceChecklistDto extends DatabaseDto {
 
   @ApiPropertyOptional({
     description: 'Loại xe áp dụng',
-    enum: ENUM_VEHICLE_MODEL_TYPE,
+    enum: EnumVehicleModelType,
     isArray: true,
   })
   @Expose()
-  vehicleType?: ENUM_VEHICLE_MODEL_TYPE[];
+  vehicleType?: EnumVehicleModelType[];
 }

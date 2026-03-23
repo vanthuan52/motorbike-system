@@ -1,55 +1,39 @@
+import { Prisma, ServiceChecklist } from '@/generated/prisma-client';
 import {
-  IDatabaseCreateManyOptions,
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
-import { ServiceChecklistDoc } from '../entities/service-checklist.entity';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 
 export interface IServiceChecklistService {
-  existByName(name: string, options?: IDatabaseExistsOptions): Promise<boolean>;
+  existByName(name: string): Promise<boolean>;
 
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceChecklistDoc[]; total: number }>;
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: ServiceChecklist[]; total: number }>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceChecklistDoc>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: ServiceChecklist[]; total?: number }>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServiceChecklistDoc>;
+  findOneById(id: string): Promise<ServiceChecklist>;
 
-  create(
-    payload: ServiceChecklistCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<DatabaseIdDto>;
+  findOne(find: Record<string, any>): Promise<ServiceChecklist | null>;
 
-  createMany(
-    data: ServiceChecklistCreateRequestDto[],
-    options?: IDatabaseCreateManyOptions,
-  ): Promise<boolean>;
+  create(payload: ServiceChecklistCreateRequestDto): Promise<{ id: string }>;
 
-  update(
-    id: string,
-    payload: ServiceChecklistUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
+  createMany(data: ServiceChecklistCreateRequestDto[]): Promise<number>;
 
-  delete(id: string, options?: IDatabaseSaveOptions): Promise<void>;
+  update(id: string, payload: ServiceChecklistUpdateRequestDto): Promise<void>;
 
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
+  delete(id: string): Promise<void>;
 }

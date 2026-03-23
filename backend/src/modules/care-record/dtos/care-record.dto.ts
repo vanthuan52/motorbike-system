@@ -3,8 +3,8 @@ import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_CARE_RECORD_STATUS,
-  ENUM_PAYMENT_STATUS,
+  EnumCareRecordStatus,
+  EnumPaymentStatus,
 } from '../enums/care-record.enum';
 
 export class CareRecordDto extends DatabaseDto {
@@ -68,19 +68,19 @@ export class CareRecordDto extends DatabaseDto {
 
   @ApiProperty({
     description: 'Trạng thái chăm sóc',
-    example: ENUM_CARE_RECORD_STATUS.PENDING,
-    enum: ENUM_CARE_RECORD_STATUS,
+    example: EnumCareRecordStatus.pending,
+    enum: EnumCareRecordStatus,
   })
   @Expose()
-  status: ENUM_CARE_RECORD_STATUS;
+  status: EnumCareRecordStatus;
 
   @ApiProperty({
     description: 'Trạng thái thanh toán',
-    example: ENUM_PAYMENT_STATUS.UNPAID,
-    enum: ENUM_PAYMENT_STATUS,
+    example: EnumPaymentStatus.unpaid,
+    enum: EnumPaymentStatus,
   })
   @Expose()
-  paymentStatus: ENUM_PAYMENT_STATUS;
+  paymentStatus: EnumPaymentStatus;
 
   @ApiPropertyOptional({
     example: 250000,

@@ -1,27 +1,17 @@
 import { faker } from '@faker-js/faker';
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
-  IsUUID,
   MaxLength,
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { IsPhoneNumber } from '@/common/request/validations/request.is-phone-number.validation';
 import { IsCustomEmail } from '@/common/request/validations/request.custom-email.validation';
-import { UserDto } from '../user.dto';
 
-export class UserCreateRequestDto extends OmitType(UserDto, [
-  '_id',
-  'role',
-  'email',
-  'name',
-  'phone',
-  'createdAt',
-  'updatedAt',
-] as const) {
+export class UserCreateRequestDto {
   @ApiProperty({
     example: faker.internet.email(),
     required: true,
@@ -31,36 +21,35 @@ export class UserCreateRequestDto extends OmitType(UserDto, [
   @IsNotEmpty()
   @MaxLength(100)
   @Transform(({ value }) => value.toLowerCase().trim())
-  email: string;
+  email: Lowercase<string>;
 
   @ApiProperty({
-    example: faker.string.uuid(),
+    example: faker.database.mongodbObjectId(),
     required: true,
   })
+  @IsString()
   @IsNotEmpty()
-  @IsUUID()
-  role: string;
+  @IsMongoId()
+  roleId: string;
 
   @ApiProperty({
     example: faker.person.fullName(),
-    required: true,
+    required: false,
     maxLength: 100,
     minLength: 1,
   })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(1)
   @MaxLength(100)
-  name: string;
+  name?: string;
 
   @ApiProperty({
-    example: faker.phone.number(),
-    required: false,
-    maxLength: 15,
-    minLength: 10,
+    example: faker.database.mongodbObjectId(),
+    required: true,
   })
-  @IsOptional()
   @IsString()
-  @IsPhoneNumber()
-  phone?: string;
+  @IsNotEmpty()
+  @IsMongoId()
+  countryId: string;
 }

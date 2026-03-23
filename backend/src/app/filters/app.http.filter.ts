@@ -33,7 +33,7 @@ export class AppHttpFilter implements ExceptionFilter {
   constructor(
     private readonly messageService: MessageService,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
     this.globalPrefix = this.configService.get<string>('app.globalPrefix');
     this.docPrefix = this.configService.get<string>('doc.prefix');
@@ -57,7 +57,7 @@ export class AppHttpFilter implements ExceptionFilter {
     ) {
       response.redirect(
         HttpStatus.PERMANENT_REDIRECT,
-        `${this.globalPrefix}/public/hello`,
+        `${this.globalPrefix}/public/hello`
       );
 
       return;

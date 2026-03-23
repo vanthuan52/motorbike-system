@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { CareRecordRepositoryModule } from './respository/care-record.repository.module';
 import { CareRecordService } from './services/care-record.service';
 import { CareRecordUtil } from './utils/care-record.util';
-import { UserVehicleRepositoryModule } from '../user-vehicle/repository/user-vehicle.repository.module';
 import { AppointmentRepositoryModule } from '../appointment/repository/appointment.repository.module';
+import { UserVehicleRepositoryModule } from '../user-vehicle/repository/user-vehicle.repository.module';
 import { CareRecordServiceModule } from '../care-record-service/care-record-service.module';
 import { VehicleServiceRepositoryModule } from '../vehicle-service/repository/vehicle-service.repository.module';
 import { CareRecordChecklistModule } from '../care-record-checklist/care-record-checklist.module';
@@ -27,6 +27,8 @@ import { UserVehicleModule } from '../user-vehicle/user-vehicle';
   ],
   controllers: [],
   providers: [CareRecordService, CareRecordUtil],
-  exports: [CareRecordRepositoryModule, CareRecordService, CareRecordUtil],
+  exports: [CareRecordService, CareRecordUtil],
+})
+export class CareRecordModule {}
 })
 export class CareRecordModule {}

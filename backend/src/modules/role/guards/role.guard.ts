@@ -2,8 +2,8 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { RoleService } from '@/modules/role/services/role.service';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
 import { RoleRequiredMetaKey } from '@/modules/role/constants/role.constant';
+import { EnumRoleType } from '@/generated/prisma-client';
 
 /**
  * Guard that validates user access based on role types
@@ -12,7 +12,7 @@ import { RoleRequiredMetaKey } from '@/modules/role/constants/role.constant';
 export class RoleGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly roleService: RoleService,
+    private readonly roleService: RoleService
   ) {}
 
   /**
@@ -24,13 +24,13 @@ export class RoleGuard implements CanActivate {
     const requiredRoles =
       this.reflector.get<EnumRoleType[]>(
         RoleRequiredMetaKey,
-        context.getHandler(),
+        context.getHandler()
       ) ?? [];
 
     const request = context.switchToHttp().getRequest<IRequestApp>();
     const abilities = await this.roleService.validateRoleGuard(
       request,
-      requiredRoles,
+      requiredRoles
     );
 
     request.__abilities = abilities;

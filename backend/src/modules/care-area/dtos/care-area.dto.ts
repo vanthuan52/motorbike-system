@@ -28,5 +28,5 @@ export class CareAreaDto extends DatabaseDto {
     example: '0',
   })
   @Expose()
-  order?: string;
+  orderBy?: string;
 }

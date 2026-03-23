@@ -1,30 +1,27 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
-import {
-  UserDocParamsId,
-  UserDocQueryList,
-} from '../constants/user.doc.constant';
-import { UserListResponseDto } from '../dtos/response/user.list.response.dto';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
   DocGuard,
   DocRequest,
+  DocRequestFile,
   DocResponse,
+  DocResponseFile,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { UserProfileResponseDto } from '../dtos/response/user.profile.response.dto';
-import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
-import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
-import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
-import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
+import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
+import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
 import {
-  UserCheckEmailRequestDto,
-  UserCheckPhoneRequestDto,
-} from '../dtos/request/user.check.request.dto';
-import { UserCheckEmailResponseDto } from '../dtos/response/user.check-email.response.dto';
-import { UserCheckPhoneResponseDto } from '../dtos/response/user.check-phone.response.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
-import { UserCreateShadowUserRequestDto } from '../dtos/request/user.create-shadow-user.request.dto';
+  UserDocParamsId,
+  UserDocQueryList,
+} from '@/modules/user/constants/user.doc.constant';
+import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
+import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
+import { FileSingleDto } from '@/common/file/dtos/file.single.dto';
+import { EnumFileExtensionDocument } from '@/common/file/enums/file.enum';
+
 export function UserAdminListDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
@@ -34,12 +31,13 @@ export function UserAdminListDoc(): MethodDecorator {
       queries: UserDocQueryList,
     }),
     DocAuth({
+      xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
     DocResponsePaging<UserListResponseDto>('user.list', {
       dto: UserListResponseDto,
-    }),
+    })
   );
 }
 
@@ -52,12 +50,13 @@ export function UserAdminGetDoc(): MethodDecorator {
       params: UserDocParamsId,
     }),
     DocAuth({
+      xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
     DocResponse<UserProfileResponseDto>('user.get', {
       dto: UserProfileResponseDto,
-    }),
+    })
   );
 }
 
@@ -66,51 +65,19 @@ export function UserAdminCreateDoc(): MethodDecorator {
     Doc({
       summary: 'create a user',
     }),
+    DocAuth({
+      xApiKey: true,
+      jwtAccessToken: true,
+    }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
       dto: UserCreateRequestDto,
     }),
-    DocGuard({ role: true, policy: true }),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
     DocResponse<DatabaseIdDto>('user.create', {
       httpStatus: HttpStatus.CREATED,
       dto: DatabaseIdDto,
-    }),
-  );
-}
-
-export function UserAdminCreateShadowUserDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'create a shadow user',
-    }),
-    DocRequest({
-      bodyType: EnumDocRequestBodyType.json,
-      dto: UserCreateShadowUserRequestDto,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<DatabaseIdDto>('user.createShadowUser', {
-      httpStatus: HttpStatus.CREATED,
-      dto: DatabaseIdDto,
-    }),
-  );
-}
-
-export function UserAdminUpdateDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'update a user',
-    }),
-    DocRequest({
-      params: UserDocParamsId,
-      bodyType: EnumDocRequestBodyType.json,
-      dto: UserUpdateRequestDto,
-    }),
-    DocAuth({
-      xApiKey: false,
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('user.update'),
+    })
   );
 }
 
@@ -128,62 +95,79 @@ export function UserAdminUpdateStatusDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('user.updateStatus'),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
+    DocResponse('user.updateStatus')
   );
 }
 
-export function UserAdminDeleteDoc(): MethodDecorator {
+export function UserAdminUpdatePasswordDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'delete an user',
+      summary: 'update password of user',
     }),
     DocRequest({
       params: UserDocParamsId,
     }),
     DocAuth({
+      xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('user.deleted'),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
+    DocResponse('user.updatePassword')
   );
 }
 
-export function UserAdminCheckEmailDoc(): MethodDecorator {
+export function UserAdminResetTwoFactorDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'check user exist by email',
+      summary: "Reset user's two-factor authentication",
     }),
     DocRequest({
-      dto: UserCheckEmailRequestDto,
-      bodyType: EnumDocRequestBodyType.json,
+      params: UserDocParamsId,
     }),
     DocAuth({
-      xApiKey: false,
+      xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocResponse<UserCheckEmailResponseDto>('user.checkEmail', {
-      dto: UserCheckEmailResponseDto,
-    }),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
+    DocResponse('user.twoFactor.reset')
   );
 }
 
-export function UserAdminCheckPhoneDoc(): MethodDecorator {
+export function UserAdminImportDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'check user exist by phone',
+      summary: 'import users via csv file',
     }),
-    DocRequest({
-      dto: UserCheckPhoneRequestDto,
-      bodyType: EnumDocRequestBodyType.json,
+    DocRequestFile({
+      dto: FileSingleDto,
     }),
     DocAuth({
-      xApiKey: false,
+      xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<UserCheckPhoneResponseDto>('user.checkPhone', {
-      dto: UserCheckPhoneResponseDto,
+    DocGuard({ role: true, policy: true, termPolicy: true }),
+    DocResponse('user.import', {
+      httpStatus: HttpStatus.CREATED,
+    })
+  );
+}
+
+export function UserAdminExportDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'export users via csv file',
     }),
+    DocRequest({
+      queries: UserDocQueryList,
+    }),
+    DocAuth({
+      xApiKey: true,
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true, termPolicy: true }),
+    DocResponseFile({
+      extension: EnumFileExtensionDocument.csv,
+    })
   );
 }

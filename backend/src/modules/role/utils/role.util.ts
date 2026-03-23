@@ -1,38 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { RoleDoc, RoleEntity } from '../entities/role.entity';
-import { RoleListResponseDto } from '../dtos/response/role.list.response.dto';
-import { RoleDto } from '../dtos/role.dto';
-import { RoleAbilitiesResponseDto } from '../dtos/response/role.abilities.response.dto';
+import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
+import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
+import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
+import { RoleDto } from '@/modules/role/dtos/role.dto';
+import { Role } from '@/generated/prisma-client';
 
 @Injectable()
 export class RoleUtil {
-  mapList(roles: RoleDoc[] | RoleEntity[]): RoleListResponseDto[] {
-    return plainToInstance(
-      RoleListResponseDto,
-      roles.map((e: RoleDoc | RoleEntity) =>
-        e instanceof Document ? e.toObject() : e,
-      ),
-    );
+  mapList(roles: Role[]): RoleListResponseDto[] {
+    return plainToInstance(RoleListResponseDto, roles);
   }
 
-  mapOne(role: RoleDoc | RoleEntity): RoleDto {
-    return plainToInstance(
-      RoleDto,
-      role instanceof Document ? role.toObject() : role,
-    );
+  mapOne(role: Role): RoleDto {
+    return plainToInstance(RoleDto, role);
   }
 
-  mapAbilities(role: RoleDoc | RoleEntity): RoleAbilitiesResponseDto {
+  mapAbilities(role: Role): RoleAbilitiesResponseDto {
     return plainToInstance(RoleAbilitiesResponseDto, {
       abilities: role.abilities,
     });
   }
 
-  mapActivityLogMetadata(role: RoleDoc | RoleEntity): any {
+  mapActivityLogMetadata(role: Role): IActivityLogMetadata {
     return {
-      roleId: role._id.toString(),
+      roleId: role.id,
       roleName: role.name,
       roleType: role.type,
       timestamp: role.updatedAt ?? role.createdAt,

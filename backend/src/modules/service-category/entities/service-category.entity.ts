@@ -1,5 +1,5 @@
 import { DatabaseEntityBase } from '@/common/database/bases/database.entity';
-import { ENUM_SERVICE_CATEGORY_STATUS } from '../enums/service-category.enum';
+import { EnumServiceCategoryStatus } from '../enums/service-category.enum';
 import {
   DatabaseEntity,
   DatabaseProp,
@@ -39,16 +39,16 @@ export class ServiceCategoryEntity extends DatabaseEntityBase {
     required: false,
     default: '0',
   })
-  order?: string;
+  orderBy?: string;
 
   @DatabaseProp({
     required: true,
-    default: ENUM_SERVICE_CATEGORY_STATUS.ACTIVE,
+    default: EnumServiceCategoryStatus.active,
     index: true,
     type: String,
-    enum: ENUM_SERVICE_CATEGORY_STATUS,
+    enum: EnumServiceCategoryStatus,
   })
-  status: ENUM_SERVICE_CATEGORY_STATUS;
+  status: EnumServiceCategoryStatus;
 }
 
 export const ServiceCategorySchema = DatabaseSchema(ServiceCategoryEntity);

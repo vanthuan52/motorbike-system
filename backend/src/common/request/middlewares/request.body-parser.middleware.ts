@@ -25,16 +25,16 @@ export class RequestBodyParserMiddleware implements NestMiddleware {
 
   constructor(private readonly configService: ConfigService) {
     this.jsonLimitInBytes = this.configService.get<number>(
-      'request.body.json.limitInBytes',
+      'request.body.json.limitInBytes'
     );
     this.textLimitInBytes = this.configService.get<number>(
-      'request.body.text.limitInBytes',
+      'request.body.text.limitInBytes'
     );
     this.urlencodedLimitInBytes = this.configService.get<number>(
-      'request.body.urlencoded.limitInBytes',
+      'request.body.urlencoded.limitInBytes'
     );
     this.applicationOctetStreamLimitInBytes = this.configService.get<number>(
-      'request.body.applicationOctetStream.limitInBytes',
+      'request.body.applicationOctetStream.limitInBytes'
     );
   }
 

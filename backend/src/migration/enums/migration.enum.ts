@@ -1,4 +1,4 @@
 export enum EnumMigrationType {
-  seed = 'seed',
-  remove = 'remove',
+    seed = 'seed',
+    remove = 'remove',
 }

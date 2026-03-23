@@ -2,16 +2,22 @@ import {
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
-import { ActivityLogDto } from '../dtos/activity-log.dto';
+import { ActivityLogResponseDto } from '@/modules/activity-log/dtos/response/activity-log.response.dto';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IActivityLogService {
   getListOffset(
     userId: string,
-    pagination: IPaginationQueryOffsetParams,
-  ): Promise<IResponsePagingReturn<ActivityLogDto>>;
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ActivityLogSelect,
+      Prisma.ActivityLogWhereInput
+    >
+  ): Promise<{ data: ActivityLogResponseDto[]; total: number }>;
   getListCursor(
     userId: string,
-    pagination: IPaginationQueryCursorParams,
-  ): Promise<IResponsePagingReturn<ActivityLogDto>>;
+    pagination: IPaginationQueryCursorParams<
+      Prisma.ActivityLogSelect,
+      Prisma.ActivityLogWhereInput
+    >
+  ): Promise<{ data: ActivityLogResponseDto[]; total: number }>;
 }

@@ -5,8 +5,8 @@ import {
   DocGuard,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { ActivityLogDto } from '../dtos/activity-log.dto';
 import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { ActivityLogResponseDto } from '@/modules/activity-log/dtos/response/activity-log.response.dto';
 
 export function ActivityLogSharedListDoc(): MethodDecorator {
   return applyDecorators(
@@ -17,10 +17,10 @@ export function ActivityLogSharedListDoc(): MethodDecorator {
       xApiKey: true,
       jwtAccessToken: true,
     }),
-    DocGuard({}),
-    DocResponsePaging<ActivityLogDto>('activityLog.list', {
-      dto: ActivityLogDto,
+    DocGuard({ termPolicy: true }),
+    DocResponsePaging<ActivityLogResponseDto>('activityLog.list', {
+      dto: ActivityLogResponseDto,
       type: EnumPaginationType.cursor,
-    }),
+    })
   );
 }

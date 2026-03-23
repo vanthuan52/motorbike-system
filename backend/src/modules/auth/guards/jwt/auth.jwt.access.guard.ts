@@ -28,7 +28,7 @@ export class AuthJwtAccessGuard extends AuthGuard(AuthJwtAccessGuardKey) {
   handleRequest<T = IAuthJwtAccessTokenPayload>(
     err: Error,
     user: IAuthJwtAccessTokenPayload,
-    info: Error,
+    info: Error
   ): T {
     return this.authService.validateJwtAccessGuard(err, user, info) as T;
   }

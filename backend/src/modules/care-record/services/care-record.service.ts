@@ -1,24 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { ICareRecordService } from '../interfaces/care-record.service.interface';
 import { CareRecordRepository } from '../respository/care-record.repository';
-import {
-  CareRecordDoc,
-  CareRecordEntity,
-} from '../entities/care-record.entity';
-import { ICareRecordEntity } from '../interfaces/care-record.interface';
+import { ICareRecordService } from '../interfaces/care-record.service.interface';
 import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.request.dto';
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
 import {
-  ENUM_CARE_RECORD_STATUS,
-  ENUM_PAYMENT_STATUS,
+  EnumCareRecordStatus,
+  EnumPaymentStatus,
 } from '../enums/care-record.enum';
 import {
   CareRecordUpdatePaymentStatusRequestDto,
@@ -26,18 +13,22 @@ import {
 } from '../dtos/request/care-record.update-status.request.dto';
 import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
 import { CareRecordUtil } from '../utils/care-record.util';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_CARE_RECORD_STATUS_CODE_ERROR } from '../enums/care-record.status-code.enum';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { EnumCareRecordStatusCodeError } from '../enums/care-record.status-code.enum';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
 import { CareRecordServiceService } from '@/modules/care-record-service/services/care-record-service.service';
 import { CareRecordChecklistService } from '@/modules/care-record-checklist/services/care-record-checklist.service';
-import { ENUM_CARE_RECORD_SERVICE_TYPE } from '@/modules/care-record-service/enums/care-record-service.enum';
+import { EnumCareRecordServiceType } from '@/modules/care-record-service/enums/care-record-service.enum';
 import { CareRecordServiceCreateRequestDto } from '@/modules/care-record-service/dtos/request/care-record-service.create.request.dto';
 import { CareRecordChecklistCreateRequestDto } from '@/modules/care-record-checklist/dtos/request/care-record-checklist.create.request.dto';
 import { AppointmentService } from '@/modules/appointment/services/appointment.service';
 import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
-import { ENUM_APPOINTMENT_STATUS_CODE_ERROR } from '@/modules/appointment/enums/appointment.status-code.enum';
-import { ENUM_USER_VEHICLE_STATUS_CODE_ERROR } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
+import { EnumAppointmentStatusCodeError } from '@/modules/appointment/enums/appointment.status-code.enum';
+import { EnumUserVehicleStatusCodeError } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
+import { CareRecord, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordService implements ICareRecordService {
@@ -48,82 +39,78 @@ export class CareRecordService implements ICareRecordService {
     private readonly careRecordServiceService: CareRecordServiceService,
     private readonly careRecordChecklistService: CareRecordChecklistService,
     private readonly appointmentService: AppointmentService,
-    private readonly userVehicleService: UserVehicleService,
+    private readonly userVehicleService: UserVehicleService
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<{ data: ICareRecordEntity[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
-
-    const [careRecords, total] = await Promise.all([
-      this.careRecordRepository.findAll<ICareRecordEntity>(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-        ...options,
-        join: true,
-      }),
-      this.careRecordRepository.getTotal(find, { ...options, join: true }),
-    ]);
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordSelect,
+      Prisma.CareRecordWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecord[]; total: number }> {
+    const { data, count } =
+      await this.careRecordRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
 
     return {
-      data: careRecords,
-      total,
+      data,
+      total: count || 0,
     };
   }
 
-  async findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordDoc> {
-    const careRecord = await this.findOneByIdOrFail(id, {
-      ...options,
-      join: true,
-    });
-    return careRecord;
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordSelect,
+      Prisma.CareRecordWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: CareRecord[]; total?: number }> {
+    const { data, count } =
+      await this.careRecordRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    return { data, total: count };
+  }
+
+  async findOneById(id: string): Promise<CareRecord> {
+    return this.findOneByIdOrFail(id);
   }
 
   async findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordDoc> {
-    const careRecord = await this.careRecordRepository.findOne<CareRecordDoc>(
-      find,
-      options,
-    );
-    return careRecord;
+    where: Prisma.CareRecordWhereInput
+  ): Promise<CareRecord | null> {
+    return this.careRecordRepository.findOne(where);
   }
 
-  async create(
-    {
-      appointment,
-      userVehicle,
+  async create({
+    appointment,
+    userVehicle,
+    vehicleModelName,
+    technician,
+    store,
+    confirmedByOwner,
+  }: CareRecordCreateRequestDto): Promise<CareRecord> {
+    const created = await this.careRecordRepository.create({
+      appointmentId: appointment,
+      userVehicleId: userVehicle,
       vehicleModelName,
-      technician,
-      store,
-      confirmedByOwner,
-    }: CareRecordCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordDoc> {
-    const create: CareRecordEntity = new CareRecordEntity();
-    create.appointment = appointment;
-    create.userVehicle = userVehicle;
-    create.vehicleModelName = vehicleModelName;
-    create.technician = technician;
-    create.store = store;
-    create.confirmedByOwner = confirmedByOwner ? confirmedByOwner : false;
-    create.status = ENUM_CARE_RECORD_STATUS.PENDING;
-    create.paymentStatus = ENUM_PAYMENT_STATUS.UNPAID;
-
-    const created = await this.careRecordRepository.create<CareRecordEntity>(
-      create,
-      options,
-    );
+      technicianId: technician,
+      storeId: store,
+      confirmedByOwner: confirmedByOwner ? confirmedByOwner : false,
+      status: EnumCareRecordStatus.pending,
+      paymentStatus: EnumPaymentStatus.unpaid,
+    });
 
     return created;
   }
@@ -135,36 +122,36 @@ export class CareRecordService implements ICareRecordService {
    */
   async createWithAppointment(
     body: CareRecordCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<CareRecordDoc> {
+    createdBy?: string
+  ): Promise<CareRecord> {
     const checkAppointment = await this.appointmentService.findOneById(
-      body.appointment,
+      body.appointment
     );
     const checkUserVehicle = await this.userVehicleService.findOneById(
-      body.userVehicle,
+      body.userVehicle
     );
 
-    if (!checkAppointment?.data) {
+    if (!checkAppointment) {
       throw new NotFoundException({
-        statusCode: ENUM_APPOINTMENT_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumAppointmentStatusCodeError.notFound,
         message: 'appointment.error.notFound',
       });
     }
     if (!checkUserVehicle) {
       throw new NotFoundException({
-        statusCode: ENUM_USER_VEHICLE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumUserVehicleStatusCodeError.notFound,
         message: 'user-vehicle.error.notFound',
       });
     }
 
     // Create care record
-    const result = await this.create(body, options);
+    const result = await this.create(body);
 
     // Auto create care-record-services from appointment
     await this.createCareRecordServices(
-      checkAppointment.data,
-      result._id,
-      options?.actionBy || '',
+      checkAppointment,
+      result.id,
+      createdBy || ''
     );
 
     return result;
@@ -172,78 +159,58 @@ export class CareRecordService implements ICareRecordService {
 
   async update(
     id: string,
-    { confirmedByOwner }: CareRecordUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
+    { confirmedByOwner }: CareRecordUpdateRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.confirmedByOwner =
-      confirmedByOwner ?? repository.confirmedByOwner;
+    const careRecord = await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.save(repository, options);
-    return;
+    await this.careRecordRepository.update(id, {
+      confirmedByOwner: confirmedByOwner ?? careRecord.confirmedByOwner,
+    });
   }
 
   async updateStatus(
     id: string,
-    { status }: CareRecordUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
+    { status }: CareRecordUpdateStatusRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.status = status;
+    await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.save(repository, options);
-    return;
+    await this.careRecordRepository.update(id, {
+      status,
+    });
   }
 
   async updatePaymentStatus(
     id: string,
-    { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto,
-    options?: IDatabaseSaveOptions,
+    { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.paymentStatus = paymentStatus;
+    await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.save(repository, options);
-    return;
+    await this.careRecordRepository.update(id, {
+      paymentStatus,
+    });
   }
 
   async updateTechnician(
     id: string,
-    { technician }: CareRecordUpdateTechnicianRequestDto,
-    options?: IDatabaseSaveOptions,
+    { technician }: CareRecordUpdateTechnicianRequestDto
   ): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    repository.technician = technician;
+    await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.save(repository, options);
-    return;
+    await this.careRecordRepository.update(id, {
+      technicianId: technician,
+    });
   }
 
-  async delete(id: string, options?: IDatabaseDeleteOptions): Promise<void> {
-    await this.careRecordRepository.delete({ _id: id }, options);
-    return;
-  }
-
-  async softDelete(id: string, options?: IDatabaseSaveOptions): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
-    await this.careRecordRepository.softDelete(repository, options);
-    return;
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.careRecordRepository.deleteMany(find, options);
-    return true;
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordRepository.delete(id);
   }
 
   async createCareRecordServices(
     appointment: any,
     careRecordId: string,
-    createdBy: string,
+    createdBy: string
   ): Promise<void> {
-    const createOptions: IDatabaseCreateOptions = { actionBy: createdBy };
     const allServiceDtos: CareRecordServiceCreateRequestDto[] = [];
 
     if (
@@ -254,8 +221,8 @@ export class CareRecordService implements ICareRecordService {
         (request: string) => ({
           careRecord: careRecordId,
           name: request,
-          type: ENUM_CARE_RECORD_SERVICE_TYPE.CUSTOMER_REQUEST,
-        }),
+          type: EnumCareRecordServiceType.customerRequest,
+        })
       );
 
       allServiceDtos.push(...customerRequestDtos);
@@ -264,32 +231,29 @@ export class CareRecordService implements ICareRecordService {
     if (appointment.vehicleServices && appointment.vehicleServices.length > 0) {
       const vehicleServices = await Promise.all(
         appointment.vehicleServices.map((id: string) =>
-          this.vehicleServiceService.findOneById(id),
-        ),
+          this.vehicleServiceService.findOneById(id)
+        )
       );
 
       const vehicleServiceDtos = vehicleServices
-        .filter((service) => service !== null || service !== undefined)
-        .map((service) => ({
+        .filter(service => service !== null || service !== undefined)
+        .map(service => ({
           careRecord: careRecordId,
           name: service.name,
-          vehicleService: service._id,
-          type: ENUM_CARE_RECORD_SERVICE_TYPE.SERVICE, // Fixed: was type
+          vehicleService: service.id,
+          type: EnumCareRecordServiceType.service,
         }));
 
       allServiceDtos.push(...vehicleServiceDtos);
     }
 
     if (allServiceDtos.length > 0) {
-      await this.careRecordServiceService.createMany(
-        allServiceDtos,
-        createOptions,
-      );
+      await this.careRecordServiceService.createMany(allServiceDtos);
 
       await this.createCareRecordChecklists(
         appointment,
         careRecordId,
-        createdBy,
+        createdBy
       );
     }
   }
@@ -297,31 +261,24 @@ export class CareRecordService implements ICareRecordService {
   async createCareRecordChecklists(
     appointment: any,
     careRecordId: string,
-    createdBy: string,
+    createdBy: string
   ): Promise<void> {
-    const createOptions: IDatabaseCreateOptions = { actionBy: createdBy };
     const allChecklistDtos: CareRecordChecklistCreateRequestDto[] = [];
 
     const { data: careRecordServices } =
       await this.careRecordServiceService.getListOffset({
-        limit: 100, // Assuming reasonable limit
+        limit: 100,
         skip: 0,
-        where: { careRecord: careRecordId },
+        where: { careRecordId },
       });
 
     for (const careRecordService of careRecordServices) {
       if (
-        careRecordService.type === ENUM_CARE_RECORD_SERVICE_TYPE.SERVICE &&
-        careRecordService.vehicleService
+        careRecordService.type === EnumCareRecordServiceType.service &&
+        careRecordService.vehicleServiceId
       ) {
-        // Handle populated vehicleService
-        const vehicleServiceId =
-          (careRecordService.vehicleService as any)._id ||
-          careRecordService.vehicleService;
-
         const vehicleService = await this.vehicleServiceService.findOneById(
-          vehicleServiceId,
-          { join: true },
+          careRecordService.vehicleServiceId
         );
 
         if (vehicleService) {
@@ -331,17 +288,17 @@ export class CareRecordService implements ICareRecordService {
           ) {
             const serviceChecklistDtos = vehicleService.checklistItems.map(
               (serviceChecklist: any) => ({
-                careRecordService: careRecordService._id,
-                serviceChecklist: serviceChecklist._id || serviceChecklist,
+                careRecordService: careRecordService.id,
+                serviceChecklist: serviceChecklist.id || serviceChecklist,
                 name: serviceChecklist.name || `${careRecordService.name}`,
                 wearPercentage: 100,
-              }),
+              })
             );
             allChecklistDtos.push(...serviceChecklistDtos);
           } else {
             const vehicleServiceChecklistDto: CareRecordChecklistCreateRequestDto =
               {
-                careRecordService: careRecordService._id,
+                careRecordService: careRecordService.id,
                 name: vehicleService.name,
                 wearPercentage: 100,
               };
@@ -350,11 +307,11 @@ export class CareRecordService implements ICareRecordService {
         }
       } else if (
         careRecordService.type ===
-        ENUM_CARE_RECORD_SERVICE_TYPE.CUSTOMER_REQUEST
+        EnumCareRecordServiceType.customerRequest
       ) {
         const customerRequestChecklistDto: CareRecordChecklistCreateRequestDto =
           {
-            careRecordService: careRecordService._id,
+            careRecordService: careRecordService.id,
             name: careRecordService.name,
             wearPercentage: 100,
           };
@@ -364,21 +321,16 @@ export class CareRecordService implements ICareRecordService {
 
     if (allChecklistDtos.length > 0) {
       await this.careRecordChecklistService.createMany(
-        allChecklistDtos,
-        createOptions,
+        allChecklistDtos
       );
     }
   }
 
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CareRecordDoc> {
-    const careRecord =
-      await this.careRecordRepository.findOneById<CareRecordDoc>(id, options);
+  private async findOneByIdOrFail(id: string): Promise<CareRecord> {
+    const careRecord = await this.careRecordRepository.findOneById(id);
     if (!careRecord) {
       throw new NotFoundException({
-        statusCode: ENUM_CARE_RECORD_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumCareRecordStatusCodeError.notFound,
         message: 'care-record.error.notFound',
       });
     }

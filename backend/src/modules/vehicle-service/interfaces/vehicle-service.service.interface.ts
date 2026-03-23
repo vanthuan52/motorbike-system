@@ -1,103 +1,53 @@
-import { PipelineStage } from 'mongoose';
-import {
-  IDatabaseAggregateOptions,
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseFindAllAggregateOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { VehicleServiceDoc } from '../entities/vehicle-service.entity';
+import { VehicleService, Prisma } from '@/generated/prisma-client';
 import { VehicleServiceCreateRequestDto } from '../dtos/request/vehicle-service.create.request.dto';
 import { VehicleServiceUpdateRequestDto } from '../dtos/request/vehicle-service.update.request.dto';
 import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-service.update-status.request.dto';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { VehicleServiceUploadPhotoRequestDto } from '../dtos/request/vehicle-service.upload-photo.request.dto';
 import {
-  IVehicleServiceDoc,
-  IVehicleServiceEntity,
-} from './vehicle-service.interface';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 
 export interface IVehicleServiceService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<VehicleServiceDoc[]>;
+  findAll(find?: Prisma.VehicleServiceWhereInput): Promise<VehicleService[]>;
 
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: VehicleServiceDoc[]; total: number }>;
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.VehicleServiceSelect,
+      Prisma.VehicleServiceWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>,
+  ): Promise<{ data: VehicleService[]; total: number }>;
 
   getListCursor(
-    pagination: IPaginationQueryCursorParams,
-    filters?: Record<string, any>,
-  ): Promise<{ data: VehicleServiceDoc[]; total?: number }>;
+    pagination: IPaginationQueryCursorParams<
+      Prisma.VehicleServiceSelect,
+      Prisma.VehicleServiceWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>,
+  ): Promise<{ data: VehicleService[]; total?: number }>;
 
-  createRawQueryFindAllWithServiceCategory(
-    find?: Record<string, any>,
-  ): PipelineStage[];
+  findOneById(id: string): Promise<VehicleService>;
 
-  findAllWithServiceCategory(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllAggregateOptions,
-  ): Promise<IVehicleServiceEntity[]>;
+  findOneWithServiceCategoryById(id: string): Promise<VehicleService | null>;
 
-  getTotalWithServiceCategory(
-    find?: Record<string, any>,
-    options?: IDatabaseAggregateOptions,
-  ): Promise<number>;
+  findOne(find: Prisma.VehicleServiceWhereInput): Promise<VehicleService>;
 
-  findOneById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleServiceDoc>;
+  getTotal(find?: Prisma.VehicleServiceWhereInput): Promise<number>;
 
-  findOneWithServiceCategoryById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IVehicleServiceDoc | null>;
+  create(payload: VehicleServiceCreateRequestDto): Promise<VehicleService>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<VehicleServiceDoc>;
+  update(id: string, payload: VehicleServiceUpdateRequestDto): Promise<void>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  updateStatus(id: string, payload: VehicleServiceUpdateStatusRequestDto): Promise<void>;
 
-  create(
-    payload: VehicleServiceCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<VehicleServiceDoc>;
+  delete(id: string): Promise<void>;
 
-  update(
-    id: string,
-    payload: VehicleServiceUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
+  deleteMany(find?: Prisma.VehicleServiceWhereInput): Promise<boolean>;
 
-  updateStatus(
-    id: string,
-    payload: VehicleServiceUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
-
-  delete(id: string, options?: IDatabaseDeleteOptions): Promise<void>;
-
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
-
-  findBySlug(slug: string): Promise<VehicleServiceDoc>;
+  findBySlug(slug: string): Promise<VehicleService>;
 
   createRandomFilenamePhoto(
     vehicleService: string,
@@ -105,8 +55,7 @@ export interface IVehicleServiceService {
   ): string;
 
   updatePhoto(
-    repository: VehicleServiceDoc,
+    repository: VehicleService,
     photo: AwsS3Dto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<VehicleServiceDoc>;
+  ): Promise<VehicleService>;
 }

@@ -1,69 +1,50 @@
 import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { ApiKeyDoc, ApiKeyEntity } from '../entities/api-key.entity';
-import { ApiKeyCreateRequestDto } from '../dtos/request/api-key.create.request.dto';
-import { ApiKeyCreateResponseDto } from '../dtos/response/api-key.create.response.dto';
-import { ApiKeyUpdateRequestDto } from '../dtos/request/api-key.update.request.dto';
-import { ApiKeyUpdateDateRequestDto } from '../dtos/request/api-key.update-date.request.dto';
-import { ApiKeyUpdateStatusRequestDto } from '../dtos/request/api-key.update-status.request.dto';
-import { ApiKeyDto } from '../dtos/api-key.dto';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
+  IPaginationEqual,
+  IPaginationIn,
+  IPaginationQueryOffsetParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { EnumApiKeyType } from '../enums/api-key.enum';
+import { ApiKeyCreateRequestDto } from '@/modules/api-key/dtos/request/api-key.create.request.dto';
+import { ApiKeyUpdateDateRequestDto } from '@/modules/api-key/dtos/request/api-key.update-date.request.dto';
+import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api-key.update-status.request.dto';
+import { ApiKeyUpdateRequestDto } from '@/modules/api-key/dtos/request/api-key.update.request.dto';
+import { ApiKey, EnumApiKeyType, Prisma } from '@/generated/prisma-client';
 
 export interface IApiKeyService {
-  getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<IResponsePagingReturn<ApiKeyDto>>;
-
-  create(
-    payload: ApiKeyCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<IResponseReturn<ApiKeyCreateResponseDto>>;
-
-  updateStatus(
-    apiKeyId: string,
-    data: ApiKeyUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<ApiKeyDto>>;
-
-  update(
-    apiKeyId: string,
-    payload: ApiKeyUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<ApiKeyDto>>;
-
-  updateDate(
-    apiKeyId: string,
-    payload: ApiKeyUpdateDateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<ApiKeyDto>>;
-
-  reset(
-    apiKeyId: string,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<ApiKeyCreateResponseDto>>;
-
-  delete(
-    apiKeyId: string,
-    options?: IDatabaseSaveOptions,
-  ): Promise<IResponseReturn<ApiKeyDto>>;
-
-  findOneActiveByKeyAndCache(key: string): Promise<ApiKeyDoc | null>;
-
-  validateXApiKeyGuard(request: IRequestApp): Promise<ApiKeyEntity>;
-
+  getListByAdmin(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.ActivityLogSelect,
+      Prisma.ActivityLogWhereInput
+    >,
+    isActive?: Record<string, IPaginationEqual>,
+    type?: Record<string, IPaginationIn>
+  ): Promise<{ data: ApiKey[]; total: number }>;
+  createByAdmin({
+    name,
+    type,
+    startAt,
+    endAt,
+  }: ApiKeyCreateRequestDto): Promise<{ created: ApiKey; secret: string }>;
+  updateStatusByAdmin(
+    id: string,
+    data: ApiKeyUpdateStatusRequestDto
+  ): Promise<ApiKey>;
+  updateByAdmin(id: string, { name }: ApiKeyUpdateRequestDto): Promise<ApiKey>;
+  updateDatesByAdmin(
+    id: string,
+    { startAt, endAt }: ApiKeyUpdateDateRequestDto
+  ): Promise<ApiKey>;
+  resetByAdmin(id: string): Promise<{ updated: ApiKey; secret: string }>;
+  deleteByAdmin(id: string): Promise<ApiKey>;
+  findOneActiveByKeyAndCache(key: string): Promise<ApiKey | null>;
+  validateApiKey(apiKey: ApiKey, includeActive: boolean): void;
+  findOneActiveByKeyAndCache(key: string): Promise<ApiKey | null>;
+  validateXApiKeyGuard(request: IRequestApp): Promise<ApiKey>;
   validateXApiKeyTypeGuard(
     request: IRequestApp,
-    apiKeyTypes: EnumApiKeyType[],
+    apiKeyTypes: EnumApiKeyType[]
   ): boolean;
-
-  validateApiKey(apiKey: ApiKeyDoc, includeActive?: boolean): void;
 }

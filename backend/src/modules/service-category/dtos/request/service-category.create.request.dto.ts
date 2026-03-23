@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsIn,
 } from 'class-validator';
-import { ENUM_SERVICE_CATEGORY_STATUS } from '../../enums/service-category.enum';
+import { EnumServiceCategoryStatus } from '../../enums/service-category.enum';
 
 export class ServiceCategoryCreateRequestDto {
   @ApiProperty({
@@ -51,16 +51,16 @@ export class ServiceCategoryCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_SERVICE_CATEGORY_STATUS))
+  @IsIn(Object.values(EnumServiceCategoryStatus))
   @ApiProperty({
-    example: ENUM_SERVICE_CATEGORY_STATUS.ACTIVE,
+    example: EnumServiceCategoryStatus.active,
     description: 'Trạng thái hoạt động (active/inactive)',
     required: false,
-    enum: ENUM_SERVICE_CATEGORY_STATUS,
-    default: ENUM_SERVICE_CATEGORY_STATUS.ACTIVE,
+    enum: EnumServiceCategoryStatus,
+    default: EnumServiceCategoryStatus.active,
   })
-  status?: ENUM_SERVICE_CATEGORY_STATUS;
+  status?: EnumServiceCategoryStatus;
 }

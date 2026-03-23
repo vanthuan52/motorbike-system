@@ -1,16 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CareRecordMediaRepositoryModule } from './respository/care-record-media.repository.module';
 import { CareRecordMediaService } from './services/care-record-media.service';
 import { CareRecordMediaUtil } from './utils/care-record-media.util';
 
 @Module({
-  imports: [CareRecordMediaRepositoryModule],
+  imports: [],
   controllers: [],
   providers: [CareRecordMediaService, CareRecordMediaUtil],
-  exports: [
-    CareRecordMediaRepositoryModule,
-    CareRecordMediaService,
-    CareRecordMediaUtil,
-  ],
+  exports: [CareRecordMediaService, CareRecordMediaUtil],
 })
 export class CareRecordMediaModule {}

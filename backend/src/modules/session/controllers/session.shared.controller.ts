@@ -3,16 +3,21 @@ import { ApiTags } from '@nestjs/swagger';
 import { PaginationCursorQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
+  RequestGeoLocation,
   RequestIPAddress,
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
-import { RequestUserAgentDto } from '@/common/request/dtos/request.user-agent.dto';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { ResponsePaging } from '@/common/response/decorators/response.decorator';
+import {
+  Response,
+  ResponsePaging,
+} from '@/common/response/decorators/response.decorator';
 import {
   IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
+
 import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
 import {
   AuthJwtAccessProtected,
@@ -23,13 +28,12 @@ import {
   SessionSharedListDoc,
   SessionSharedRevokeDoc,
 } from '@/modules/session/docs/session.shared.doc';
-import { SessionListResponseDto } from '@/modules/session/dtos/response/session.list.response.dto';
+import { SessionResponseDto } from '@/modules/session/dtos/response/session.response.dto';
 import { SessionService } from '@/modules/session/services/session.service';
+import { SessionUtil } from '@/modules/session/utils/session.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { SessionUtil } from '../utils/session.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { GeoLocation, Prisma, UserAgent } from '@/generated/prisma-client';
 
 @ApiTags('modules.shared.user.session')
 @Controller({
@@ -40,7 +44,7 @@ export class SessionSharedController {
   constructor(
     private readonly sessionService: SessionService,
     private readonly sessionUtil: SessionUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @SessionSharedListDoc()
@@ -50,40 +54,39 @@ export class SessionSharedController {
   @ApiKeyProtected()
   @Get('/list')
   async list(
-    @AuthJwtPayload('userId') userId: string,
     @PaginationCursorQuery({
       availableOrderBy: SessionDefaultAvailableOrderBy,
     })
-    pagination: IPaginationQueryCursorParams,
-  ): Promise<IResponsePagingReturn<SessionListResponseDto>> {
-    const { data, total } = await this.sessionService.getListCursor(
-      userId,
-      pagination,
-    );
-    const mappedData = this.sessionUtil.mapList(data);
-
-    return this.paginationUtil.formatCursor(mappedData, total, pagination);
+    pagination: IPaginationQueryCursorParams<
+      Prisma.SessionSelect,
+      Prisma.SessionWhereInput
+    >,
+    @AuthJwtPayload('userId') userId: string
+  ): Promise<IResponsePagingReturn<SessionResponseDto>> {
+    const { data, total } = await this.sessionService.getListCursor(userId, pagination);
+    const mapped = this.sessionUtil.mapList(data);
+    return this.paginationUtil.formatCursor(mapped, total, pagination);
   }
 
   @SessionSharedRevokeDoc()
-  @ResponsePaging('session.revoke')
+  @Response('session.revoke')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
   @Delete('/revoke/:sessionId')
   async revoke(
-    @Param('sessionId', RequestRequiredPipe, RequestIsValidUuidPipe)
+    @Param('sessionId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     sessionId: string,
     @AuthJwtPayload('userId') userId: string,
     @RequestIPAddress() ipAddress: string,
-    @RequestUserAgent() userAgent: RequestUserAgentDto,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    const requestLog: IRequestLog = {
+    await this.sessionService.revoke(userId, sessionId, {
       ipAddress,
       userAgent,
-    };
-
-    await this.sessionService.revoke(userId, sessionId, requestLog);
+      geoLocation,
+    });
     return {};
   }
 }

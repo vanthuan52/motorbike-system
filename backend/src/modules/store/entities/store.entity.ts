@@ -5,7 +5,7 @@ import {
   DatabaseSchema,
 } from '@/common/database/decorators/database.decorator';
 import { IDatabaseDocument } from '@/common/database/interfaces/database.interface';
-import { ENUM_STORE_STATUS } from '../enums/store.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
 
 export const StoreTableName = 'store';
 
@@ -49,12 +49,12 @@ export class StoreEntity extends DatabaseEntityBase {
 
   @DatabaseProp({
     required: true,
-    default: ENUM_STORE_STATUS.ACTIVE,
+    default: EnumStoreStatus.active,
     index: true,
     type: String,
-    enum: ENUM_STORE_STATUS,
+    enum: EnumStoreStatus,
   })
-  status: ENUM_STORE_STATUS;
+  status: EnumStoreStatus;
 }
 
 export const StoreSchema = DatabaseSchema(StoreEntity);

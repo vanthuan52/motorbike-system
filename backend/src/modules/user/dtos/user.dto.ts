@@ -1,26 +1,46 @@
 import { faker } from '@faker-js/faker';
-import { ApiHideProperty, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { RoleDto } from '@/modules/role/dtos/role.dto';
-import { MediaEmbeddedResponseDto } from '@/modules/media/dtos/response/media.embedded.response.dto';
+import { UserTermPolicyDto } from '@/modules/user/dtos/user.term-policy.dto';
+import { UserTwoFactorDto } from '@/modules/user/dtos/user.two-factor.dto';
 import {
   EnumUserGender,
   EnumUserLoginFrom,
+  EnumUserLoginWith,
   EnumUserSignUpFrom,
   EnumUserSignUpWith,
   EnumUserStatus,
-} from '@/modules/user/enums/user.enum';
-import { UserTwoFactorDto } from './user.two-factor.dto';
+} from '@/generated/prisma-client';
 
 export class UserDto extends DatabaseDto {
   @ApiProperty({
     required: false,
-    example: faker.person.fullName(),
     maxLength: 100,
     minLength: 1,
   })
   name?: string;
+
+  @ApiProperty({
+    required: true,
+    maxLength: 50,
+    minLength: 3,
+  })
+  username: Lowercase<string>;
+
+  @ApiProperty({
+    required: true,
+    example: true,
+  })
+  isVerified: boolean;
+
+  @ApiProperty({
+    required: false,
+    example: faker.date.past(),
+  })
+  verifiedAt?: Date;
 
   @ApiProperty({
     required: true,
@@ -30,11 +50,17 @@ export class UserDto extends DatabaseDto {
   email: Lowercase<string>;
 
   @ApiProperty({
-    required: false,
-    example: faker.phone.number(),
-    maxLength: 20,
+    required: true,
+    example: faker.database.mongodbObjectId(),
   })
-  phone?: string;
+  roleId: string;
+
+  @ApiProperty({
+    required: true,
+    type: RoleDto,
+  })
+  @Type(() => RoleDto)
+  role: RoleDto;
 
   @ApiHideProperty()
   @Exclude()
@@ -43,97 +69,58 @@ export class UserDto extends DatabaseDto {
   @ApiProperty({
     required: false,
     example: faker.date.future(),
-    description: 'Date when password expires',
   })
   passwordExpired?: Date;
 
   @ApiProperty({
     required: false,
     example: faker.date.past(),
-    description: 'Date when password was created',
   })
   passwordCreated?: Date;
 
-  @ApiProperty({
-    required: false,
-    example: 0,
-    minimum: 0,
-    description: 'Number of failed password attempts',
-  })
+  @ApiProperty({ required: false, example: 0, minimum: 0 })
   passwordAttempt?: number;
 
   @ApiProperty({
-    required: false,
-    example: true,
-    default: false,
-    description: 'Whether the user email is verified',
+    required: true,
+    example: faker.date.recent(),
   })
-  isVerified?: boolean;
-
-  @ApiProperty({
-    required: false,
-    example: faker.date.past(),
-    description: 'Date when user was verified',
-  })
-  verifiedAt?: Date;
+  signUpDate: Date;
 
   @ApiProperty({
     required: true,
-    example: faker.string.uuid(),
-    type: 'string',
-    description: 'User role ID or populated role object',
+    example: EnumUserSignUpFrom.admin,
+    enum: EnumUserSignUpFrom,
   })
-  role: string;
+  signUpFrom: EnumUserSignUpFrom;
+
+  @ApiProperty({
+    required: true,
+    example: EnumUserSignUpWith.credential,
+    enum: EnumUserSignUpWith,
+  })
+  signUpWith: EnumUserSignUpWith;
 
   @ApiProperty({
     required: true,
     example: EnumUserStatus.active,
     enum: EnumUserStatus,
-    description: 'User account status',
   })
   status: EnumUserStatus;
+
+  @ApiProperty({
+    required: true,
+    example: faker.database.mongodbObjectId(),
+  })
+  countryId: string;
 
   @ApiProperty({
     example: EnumUserGender.male,
     enum: EnumUserGender,
     required: false,
-    description: 'User gender',
   })
   gender?: EnumUserGender;
 
-  @ApiProperty({
-    required: false,
-    type: () => MediaEmbeddedResponseDto,
-    description: 'User profile photo',
-  })
-  @Type(() => MediaEmbeddedResponseDto)
-  photo?: MediaEmbeddedResponseDto;
-
-  // Sign up tracking
-  @ApiProperty({
-    required: false,
-    example: faker.date.recent(),
-    description: 'Date when user signed up',
-  })
-  signUpDate?: Date;
-
-  @ApiProperty({
-    required: false,
-    example: EnumUserSignUpFrom.admin,
-    enum: EnumUserSignUpFrom,
-    description: 'Platform from which user signed up',
-  })
-  signUpFrom?: EnumUserSignUpFrom;
-
-  @ApiProperty({
-    required: false,
-    example: EnumUserSignUpWith.credential,
-    enum: EnumUserSignUpWith,
-    description: 'Method used for sign up',
-  })
-  signUpWith?: EnumUserSignUpWith;
-
-  // Last login tracking
   @ApiProperty({
     required: false,
     description: 'Last login time of user',
@@ -145,7 +132,6 @@ export class UserDto extends DatabaseDto {
     required: false,
     description: 'Last IP Address of user',
     example: faker.internet.ipv4(),
-    maxLength: 50,
   })
   lastIPAddress?: string;
 
@@ -153,22 +139,34 @@ export class UserDto extends DatabaseDto {
     required: false,
     enum: EnumUserLoginFrom,
     example: EnumUserLoginFrom.website,
-    description: 'Platform from which user last logged in',
   })
   lastLoginFrom?: EnumUserLoginFrom;
 
   @ApiProperty({
     required: false,
-    enum: EnumUserSignUpWith,
-    example: EnumUserSignUpWith.credential,
-    description: 'Method used for last login',
+    enum: EnumUserLoginWith,
+    example: EnumUserLoginWith.credential,
   })
-  lastLoginWith?: EnumUserSignUpWith;
+  lastLoginWith?: EnumUserLoginWith;
+
+  @ApiProperty({
+    required: true,
+    type: UserTermPolicyDto,
+  })
+  @Type(() => UserTermPolicyDto)
+  termPolicy: UserTermPolicyDto;
 
   @ApiProperty({
     required: false,
+    type: AwsS3Dto,
+  })
+  @Type(() => AwsS3Dto)
+  photo?: AwsS3Dto;
+
+  @ApiProperty({
+    required: true,
     type: UserTwoFactorDto,
   })
   @Type(() => UserTwoFactorDto)
-  twoFactor?: UserTwoFactorDto;
+  twoFactor: UserTwoFactorDto;
 }

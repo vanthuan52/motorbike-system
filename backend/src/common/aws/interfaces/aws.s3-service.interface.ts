@@ -20,6 +20,7 @@ import {
   IAwsS3Options,
   IAwsS3PresignGetItemOptions,
   IAwsS3PresignPutItemOptions,
+  IAwsS3PresignPutItemPartOptions,
   IAwsS3PutItem,
   IAwsS3PutItemOptions,
 } from '@/common/aws/interfaces/aws.interface';
@@ -27,66 +28,66 @@ import {
 export interface IAwsS3Service {
   checkConnection(): Promise<boolean>;
   checkBucket(options?: IAwsS3Options): Promise<boolean>;
-  checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto>;
+  checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto | null>;
   getItems(path: string, options?: IAwsS3GetItemsOptions): Promise<AwsS3Dto[]>;
-  getItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto>;
+  getItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto | null>;
   putItem(
     file: IAwsS3PutItem,
-    options?: IAwsS3PutItemOptions,
-  ): Promise<AwsS3Dto>;
+    options?: IAwsS3PutItemOptions
+  ): Promise<AwsS3Dto | null>;
   deleteItem(key: string, options?: IAwsS3Options): Promise<void>;
   deleteItems(keys: string[], options?: IAwsS3Options): Promise<void>;
   deleteDir(
     path: string,
-    options?: IAwsS3DeleteDirOptions,
+    options?: IAwsS3DeleteDirOptions
   ): Promise<void | _Object[]>;
   createMultiPart(
     file: IAwsS3CreateMultiplePart,
     maxPartNumber: number,
-    options?: IAwsS3PutItemOptions,
-  ): Promise<AwsS3MultipartDto>;
+    options?: IAwsS3PutItemOptions
+  ): Promise<AwsS3MultipartDto | null>;
   putItemMultiPart(
     multipart: AwsS3MultipartDto,
     partNumber: number,
     file: Buffer,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<AwsS3MultipartDto>;
   completeMultipart(
     key: string,
     uploadId: string,
     parts: AwsS3MultipartPartDto[],
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<void>;
   abortMultipart(
     key: string,
     uploadId: string,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<void>;
   presignGetItem(
     key: string,
-    options?: IAwsS3PresignGetItemOptions,
-  ): Promise<AwsS3PresignDto>;
+    options?: IAwsS3PresignGetItemOptions
+  ): Promise<AwsS3PresignDto | null>;
   presignPutItem(
     { key, size }: AwsS3PresignRequestDto,
-    options?: IAwsS3PresignPutItemOptions,
-  ): Promise<AwsS3PresignDto>;
+    options?: IAwsS3PresignPutItemOptions
+  ): Promise<AwsS3PresignDto | null>;
   presignPutItemPart(
     { key, size, uploadId, partNumber }: AwsS3PresignPartRequestDto,
-    options?: IAwsS3PresignPutItemOptions,
-  ): Promise<AwsS3PresignPartDto>;
+    options?: IAwsS3PresignPutItemPartOptions
+  ): Promise<AwsS3PresignPartDto | null>;
   mapPresign(
     { key, size }: AwsS3PresignRequestDto,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): AwsS3Dto;
   moveItem(
     source: AwsS3Dto,
     destination: string,
-    options?: IAwsS3MoveItemOptions,
-  ): Promise<AwsS3Dto>;
+    options?: IAwsS3MoveItemOptions
+  ): Promise<AwsS3Dto | null>;
   moveItems(
     sources: AwsS3Dto[],
     destination: string,
-    options?: IAwsS3Options,
+    options?: IAwsS3Options
   ): Promise<AwsS3Dto[]>;
   settingBucketExpiredObjectLifecycle(options: IAwsS3Options): Promise<void>;
   settingBucketPolicy(options?: IAwsS3Options): Promise<void>;

@@ -44,7 +44,7 @@ import {
 } from '../docs/part.admin.doc';
 import { PartUtil } from '../utils/part.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
@@ -60,7 +60,7 @@ import {
 } from '../constants/part.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 
 @ApiTags('modules.admin.part')
 @Controller({
@@ -71,7 +71,7 @@ export class PartAdminController {
   constructor(
     private readonly partService: PartService,
     private readonly partUtil: PartUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @PartAdminListDoc()
@@ -93,13 +93,13 @@ export class PartAdminController {
     @PaginationQueryFilterInEnum('status', PART_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
     @Query('partType') partTypeId: string,
-    @Query('vehicleBrand') vehicleBrandId: string,
+    @Query('vehicleBrand') vehicleBrandId: string
   ): Promise<IResponsePagingReturn<PartListResponseDto>> {
     const { data, total } = await this.partService.getListOffset(
       pagination,
       status,
       partTypeId,
-      vehicleBrandId,
+      vehicleBrandId
     );
     const mapped = this.partUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -116,7 +116,7 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<PartGetFullResponseDto>> {
     const part = await this.partService.findOneWithRelationsById(id);
     const mapped = this.partUtil.mapGetPopulate(part);
@@ -134,10 +134,10 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: PartCreateRequestDto,
+    @Body() body: PartCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.partService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created.id } };
   }
 
   @PartAdminUpdateDoc()
@@ -151,8 +151,8 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: PartUpdateRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: PartUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.partService.update(id, body);
     return {};
@@ -169,8 +169,8 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: PartUpdateStatusRequestDto,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: PartUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.partService.updateStatus(id, body);
     return {};
@@ -187,9 +187,9 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<void>> {
-    await this.partService.softDelete(id);
+    await this.partService.delete(id);
     return {};
   }
 }

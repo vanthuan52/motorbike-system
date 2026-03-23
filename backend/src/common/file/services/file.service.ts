@@ -102,7 +102,7 @@ export class FileService implements IFileService {
    */
   extractMimeFromFilename(filename: string): string {
     return Mime.getType(
-      filename.slice(filename.lastIndexOf('.')),
+      filename.slice(filename.lastIndexOf('.'))
     ).toLowerCase();
   }
 

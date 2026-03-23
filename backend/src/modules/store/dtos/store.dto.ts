@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { ENUM_STORE_STATUS } from '../enums/store.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 
 export class StoreDto extends DatabaseDto {
@@ -49,11 +49,11 @@ export class StoreDto extends DatabaseDto {
   slug: string;
 
   @ApiProperty({
-    enum: ENUM_STORE_STATUS,
+    enum: EnumStoreStatus,
     required: true,
     description: 'Store status',
-    example: ENUM_STORE_STATUS.ACTIVE,
+    example: EnumStoreStatus.active,
   })
   @Expose()
-  status: ENUM_STORE_STATUS;
+  status: EnumStoreStatus;
 }

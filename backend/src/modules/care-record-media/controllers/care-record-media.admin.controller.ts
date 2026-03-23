@@ -86,7 +86,7 @@ export class CareRecordMediaAdminController {
     const filters: Record<string, any> = {};
 
     if (careRecordId) {
-      filters['careRecord._id'] = careRecordId;
+      filters['careRecordId'] = careRecordId;
     }
 
     const { data, total } = await this.careRecordMediaService.getListOffset(
@@ -130,7 +130,7 @@ export class CareRecordMediaAdminController {
     @Body() body: CareRecordMediaCreateRequestDto,
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careRecordMediaService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created._id } };
   }
 
   @CareRecordMediaAdminUpdateDoc()

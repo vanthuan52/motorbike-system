@@ -1,20 +1,20 @@
-export enum ENUM_VEHICLE_MODEL_STATUS {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+export enum EnumVehicleModelStatus {
+  active = 'active',
+  inactive = 'inactive',
 }
 
-export enum ENUM_VEHICLE_MODEL_TYPE {
-  UNKNOWN = 'unknown', // Không xác định
-  SCOOTER = 'scooter', // Xe tay ga
-  MANUAL_OR_CLUTCH = 'manual_or_clutch', // Xe số/xe côn
-  MANUAL = 'manual', // Xe số
-  CLUTCH = 'clutch', // Xe côn
-  ELECTRIC = 'electric', // Xe điện
+export enum EnumVehicleModelType {
+  unknown = 'unknown',
+  scooter = 'scooter',
+  manualOrClutch = 'manualOrClutch',
+  manual = 'manual',
+  clutch = 'clutch',
+  electric = 'electric',
 }
 
-export enum ENUM_VEHICLE_MODEL_FUEL_TYPE {
-  UNKNOWN = 'unknown', // Không xác định
-  GASOLINE = 'gasoline', // Xăng
-  HYBRID = 'hybrid', // Hybrid
-  ELECTRIC = 'electric', // Điện
+export enum EnumVehicleModelFuelType {
+  unknown = 'unknown',
+  gasoline = 'gasoline',
+  hybrid = 'hybrid',
+  electric = 'electric',
 }

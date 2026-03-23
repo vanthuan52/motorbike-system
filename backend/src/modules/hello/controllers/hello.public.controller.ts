@@ -1,10 +1,10 @@
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { HelloPublicDoc } from '../docs/hello.public.doc';
 import { Response } from '@/common/response/decorators/response.decorator';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
-import { HelloResponseDto } from '../dtos/response/hello.response.dto';
-import { HelloService } from '../services/hello.service';
+import { HelloService } from '@/modules/hello/services/hello.service';
+import { HelloResponseDto } from '@/modules/hello/dtos/response/hello.response.dto';
+import { HelloPublicDoc } from '@/modules/hello/docs/hello.public.doc';
 
 @ApiTags('modules.public.hello')
 @Controller({

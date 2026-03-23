@@ -1,28 +1,5 @@
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseDeleteOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
-  IDatabaseSoftDeleteOptions,
-  IDatabaseUpdateOptions,
-} from '@/common/database/interfaces/database.interface';
-import { UserDoc } from '../entities/user.entity';
-import { IUserDoc, IUserLogin } from './user.interface';
-import { UserCreateRequestDto } from '../dtos/request/user.create.request.dto';
-import { UserCreateShadowUserRequestDto } from '../dtos/request/user.create-shadow-user.request.dto';
-import { UserCreateBySignUpRequestDto } from '../dtos/request/user.create-by-sign-up.request.dto';
-import { UserUpdateRequestDto } from '../dtos/request/user.update.request.dto';
-import { UserUpdateStatusRequestDto } from '../dtos/request/user.update-status.request.dto';
-import { UserGeneratePhotoProfileRequestDto } from '../dtos/request/user.generate-photo-profile.request.dto';
-import { UserCreateSocialRequestDto } from '../dtos/request/user.create-social.request.dto';
 import { AwsS3PresignDto } from '@/common/aws/dtos/aws.s3-presign.dto';
-import {
-  IRequestApp,
-  IRequestLog,
-} from '@/common/request/interfaces/request.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IFile } from '@/common/file/interfaces/file.interface';
 import {
   IPaginationEqual,
@@ -30,161 +7,239 @@ import {
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IRequestApp,
+  IRequestLog,
+} from '@/common/request/interfaces/request.interface';
+import {
+  IResponseFileReturn,
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import { UserChangePasswordRequestDto } from '@/modules/user/dtos/request/user.change-password.request.dto';
+import {
+  UserCheckEmailRequestDto,
+  UserCheckUsernameRequestDto,
+} from '@/modules/user/dtos/request/user.check.request.dto';
+import { UserClaimUsernameRequestDto } from '@/modules/user/dtos/request/user.claim-username.request.dto';
+import { UserCreateSocialRequestDto } from '@/modules/user/dtos/request/user.create-social.request.dto';
+import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
+import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
+import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
+import { UserGeneratePhotoProfileRequestDto } from '@/modules/user/dtos/request/user.generate-photo-profile.request.dto';
+import { UserLoginRequestDto } from '@/modules/user/dtos/request/user.login.request.dto';
+import { UserAddMobileNumberRequestDto } from '@/modules/user/dtos/request/user.mobile-number.request.dto';
+import {
+  UserUpdateProfilePhotoRequestDto,
+  UserUpdateProfileRequestDto,
+} from '@/modules/user/dtos/request/user.profile.request.dto';
+import { UserSendEmailVerificationRequestDto } from '@/modules/user/dtos/request/user.send-email-verification.request.dto';
+import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
+import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
+import { UserVerifyEmailRequestDto } from '@/modules/user/dtos/request/user.verify-email.request.dto';
+import {
+  UserCheckEmailResponseDto,
+  UserCheckUsernameResponseDto,
+} from '@/modules/user/dtos/response/user.check.response.dto';
+import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
+import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
+import { UserLoginResponseDto } from '@/modules/user/dtos/response/user.login.response.dto';
+import { UserMobileNumberResponseDto } from '@/modules/user/dtos/user.mobile-number.dto';
+import { IUser } from '@/modules/user/interfaces/user.interface';
+import { UserTwoFactorSetupResponseDto } from '@/modules/user/dtos/response/user.two-factor-setup.response.dto';
+import { UserTwoFactorStatusResponseDto } from '@/modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserTwoFactorEnableRequestDto } from '@/modules/user/dtos/request/user.two-factor-enable.request.dto';
+import { UserTwoFactorEnableResponseDto } from '@/modules/user/dtos/response/user.two-factor-enable.response.dto';
+import { UserTwoFactorDisableRequestDto } from '@/modules/user/dtos/request/user.two-factor-disable.request.dto';
+import { UserLoginVerifyTwoFactorRequestDto } from '@/modules/user/dtos/request/user.login-verify-two-factor.request.dto';
+import { AuthTokenResponseDto } from '@/modules/auth/dtos/response/auth.token.response.dto';
+import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
+import { UserLoginSetupTwoFactorRequestDto } from '@/modules/user/dtos/request/user.login-setup-two-factor.request.dto';
+import { Prisma } from '@/generated/prisma-client';
 import { EnumUserLoginWith } from '../enums/user.enum';
-import { UserUpdateProfileRequestDto } from '../dtos/request/user.update-profile.request.dto';
 
 export interface IUserService {
-  getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-  ): Promise<{ data: IUserDoc[]; total: number }>;
-
-  getListCursor(
-    pagination: IPaginationQueryCursorParams,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-  ): Promise<{ data: IUserDoc[]; total?: number }>;
-
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc>;
-
-  findOneWithRole(
-    find?: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IUserDoc>;
-
-  findOneById(id: string, options?: IDatabaseOptions): Promise<UserDoc>;
-
-  findOneWithRoleById(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<IUserDoc>;
-
-  findOneByPhone(
-    phone: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc>;
-
-  findOneByEmail(
-    email: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<UserDoc>;
-
-  existByEmail(
-    email: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean>;
-
-  existByPhone(
-    phone: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean>;
-
-  create(data: UserCreateRequestDto): Promise<UserDoc>;
-
-  createByAdmin(
-    data: UserCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc>;
-
-  createUserByAdmin(
-    data: UserCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc>;
-
-  createShadowUser(
-    data: UserCreateShadowUserRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc>;
-
-  createBySignUp(
-    data: UserCreateBySignUpRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<UserDoc>;
-
-  createBySocial(
-    email: string,
-    roleId: string,
-    loginWith: EnumUserLoginWith,
-    socialData: UserCreateSocialRequestDto,
-    requestLog: IRequestLog,
-    options?: IDatabaseCreateOptions,
-  ): Promise<IUserDoc>;
-
-  findOrCreateUserBySocial(
-    email: string,
-    loginWith: EnumUserLoginWith,
-    socialData: UserCreateSocialRequestDto,
-    requestLog: IRequestLog,
-  ): Promise<IUserDoc>;
-
-  update(
-    id: string,
-    data: UserUpdateRequestDto,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void>;
-
-  updateProfile(
-    id: string,
-    data: UserUpdateProfileRequestDto,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void>;
-
-  updateStatus(
-    id: string,
-    data: UserUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
-
-  updatePassword(
-    id: string,
-    newPassword: string,
-    options?: IDatabaseSaveOptions,
-  ): Promise<void>;
-
-  updateVerify(
-    id: string,
-    isVerified: boolean,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void>;
-
-  delete(id: string, options?: IDatabaseDeleteOptions): Promise<void>;
-
-  softDelete(id: string, options?: IDatabaseSoftDeleteOptions): Promise<void>;
-
-  deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<void>;
-
-  generatePhotoProfilePresign(
-    id: string,
-    data: UserGeneratePhotoProfileRequestDto,
-  ): Promise<AwsS3PresignDto>;
-
-  confirmPhotoProfile(id: string, key: string): Promise<void>;
-
-  uploadPhotoProfile(
-    id: string,
-    file: IFile,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void>;
-
-  updateLogin(
-    id: string,
-    { loginFrom, loginWith, sessionId, expiredAt, jti }: IUserLogin,
-    { ipAddress, userAgent }: IRequestLog,
-    options?: IDatabaseUpdateOptions,
-  ): Promise<void>;
-
   validateUserGuard(
     request: IRequestApp,
-    requiredVerified: boolean,
-  ): Promise<UserDoc>;
-
-  incrementUserPasswordAttempt(id: string): Promise<void>;
-  resetUserPasswordAttempt(id: string): Promise<void>;
+    requiredVerified: boolean
+  ): Promise<IUser>;
+  getListOffsetByAdmin(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.UserSelect,
+      Prisma.UserWhereInput
+    >,
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+    country?: Record<string, IPaginationEqual>
+  ): Promise<IResponsePagingReturn<UserListResponseDto>>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.UserSelect,
+      Prisma.UserWhereInput
+    >,
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+    country?: Record<string, IPaginationEqual>
+  ): Promise<IResponsePagingReturn<UserListResponseDto>>;
+  getOne(id: string): Promise<IResponseReturn<UserProfileResponseDto>>;
+  createByAdmin(
+    { countryId, email, name, roleId }: UserCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<IResponseReturn<DatabaseIdDto>>;
+  updateStatusByAdmin(
+    userId: string,
+    { status }: UserUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<void>>;
+  checkUsername({
+    username,
+  }: UserCheckUsernameRequestDto): Promise<
+    IResponseReturn<UserCheckUsernameResponseDto>
+  >;
+  checkEmail({
+    email,
+  }: UserCheckEmailRequestDto): Promise<
+    IResponseReturn<UserCheckEmailResponseDto>
+  >;
+  getProfile(userId: string): Promise<IResponseReturn<UserProfileResponseDto>>;
+  updateProfile(
+    userId: string,
+    { countryId, ...data }: UserUpdateProfileRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  generatePhotoProfilePresign(
+    userId: string,
+    { extension, size }: UserGeneratePhotoProfileRequestDto
+  ): Promise<IResponseReturn<AwsS3PresignDto>>;
+  updatePhotoProfile(
+    userId: string,
+    { photoKey, size }: UserUpdateProfilePhotoRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  deleteSelf(
+    userId: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  addMobileNumber(
+    userId: string,
+    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+  updateMobileNumber(
+    userId: string,
+    mobileNumberId: string,
+    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+  deleteMobileNumber(
+    userId: string,
+    mobileNumberId: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+  claimUsername(
+    userId: string,
+    { username }: UserClaimUsernameRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  uploadPhotoProfile(
+    userId: string,
+    file: IFile,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  updatePasswordByAdmin(
+    userId: string,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<void>>;
+  changePassword(
+    user: IUser,
+    { newPassword, oldPassword }: UserChangePasswordRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  loginCredential(
+    { email, password, from }: UserLoginRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserLoginResponseDto>>;
+  loginWithSocial(
+    email: string,
+    loginWith: EnumUserLoginWith,
+    { from, device, ...others }: UserCreateSocialRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserLoginResponseDto>>;
+  refresh(
+    user: IUser,
+    refreshToken: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<AuthTokenResponseDto>>;
+  signUp(
+    { countryId, email, password, ...others }: UserSignUpRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  verifyEmail(
+    { token }: UserVerifyEmailRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  sendVerificationEmail(
+    { email }: UserSendEmailVerificationRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  forgotPassword(
+    { email }: UserForgotPasswordRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  resetPassword(
+    { newPassword, token }: UserForgotPasswordResetRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  loginVerifyTwoFactor(
+    {
+      challengeToken,
+      code,
+      backupCode,
+      method,
+    }: UserLoginVerifyTwoFactorRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<AuthTokenResponseDto>>;
+  loginSetupTwoFactor(
+    { code, challengeToken }: UserLoginSetupTwoFactorRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>>;
+  getTwoFactorStatus(
+    user: IUser
+  ): Promise<IResponseReturn<UserTwoFactorStatusResponseDto>>;
+  setupTwoFactor(
+    user: IUser,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorSetupResponseDto>>;
+  enableTwoFactor(
+    user: IUser,
+    { code }: UserTwoFactorEnableRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>>;
+  disableTwoFactor(
+    user: IUser,
+    { code, backupCode, method }: UserTwoFactorDisableRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  regenerateTwoFactorBackupCodes(
+    user: IUser,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>>;
+  resetTwoFactorByAdmin(
+    userId: string,
+    updatedBy: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  importByAdmin(
+    data: UserImportRequestDto[],
+    createdBy: string,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>>;
+  exportByAdmin(
+    status?: Record<string, IPaginationIn>,
+    role?: Record<string, IPaginationEqual>,
+    country?: Record<string, IPaginationEqual>
+  ): Promise<IResponseFileReturn>;
 }

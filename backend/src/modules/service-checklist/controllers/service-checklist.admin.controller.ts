@@ -31,7 +31,6 @@ import {
   ServiceChecklistAdminParamsIdDoc,
   ServiceChecklistAdminUpdateDoc,
 } from '../docs/service-checklist.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
@@ -46,6 +45,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
 import { ServiceChecklistUtil } from '../utils/service-checklist.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-checklist')
 @Controller({
@@ -56,7 +56,7 @@ export class ServiceChecklistAdminController {
   constructor(
     private readonly serviceChecklistService: ServiceChecklistService,
     private readonly serviceChecklistUtil: ServiceChecklistUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @ServiceChecklistAdminListDoc()
@@ -70,24 +70,27 @@ export class ServiceChecklistAdminController {
       availableSearch: SERVICE_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
     @Query('careArea', RequestOptionalParseUUIDPipe)
     careAreaId: string,
-    @Query('vehicleType') vehicleType: ENUM_VEHICLE_MODEL_TYPE,
+    @Query('vehicleType') vehicleType: ENUM_VEHICLE_MODEL_TYPE
   ): Promise<IResponsePagingReturn<ServiceChecklistListResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: Prisma.ServiceChecklistWhereInput = {};
 
     if (careAreaId) {
-      filters['careArea'] = careAreaId;
+      filters.careAreaId = careAreaId;
     }
 
     if (vehicleType) {
-      filters['vehicleType'] = { $in: [vehicleType] };
+      filters.vehicleType = { has: vehicleType };
     }
 
     const { data, total } = await this.serviceChecklistService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.serviceChecklistUtil.mapList(data);
     return this.paginationUtil.formatOffset(mapped, total, pagination);
@@ -100,7 +103,7 @@ export class ServiceChecklistAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
   ): Promise<IResponseReturn<ServiceChecklistDto>> {
     const serviceChecklist = await this.serviceChecklistService.findOneById(id);
     return {
@@ -115,10 +118,10 @@ export class ServiceChecklistAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: ServiceChecklistCreateRequestDto,
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    @Body() body: ServiceChecklistCreateRequestDto
+  ): Promise<IResponseReturn<{ id: string }>> {
     const created = await this.serviceChecklistService.create(body);
-    return { data: { _id: created._id } };
+    return { data: created };
   }
 
   @ServiceChecklistAdminUpdateDoc()
@@ -129,7 +132,7 @@ export class ServiceChecklistAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: ServiceChecklistUpdateRequestDto,
+    @Body() body: ServiceChecklistUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.serviceChecklistService.update(id, body);
     return {};
@@ -142,7 +145,7 @@ export class ServiceChecklistAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
   ): Promise<IResponseReturn<void>> {
     await this.serviceChecklistService.delete(id);
     return {};

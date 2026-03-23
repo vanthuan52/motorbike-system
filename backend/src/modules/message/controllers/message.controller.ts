@@ -20,12 +20,12 @@ import { IResponsePagingReturn } from '@/common/response/interfaces/response.int
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
-import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { MessageGetResponseDto } from '../dtos/response/message-response.dto';
-import { MessageDoc } from '../entities/message.entity';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { MessageUpdateStatusRequestDto } from '../dtos/request/message-update-status.request.dto';
-import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.num';
+import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
+import { Message, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.chat')
 @Controller({
@@ -42,28 +42,31 @@ export class MessageSharedController {
   @Get('/:conversationId/messages')
   async listMessages(
     @PaginationOffsetQuery({})
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    @Param('conversationId', OptionalParseUUIDPipe)
-    conversationId: string,
+    {
+      limit,
+      skip,
+      where,
+      orderBy,
+    }: IPaginationQueryOffsetParams<
+      Prisma.MessageSelect,
+      Prisma.MessageWhereInput
+    >,
+    @Param('conversationId', RequestOptionalParseObjectIdPipe)
+    conversationId: string
   ): Promise<IResponsePagingReturn<MessageGetResponseDto>> {
-    const find: Record<string, any> = {
+    const where_query: Prisma.MessageWhereInput = {
       ...where,
     };
 
-    if (conversationId) find['conversation'] = conversationId;
+    if (conversationId) {
+      where_query.conversationId = conversationId;
+    }
 
-    const messages = await this.messageService.findAllMessagesWithPopulate(
-      find,
-      {
-        paging: {
-          limit,
-          offset: skip,
-        },
-        order: orderBy,
-      },
-    );
+    const messages =
+      await this.messageService.findAllMessagesWithPopulate(where_query);
 
-    const total: number = await this.messageService.getTotalWithPopulate(find);
+    const total: number =
+      await this.messageService.getTotalWithPopulate(where_query);
     const totalPage: number = Math.ceil(total / limit);
     const mapped = this.messageService.mapListMessage(messages);
 
@@ -92,16 +95,16 @@ export class MessageSharedController {
   @Put('/:messageId/status')
   async updateStatusMessage(
     @Param('messageId', RequestRequiredPipe)
-    message: MessageDoc,
+    messageId: string,
     @AuthJwtPayload('user') updatedBy: string,
-    @Body() { status }: MessageUpdateStatusRequestDto,
+    @Body() { status }: MessageUpdateStatusRequestDto
   ): Promise<void> {
     try {
-      await this.messageService.updateStatusMessage(
-        message,
-        { status },
-        { actionBy: updatedBy },
-      );
+      const message = await this.messageService.findOneById(messageId);
+      if (!message) {
+        throw new Error('Message not found');
+      }
+      await this.messageService.updateStatusMessage(message, { status });
     } catch (err) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,

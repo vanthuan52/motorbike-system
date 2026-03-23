@@ -1,8 +1,8 @@
-export enum ENUM_STORE_STATUS_CODE_ERROR {
-  NOT_FOUND = 5400,
-  EXIST = 5401,
-  IS_ACTIVE = 5402,
-  USED = 5403,
-  INACTIVE_FORBIDDEN = 5404,
-  SLUG_EXISTED = 5405,
+export enum EnumStoreStatusCodeError {
+  notFound = 5400,
+  exist = 5401,
+  isActive = 5402,
+  used = 5403,
+  inactiveForbidden = 5404,
+  slugExisted = 5405,
 }

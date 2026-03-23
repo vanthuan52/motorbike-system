@@ -26,12 +26,12 @@ import { PaginationCursorPipe } from '@/common/pagination/pipes/pagination.curso
  * @returns {ParameterDecorator} Parameter decorator that applies pagination pipes for database queries
  */
 export function PaginationOffsetQuery(
-  options?: IPaginationQueryOffsetOptions,
+  options?: IPaginationQueryOffsetOptions
 ): ParameterDecorator {
   return Query(
     PaginationSearchPipe(options?.availableSearch),
     PaginationOffsetPipe(options?.defaultPerPage),
-    PaginationOrderPipe(options?.availableOrderBy),
+    PaginationOrderPipe(options?.availableOrderBy)
   );
 }
 
@@ -42,12 +42,12 @@ export function PaginationOffsetQuery(
  * @returns {ParameterDecorator} Parameter decorator that applies pagination pipes for cursor-based database queries
  */
 export function PaginationCursorQuery(
-  options?: IPaginationQueryCursorOptions,
+  options?: IPaginationQueryCursorOptions
 ): ParameterDecorator {
   return Query(
     PaginationSearchPipe(options?.availableSearch),
     PaginationCursorPipe(options?.defaultPerPage, options?.cursorField),
-    PaginationOrderPipe(options?.availableOrderBy),
+    PaginationOrderPipe(options?.availableOrderBy)
   );
 }
 
@@ -63,7 +63,7 @@ export function PaginationCursorQuery(
 export function PaginationQueryFilterInEnum<T>(
   field: string,
   defaultEnum: T[],
-  options?: IPaginationQueryFilterEnumOptions,
+  options?: IPaginationQueryFilterEnumOptions
 ): ParameterDecorator {
   return Query(field, PaginationQueryFilterInEnumPipe(defaultEnum, options));
 }
@@ -80,7 +80,7 @@ export function PaginationQueryFilterInEnum<T>(
 export function PaginationQueryFilterNinEnum<T>(
   field: string,
   defaultEnum: T[],
-  options?: IPaginationQueryFilterEnumOptions,
+  options?: IPaginationQueryFilterEnumOptions
 ): ParameterDecorator {
   return Query(field, PaginationQueryFilterNinEnumPipe(defaultEnum, options));
 }
@@ -94,14 +94,14 @@ export function PaginationQueryFilterNinEnum<T>(
  */
 export function PaginationQueryFilterEqualBoolean(
   field: string,
-  options?: IPaginationQueryFilterOptions,
+  options?: IPaginationQueryFilterOptions
 ): ParameterDecorator {
   return Query(
     field,
     PaginationQueryFilterEqualPipe({
       ...options,
       isBoolean: true,
-    }),
+    })
   );
 }
 
@@ -114,14 +114,14 @@ export function PaginationQueryFilterEqualBoolean(
  */
 export function PaginationQueryFilterEqualNumber(
   field: string,
-  options?: IPaginationQueryFilterOptions,
+  options?: IPaginationQueryFilterOptions
 ): ParameterDecorator {
   return Query(
     field,
     PaginationQueryFilterEqualPipe({
       ...options,
       isNumber: true,
-    }),
+    })
   );
 }
 
@@ -134,7 +134,7 @@ export function PaginationQueryFilterEqualNumber(
  */
 export function PaginationQueryFilterEqualString(
   field: string,
-  options?: IPaginationQueryFilterEqualOptions,
+  options?: IPaginationQueryFilterEqualOptions
 ): ParameterDecorator {
   return Query(field, PaginationQueryFilterEqualPipe(options));
 }
@@ -148,7 +148,7 @@ export function PaginationQueryFilterEqualString(
  */
 export function PaginationQueryFilterNotEqual(
   field: string,
-  options?: IPaginationQueryFilterEqualOptions,
+  options?: IPaginationQueryFilterEqualOptions
 ): ParameterDecorator {
   return Query(field, PaginationQueryFilterNotEqualPipe(options));
 }
@@ -162,7 +162,7 @@ export function PaginationQueryFilterNotEqual(
  */
 export function PaginationQueryFilterDate(
   field: string,
-  options?: IPaginationQueryFilterDateOptions,
+  options?: IPaginationQueryFilterDateOptions
 ): ParameterDecorator {
   return Query(field, PaginationQueryFilterDatePipe(options));
 }

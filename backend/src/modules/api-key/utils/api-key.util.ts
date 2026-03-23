@@ -1,21 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { EnumAppEnvironment } from '@/app/enums/app.enum';
 import { ApiKeyDto } from '@/modules/api-key/dtos/api-key.dto';
-import {
-  IApiKeyDoc,
-  IApiKeyEntity,
-  IApiKeyGenerateCredential,
-} from '@/modules/api-key/interfaces/api-key.interface';
+import { IApiKeyGenerateCredential } from '@/modules/api-key/interfaces/api-key.interface';
 import { ApiKeyCreateResponseDto } from '@/modules/api-key/dtos/response/api-key.create.response.dto';
+import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { CacheMainProvider } from '@/common/cache/constants/cache.constant';
-import { ApiKeyDoc, ApiKeyEntity } from '../entities/api-key.entity';
-import { EnumApiKeyType } from '../enums/api-key.enum';
+import { ApiKey, EnumApiKeyType } from '@/generated/prisma-client';
 
 @Injectable()
 export class ApiKeyUtil {
@@ -26,48 +21,40 @@ export class ApiKeyUtil {
   constructor(
     @Inject(CacheMainProvider) private cacheManager: Cache,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
     this.cachePrefixKey = this.configService.get<string>(
-      'auth.xApiKey.cachePrefixKey',
+      'auth.xApiKey.cachePrefixKey'
     );
     this.env = this.configService.get<EnumAppEnvironment>('app.env');
     this.header = this.configService.get<string>('auth.xApiKey.header');
   }
 
-  mapList(apiKeys: IApiKeyDoc[] | IApiKeyEntity[] | ApiKeyDoc[]): ApiKeyDto[] {
-    return plainToInstance(
-      ApiKeyDto,
-      apiKeys.map((p: IApiKeyDoc | IApiKeyEntity | ApiKeyDoc) =>
-        p instanceof Document ? p.toObject() : p,
-      ),
-    );
+  mapList(apiKeys: ApiKey[]): ApiKeyDto[] {
+    return plainToInstance(ApiKeyDto, apiKeys);
   }
 
-  mapOne(apiKey: IApiKeyDoc | IApiKeyEntity | ApiKeyDoc): ApiKeyDto {
-    return plainToInstance(
-      ApiKeyDto,
-      apiKey instanceof Document ? apiKey.toObject() : apiKey,
-    );
+  mapOne(apiKey: ApiKey): ApiKeyDto {
+    return plainToInstance(ApiKeyDto, apiKey);
   }
 
-  mapCreate(apiKey: ApiKeyDoc, secret: string): ApiKeyCreateResponseDto {
+  mapCreate(apiKey: ApiKey, secret: string): ApiKeyCreateResponseDto {
     return plainToInstance(ApiKeyCreateResponseDto, { ...apiKey, secret });
   }
 
-  async getCacheByKey(key: string): Promise<ApiKeyDoc | null> {
+  async getCacheByKey(key: string): Promise<ApiKey | null> {
     const cacheKey = `${this.cachePrefixKey}:${key}`;
-    const cachedApiKey = await this.cacheManager.get<string>(cacheKey);
+    const cachedApiKey = await this.cacheManager.get<ApiKey>(cacheKey);
     if (cachedApiKey) {
-      return JSON.parse(cachedApiKey) as ApiKeyDoc;
+      return cachedApiKey;
     }
 
     return null;
   }
 
-  async setCacheByKey(key: string, apiKey: ApiKeyEntity): Promise<void> {
+  async setCacheByKey(key: string, apiKey: ApiKey): Promise<void> {
     const cacheKey = `${this.cachePrefixKey}:${key}`;
-    await this.cacheManager.set(cacheKey, JSON.stringify(apiKey));
+    await this.cacheManager.set(cacheKey, apiKey);
 
     return;
   }
@@ -95,7 +82,7 @@ export class ApiKeyUtil {
   validateCredential(
     key: string,
     secret: string,
-    apiKey: { hash: string },
+    apiKey: { hash: string }
   ): boolean {
     if (!apiKey) {
       return false;
@@ -107,13 +94,13 @@ export class ApiKeyUtil {
 
   isExpired(
     apiKey: {
-      startDate?: Date;
-      endDate?: Date;
+      startAt?: Date;
+      endAt?: Date;
     },
-    currentDate: Date,
+    currentDate: Date
   ): boolean {
-    if (apiKey.startDate && apiKey.endDate) {
-      return currentDate > apiKey.endDate;
+    if (apiKey.startAt && apiKey.endAt) {
+      return currentDate > apiKey.endAt;
     }
 
     return false;
@@ -121,13 +108,13 @@ export class ApiKeyUtil {
 
   isNotYetActive(
     apiKey: {
-      startDate?: Date;
-      endDate?: Date;
+      startAt?: Date;
+      endAt?: Date;
     },
-    currentDate: Date,
+    currentDate: Date
   ): boolean {
-    if (apiKey.startDate && apiKey.endDate) {
-      return currentDate < apiKey.startDate;
+    if (apiKey.startAt && apiKey.endAt) {
+      return currentDate < apiKey.startAt;
     }
 
     return false;
@@ -139,11 +126,11 @@ export class ApiKeyUtil {
 
   isValid(
     apiKey: {
-      startDate?: Date;
-      endDate?: Date;
+      startAt?: Date;
+      endAt?: Date;
       isActive: boolean;
     },
-    currentDate: Date,
+    currentDate: Date
   ): boolean {
     return (
       apiKey &&
@@ -163,7 +150,7 @@ export class ApiKeyUtil {
 
   validateType(
     apiKey: { type: EnumApiKeyType },
-    allowed: EnumApiKeyType[],
+    allowed: EnumApiKeyType[]
   ): boolean {
     return apiKey && allowed.includes(apiKey.type);
   }
@@ -174,5 +161,14 @@ export class ApiKeyUtil {
     const hash: string = this.createHash(key, secret);
 
     return { key, secret, hash };
+  }
+
+  mapActivityLogMetadata(apiKey: ApiKey): IActivityLogMetadata {
+    return {
+      apiKeyId: apiKey.id,
+      apiKeyName: apiKey.name,
+      apiKeyType: apiKey.type,
+      timestamp: apiKey.updatedAt ?? apiKey.createdAt,
+    };
   }
 }

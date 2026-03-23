@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsIn,
 } from 'class-validator';
-import { ENUM_VEHICLE_BRAND_STATUS } from '../../enums/vehicle-brand.enum';
+import { EnumVehicleBrandStatus } from '../../enums/vehicle-brand.enum';
 
 export class VehicleBrandCreateRequestDto {
   @ApiProperty({
@@ -62,16 +62,16 @@ export class VehicleBrandCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_VEHICLE_BRAND_STATUS))
+  @IsIn(Object.values(EnumVehicleBrandStatus))
   @ApiProperty({
-    example: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
+    example: EnumVehicleBrandStatus.active,
     description: 'Trạng thái hoạt động (active/inactive)',
     required: false,
-    enum: ENUM_VEHICLE_BRAND_STATUS,
-    default: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
+    enum: EnumVehicleBrandStatus,
+    default: EnumVehicleBrandStatus.active,
   })
-  status?: ENUM_VEHICLE_BRAND_STATUS;
+  status?: EnumVehicleBrandStatus;
 }

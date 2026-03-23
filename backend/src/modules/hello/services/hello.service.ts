@@ -11,7 +11,7 @@ import { IHelloService } from '@/modules/hello/interfaces/hello.service.interfac
 export class HelloService implements IHelloService {
   constructor(
     private readonly helperService: HelperService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   async hello(): Promise<IResponseReturn<HelloResponseDto>> {
@@ -27,55 +27,55 @@ export class HelloService implements IHelloService {
 
     // auth
     const authPasswordAttempt = this.configService.get<boolean>(
-      'auth.password.attempt',
+      'auth.password.attempt'
     )!;
     const authPasswordMaxAttempt = this.configService.get<number>(
-      'auth.password.maxAttempt',
+      'auth.password.maxAttempt'
     )!;
     const authPasswordExpiredInSeconds = this.configService.get<number>(
-      'auth.password.expiredInSeconds',
+      'auth.password.expiredInSeconds'
     )!;
     const authPasswordExpiredTemporaryInSeconds =
       this.configService.get<number>(
-        'auth.password.expiredTemporaryInSeconds',
+        'auth.password.expiredTemporaryInSeconds'
       )!;
     const authPasswordPeriodInSeconds = this.configService.get<number>(
-      'auth.password.periodInSeconds',
+      'auth.password.periodInSeconds'
     )!;
 
     // message
     const messageAvailableLanguage: EnumMessageLanguage[] =
       this.configService.get<EnumMessageLanguage[]>(
-        'message.availableLanguage',
+        'message.availableLanguage'
       )!;
     const messageDefaultLanguage: EnumMessageLanguage =
       this.configService.get<EnumMessageLanguage>('message.language')!;
 
     // request
     const requestTimeoutInMs = this.configService.get<number>(
-      'request.timeoutInMs',
+      'request.timeoutInMs'
     )!;
     const requestBodyJsonLimitInBytes = this.configService.get<number>(
-      'request.body.json.limitInBytes',
+      'request.body.json.limitInBytes'
     )!;
     const requestBodyRawLimitInBytes = this.configService.get<number>(
-      'request.body.raw.limitInBytes',
+      'request.body.raw.limitInBytes'
     )!;
     const requestBodyTextLimitInBytes = this.configService.get<number>(
-      'request.body.text.limitInBytes',
+      'request.body.text.limitInBytes'
     )!;
     const requestBodyUrlencodedLimitInBytes = this.configService.get<number>(
-      'request.body.urlencoded.limitInBytes',
+      'request.body.urlencoded.limitInBytes'
     )!;
     const requestBodyApplicationOctetStreamLimitInBytes =
       this.configService.get<number>(
-        'request.body.applicationOctetStream.limitInBytes',
+        'request.body.applicationOctetStream.limitInBytes'
       )!;
     const requestThrottleTtlInMs = this.configService.get<number>(
-      'request.throttle.ttlInMs',
+      'request.throttle.ttlInMs'
     )!;
     const requestThrottleLimit = this.configService.get<number>(
-      'request.throttle.limit',
+      'request.throttle.limit'
     )!;
 
     return {

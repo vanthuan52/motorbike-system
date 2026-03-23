@@ -8,5 +8,5 @@ export default registerAs(
   'response',
   (): IConfigRequest => ({
     cachePrefix: 'apis',
-  }),
+  })
 );

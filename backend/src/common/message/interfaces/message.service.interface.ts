@@ -12,10 +12,10 @@ export interface IMessageService {
   setMessage(path: string, options?: IMessageSetOptions): string;
   setValidationMessage(
     errors: ValidationError[],
-    options?: IMessageErrorOptions,
+    options?: IMessageErrorOptions
   ): IMessageValidationError[];
   setValidationImportMessage(
     errors: IMessageValidationImportErrorParam[],
-    options?: IMessageErrorOptions,
+    options?: IMessageErrorOptions
   ): IMessageValidationImportError[];
 }

@@ -1,33 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
 import slugify from 'slugify';
-import {
-  IPartTypeDoc,
-  IPartTypeEntity,
-} from '../interfaces/part-type.interface';
-import { PartTypeDoc } from '../entities/part-type.entity';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
 import { PartTypeDto } from '../dtos/part-type.dto';
+import { PartType } from '@/generated/prisma-client';
 
 @Injectable()
 export class PartTypeUtil {
-  mapList(
-    partTypes: IPartTypeDoc[] | IPartTypeEntity[] | PartTypeDoc[],
-  ): PartTypeListResponseDto[] {
-    return plainToInstance(
-      PartTypeListResponseDto,
-      partTypes.map((p: IPartTypeDoc | IPartTypeEntity | PartTypeDoc) =>
-        p instanceof Document ? p.toObject() : p,
-      ),
-    );
+  mapList(partTypes: PartType[]): PartTypeListResponseDto[] {
+    return plainToInstance(PartTypeListResponseDto, partTypes);
   }
 
-  mapOne(partType: IPartTypeDoc | IPartTypeEntity | PartTypeDoc): PartTypeDto {
-    return plainToInstance(
-      PartTypeDto,
-      partType instanceof Document ? partType.toObject() : partType,
-    );
+  mapOne(partType: PartType): PartTypeDto {
+    return plainToInstance(PartTypeDto, partType);
   }
 
   createSlug(name: string): string {

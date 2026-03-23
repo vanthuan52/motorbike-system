@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { RouterModule } from '../router/router.module';
-import { CommonModule } from '@/common/common.module';
 import { APP_FILTER } from '@nestjs/core';
-import { AppGeneralFilter } from './filters/app.general.filter';
-import { AppHttpFilter } from './filters/app.http.filter';
-import { AppValidationFilter } from './filters/app.validation.filter';
+import { CommonModule } from '@/common/common.module';
+import { RouterModule } from '@/router/router.module';
+import { AppGeneralFilter } from '@/app/filters/app.general.filter';
+import { AppHttpFilter } from '@/app/filters/app.http.filter';
+import { AppValidationFilter } from '@/app/filters/app.validation.filter';
+import { AppValidationImportFilter } from '@/app/filters/app.validation-import.filter';
 import { QueueModule } from '@/queues/queue.module';
-import { AppValidationImportFilter } from './filters/app.validation-import.filter';
 
 /**
  * Root application module that serves as the entry point for the NestJS application.

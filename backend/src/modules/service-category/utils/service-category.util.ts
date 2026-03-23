@@ -1,50 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
-import { ServiceCategoryDoc } from '../entities/service-category.entity';
-import {
-  IServiceCategoryDoc,
-  IServiceCategoryEntity,
-} from '../interfaces/service-category.interface';
+import { ServiceCategory } from '@/generated/prisma-client';
+import slugify from 'slugify';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
 import { ServiceCategoryDto } from '../dtos/service-category.dto';
 
 @Injectable()
 export class ServiceCategoryUtil {
   mapList(
-    serviceCategories:
-      | ServiceCategoryDoc[]
-      | IServiceCategoryEntity[]
-      | IServiceCategoryDoc[],
+    serviceCategories: ServiceCategory[]
   ): ServiceCategoryListResponseDto[] {
-    return plainToInstance(
-      ServiceCategoryListResponseDto,
-      serviceCategories.map((c: ServiceCategoryDoc | IServiceCategoryEntity) =>
-        c instanceof Document ? c.toObject() : c,
-      ),
-    );
+    return plainToInstance(ServiceCategoryListResponseDto, serviceCategories);
   }
 
-  mapGet(
-    serviceCategory:
-      | ServiceCategoryDoc
-      | IServiceCategoryEntity
-      | IServiceCategoryDoc,
-  ): ServiceCategoryDto {
-    return plainToInstance(
-      ServiceCategoryDto,
-      serviceCategory instanceof Document
-        ? serviceCategory.toObject()
-        : serviceCategory,
-    );
+  mapGet(serviceCategory: ServiceCategory): ServiceCategoryDto {
+    return plainToInstance(ServiceCategoryDto, serviceCategory);
   }
 
   createSlug(name: string): string {
-    return name
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '');
+    return slugify(name, {
+      lower: true,
+      strict: true,
+      locale: 'vi',
+    });
   }
 }

@@ -8,9 +8,9 @@ import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import {
-  ENUM_VEHICLE_MODEL_FUEL_TYPE,
-  ENUM_VEHICLE_MODEL_STATUS,
-  ENUM_VEHICLE_MODEL_TYPE,
+  EnumVehicleModelFuelType,
+  EnumVehicleModelStatus,
+  EnumVehicleModelType,
 } from '../enums/vehicle-model.enum';
 
 export class VehicleModelDto extends DatabaseDto {
@@ -36,30 +36,30 @@ export class VehicleModelDto extends DatabaseDto {
 
   @ApiPropertyOptional({ default: 0 })
   @Expose()
-  order?: number;
+  orderBy?: number;
 
   @ApiProperty({
-    example: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
-    enum: () => ENUM_VEHICLE_MODEL_STATUS,
+    example: EnumVehicleModelStatus.active,
+    enum: EnumVehicleModelStatus,
   })
   @Expose()
-  status: ENUM_VEHICLE_MODEL_STATUS;
+  status: EnumVehicleModelStatus;
 
   @ApiPropertyOptional({
-    example: ENUM_VEHICLE_MODEL_TYPE.UNKNOWN,
+    example: EnumVehicleModelType.unknown,
     description: 'Phân loại kiểu dáng của xe',
-    enum: () => ENUM_VEHICLE_MODEL_TYPE,
+    enum: EnumVehicleModelType,
   })
   @Expose()
-  type?: ENUM_VEHICLE_MODEL_TYPE;
+  type?: EnumVehicleModelType;
 
   @ApiPropertyOptional({
-    example: ENUM_VEHICLE_MODEL_FUEL_TYPE.UNKNOWN,
+    example: EnumVehicleModelFuelType.unknown,
     description: 'Phân loại nhiên liệu của xe',
-    enum: () => ENUM_VEHICLE_MODEL_FUEL_TYPE,
+    enum: EnumVehicleModelFuelType,
   })
   @Expose()
-  fuelType?: ENUM_VEHICLE_MODEL_FUEL_TYPE;
+  fuelType?: EnumVehicleModelFuelType;
 
   @ApiPropertyOptional({
     example: 2020,

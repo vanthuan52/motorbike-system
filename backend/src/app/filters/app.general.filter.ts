@@ -28,7 +28,7 @@ export class AppGeneralFilter implements ExceptionFilter {
   constructor(
     private readonly messageService: MessageService,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {}
 
   /**

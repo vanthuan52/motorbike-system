@@ -32,7 +32,7 @@ import {
   CareAreaAdminUpdateDoc,
   CareAreaAdminDeleteDoc,
 } from '../docs/care-area.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -41,23 +41,17 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
 } from '../constants/care-area.list.constant';
-import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { CareAreaWithServiceChecklistResponseDto } from '../dtos/response/care-area.with-service-checklist.response.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-
 import { CareAreaUtil } from '../utils/care-area.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { ServiceChecklistUtil } from '@/modules/service-checklist/utils/service-checklist.util';
@@ -72,7 +66,7 @@ export class CareAreaAdminController {
     private readonly careAreaService: CareAreaService,
     private readonly careAreaUtil: CareAreaUtil,
     private readonly paginationUtil: PaginationUtil,
-    private readonly serviceChecklistUtil: ServiceChecklistUtil,
+    private readonly serviceChecklistUtil: ServiceChecklistUtil
   ) {}
 
   @CareAreaAdminListDoc()
@@ -90,7 +84,7 @@ export class CareAreaAdminController {
       availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams
   ): Promise<IResponsePagingReturn<CareAreaListResponseDto>> {
     const { data, total } =
       await this.careAreaService.getListOffset(pagination);
@@ -109,7 +103,7 @@ export class CareAreaAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe) id: string
   ): Promise<IResponseReturn<CareAreaDto>> {
     const careArea = await this.careAreaService.findOneById(id);
     const mapped = this.careAreaUtil.mapGet(careArea);
@@ -127,10 +121,10 @@ export class CareAreaAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: CareAreaCreateRequestDto,
+    @Body() body: CareAreaCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careAreaService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created.id } };
   }
 
   @CareAreaWithServiceChecklistDoc()
@@ -149,20 +143,20 @@ export class CareAreaAdminController {
       availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('vehicleType') vehicleType?: ENUM_VEHICLE_MODEL_TYPE,
+    @Query('vehicleType') vehicleType?: EnumVehicleModelType
   ): Promise<IResponsePagingReturn<CareAreaWithServiceChecklistResponseDto>> {
     const { data, total, checklistMap } =
       await this.careAreaService.getListOffsetWithServiceChecklists(
         pagination,
-        vehicleType,
+        vehicleType
       );
 
-    const mapped = data.map((careArea) => {
-      const checklists = checklistMap.get(careArea._id.toString()) || [];
+    const mapped = data.map(careArea => {
+      const checklists = checklistMap.get(careArea.id) || [];
       const mappedChecklists = this.serviceChecklistUtil.mapList(checklists);
       return this.careAreaUtil.mapWithServiceChecklists(
         careArea,
-        mappedChecklists,
+        mappedChecklists
       );
     });
 
@@ -181,7 +175,7 @@ export class CareAreaAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe) id: string,
-    @Body() body: CareAreaUpdateRequestDto,
+    @Body() body: CareAreaUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.careAreaService.update(id, body);
     return {};
@@ -198,7 +192,7 @@ export class CareAreaAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe) id: string
   ): Promise<IResponseReturn<void>> {
     await this.careAreaService.delete(id);
     return {};

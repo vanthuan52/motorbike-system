@@ -29,7 +29,7 @@ export class AuthJwtRefreshGuard extends AuthGuard(AuthJwtRefreshGuardKey) {
   handleRequest<T = IAuthJwtRefreshTokenPayload>(
     err: Error,
     user: IAuthJwtRefreshTokenPayload,
-    info: Error,
+    info: Error
   ): T {
     return this.authService.validateJwtRefreshGuard(err, user, info) as T;
   }

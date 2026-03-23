@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { StreamingBlobTypes } from '@smithy/types';
 import { Exclude } from 'class-transformer';
-import { EnumAwsS3Accessibility } from '../enums/aws.enum';
+import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 
 /**
  * DTO for AWS S3 object information.

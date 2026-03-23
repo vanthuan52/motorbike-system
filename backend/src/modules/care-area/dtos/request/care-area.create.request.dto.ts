@@ -32,5 +32,5 @@ export class CareAreaCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 }

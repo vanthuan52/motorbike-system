@@ -4,5 +4,5 @@ import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.r
 
 export class UserCreateSocialRequestDto extends IntersectionType(
   OmitType(UserSignUpRequestDto, ['email', 'from', 'password'] as const),
-  PickType(UserLoginRequestDto, ['from']),
+  PickType(UserLoginRequestDto, ['from', 'device'] as const)
 ) {}

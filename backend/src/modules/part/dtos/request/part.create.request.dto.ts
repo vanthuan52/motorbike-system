@@ -8,7 +8,7 @@ import {
   IsIn,
   IsUUID,
 } from 'class-validator';
-import { ENUM_PART_STATUS } from '../../enums/part.enum';
+import { EnumPartStatus } from '../../enums/part.enum';
 
 export class PartCreateRequestDto {
   @ApiProperty({
@@ -41,7 +41,7 @@ export class PartCreateRequestDto {
   })
   @IsOptional()
   @IsString()
-  order?: string;
+  orderBy?: string;
 
   @ApiProperty({
     example: faker.string.uuid(),
@@ -73,13 +73,13 @@ export class PartCreateRequestDto {
   description?: string;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_PART_STATUS))
+  @IsIn(Object.values(EnumPartStatus))
   @ApiProperty({
-    example: ENUM_PART_STATUS.ACTIVE,
+    example: EnumPartStatus.active,
     description: 'Trạng thái hoạt động (active/inactive)',
     required: false,
-    enum: ENUM_PART_STATUS,
-    default: ENUM_PART_STATUS.ACTIVE,
+    enum: EnumPartStatus,
+    default: EnumPartStatus.active,
   })
-  status?: ENUM_PART_STATUS;
+  status?: EnumPartStatus;
 }

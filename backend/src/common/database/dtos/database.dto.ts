@@ -1,20 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class DatabaseDto {
-  @ApiHideProperty()
-  @Exclude()
-  _id: string;
-
-  // @ApiProperty({
-  //   description: 'The unique identifier of the record',
-  //   example: faker.string.uuid(),
-  //   required: true,
-  // })
-  // @Expose()
-  // @Transform(({ obj }) => obj._id?.toString())
-  // id: string;
+  @ApiProperty({
+    description: 'Database document identifier',
+    example: faker.database.mongodbObjectId(),
+    required: true,
+  })
+  id: string;
 
   @ApiProperty({
     description: 'Date created at',
@@ -24,7 +17,7 @@ export class DatabaseDto {
   createdAt: Date;
 
   @ApiProperty({
-    description: 'Created by',
+    description: 'created by',
     required: false,
   })
   createdBy?: string;
@@ -37,24 +30,20 @@ export class DatabaseDto {
   updatedAt: Date;
 
   @ApiProperty({
-    description: 'Updated by',
+    description: 'updated by',
     required: false,
   })
   updatedBy?: string;
 
   @ApiProperty({
-    description: 'Date deleted at',
+    description: 'Date delete at',
     required: false,
   })
   deletedAt?: Date;
 
   @ApiProperty({
-    description: 'Deleted by',
+    description: 'Delete by',
     required: false,
   })
   deletedBy?: string;
-
-  @ApiHideProperty()
-  @Exclude()
-  __v?: string;
 }

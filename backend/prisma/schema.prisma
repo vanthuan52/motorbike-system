@@ -1,0 +1,1083 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma-client"
+}
+
+// ================================
+// ENUMS DEFINITIONS
+// ================================
+
+enum VehicleModelType {
+  UNKNOWN
+  SCOOTER
+  MANUAL_OR_CLUTCH
+  MANUAL
+  CLUTCH
+  ELECTRIC
+
+  @@map("vehicle_model_type")
+}
+
+enum VehicleModelFuelType {
+  UNKNOWN
+  GASOLINE
+  HYBRID
+  ELECTRIC
+
+  @@map("vehicle_model_fuel_type")
+}
+
+enum StatusEnum {
+  ACTIVE
+  INACTIVE
+
+  @@map("status_enum")
+}
+
+enum BlockableStatusEnum {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+
+  @@map("blockable_status_enum")
+}
+
+enum UserGender {
+  MALE
+  FEMALE
+
+  @@map("user_gender")
+}
+
+enum UserSignUpFrom {
+  WEBSITE
+  MOBILE
+  SYSTEM
+  ADMIN
+
+  @@map("user_signup_from")
+}
+
+enum UserSignUpWith {
+  CREDENTIAL
+  GOOGLE
+  APPLE
+
+  @@map("user_signup_with")
+}
+
+enum UserLoginFrom {
+  WEBSITE
+  MOBILE
+
+  @@map("user_login_from")
+}
+
+enum UserLoginWith {
+  CREDENTIAL
+  GOOGLE
+  APPLE
+
+  @@map("user_login_with")
+}
+
+enum SessionStatus {
+  ACTIVE
+  REVOKED
+
+  @@map("session_status")
+}
+
+enum ActivityLogAction {
+  USER_LOGIN_CREDENTIAL
+  USER_LOGIN_GOOGLE
+  USER_LOGIN_APPLE
+  USER_LOGOUT
+  USER_REFRESH_TOKEN
+  USER_CHANGE_PASSWORD
+  USER_UPDATE_PROFILE
+  USER_FORGOT_PASSWORD
+  USER_RESET_PASSWORD
+  USER_VERIFY_EMAIL
+
+  @@map("activity_log_action")
+}
+
+enum AppointmentStatus {
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+  MISSED
+
+  @@map("appointment_status")
+}
+
+enum CareRecordStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCEL
+
+  @@map("care_record_status")
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+
+  @@map("payment_status")
+}
+
+enum CareRecordItemSource {
+  SCHEDULED
+  ADDITIONAL
+
+  @@map("care_record_item_source")
+}
+
+enum CareRecordItemType {
+  PART
+  SERVICE
+  UPGRADE
+
+  @@map("care_record_item_type")
+}
+
+enum CareRecordServiceStatus {
+  PENDING
+  COMPLETED
+
+  @@map("care_record_service_status")
+}
+
+enum CareRecordServiceType {
+  CUSTOMER_REQUEST
+  SERVICE
+
+  @@map("care_record_service_type")
+}
+
+enum CareRecordChecklistResult {
+  UNCHECKED
+  CHECKED
+  REPLACED
+  SKIPPED
+
+  @@map("care_record_checklist_result")
+}
+
+enum CareRecordChecklistStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+
+  @@map("care_record_checklist_status")
+}
+
+enum OilLevel {
+  FULL
+  LOW
+  EMPTY
+
+  @@map("oil_level")
+}
+
+enum MirrorCondition {
+  PRESENT
+  ABSENT
+
+  @@map("mirror_condition")
+}
+
+enum SeatCondition {
+  OK
+  TORN
+
+  @@map("seat_condition")
+}
+
+enum BodyCondition {
+  OK
+  SCRATCHED
+  BROKEN
+
+  @@map("body_condition")
+}
+
+enum ExhaustCoverCondition {
+  PRESENT
+  ABSENT
+  BROKEN
+
+  @@map("exhaust_cover_condition")
+}
+
+enum CareRecordMediaStage {
+  BEFORE
+  AFTER
+  HANDOVER
+
+  @@map("care_record_media_stage")
+}
+
+enum MediaFileType {
+  JPG
+  JPEG
+  PNG
+  PDF
+  CSV
+  HBS
+  MPEG
+  M4A
+  MP3
+  MP4
+
+  @@map("media_file_type")
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+
+  @@map("message_type")
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+
+  @@map("message_status")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  AUDIO
+  OTHER
+
+  @@map("media_type")
+}
+
+enum MediaPurpose {
+  PROFILE_PHOTO
+  CARE_RECORD
+  CARE_RECORD_MEDIA
+  VEHICLE
+  VEHICLE_BRAND
+  CHAT_ATTACHMENT
+  STORE
+  GENERAL
+
+  @@map("media_purpose")
+}
+
+enum MediaAccessibility {
+  PUBLIC
+  PRIVATE
+
+  @@map("media_accessibility")
+}
+
+enum HiringJobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  ETC
+
+  @@map("hiring_job_type")
+}
+
+enum HiringStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+
+  @@map("hiring_status")
+}
+
+enum ApiKeyType {
+  SYSTEM
+  DEFAULT
+
+  @@map("api_key_type")
+}
+
+enum RoleType {
+  SUPERADMIN
+  ADMIN
+  USER
+
+  @@map("role_type")
+}
+
+enum PolicyAction {
+  MANAGE
+  READ
+  CREATE
+  UPDATE
+  DELETE
+
+  @@map("policy_action")
+}
+
+enum PolicySubject {
+  ALL
+  API_KEY
+  ROLE
+  USER
+  AUTH
+  SESSION
+  ACTIVITY_LOG
+  PASSWORD_HISTORY
+  TERM_POLICY
+  FEATURE_FLAG
+
+  @@map("policy_subject")
+}
+
+// ================================
+// DOMAIN: VEHICLE MANAGEMENT
+// ================================
+
+model VehicleBrand {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  description String?
+  orderBy     String   @default("0")
+  country     String?
+  status      StatusEnum @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicleModels VehicleModel[]
+  parts         Part[]
+
+  @@map("vehicle_brands")
+}
+
+model VehicleModel {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  fullName            String?
+  slug                String   @unique
+  description         String?
+  engineDisplacement  Int?
+  modelYear           Int?
+  type                VehicleModelType @default(UNKNOWN)
+  fuelType            VehicleModelFuelType @default(UNKNOWN)
+  status              StatusEnum @default(ACTIVE)
+  orderBy             String   @default("0")
+  yearStart           Int?
+  yearEnd             Int?
+  photo               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+
+  createdBy           String?  @db.ObjectId
+  updatedBy           String?  @db.ObjectId
+  deletedBy           String?  @db.ObjectId
+
+  vehicleBrandId String   @db.ObjectId
+  vehicleBrand   VehicleBrand @relation(fields: [vehicleBrandId], references: [id])
+
+  servicePrices  ServicePrice[]
+  appointments   Appointment[]
+  userVehicles   UserVehicle[]
+
+  @@index([vehicleBrandId])
+  @@index([type])
+  @@index([fuelType])
+  @@index([status])
+  @@map("vehicle_models")
+}
+
+model VehicleService {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  description String?
+  orderBy     String   @default("0")
+  status      StatusEnum @default(ACTIVE)
+  photo       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  createdBy   String?  @db.ObjectId
+  updatedBy   String?  @db.ObjectId
+  deletedBy   String?  @db.ObjectId
+
+  serviceCategoryId String          @db.ObjectId
+  serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+
+  servicePrices      ServicePrice[]
+  appointments       Appointment[]
+  careRecordItems    CareRecordItem[]
+  careRecordServices CareRecordService[]
+  checklistItems     ServiceChecklist[]
+
+  @@index([serviceCategoryId])
+  @@index([status])
+  @@map("vehicle_services")
+}
+
+model ServiceCategory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  description String?
+  orderBy     String   @default("0")
+  status      StatusEnum @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicleServices VehicleService[]
+
+  @@index([status])
+  @@map("service_categories")
+}
+
+model ServicePrice {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  price Int    @default(150000)
+
+  vehicleServiceId String         @db.ObjectId
+  vehicleService   VehicleService @relation(fields: [vehicleServiceId], references: [id])
+  vehicleModelId   String         @db.ObjectId
+  vehicleModel     VehicleModel   @relation(fields: [vehicleModelId], references: [id])
+
+  dateStart DateTime @default(now())
+  dateEnd   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([vehicleServiceId])
+  @@index([vehicleModelId])
+  @@map("service_prices")
+}
+
+model ServiceChecklist {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  code        String   @unique
+  description String?
+  orderBy     String   @default("0")
+  vehicleType String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  careAreaId String   @db.ObjectId
+  careArea   CareArea @relation(fields: [careAreaId], references: [id])
+
+  vehicleServiceId String?          @db.ObjectId
+  vehicleService   VehicleService?  @relation(fields: [vehicleServiceId], references: [id])
+  careRecordChecklists CareRecordChecklist[]
+
+  @@index([careAreaId])
+  @@map("service_checklists")
+}
+
+model CareArea {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  orderBy     String   @default("0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  serviceChecklists ServiceChecklist[]
+
+  @@map("care_areas")
+}
+
+// ================================
+// DOMAIN: PART MANAGEMENT
+// ================================
+
+model PartType {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  description String?
+  orderBy     String   @default("0")
+  status      StatusEnum @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parts Part[]
+
+  @@index([status])
+  @@map("part_types")
+}
+
+model Part {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  slug        String   @unique
+  description String?
+  status      StatusEnum @default(ACTIVE)
+  orderBy     String   @default("0")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  partTypeId     String   @db.ObjectId
+  partType       PartType @relation(fields: [partTypeId], references: [id])
+  vehicleBrandId String   @db.ObjectId
+  vehicleBrand   VehicleBrand @relation(fields: [vehicleBrandId], references: [id])
+
+  careRecordItems CareRecordItem[]
+
+  @@index([partTypeId])
+  @@index([vehicleBrandId])
+  @@index([status])
+  @@map("parts")
+}
+
+// ================================
+// DOMAIN: USER & AUTHENTICATION
+// ================================
+
+model Role {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  type        RoleType
+  abilities   Json[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  createdBy   String?  @db.ObjectId
+  updatedBy   String?  @db.ObjectId
+  deletedBy   String?  @db.ObjectId
+
+  users User[]
+  policies Policy[]
+
+  @@index([isActive])
+  @@index([type])
+  @@map("roles")
+}
+
+model User {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  email           String   @unique
+  phone           String?
+  password        String?
+  passwordExpired DateTime?
+  passwordCreated DateTime?
+  passwordAttempt Int      @default(0)
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+  status          BlockableStatusEnum @default(ACTIVE)
+  gender          UserGender?
+  photo           Json?
+
+  signUpDate     DateTime?
+  signUpFrom     UserSignUpFrom?
+  signUpWith     UserSignUpWith?
+
+  lastLoginAt    DateTime?
+  lastLoginFrom  UserLoginFrom?
+  lastLoginWith  UserLoginWith?
+
+  twoFactor    Json?
+  verification Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  createdBy String? @db.ObjectId
+  updatedBy String? @db.ObjectId
+  deletedBy String? @db.ObjectId
+
+  roleId String @db.ObjectId
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  messages         Message[]
+  receivedMessages Message[] @relation("ReceivedMessages")
+  sessions         Session[]
+  appointments     Appointment[]
+  careRecords      CareRecord[]
+  careRecordItems  CareRecordItem[]
+  activityLogs     ActivityLog[]
+  candidateReviews CandidateReview[]
+  userVehicles     UserVehicle[]
+
+  @@index([roleId])
+  @@index([status])
+  @@map("users")
+}
+
+model Session {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  jti            String?
+  ip             String
+  userAgent      Json?
+  expiredAt      DateTime
+  revokeAt       DateTime?
+  status         SessionStatus @default(ACTIVE)
+  hostname       String?
+  protocol       String?
+  originalUrl    String?
+  method         String?
+  xForwardedFor  String?
+  xForwardedHost String?
+  xForwardedPorto String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("sessions")
+}
+
+model ActivityLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  action    ActivityLogAction
+  ipAddress String
+  userAgent Json?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@map("activity_logs")
+}
+
+// ================================
+// DOMAIN: HIRING & RECRUITMENT
+// ================================
+
+model Hiring {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  title               String
+  slug                String
+  description         String?
+  requirements        String[]
+  location            String
+  salaryRange         String
+  applicationDeadline DateTime
+  category            String
+  jobType             HiringJobType @default(FULL_TIME)
+  status              HiringStatus @default(DRAFT)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  candidates Candidate[]
+
+  @@index([status])
+  @@map("hiring")
+}
+
+model Candidate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  phone     String
+  appliedAt DateTime
+  status    String   @default("pending")
+  resume    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hiringId String @db.ObjectId
+  hiring   Hiring @relation(fields: [hiringId], references: [id])
+
+  reviews CandidateReview[]
+
+  @@index([hiringId])
+  @@index([status])
+  @@map("candidates")
+}
+
+model CandidateReview {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  feedback  String
+  rating    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  candidateId String    @db.ObjectId
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+
+  @@index([userId])
+  @@index([candidateId])
+  @@map("candidate_reviews")
+}
+
+// ================================
+// DOMAIN: STORE & LOCATION
+// ================================
+
+model Store {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  address     String
+  workHours   String
+  description String?
+  slug        String
+  status      StatusEnum @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  careRecords CareRecord[]
+
+  @@index([status])
+  @@map("store")
+}
+
+// ================================
+// DOMAIN: VEHICLE OWNERSHIP
+// ================================
+
+model UserVehicle {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  modelYear          Int?
+  color              String?
+  licensePlateNumber String
+  engineNumber       String?
+  chassisNumber      String?
+  photo              Json?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  userId        String       @db.ObjectId
+  user          User         @relation(fields: [userId], references: [id])
+  vehicleModelId String       @db.ObjectId
+  vehicleModel  VehicleModel @relation(fields: [vehicleModelId], references: [id])
+
+  careRecords  CareRecord[]
+  appointments Appointment[]
+
+  @@index([userId])
+  @@index([vehicleModelId])
+  @@map("user_vehicles")
+}
+
+// ================================
+// DOMAIN: APPOINTMENTS
+// ================================
+
+model Appointment {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  phone              String
+  licensePlateNumber String?
+  address            String?
+  customerRequests   String[]
+  note               String?
+  appointmentDate    DateTime
+  status             AppointmentStatus @default(PENDING)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  userId        String?      @db.ObjectId
+  user          User?        @relation(fields: [userId], references: [id])
+  userVehicleId String?      @db.ObjectId
+  userVehicle   UserVehicle? @relation(fields: [userVehicleId], references: [id])
+  vehicleModelId String       @db.ObjectId
+  vehicleModel  VehicleModel @relation(fields: [vehicleModelId], references: [id])
+
+  careRecords     CareRecord[]
+  vehicleServices VehicleService[]
+
+  @@index([userId])
+  @@index([userVehicleId])
+  @@index([vehicleModelId])
+  @@index([status])
+  @@index([phone])
+  @@map("appointments")
+}
+
+// ================================
+// DOMAIN: CARE RECORDS
+// ================================
+
+model CareRecord {
+  id                         String   @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleModelName           String?
+  isInitialConditionRecorded Boolean  @default(false)
+  receivedAt                 DateTime? @default(now())
+  confirmedByOwner           Boolean  @default(false)
+  status                     CareRecordStatus @default(PENDING)
+  paymentStatus              PaymentStatus?
+  paymentMethod              String?
+  totalPrice                 Float?
+  deliveryDate               DateTime?
+  deliveryKm                 Int?
+  notes                      String?
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  appointmentId  String?      @db.ObjectId
+  appointment    Appointment? @relation(fields: [appointmentId], references: [id])
+  userVehicleId  String       @db.ObjectId
+  userVehicle    UserVehicle  @relation(fields: [userVehicleId], references: [id])
+  technicianId   String?      @db.ObjectId
+  technician     User?        @relation(fields: [technicianId], references: [id])
+  storeId        String?      @db.ObjectId
+  store          Store?       @relation(fields: [storeId], references: [id])
+
+  careRecordItems      CareRecordItem[]
+  careRecordServices   CareRecordService[]
+  careRecordMedias     CareRecordMedia[]
+  careRecordCondition  CareRecordCondition?
+
+  @@index([appointmentId])
+  @@index([userVehicleId])
+  @@index([technicianId])
+  @@index([storeId])
+  @@index([status])
+  @@map("care_records")
+}
+
+model CareRecordItem {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  source          CareRecordItemSource
+  itemType        CareRecordItemType
+  name            String?
+  quantity        Int
+  unitPrice       Float
+  totalPrice      Float
+  approvedByOwner Boolean? @default(false)
+  note            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  createdBy       String?  @db.ObjectId
+  updatedBy       String?  @db.ObjectId
+  deletedBy       String?  @db.ObjectId
+
+  careRecordId     String       @db.ObjectId
+  careRecord       CareRecord   @relation(fields: [careRecordId], references: [id])
+  vehicleServiceId String       @db.ObjectId
+  vehicleService   VehicleService @relation(fields: [vehicleServiceId], references: [id])
+  partId           String?      @db.ObjectId
+  part             Part?        @relation(fields: [partId], references: [id])
+  technicianId     String?      @db.ObjectId
+  technician       User?        @relation(fields: [technicianId], references: [id])
+
+  @@index([careRecordId])
+  @@index([vehicleServiceId])
+  @@index([partId])
+  @@index([technicianId])
+  @@map("care_record_items")
+}
+
+model CareRecordService {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  status CareRecordServiceStatus @default(PENDING)
+  type   CareRecordServiceType @default(SERVICE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  careRecordId     String        @db.ObjectId
+  careRecord       CareRecord    @relation(fields: [careRecordId], references: [id])
+  vehicleServiceId String?       @db.ObjectId
+  vehicleService   VehicleService? @relation(fields: [vehicleServiceId], references: [id])
+
+  careRecordChecklists CareRecordChecklist[]
+
+  @@index([careRecordId])
+  @@index([vehicleServiceId])
+  @@index([status])
+  @@map("care_record_services")
+}
+
+model CareRecordChecklist {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  result         CareRecordChecklistResult @default(UNCHECKED)
+  status         CareRecordChecklistStatus @default(PENDING)
+  note           String?
+  wearPercentage Int?     @default(100)
+  imageBefore    String?
+  imageAfter     String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  careRecordServiceId String            @db.ObjectId
+  careRecordService   CareRecordService @relation(fields: [careRecordServiceId], references: [id])
+  serviceChecklistId  String?           @db.ObjectId
+  serviceChecklist    ServiceChecklist? @relation(fields: [serviceChecklistId], references: [id])
+
+  @@index([careRecordServiceId])
+  @@index([serviceChecklistId])
+  @@map("care_record_checklist")
+}
+
+model CareRecordCondition {
+  id                      String   @id @default(auto()) @map("_id") @db.ObjectId
+  odoKm                   Int?
+  odoKmFaulty             Boolean  @default(false)
+  fuelLevelPercent        Int?
+  fuelLevelFaulty         Boolean  @default(false)
+  engineOilLevel          OilLevel @default(FULL)
+  rearviewMirrorCondition MirrorCondition @default(PRESENT)
+  seatCondition           SeatCondition @default(OK)
+  bodyCondition           BodyCondition @default(OK)
+  exhaustCoverCondition   ExhaustCoverCondition @default(PRESENT)
+  hasLuggageRack          Boolean  @default(false)
+  hasFootMat              Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  deletedAt               DateTime?
+
+  createdBy               String?  @db.ObjectId
+  updatedBy               String?  @db.ObjectId
+  deletedBy               String?  @db.ObjectId
+
+  careRecordId String     @unique @db.ObjectId
+  careRecord   CareRecord @relation(fields: [careRecordId], references: [id])
+
+  @@index([careRecordId])
+  @@map("care_record_conditions")
+}
+
+model CareRecordMedia {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  url         String?
+  description String?
+  stage       CareRecordMediaStage
+  type        MediaFileType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  careRecordId String     @db.ObjectId
+  careRecord   CareRecord @relation(fields: [careRecordId], references: [id])
+
+  @@index([careRecordId])
+  @@map("care_record_medias")
+}
+
+// ================================
+// DOMAIN: MESSAGING
+// ================================
+
+model Conversation {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  participants String[] @db.ObjectId
+  lastMessage String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  messages Message[]
+
+  @@unique([participants])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  content        String
+  messageType    MessageType @default(TEXT)
+  timestamp      DateTime @default(now())
+  status         MessageStatus @default(SENT)
+  readBy         String[] @db.ObjectId
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String       @db.ObjectId
+  sender         User         @relation(fields: [senderId], references: [id])
+  receiverId     String       @db.ObjectId
+  receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@index([conversationId])
+  @@map("messages")
+}
+
+// ================================
+// DOMAIN: MEDIA & FILES
+// ================================
+
+model Media {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  key           String   @unique
+  filename      String
+  mimeType      String
+  size          Int
+  extension     String
+  bucket        String
+  cdnUrl        String?
+  completedUrl  String
+  type          MediaType @default(OTHER)
+  purpose       MediaPurpose @default(GENERAL)
+  status        StatusEnum @default(ACTIVE)
+  accessibility MediaAccessibility @default(PRIVATE)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([key])
+  @@map("media")
+}
+
+// ================================
+// DOMAIN: API MANAGEMENT
+// ================================
+
+model ApiKey {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  type      ApiKeyType
+  name      String
+  key       String   @unique
+  hash      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+  @@index([type])
+  @@index([isActive])
+  @@map("api_keys")
+}
+
+// ================================
+// DOMAIN: POLICIES & RBAC
+// ================================
+
+model Policy {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  action  PolicyAction
+  subject PolicySubject
+  fields  String[]
+  conditions Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roleId String @db.ObjectId
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@index([roleId])
+  @@index([action])
+  @@index([subject])
+  @@map("policies")
+}

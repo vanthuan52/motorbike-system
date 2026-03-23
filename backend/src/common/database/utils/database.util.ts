@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
-import { DatabaseDefaultUUID } from '../constants/database.function.constant';
+import ObjectID from 'bson-objectid';
+import { Prisma } from '@generated/prisma-client';
 
 /**
  * Database utility service providing common database operations.
@@ -25,7 +25,7 @@ export class DatabaseUtil {
    * @returns {boolean} True if the ID is a valid ObjectID, false otherwise
    */
   checkIdIsValid(id: string): boolean {
-    return Types.ObjectId.isValid(id);
+    return ObjectID.isValid(id);
   }
 
   /**
@@ -37,38 +37,37 @@ export class DatabaseUtil {
    *
    * @returns {string} A 24-character hexadecimal string representing the ObjectID
    */
-  createObjectId(): string {
-    return new Types.ObjectId().toHexString();
+  createId(): string {
+    return ObjectID().toHexString();
   }
 
   /**
-   * Creates a new unique identifier using UUID v7.
+   * Converts the provided data to a plain object compatible with Prisma JsonObject format.
    *
-   * Generates a new UUID v7 which is time-sortable.
+   * Performs a deep clone of the input and casts it to Prisma.JsonObject, ensuring
+   * compatibility for Prisma JSON fields.
    *
-   * @returns {string} A UUID v7 string
+   * @template T Input data type
+   * @template N Output type, defaults to Prisma.JsonObject
+   * @param {T} data - The data to convert
+   * @returns {N} The plain object representation, compatible with Prisma JsonObject
    */
-  createUUID(): string {
-    return DatabaseDefaultUUID();
+  toPlainObject<T, N = Prisma.JsonObject>(data: T): N {
+    return structuredClone(data as unknown) as N;
   }
 
   /**
-   * Converts data to a plain object.
+   * Converts the provided data to a plain array compatible with Prisma JsonObject array format.
    *
-   * @param {T} data - The data to convert to plain object
-   * @returns {Record<string, any>} Plain object representation of the data
-   */
-  toPlainObject<T>(data: T): Record<string, any> {
-    return structuredClone(data) as unknown as Record<string, any>;
-  }
-
-  /**
-   * Converts data to a plain array.
+   * Performs a deep clone of the input and casts it to an array of Prisma.JsonObject,
+   * making it suitable for Prisma JSON array fields.
    *
-   * @param {T} data - The data to convert to plain array
-   * @returns {Record<string, any>[]} Plain array representation of the data
+   * @template T Input data type
+   * @template N Output array element type, defaults to Prisma.JsonObject
+   * @param {T} data - The data to convert
+   * @returns {N[]} The plain array representation, compatible with Prisma JsonObject[]
    */
-  toPlainArray<T>(data: T): Record<string, any>[] {
-    return structuredClone(data) as unknown as Record<string, any>[];
+  toPlainArray<T, N = Prisma.JsonObject>(data: T): N[] {
+    return structuredClone(data) as N[];
   }
 }

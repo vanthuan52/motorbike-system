@@ -23,7 +23,7 @@ export class PolicyAbilityFactory {
    */
   createForUser(abilities: RoleAbilityRequestDto[]): IPolicyAbilityRule {
     const { can, build } = new AbilityBuilder<IPolicyAbilityRule>(
-      createMongoAbility,
+      createMongoAbility
     );
 
     for (const ability of abilities) {
@@ -46,12 +46,12 @@ export class PolicyAbilityFactory {
    */
   handlerAbilities(
     userAbilities: IPolicyAbilityRule,
-    abilities: RoleAbilityRequestDto[],
+    abilities: RoleAbilityRequestDto[]
   ): boolean {
     return abilities.every((ability: RoleAbilityRequestDto) =>
       ability.action.every((action: EnumPolicyAction) =>
-        userAbilities.can(action, ability.subject),
-      ),
+        userAbilities.can(action, ability.subject)
+      )
     );
   }
 }

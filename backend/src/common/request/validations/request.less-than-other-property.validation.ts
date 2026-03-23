@@ -6,6 +6,7 @@ import {
   ValidatorConstraintInterface,
   registerDecorator,
 } from 'class-validator';
+import { HelperService } from '@/common/helper/services/helper.service';
 
 /**
  * Validator constraint that checks if a value is less than or equal to another property's value.
@@ -14,6 +15,8 @@ import {
 @ValidatorConstraint({ async: false })
 @Injectable()
 export class LessThanEqualOtherPropertyConstraint implements ValidatorConstraintInterface {
+  constructor(private readonly helperService: HelperService) {}
+
   /**
    * Validates that the current value is less than or equal to the related property value.
    *
@@ -70,13 +73,13 @@ export class LessThanEqualOtherPropertyConstraint implements ValidatorConstraint
    * @returns Converted number or null if conversion fails
    */
   private convertToNumber(value: unknown): number | null {
-    if (typeof value === 'number' && !isNaN(value)) {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
       return value;
     }
 
     if (typeof value === 'string') {
       const converted = Number(value);
-      return !isNaN(converted) ? converted : null;
+      return !Number.isNaN(converted) ? converted : null;
     }
 
     return null;
@@ -89,18 +92,18 @@ export class LessThanEqualOtherPropertyConstraint implements ValidatorConstraint
    * @returns Converted Date or null if conversion fails
    */
   private convertToDate(value: unknown): Date | null {
-    if (value instanceof Date && !isNaN(value.getTime())) {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
       return value;
     }
 
     if (typeof value === 'string') {
-      const date = new Date(value);
-      return !isNaN(date.getTime()) ? date : null;
+      const date = this.helperService.dateCreateFromIso(value);
+      return !Number.isNaN(date.getTime()) ? date : null;
     }
 
     if (typeof value === 'number') {
-      const date = new Date(value);
-      return !isNaN(date.getTime()) ? date : null;
+      const date = this.helperService.dateCreateFromTimestamp(value);
+      return !Number.isNaN(date.getTime()) ? date : null;
     }
 
     return null;
@@ -116,7 +119,7 @@ export class LessThanEqualOtherPropertyConstraint implements ValidatorConstraint
  */
 export function LessThanEqualOtherProperty(
   property: string,
-  validationOptions?: ValidationOptions,
+  validationOptions?: ValidationOptions
 ) {
   return function (object: unknown, propertyName: string): void {
     registerDecorator({
@@ -137,6 +140,8 @@ export function LessThanEqualOtherProperty(
 @ValidatorConstraint({ async: false })
 @Injectable()
 export class LessThanOtherPropertyConstraint implements ValidatorConstraintInterface {
+  constructor(private readonly helperService: HelperService) {}
+
   /**
    * Validates that the current value is strictly less than the related property value.
    *
@@ -193,13 +198,13 @@ export class LessThanOtherPropertyConstraint implements ValidatorConstraintInter
    * @returns Converted number or null if conversion fails
    */
   private convertToNumber(value: unknown): number | null {
-    if (typeof value === 'number' && !isNaN(value)) {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
       return value;
     }
 
     if (typeof value === 'string') {
       const converted = Number(value);
-      return !isNaN(converted) ? converted : null;
+      return !Number.isNaN(converted) ? converted : null;
     }
 
     return null;
@@ -212,18 +217,18 @@ export class LessThanOtherPropertyConstraint implements ValidatorConstraintInter
    * @returns Converted Date or null if conversion fails
    */
   private convertToDate(value: unknown): Date | null {
-    if (value instanceof Date && !isNaN(value.getTime())) {
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
       return value;
     }
 
     if (typeof value === 'string') {
-      const date = new Date(value);
-      return !isNaN(date.getTime()) ? date : null;
+      const date = this.helperService.dateCreateFromIso(value);
+      return !Number.isNaN(date.getTime()) ? date : null;
     }
 
     if (typeof value === 'number') {
-      const date = new Date(value);
-      return !isNaN(date.getTime()) ? date : null;
+      const date = this.helperService.dateCreateFromTimestamp(value);
+      return !Number.isNaN(date.getTime()) ? date : null;
     }
 
     return null;
@@ -239,7 +244,7 @@ export class LessThanOtherPropertyConstraint implements ValidatorConstraintInter
  */
 export function LessThanOtherProperty(
   property: string,
-  validationOptions?: ValidationOptions,
+  validationOptions?: ValidationOptions
 ) {
   return function (object: unknown, propertyName: string): void {
     registerDecorator({

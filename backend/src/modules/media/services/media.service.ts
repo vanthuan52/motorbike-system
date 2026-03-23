@@ -1,29 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { Document } from 'mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { MediaRepository } from '../repositories/media.repository';
-import { IMediaEntity, IMediaService } from '../interfaces/media.interface';
-import { MediaDoc, MediaEntity } from '../entities/media.entity';
-import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
+import { IMediaService } from '../interfaces/media.interface';
 import { MediaCreateRequestDto } from '../dtos/request/media.create.request.dto';
-import { MediaUpdateStatusRequestDto } from '../dtos/request/media.update-status.request.dto';
 import { MediaUpdateRequestDto } from '../dtos/request/media.update.request.dto';
+import { MediaUpdateStatusRequestDto } from '../dtos/request/media.update-status.request.dto';
 import {
   EnumMediaStatus,
   EnumMediaType,
   EnumMediaPurpose,
 } from '../enums/media.enum';
-import { MediaGetResponseDto } from '../dtos/response/media.get.response.dto';
-import { MediaListResponseDto } from '../dtos/response/media.list.response.dto';
-import { MediaEmbeddedResponseDto } from '../dtos/response/media.embedded.response.dto';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 import {
@@ -32,6 +17,12 @@ import {
   MediaAllowedDocumentTypes,
   MediaAllowedAudioTypes,
 } from '../constants/media.constant';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { Media, Prisma } from '@/generated/prisma-client';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 
 /**
  * Media service
@@ -41,187 +32,122 @@ import {
 export class MediaService implements IMediaService {
   constructor(private readonly mediaRepository: MediaRepository) {}
 
-  // ============================================
-  // CRUD Operations
-  // ============================================
+  async getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.MediaSelect,
+      Prisma.MediaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: Media[]; total: number }> {
+    const { data, count } =
+      await this.mediaRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
 
-  async findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<MediaDoc[]> {
-    return this.mediaRepository.findAll<MediaDoc>(find, options);
+    return { data, total: count || 0 };
   }
 
-  async findOneById(
-    _id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<MediaDoc | null> {
-    return this.mediaRepository.findOneById<MediaDoc>(_id, options);
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.MediaSelect,
+      Prisma.MediaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<{ data: Media[]; total?: number }> {
+    const { data, count } =
+      await this.mediaRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    return { data, total: count || 0 };
   }
 
-  async findOneByKey(
-    key: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<MediaDoc | null> {
-    return this.mediaRepository.findOneByKey(key);
+  async findOneById(id: string): Promise<Media | null> {
+    return this.mediaRepository.findOneById(id);
   }
 
-  async findByOwner(
-    ownerId: string,
-    ownerType: string,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<MediaDoc[]> {
-    return this.mediaRepository.findByOwner(ownerId, ownerType);
+  async findByKey(key: string): Promise<Media | null> {
+    return this.mediaRepository.findByKey(key);
   }
 
-  async getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.mediaRepository.getTotal(find, options);
+  async create(dto: MediaCreateRequestDto): Promise<DatabaseIdDto> {
+    const created = await this.mediaRepository.create({
+      key: dto.key,
+      filename: dto.filename,
+      mimeType: dto.mimeType,
+      size: dto.size,
+      extension: dto.extension.toLowerCase(),
+      bucket: dto.bucket,
+      completedUrl: dto.completedUrl,
+      cdnUrl: dto.cdnUrl,
+      type: this.determineMediaType(dto.mimeType),
+      purpose: dto.purpose || EnumMediaPurpose.General,
+      status: EnumMediaStatus.pending,
+      accessibility: dto.access || EnumAwsS3Accessibility.public,
+    });
+
+    return { _id: created.id };
   }
 
-  async create(
-    dto: MediaCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<MediaDoc> {
-    const create: MediaEntity = new MediaEntity();
-    create.key = dto.key;
-    create.filename = dto.filename;
-    create.mimeType = dto.mimeType;
-    create.size = dto.size;
-    create.extension = dto.extension.toLowerCase();
-    create.bucket = dto.bucket;
-    create.completedUrl = dto.completedUrl;
-    create.cdnUrl = dto.cdnUrl;
-    create.type = this.determineMediaType(dto.mimeType);
-    create.purpose = dto.purpose || EnumMediaPurpose.General;
-    create.status = EnumMediaStatus.pending;
-    create.access = dto.access || EnumAwsS3Accessibility.public;
-    create.ownerId = dto.ownerId;
-    create.ownerType = dto.ownerType;
-
-    return this.mediaRepository.create<MediaEntity>(create, options);
-  }
-
-  /**
-   * Create media record from AwsS3Dto after successful S3 upload
-   * @param s3Data Data returned from AwsS3Service
-   * @param filename Original filename
-   * @param purpose Media purpose
-   * @param ownerId Owner entity ID
-   * @param ownerType Owner entity type
-   * @param options Database options
-   * @returns Created media document
-   */
   async createFromS3(
     s3Data: AwsS3Dto,
     filename: string,
     purpose: EnumMediaPurpose = EnumMediaPurpose.General,
     ownerId?: string,
     ownerType?: string,
-    options?: IDatabaseCreateOptions,
-  ): Promise<MediaDoc> {
-    const create: MediaEntity = new MediaEntity();
-    create.key = s3Data.key;
-    create.filename = filename;
-    create.mimeType = s3Data.mime;
-    create.size = s3Data.size;
-    create.extension = s3Data.extension.toLowerCase();
-    create.bucket = s3Data.bucket;
-    create.completedUrl = s3Data.completedUrl;
-    create.cdnUrl = s3Data.cdnUrl;
-    create.type = this.determineMediaType(s3Data.mime);
-    create.purpose = purpose;
-    create.status = EnumMediaStatus.pending;
-    create.access = s3Data.access;
-    create.ownerId = ownerId;
-    create.ownerType = ownerType;
+  ): Promise<DatabaseIdDto> {
+    const created = await this.mediaRepository.create({
+      key: s3Data.key,
+      filename: filename,
+      mimeType: s3Data.mime,
+      size: s3Data.size,
+      extension: s3Data.extension.toLowerCase(),
+      bucket: s3Data.bucket,
+      completedUrl: s3Data.completedUrl,
+      cdnUrl: s3Data.cdnUrl,
+      type: this.determineMediaType(s3Data.mime),
+      purpose: purpose,
+      status: EnumMediaStatus.pending,
+      accessibility: s3Data.access,
+    });
 
-    return this.mediaRepository.create<MediaEntity>(create, options);
+    return { _id: created.id };
   }
 
   async update(
-    repository: MediaDoc,
-    dto: MediaUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<MediaDoc> {
-    if (dto.filename !== undefined) {
-      repository.filename = dto.filename;
-    }
-    if (dto.purpose !== undefined) {
-      repository.purpose = dto.purpose;
-    }
-    if (dto.ownerId !== undefined) {
-      repository.ownerId = dto.ownerId;
-    }
-    if (dto.ownerType !== undefined) {
-      repository.ownerType = dto.ownerType;
-    }
+    id: string,
+    dto: MediaUpdateRequestDto
+  ): Promise<void> {
+    const media = await this.findOneByIdOrFail(id);
 
-    return this.mediaRepository.save(repository, options);
+    const updateData: any = {};
+    if (dto.filename !== undefined) updateData.filename = dto.filename;
+    if (dto.purpose !== undefined) updateData.purpose = dto.purpose;
+
+    if (Object.keys(updateData).length > 0) {
+      await this.mediaRepository.update(id, updateData);
+    }
   }
 
   async updateStatus(
-    repository: MediaDoc,
-    { status }: MediaUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<MediaDoc> {
-    repository.status = status;
-    return this.mediaRepository.save(repository, options);
+    id: string,
+    { status }: MediaUpdateStatusRequestDto
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.mediaRepository.update(id, { status });
   }
 
-  /**
-   * Activate media (set status to Active)
-   * @description Convenience method to activate media after it's attached to an entity
-   */
-  async activate(
-    repository: MediaDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<MediaDoc> {
-    repository.status = EnumMediaStatus.active;
-    return this.mediaRepository.save(repository, options);
-  }
-
-  /**
-   * Set owner for media
-   * @description Update owner reference and optionally activate the media
-   */
-  async setOwner(
-    repository: MediaDoc,
-    ownerId: string,
-    ownerType: string,
-    activate: boolean = true,
-    options?: IDatabaseSaveOptions,
-  ): Promise<MediaDoc> {
-    repository.ownerId = ownerId;
-    repository.ownerType = ownerType;
-    if (activate) {
-      repository.status = EnumMediaStatus.active;
-    }
-    return this.mediaRepository.save(repository, options);
-  }
-
-  async softDelete(
-    repository: MediaDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<MediaDoc> {
-    return this.mediaRepository.softDelete(repository, options);
-  }
-
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    await this.mediaRepository.deleteMany(find, options);
-    return true;
-  }
-
-  async existByKey(
-    key: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean> {
-    return this.mediaRepository.exists({ key }, options);
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.mediaRepository.delete(id);
   }
 
   // ============================================
@@ -247,6 +173,46 @@ export class MediaService implements IMediaService {
     ) {
       return EnumMediaType.video;
     }
+
+    if (
+      MediaAllowedDocumentTypes.some((type) => normalizedMime.startsWith(type))
+    ) {
+      return EnumMediaType.document;
+    }
+
+    if (
+      MediaAllowedAudioTypes.some((type) => normalizedMime.startsWith(type))
+    ) {
+      return EnumMediaType.audio;
+    }
+
+    // Fallback: check prefix
+    if (normalizedMime.startsWith('image/')) {
+      return EnumMediaType.image;
+    }
+    if (normalizedMime.startsWith('video/')) {
+      return EnumMediaType.video;
+    }
+    if (normalizedMime.startsWith('audio/')) {
+      return EnumMediaType.audio;
+    }
+
+    return EnumMediaType.other;
+  }
+
+  private async findOneByIdOrFail(id: string): Promise<Media> {
+    const media = await this.mediaRepository.findOneById(id);
+
+    if (!media) {
+      throw new NotFoundException({
+        message: 'media.error.notFound',
+      });
+    }
+
+    return media;
+  }
+}
+
 
     if (
       MediaAllowedDocumentTypes.some((type) => normalizedMime.startsWith(type))
