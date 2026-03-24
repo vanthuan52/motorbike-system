@@ -1,17 +1,3 @@
-import {
-  UserVehicleDoc,
-  UserVehicleEntity,
-} from '@/modules/user-vehicle/entities/user-vehicle.entity';
-import {
-  CareRecordDoc,
-  CareRecordEntity,
-} from '../entities/care-record.entity';
+import { CareRecordModel } from '../models/care-record.model';
 
-export interface ICareRecordEntity
-  extends Omit<CareRecordEntity, 'userVehicle'> {
-  userVehicle: UserVehicleEntity;
-}
-
-export interface ICareRecordDoc extends Omit<CareRecordDoc, 'userVehicle'> {
-  userVehicle: UserVehicleDoc;
-}
+export interface ICareRecord extends CareRecordModel {}

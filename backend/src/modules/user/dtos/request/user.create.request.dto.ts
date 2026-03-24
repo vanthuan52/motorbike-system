@@ -43,13 +43,4 @@ export class UserCreateRequestDto {
   @MinLength(1)
   @MaxLength(100)
   name?: string;
-
-  @ApiProperty({
-    example: faker.database.mongodbObjectId(),
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @IsMongoId()
-  countryId: string;
 }

@@ -18,17 +18,21 @@ import {
   AuthJwtRefreshProtected,
   AuthJwtToken,
 } from '../decorators/auth.jwt.decorator';
-import { AuthChangePasswordDoc, AuthRefreshDoc } from '../docs/auth.doc';
-import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import {
+  AuthSharedChangePasswordDoc,
+  AuthSharedRefreshDoc,
+} from '../docs/auth.shared.doc';
+import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
+import {
+  RequestGeoLocation,
   RequestIPAddress,
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
-import { RequestUserAgentDto } from '@/common/request/dtos/request.user-agent.dto';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
-import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
+import { UserChangePasswordRequestDto } from '@/modules/user/dtos/request/user.change-password.request.dto';
+import { IUser } from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.shared.auth')
 @Controller({
@@ -38,43 +42,44 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 export class AuthSharedController {
   constructor(private readonly authService: AuthService) {}
 
-  @AuthChangePasswordDoc()
-  @Response('auth.changePassword')
+  @AuthSharedChangePasswordDoc()
+  @Response('user.changePassword')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ApiKeyProtected()
   @Patch('/change-password')
   async changePassword(
-    @UserCurrent() user: IUserDoc,
-    @Body() body: AuthChangePasswordRequestDto,
+    @UserCurrent() user: IUser,
+    @Body() body: UserChangePasswordRequestDto,
     @RequestIPAddress() ipAddress: string,
-    @RequestUserAgent() userAgent: RequestUserAgentDto,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.authService.changePassword(user, body, {
+    return this.authService.changePassword(user, body, {
       ipAddress,
       userAgent,
+      geoLocation,
     });
-
-    return {};
   }
 
-  @AuthRefreshDoc()
-  @Response('auth.refresh')
+  @AuthSharedRefreshDoc()
+  @Response('user.refresh')
   @UserProtected()
   @AuthJwtRefreshProtected()
+  @ApiKeyProtected()
   @HttpCode(HttpStatus.OK)
   @Post('/refresh')
   async refresh(
-    @UserCurrent() user: IUserDoc,
+    @UserCurrent() user: IUser,
     @AuthJwtToken() refreshToken: string,
     @RequestIPAddress() ipAddress: string,
-    @RequestUserAgent() userAgent: RequestUserAgentDto,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<AuthTokenResponseDto>> {
-    const requestLog: IRequestLog = {
+    return this.authService.refresh(user, refreshToken, {
       ipAddress,
       userAgent,
-    };
-
-    await this.authService.refreshToken(user, refreshToken, requestLog);
-    return {};
+      geoLocation,
+    });
   }
 }

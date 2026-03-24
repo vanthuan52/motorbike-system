@@ -6,10 +6,12 @@ import { IsPassword } from '@/common/request/validations/request.is-password.val
 export class AuthChangePasswordRequestDto {
   @ApiProperty({
     description: "new string password, newPassword can't same with oldPassword",
-    example: `${faker.string.alphanumeric(5).toLowerCase()}${faker.string.alphanumeric(5).toUpperCase()}@@!123`,
+    example: `${faker.string.alphanumeric(5).toLowerCase()}${faker.string
+      .alphanumeric(5)
+      .toUpperCase()}@@!123`,
     required: true,
     minLength: 8,
-    maxLength: 8,
+    maxLength: 50,
   })
   @IsNotEmpty()
   @IsString()
@@ -20,7 +22,9 @@ export class AuthChangePasswordRequestDto {
 
   @ApiProperty({
     description: 'old string password',
-    example: `${faker.string.alphanumeric(5).toLocaleLowerCase()}${faker.string.alphanumeric(5).toUpperCase()}@@!123`,
+    example: `${faker.string.alphanumeric(5).toLowerCase()}${faker.string
+      .alphanumeric(5)
+      .toUpperCase()}@@!123`,
     required: true,
   })
   @IsString()

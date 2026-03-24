@@ -1,5 +1,3 @@
-import { CareAreaDoc, CareAreaEntity } from '../entities/care-area.entity';
+import { CareAreaModel } from '../models/care-area.model';
 
-export interface ICareAreaEntity extends Omit<CareAreaEntity, 'createdBy'> {}
-
-export interface ICareAreaDoc extends Omit<CareAreaDoc, 'createdBy'> {}
+export interface ICareArea extends CareAreaModel {}

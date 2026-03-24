@@ -10,6 +10,7 @@ import {
   VehicleModelDoc,
   VehicleModelEntity,
 } from '@/modules/vehicle-model/entities/vehicle-model.entity';
+import { AppointmentModel } from '../models/appointment.model';
 
 export interface IAppointmentEntity
   extends Omit<AppointmentEntity, 'vehicleServices' | 'vehicleModel'> {
@@ -22,3 +23,5 @@ export interface IAppointmentDoc
   vehicleServices: VehicleServiceDoc;
   vehicleModel: VehicleModelDoc;
 }
+
+export interface IAppointment extends AppointmentModel {}

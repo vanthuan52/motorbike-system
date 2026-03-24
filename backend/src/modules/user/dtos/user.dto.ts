@@ -4,8 +4,6 @@ import { Exclude, Type } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { RoleDto } from '@/modules/role/dtos/role.dto';
-import { UserTermPolicyDto } from '@/modules/user/dtos/user.term-policy.dto';
-import { UserTwoFactorDto } from '@/modules/user/dtos/user.two-factor.dto';
 import {
   EnumUserGender,
   EnumUserLoginFrom,
@@ -13,7 +11,7 @@ import {
   EnumUserSignUpFrom,
   EnumUserSignUpWith,
   EnumUserStatus,
-} from '@/generated/prisma-client';
+} from '@/modules/user/enums/user.enum';
 
 export class UserDto extends DatabaseDto {
   @ApiProperty({
@@ -109,12 +107,6 @@ export class UserDto extends DatabaseDto {
   status: EnumUserStatus;
 
   @ApiProperty({
-    required: true,
-    example: faker.database.mongodbObjectId(),
-  })
-  countryId: string;
-
-  @ApiProperty({
     example: EnumUserGender.male,
     enum: EnumUserGender,
     required: false,
@@ -150,23 +142,9 @@ export class UserDto extends DatabaseDto {
   lastLoginWith?: EnumUserLoginWith;
 
   @ApiProperty({
-    required: true,
-    type: UserTermPolicyDto,
-  })
-  @Type(() => UserTermPolicyDto)
-  termPolicy: UserTermPolicyDto;
-
-  @ApiProperty({
     required: false,
     type: AwsS3Dto,
   })
   @Type(() => AwsS3Dto)
   photo?: AwsS3Dto;
-
-  @ApiProperty({
-    required: true,
-    type: UserTwoFactorDto,
-  })
-  @Type(() => UserTwoFactorDto)
-  twoFactor: UserTwoFactorDto;
 }

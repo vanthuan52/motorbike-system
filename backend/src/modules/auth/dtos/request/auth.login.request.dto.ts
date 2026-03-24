@@ -1,11 +1,19 @@
-import { IsCustomEmail } from '@/common/request/validations/request.custom-email.validation';
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { EnumUserLoginFrom } from '../../enums/auth.enum';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { IsCustomEmail } from '@/common/request/validations/request.custom-email.validation';
+import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
+import { EnumUserLoginFrom } from '@/modules/user/enums/user.enum';
 
-export class UserLoginRequestDto {
+export class AuthLoginRequestDto {
   @ApiProperty({
     required: true,
     example: faker.internet.email(),
@@ -34,4 +42,16 @@ export class UserLoginRequestDto {
   @IsNotEmpty()
   @IsEnum(EnumUserLoginFrom)
   from: EnumUserLoginFrom;
+
+  @ApiProperty({
+    description: 'Device information',
+    required: true,
+    type: DeviceRequestDto,
+  })
+  @Type(() => DeviceRequestDto)
+  @IsNotEmpty()
+  @IsObject()
+  @IsNotEmptyObject()
+  @ValidateNested()
+  device: DeviceRequestDto;
 }

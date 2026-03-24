@@ -5,13 +5,12 @@ import {
   EnumUserLoginWith,
   EnumVerificationType,
   Role,
-  TwoFactor,
   User,
 } from '@/generated/prisma-client';
+import { UserModel } from '../models/user.model';
 
-export interface IUser extends User {
-  role: Role;
-  twoFactor: TwoFactor;
+export interface IUser extends UserModel {
+  roles: Role[];
 }
 
 export interface IUserProfile extends IUser {}

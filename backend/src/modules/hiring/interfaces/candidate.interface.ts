@@ -1,10 +1,3 @@
-import { UserDoc, UserEntity } from '@/modules/user/entities/user.entity';
-import { CandidateDoc, CandidateEntity } from '../entities/candidate.entity';
+import { CandidateModel } from '../models/candidate.model';
 
-export interface ICandidateEntity extends Omit<CandidateEntity, 'createdBy'> {
-  createdBy: UserEntity;
-}
-
-export interface ICandidateDoc extends Omit<CandidateDoc, 'createdBy'> {
-  createdBy: UserDoc;
-}
+export interface ICandidate extends CandidateModel {}
