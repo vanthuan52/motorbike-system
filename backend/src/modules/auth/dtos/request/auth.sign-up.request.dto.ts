@@ -1,11 +1,19 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { IsPassword } from '@/common/request/validations/request.is-password.validation';
 import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
+import { EnumUserSignUpFrom } from '@/modules/user/enums/user.enum';
 
 export class AuthSignUpRequestDto extends OmitType(UserCreateRequestDto, [
-  'role',
+  'roleId',
 ] as const) {
   @ApiProperty({
     description: 'string password',
@@ -21,4 +29,24 @@ export class AuthSignUpRequestDto extends OmitType(UserCreateRequestDto, [
   @MinLength(8)
   @MaxLength(50)
   password: string;
+
+  @ApiProperty({
+    description: 'boolean cookies',
+    example: true,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  cookies: boolean;
+
+  @ApiProperty({
+    description: 'enum user sign up from',
+    example: EnumUserSignUpFrom.mobile,
+    required: true,
+    enum: [EnumUserSignUpFrom.mobile, EnumUserSignUpFrom.website],
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum([EnumUserSignUpFrom.mobile, EnumUserSignUpFrom.website])
+  from: EnumUserSignUpFrom;
 }

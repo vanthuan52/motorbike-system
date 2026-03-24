@@ -14,7 +14,6 @@ import { UserMobileNumberResponseDto } from '@/modules/user/dtos/user.mobile-num
 import {
   IUser,
   IUserForgotPasswordCreate,
-  IUserMobileNumber,
   IUserProfile,
   IUserVerificationCreate,
 } from '@/modules/user/interfaces/user.interface';
@@ -158,12 +157,6 @@ export class UserUtil {
 
   mapProfile(user: IUserProfile): UserProfileResponseDto {
     return plainToInstance(UserProfileResponseDto, user);
-  }
-
-  mapMobileNumber(
-    mobileNumber: IUserMobileNumber
-  ): UserMobileNumberResponseDto {
-    return plainToInstance(UserMobileNumberResponseDto, mobileNumber);
   }
 
   mapTwoFactor(twoFactor: TwoFactor): UserTwoFactorStatusResponseDto {

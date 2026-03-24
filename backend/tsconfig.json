@@ -29,17 +29,17 @@
     "noFallthroughCasesInSwitch": false
   },
   "include": ["src/**/*", "test/**/*"],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "coverage",
-        "logs",
-        "keys",
-        ".warmup",
-        ".nyc_output",
-        "generated",
-        "src/metadata.ts",
-        "src/swagger.json",
-        "**/**/templates/*"
-    ]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "logs",
+    "keys",
+    ".warmup",
+    ".nyc_output",
+    "generated",
+    "src/metadata.ts",
+    "src/swagger.json",
+    "**/**/templates/*"
+  ]
 }

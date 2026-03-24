@@ -26,11 +26,12 @@ import {
 } from '@/modules/auth/interfaces/auth.interface';
 import { IAuthService } from '@/modules/auth/interfaces/auth.service.interface';
 import { AuthUtil } from '@/modules/auth/utils/auth.util';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
   EnumUserStatus,
+  EnumUserSignUpFrom,
+  EnumUserSignUpWith,
 } from '@/modules/user/enums/user.enum';
 import { EnumSessionStatusCodeError } from '@/modules/session/enums/session.status-code.enum';
 import { SessionUtil } from '@/modules/session/utils/session.util';
@@ -39,20 +40,17 @@ import { UserService } from '@/modules/user/services/user.service';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import { UserLoginRequestDto } from '@/modules/auth/dtos/request/auth.login.request.dto';
-import { UserCreateSocialRequestDto } from '@/modules/user/dtos/request/user.create-social.request.dto';
+import { UserCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
 import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
 import { RoleService } from '@/modules/role/services/role.service';
 import { SessionService } from '@/modules/session/services/session.service';
 import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.enum';
-import {
-  EnumUserSignUpFrom,
-  EnumUserSignUpWith,
-} from '@/modules/user/enums/user.enum';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
 import { UserCreateBySignUpRequestDto } from '@/modules/user/dtos/request/user.create-by-sign-up.request.dto';
 import { DefaultRole } from '../constants/auth.constant';
 import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
+import { IUser } from '@/modules/user/interfaces/user.interface';
 
 /**
  * Authentication service handling JWT token operations, session validation,
@@ -306,7 +304,7 @@ export class AuthService implements IAuthService {
    * @returns Token response object containing access token, refresh token, expiration time, jti, and sessionId
    */
   createTokens(
-    user: IUserDoc,
+    user: IUser,
     loginFrom: EnumUserLoginFrom,
     loginWith: EnumUserLoginWith
   ): IAuthAccessTokenGenerate {
@@ -427,26 +425,11 @@ export class AuthService implements IAuthService {
 
   // Api Service
 
-  /**
-   * Authenticates user with email/password credentials.
-   *
-   * Validates user exists and is active, checks password attempts,
-   * verifies password, creates tokens, and establishes session.
-   *
-   * @param body - Login credentials (email, password, from)
-   * @param requestLog - Request logging info (IP, user agent)
-   * @returns Token response containing access and refresh tokens
-   * @throws {NotFoundException} When user not found
-   * @throws {ForbiddenException} When user inactive or max password attempts reached
-   * @throws {BadRequestException} When password not set or not match
-   */
   async loginCredential(
-    { email, password, from }: UserLoginRequestDto,
+    { email, password, from, device }: UserLoginRequestDto,
     requestLog: IRequestLog
-  ): Promise<AuthTokenResponseDto> {
-    const user: IUserDoc = await this.userService.findOneWithRole({
-      email,
-    });
+  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+    const user = await this.userRepository.findOneWithRoleByEmail(email);
     if (!user) {
       throw new NotFoundException({
         statusCode: EnumUserStatusCodeError.notFound,
@@ -465,17 +448,14 @@ export class AuthService implements IAuthService {
     }
 
     if (this.authUtil.checkPasswordAttempt(user)) {
-      // Set user status to inactive
-      await this.userService.updateStatus(user._id, {
-        status: EnumUserStatus.inactive,
-      });
+      await this.userRepository.reachMaxPasswordAttempt(user.id, requestLog);
 
       throw new ForbiddenException({
         statusCode: EnumUserStatusCodeError.passwordAttemptMax,
         message: 'auth.error.passwordAttemptMax',
       });
     } else if (!this.authUtil.validatePassword(password, user.password)) {
-      await this.userService.incrementUserPasswordAttempt(user._id);
+      await this.userRepository.increasePasswordAttempt(user.id);
 
       throw new BadRequestException({
         statusCode: EnumUserStatusCodeError.passwordNotMatch,
@@ -483,63 +463,65 @@ export class AuthService implements IAuthService {
       });
     }
 
-    await this.userService.resetUserPasswordAttempt(user._id);
+    await this.userRepository.resetPasswordAttempt(user.id);
 
-    const { tokens, sessionId, jti } = this.createTokens(
+    const checkPasswordExpired: boolean = this.authUtil.checkPasswordExpired(
+      user.passwordExpired
+    );
+    if (checkPasswordExpired) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.passwordExpired,
+        message: 'auth.error.passwordExpired',
+      });
+    }
+
+    return this.handleLogin(
       user,
+      device,
       from,
-      EnumUserLoginWith.credential
-    );
-    const expiredAt = this.helperService.dateForward(
+      EnumUserLoginWith.credential,
       this.helperService.dateCreate(),
-      Duration.fromObject({
-        seconds: this.authUtil.jwtRefreshTokenExpirationTimeInSeconds,
-      })
+      requestLog
     );
-
-    await Promise.all([
-      this.sessionUtil.setLogin(user._id, sessionId, jti, expiredAt),
-      this.userService.updateLogin(
-        user._id,
-        {
-          loginFrom: from,
-          loginWith: EnumUserLoginWith.credential,
-          sessionId,
-          expiredAt,
-          jti,
-        },
-        requestLog
-      ),
-    ]);
-
-    return tokens;
   }
 
-  /**
-   * Authenticates user via social login (Google, Apple).
-   *
-   * If user doesn't exist, creates new user. Validates user status,
-   * creates tokens, and establishes session.
-   *
-   * @param email - User's email from social provider
-   * @param loginWith - Social login provider (google, apple)
-   * @param body - Social user creation data
-   * @param requestLog - Request logging info (IP, user agent)
-   * @returns Token response containing access and refresh tokens
-   */
   async loginWithSocial(
     email: string,
     loginWith: EnumUserLoginWith,
-    { from, ...others }: UserCreateSocialRequestDto,
+    { from, device, ...others }: UserCreateSocialRequestDto,
     requestLog: IRequestLog
-  ): Promise<AuthTokenResponseDto> {
-    // Delegate user fetching/creation to UserService
-    const user = await this.userService.findOrCreateUserBySocial(
-      email,
-      loginWith,
-      { from, ...others },
-      requestLog
+  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+    const featureFlag = await this.featureFlagUtil.getMetadataByKeyAndCache<{
+      signUpAllowed: boolean;
+    }>(
+      loginWith === EnumUserLoginWith.socialGoogle
+        ? 'loginWithGoogle'
+        : 'loginWithApple'
     );
+    let user = await this.userRepository.findOneWithRoleByEmail(email);
+
+    if (!user && featureFlag.signUpAllowed) {
+      const role = await this.roleRepository.existByName(this.userRoleName);
+      if (!role) {
+        throw new NotFoundException({
+          statusCode: EnumRoleStatusCodeError.notFound,
+          message: 'role.error.notFound',
+        });
+      }
+
+      const randomUsername = this.userUtil.createRandomUsername();
+      user = await this.userRepository.createBySocial(
+        email,
+        randomUsername,
+        role.id,
+        loginWith,
+        { from, device, ...others },
+        requestLog
+      );
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendWelcomeSocial(user.id);
+    }
 
     if (user.status !== EnumUserStatus.active) {
       throw new ForbiddenException({
@@ -547,74 +529,354 @@ export class AuthService implements IAuthService {
         message: 'user.error.inactive',
       });
     }
-    const promises = [];
+
     if (!user.isVerified) {
-      promises.push(this.userService.updateVerify(user._id, true));
+      const updatedUser = await this.userRepository.verify(user.id, requestLog);
+      user.isVerified = updatedUser.isVerified;
     }
 
-    const { tokens, jti, sessionId } = this.createTokens(user, from, loginWith);
-    const expiredAt = this.helperService.dateForward(
+    return this.handleLogin(
+      user,
+      device,
+      from,
+      loginWith,
       this.helperService.dateCreate(),
-      Duration.fromObject({
-        seconds: this.authUtil.jwtRefreshTokenExpirationTimeInSeconds,
-      })
+      requestLog
     );
-
-    await Promise.all([
-      ...promises,
-      this.sessionUtil.setLogin(user._id, sessionId, jti, expiredAt),
-      this.userService.updateLogin(
-        user._id,
-        {
-          loginFrom: from,
-          jti,
-          loginWith,
-          sessionId,
-          expiredAt,
-        },
-        requestLog
-      ),
-    ]);
-
-    return tokens;
   }
 
   async signUp(
-    dto: AuthSignUpRequestDto,
+    {
+      countryId,
+      email,
+      password: passwordString,
+      ...others
+    }: UserSignUpRequestDto,
     requestLog: IRequestLog
-  ): Promise<void> {
-    const [role, emailExist] = await Promise.all([
-      this.roleService.findOneByName(DefaultRole),
-      this.userService.existByEmail(dto.email),
+  ): Promise<IResponseReturn<void>> {
+    const [role, emailExist, checkCountry] = await Promise.all([
+      this.roleRepository.existByName(this.userRoleName),
+      this.userRepository.existByEmail(email),
+      this.countryRepository.existById(countryId),
     ]);
-
     if (!role) {
       throw new NotFoundException({
         statusCode: EnumRoleStatusCodeError.notFound,
         message: 'role.error.notFound',
       });
-    }
-
-    if (emailExist) {
+    } else if (!checkCountry) {
+      throw new NotFoundException({
+        statusCode: EnumCountryStatusCodeError.notFound,
+        message: 'country.error.notFound',
+      });
+    } else if (emailExist) {
       throw new ConflictException({
         statusCode: EnumUserStatusCodeError.emailExist,
         message: 'user.error.emailExist',
       });
     }
 
-    const { passwordHash } = this.authUtil.createPassword(dto.password);
+    try {
+      const userId = this.databaseUtil.createId();
+      const password = this.authUtil.createPassword(userId, passwordString);
+      const randomUsername = this.userUtil.createRandomUsername();
+      const emailVerification = this.userUtil.verificationCreateVerification(
+        userId,
+        EnumVerificationType.email
+      );
 
-    const data: UserCreateBySignUpRequestDto = {
-      name: dto.name,
-      email: dto.email,
-      phone: dto.phone,
-      passwordHash,
-      roleId: role._id,
-      signUpFrom: EnumUserSignUpFrom.website,
-      signUpWith: EnumUserSignUpWith.credential,
-    };
+      const created = await this.userRepository.signUp(
+        userId,
+        randomUsername,
+        role.id,
+        {
+          countryId,
+          email,
+          password: passwordString,
+          ...others,
+        },
+        password,
+        emailVerification,
+        requestLog
+      );
 
-    await this.userService.createBySignUp(data);
+      // @note: send email after all creation
+      await this.notificationUtil.sendWelcome(created.id, {
+        expiredAt: this.helperService.dateFormatToIso(
+          emailVerification.expiredAt
+        ),
+        reference: emailVerification.reference,
+        link: emailVerification.encryptedLink,
+        expiredInMinutes: emailVerification.expiredInMinutes,
+      });
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async verifyEmail(
+    { token }: UserVerifyEmailRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const hashedToken = this.userUtil.hashedToken(token);
+    const verification =
+      await this.userRepository.findOneActiveByVerificationEmailToken(
+        hashedToken
+      );
+    if (!verification) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.tokenInvalid,
+        message: 'user.error.verificationTokenInvalid',
+      });
+    }
+
+    try {
+      await this.userRepository.verifyEmail(
+        verification.id,
+        verification.userId,
+        requestLog
+      );
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendVerifiedEmail(verification.userId, {
+        reference: verification.reference,
+      });
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async sendVerificationEmail(
+    { email }: UserSendEmailVerificationRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const user = await this.userRepository.findOneActiveByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    } else if (user.isVerified) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.emailAlreadyVerified,
+        message: 'user.error.emailAlreadyVerified',
+      });
+    }
+
+    const lastVerification =
+      await this.userRepository.findOneLatestByVerificationEmail(user.id);
+    if (lastVerification) {
+      const today = this.helperService.dateCreate();
+      const canResendAt = this.helperService.dateForward(
+        lastVerification.createdAt,
+        Duration.fromObject({
+          minutes: this.userUtil.verificationExpiredInMinutes,
+        })
+      );
+
+      if (today < canResendAt) {
+        throw new BadRequestException({
+          statusCode:
+            EnumUserStatusCodeError.verificationEmailResendLimitExceeded,
+          message: 'user.error.verificationEmailResendLimitExceeded',
+          messageProperties: {
+            resendIn: this.helperService.dateDiff(today, canResendAt).minutes,
+          },
+        });
+      }
+    }
+
+    try {
+      const emailVerification = this.userUtil.verificationCreateVerification(
+        user.id,
+        EnumVerificationType.email
+      );
+
+      await this.userRepository.requestVerificationEmail(
+        user.id,
+        user.email,
+        emailVerification,
+        requestLog
+      );
+
+      await this.notificationUtil.sendVerificationEmail(user.id, {
+        expiredAt: this.helperService.dateFormatToIso(
+          emailVerification.expiredAt
+        ),
+        reference: emailVerification.reference,
+        link: emailVerification.encryptedLink,
+        expiredInMinutes: emailVerification.expiredInMinutes,
+      });
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async forgotPassword(
+    { email }: UserForgotPasswordRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const user = await this.userRepository.findOneActiveByEmail(email);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    }
+
+    const lastForgotPassword =
+      await this.userRepository.findOneLatestByForgotPassword(user.id);
+    if (lastForgotPassword) {
+      const today = this.helperService.dateCreate();
+      const canResendAt = this.helperService.dateForward(
+        lastForgotPassword.createdAt,
+        Duration.fromObject({
+          minutes: this.userUtil.forgotResendInMinutes,
+        })
+      );
+
+      if (today < canResendAt) {
+        throw new BadRequestException({
+          statusCode:
+            EnumUserStatusCodeError.forgotPasswordRequestLimitExceeded,
+          message: 'user.error.forgotPasswordRequestLimitExceeded',
+          messageProperties: {
+            resendIn: this.helperService.dateDiff(today, canResendAt).minutes,
+          },
+        });
+      }
+    }
+
+    try {
+      const resetPassword = this.userUtil.forgotPasswordCreate(user.id);
+
+      await this.userRepository.forgotPassword(
+        user.id,
+        email,
+        resetPassword,
+        requestLog
+      );
+
+      await this.notificationUtil.sendForgotPassword(user.id, {
+        expiredAt: this.helperService.dateFormatToIso(resetPassword.expiredAt),
+        link: resetPassword.encryptedLink,
+        reference: resetPassword.reference,
+        expiredInMinutes: resetPassword.expiredInMinutes,
+        resendInMinutes: resetPassword.resendInMinutes,
+      });
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  async resetPassword(
+    {
+      newPassword,
+      token,
+      backupCode,
+      code,
+      method,
+    }: UserForgotPasswordResetRequestDto,
+    requestLog: IRequestLog
+  ): Promise<IResponseReturn<void>> {
+    const hashedToken = this.userUtil.hashedToken(token);
+    const resetPassword =
+      await this.userRepository.findOneActiveByForgotPasswordToken(hashedToken);
+    if (!resetPassword) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    }
+
+    const passwordHistories =
+      await this.passwordHistoryRepository.findActiveUser(resetPassword.userId);
+    const passwordCheck = this.authUtil.checkPasswordPeriod(
+      passwordHistories,
+      newPassword
+    );
+    if (passwordCheck) {
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordMustNew,
+        message: 'auth.error.passwordMustNew',
+        messageProperties: {
+          period: this.authUtil.getPasswordPeriodInDays(),
+        },
+      });
+    }
+
+    let twoFactorVerified: IAuthTwoFactorVerifyResult | undefined;
+    if (resetPassword.user.twoFactor.enabled) {
+      twoFactorVerified = await this.handleTwoFactorValidation(
+        resetPassword.user,
+        {
+          code,
+          backupCode,
+          method,
+        }
+      );
+    }
+
+    try {
+      const sessions = await this.sessionRepository.findActive(
+        resetPassword.userId
+      );
+      const password = this.authUtil.createPassword(
+        resetPassword.userId,
+        newPassword
+      );
+
+      await Promise.all([
+        this.userRepository.resetPassword(
+          resetPassword.userId,
+          resetPassword.id,
+          password,
+          requestLog
+        ),
+        this.sessionUtil.deleteAllLogins(resetPassword.userId, sessions),
+        twoFactorVerified
+          ? this.userRepository.verifyTwoFactor(
+              resetPassword.userId,
+              twoFactorVerified,
+              requestLog
+            )
+          : Promise.resolve(),
+      ]);
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendResetPassword(resetPassword.userId);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
   }
 
   /**
@@ -627,11 +889,11 @@ export class AuthService implements IAuthService {
    * @param requestLog - Request logging info (IP, user agent)
    * @returns Token response containing new access and refresh tokens
    */
-  async refreshToken(
-    user: IUserDoc,
+  async refresh(
+    user: IUser,
     refreshToken: string,
     requestLog: IRequestLog
-  ): Promise<AuthTokenResponseDto> {
+  ): Promise<IResponseReturn<AuthTokenResponseDto>> {
     const {
       sessionId,
       userId,
@@ -648,92 +910,203 @@ export class AuthService implements IAuthService {
       });
     }
 
-    const {
-      jti: newJti,
-      tokens,
-      expiredInMs,
-    } = this.generateRefreshTokens(user, refreshToken);
+    try {
+      const {
+        jti: newJti,
+        tokens,
+        expiredInMs,
+      } = this.authUtil.refreshToken(user, refreshToken);
 
-    await this.sessionUtil.updateLogin(
-      userId,
-      sessionId,
-      session,
-      newJti,
-      expiredInMs
+      await Promise.all([
+        this.sessionUtil.updateLogin(
+          userId,
+          sessionId,
+          session,
+          newJti,
+          expiredInMs
+        ),
+        this.userRepository.refresh(
+          userId,
+          {
+            sessionId,
+            jti: newJti,
+            expiredAt: session.expiredAt,
+            loginFrom: loginFrom,
+            loginWith: loginWith,
+          },
+          requestLog
+        ),
+      ]);
+
+      return {
+        data: tokens,
+      };
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
+  private async createTokenAndSession(
+    user: IUser,
+    device: DeviceRequestDto,
+    loginFrom: EnumUserLoginFrom,
+    loginWith: EnumUserLoginWith,
+    loginAt: Date,
+    requestLog: IRequestLog
+  ): Promise<AuthTokenResponseDto> {
+    const { tokens, sessionId, jti } = this.authUtil.createTokens(
+      user,
+      loginFrom,
+      loginWith
     );
-
     const expiredAt = this.helperService.dateForward(
-      this.helperService.dateCreate(),
-      Duration.fromObject({ milliseconds: expiredInMs })
+      loginAt,
+      Duration.fromObject({
+        seconds: this.authUtil.jwtRefreshTokenExpirationTimeInSeconds,
+      })
     );
-    const { ipAddress, userAgent } = requestLog;
 
-    await Promise.all([
-      this.userService.updateLogin(
-        user._id,
+    const { isNewDevice, sessionShouldBeInactive } =
+      await this.userRepository.login(
+        user.id,
+        device,
         {
           loginFrom,
           loginWith,
+          jti,
           sessionId,
           expiredAt,
-          jti: newJti,
         },
-        {
-          ipAddress,
-          userAgent,
-        }
-      ),
-      this.sessionService.updateJti(sessionId, newJti),
-    ]);
+        requestLog
+      );
+
+    const promises = [
+      this.sessionUtil.setLogin(user.id, sessionId, jti, expiredAt),
+    ];
+
+    if (sessionShouldBeInactive.length > 0) {
+      promises.push(
+        this.sessionUtil.deleteAllLogins(user.id, sessionShouldBeInactive)
+      );
+    }
+
+    if (isNewDevice) {
+      promises.push(
+        this.notificationUtil.sendNewDeviceLogin(user.id, {
+          requestLog,
+          loginFrom,
+          loginWith,
+          loginAt: this.helperService.dateFormatToIso(loginAt),
+        })
+      );
+    }
+
+    await Promise.all(promises);
 
     return tokens;
   }
 
-  async changePassword(
-    user: IUserDoc,
-    { newPassword, oldPassword }: AuthChangePasswordRequestDto,
+  private async handleLogin(
+    user: IUser,
+    device: DeviceRequestDto,
+    loginFrom: EnumUserLoginFrom,
+    loginWith: EnumUserLoginWith,
+    loginAt: Date,
     requestLog: IRequestLog
-  ): Promise<void> {
-    // Check if password attempts exceeded
-    if (this.authUtil.checkPasswordAttempt(user)) {
+  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+    if (!user.isVerified) {
+      const emailVerification = this.userUtil.verificationCreateVerification(
+        user.id,
+        EnumVerificationType.email
+      );
+
+      await this.userRepository.requestVerificationEmail(
+        user.id,
+        user.email,
+        emailVerification,
+        requestLog
+      );
+
+      // send notification after all creation
+      await this.notificationUtil.sendVerificationEmail(user.id, {
+        expiredAt: this.helperService.dateFormatToIso(
+          emailVerification.expiredAt
+        ),
+        reference: emailVerification.reference,
+        link: emailVerification.encryptedLink,
+        expiredInMinutes: emailVerification.expiredInMinutes,
+      });
+
       throw new ForbiddenException({
-        statusCode: EnumUserStatusCodeError.passwordAttemptMax,
-        message: 'auth.error.passwordAttemptMax',
+        statusCode: EnumUserStatusCodeError.emailNotVerified,
+        message: 'user.error.emailNotVerified',
       });
     }
 
-    const passwordMatch = this.authUtil.validatePassword(
-      oldPassword,
-      user.password
-    );
+    if (!user.twoFactor.enabled) {
+      const tokens = await this.createTokenAndSession(
+        user,
+        device,
+        loginFrom,
+        loginWith,
+        loginAt,
+        requestLog
+      );
 
-    if (!passwordMatch) {
-      await this.userService.incrementPasswordAttempt(user._id);
-
-      throw new BadRequestException({
-        statusCode: EnumUserStatusCodeError.passwordNotMatch,
-        message: 'auth.error.passwordNotMatch',
-      });
+      return {
+        data: {
+          isTwoFactorEnable: false,
+          tokens,
+        },
+      };
     }
 
-    // Reset password attempt after successful validation
-    await this.userService.resetPasswordAttempt(user._id);
+    const { challengeToken, expiresInMs } =
+      await this.authTwoFactorUtil.createChallenge({
+        userId: user.id,
+        device,
+        loginFrom,
+        loginWith,
+      });
+    if (user.twoFactor.requiredSetup) {
+      const { encryptedSecret, otpauthUrl, secret, iv } =
+        await this.authTwoFactorUtil.setupTwoFactor(user.email);
+      await this.userRepository.setupTwoFactor(
+        user.id,
+        encryptedSecret,
+        iv,
+        requestLog
+      );
 
-    // Update password in database
-    await this.userService.updatePassword(user._id, newPassword);
+      return {
+        data: {
+          isTwoFactorEnable: true,
+          twoFactor: {
+            isRequiredSetup: true,
+            challengeToken,
+            challengeExpiresInMs: expiresInMs,
+            backupCodesRemaining: user.twoFactor.backupCodes.length ?? 0,
+            otpauthUrl,
+            secret,
+          },
+        },
+      };
+    }
 
-    // Revoke all sessions to force re-login
-    const sessions = await this.sessionService.findAllByUser(user._id);
-    await this.sessionUtil.deleteAllLogins(user._id, sessions);
+    return {
+      data: {
+        isTwoFactorEnable: true,
+        twoFactor: {
+          isRequiredSetup: false,
+          challengeToken,
+          challengeExpiresInMs: expiresInMs,
+          backupCodesRemaining: user.twoFactor.backupCodes.length ?? 0,
+        },
+      },
+    };
   }
-
-  async forgotPassword(
-    { email }: UserForgotPasswordRequestDto,
-    requestLog: IRequestLog
-  ): Promise<void> {}
-
-  async resetPassword(
-    data: UserForgotPasswordResetRequestDto,
-    requestLog: IRequestLog
-  ): Promise<void> {}
 }

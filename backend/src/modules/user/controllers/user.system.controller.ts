@@ -45,8 +45,8 @@ import {
 } from '@/modules/user/dtos/response/user.check.response.dto';
 import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
 import { UserService } from '@/modules/user/services/user.service';
-
-import { EnumUserStatus, Prisma } from '@/generated/prisma-client';
+import { EnumUserStatus } from '../enums/user.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.system.user')
 @Controller({

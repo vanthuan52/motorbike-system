@@ -14,18 +14,13 @@ import {
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
-import { EnumAuthTwoFactorMethod } from '@/modules/auth/enums/auth.enum';
-import {
-  IAuthPassword,
-  IAuthTwoFactorVerifyResult,
-} from '@/modules/auth/interfaces/auth.interface';
+import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
 import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
 import { IRole } from '@/modules/role/interfaces/role.interface';
 import { UserClaimUsernameRequestDto } from '@/modules/user/dtos/request/user.claim-username.request.dto';
-import { UserCreateSocialRequestDto } from '@/modules/user/dtos/request/user.create-social.request.dto';
+import { UserCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
 import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
-import { UserAddMobileNumberRequestDto } from '@/modules/user/dtos/request/user.mobile-number.request.dto';
 import { UserUpdateProfileRequestDto } from '@/modules/user/dtos/request/user.profile.request.dto';
 import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
 import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
@@ -334,31 +329,6 @@ export class UserRepository {
     });
   }
 
-  async findOneMobileNumber(
-    userId: string,
-    mobileNumberId: string
-  ): Promise<{
-    id: string;
-    number: string;
-    phoneCode: string;
-    isVerified: boolean;
-  } | null> {
-    return this.databaseService.userMobileNumber.findFirst({
-      where: {
-        id: mobileNumberId,
-        user: {
-          id: userId,
-        },
-      },
-      select: {
-        id: true,
-        number: true,
-        phoneCode: true,
-        isVerified: true,
-      },
-    });
-  }
-
   async existByEmail(email: string): Promise<{ id: string } | null> {
     return this.databaseService.user.findFirst({
       where: { email: email },
@@ -376,7 +346,7 @@ export class UserRepository {
   async createByAdmin(
     userId: string,
     username: string,
-    { countryId, email, name }: UserCreateRequestDto,
+    { email, name }: UserCreateRequestDto,
     {
       passwordCreated,
       passwordExpired,
@@ -387,24 +357,11 @@ export class UserRepository {
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     createdBy: string
   ): Promise<User> {
-    const termPolicies = await this.databaseService.termPolicy.findMany({
-      where: {
-        type: {
-          in: [EnumTermPolicyType.termsOfService, EnumTermPolicyType.privacy],
-        },
-        status: EnumTermPolicyStatus.published,
-      },
-      select: {
-        id: true,
-      },
-    });
-
     const [user] = await this.databaseService.$transaction([
       this.databaseService.user.create({
         data: {
           id: userId,
           email,
-          countryId,
           roleId,
           name,
           signUpFrom: EnumUserSignUpFrom.admin,
@@ -475,15 +432,6 @@ export class UserRepository {
           },
         },
       }),
-      ...termPolicies.map(termPolicy =>
-        this.databaseService.termPolicyUserAcceptance.create({
-          data: {
-            userId,
-            termPolicyId: termPolicy.id,
-            createdBy,
-          },
-        })
-      ),
     ]);
 
     return user;
@@ -600,171 +548,6 @@ export class UserRepository {
         },
       },
     });
-  }
-
-  async existMobileNumber(
-    userId: string,
-    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
-    excludeId?: string
-  ): Promise<{ id: string } | null> {
-    return this.databaseService.userMobileNumber.findFirst({
-      where: {
-        number,
-        countryId,
-        phoneCode,
-        user: {
-          id: userId,
-        },
-        ...(excludeId
-          ? {
-              id: { not: excludeId },
-            }
-          : {}),
-      },
-      select: {
-        id: true,
-      },
-    });
-  }
-
-  async addMobileNumber(
-    userId: string,
-    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<UserMobileNumber & { country: Country }> {
-    const updated = await this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        mobileNumbers: {
-          create: {
-            countryId,
-            number,
-            phoneCode,
-            createdBy: userId,
-          },
-        },
-        updatedBy: userId,
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userAddMobileNumber,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-          },
-        },
-      },
-      include: {
-        mobileNumbers: {
-          where: {
-            countryId,
-            number,
-            phoneCode,
-          },
-          take: 1,
-          include: {
-            country: true,
-          },
-        },
-      },
-    });
-
-    return updated.mobileNumbers[0];
-  }
-
-  async updateMobileNumber(
-    userId: string,
-    mobileNumber: {
-      id: string;
-      number: string;
-      phoneCode: string;
-      isVerified: boolean;
-    },
-    { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<UserMobileNumber & { country: Country }> {
-    const updated = await this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        mobileNumbers: {
-          update: {
-            where: { id: mobileNumber.id },
-            data: {
-              countryId,
-              number,
-              phoneCode,
-              updatedBy: userId,
-              isVerified:
-                mobileNumber.number === number &&
-                mobileNumber.phoneCode === phoneCode
-                  ? mobileNumber.isVerified
-                  : false,
-            },
-          },
-        },
-        updatedBy: userId,
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userUpdateMobileNumber,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-          },
-        },
-      },
-      include: {
-        mobileNumbers: {
-          where: {
-            id: mobileNumber.id,
-          },
-          take: 1,
-          include: {
-            country: true,
-          },
-        },
-      },
-    });
-
-    return updated.mobileNumbers[0];
-  }
-
-  async deleteMobileNumber(
-    userId: string,
-    mobileNumberId: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<UserMobileNumber & { country: Country }> {
-    const user = await this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        mobileNumbers: {
-          delete: { id: mobileNumberId },
-        },
-        updatedBy: userId,
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userDeleteMobileNumber,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-          },
-        },
-      },
-      include: {
-        mobileNumbers: {
-          where: {
-            id: mobileNumberId,
-          },
-          take: 1,
-          include: {
-            country: true,
-          },
-        },
-      },
-    });
-
-    return user.mobileNumbers[0];
   }
 
   async claimUsername(
@@ -1594,294 +1377,10 @@ export class UserRepository {
     });
   }
 
-  async verifyTwoFactor(
-    userId: string,
-    { method, newBackupCodes }: IAuthTwoFactorVerifyResult,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
-    const now = this.helperService.dateCreate();
-
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            lastUsedAt: this.helperService.dateCreate(),
-            ...(method === EnumAuthTwoFactorMethod.backupCodes && {
-              backupCodes: newBackupCodes,
-            }),
-          },
-        },
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userVerifyTwoFactor,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-            createdAt: now,
-          },
-        },
-      },
-      include: {
-        role: true,
-        twoFactor: true,
-      },
-    });
-  }
-
-  async setupTwoFactor(
-    userId: string,
-    secretEncrypted: string,
-    iv: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
-    const now = this.helperService.dateCreate();
-
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            secret: secretEncrypted,
-            iv,
-            updatedAt: now,
-            updatedBy: userId,
-          },
-        },
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userSetupTwoFactor,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-            createdAt: now,
-          },
-        },
-      },
-      include: {
-        role: true,
-        twoFactor: true,
-      },
-    });
-  }
-
-  async enableTwoFactor(
-    userId: string,
-    backupCodesHashed: string[],
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
-    const now = this.helperService.dateCreate();
-
-    return this.databaseService.$transaction<IUser>(async tx => {
-      const twoFactor = await tx.twoFactor.findUnique({
-        where: { userId },
-        select: {
-          confirmedAt: true,
-        },
-      });
-
-      return tx.user.update({
-        where: { id: userId, deletedAt: null },
-        data: {
-          twoFactor: {
-            update: {
-              enabled: true,
-              confirmedAt: twoFactor.confirmedAt ?? now,
-              backupCodes: backupCodesHashed,
-              lastUsedAt: now,
-              updatedAt: now,
-              updatedBy: userId,
-            },
-          },
-          activityLogs: {
-            create: {
-              action: EnumActivityLogAction.userEnableTwoFactor,
-              ipAddress,
-              userAgent: this.databaseUtil.toPlainObject(userAgent),
-              geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-              createdBy: userId,
-              createdAt: now,
-            },
-          },
-        },
-        include: {
-          role: true,
-          twoFactor: true,
-        },
-      });
-    });
-  }
-
-  async disableTwoFactor(
-    userId: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
-    const now = this.helperService.dateCreate();
-
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            enabled: false,
-            requiredSetup: false,
-            backupCodes: [],
-            lastUsedAt: now,
-            secret: null,
-            iv: null,
-            updatedBy: userId,
-            updatedAt: now,
-          },
-        },
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userDisableTwoFactor,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-            createdAt: now,
-          },
-        },
-        sessions: {
-          updateMany: {
-            where: {
-              isRevoked: false,
-              expiredAt: { gte: now },
-            },
-            data: {
-              isRevoked: true,
-              revokedAt: now,
-              revokedById: userId,
-            },
-          },
-        },
-      },
-      include: {
-        role: true,
-        twoFactor: true,
-      },
-    });
-  }
-
-  async regenerateTwoFactorBackupCodes(
-    userId: string,
-    backupCodesHashed: string[],
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
-    const now = this.helperService.dateCreate();
-
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            backupCodes: backupCodesHashed,
-            updatedBy: userId,
-            updatedAt: now,
-          },
-        },
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.userRegenerateTwoFactorBackupCodes,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: userId,
-            createdAt: now,
-          },
-        },
-      },
-      include: {
-        role: true,
-        twoFactor: true,
-      },
-    });
-  }
-
-  async resetTwoFactorByAdmin(
-    userId: string,
-    updatedBy: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
-    const now = this.helperService.dateCreate();
-
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            requiredSetup: true,
-            backupCodes: [],
-            secret: null,
-            iv: null,
-            updatedBy: updatedBy,
-            updatedAt: now,
-          },
-        },
-        activityLogs: {
-          create: {
-            action: EnumActivityLogAction.adminUserResetTwoFactor,
-            ipAddress,
-            userAgent: this.databaseUtil.toPlainObject(userAgent),
-            geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-            createdBy: updatedBy,
-            createdAt: now,
-          },
-        },
-        sessions: {
-          updateMany: {
-            where: { isRevoked: false, expiredAt: { gte: now } },
-            data: {
-              isRevoked: true,
-              revokedAt: now,
-              revokedById: updatedBy,
-            },
-          },
-        },
-      },
-      include: {
-        role: true,
-        twoFactor: true,
-      },
-    });
-  }
-
-  async increaseTwoFactorAttempt(userId: string): Promise<User> {
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            attempt: {
-              increment: 1,
-            },
-          },
-        },
-      },
-    });
-  }
-
-  async resetTwoFactorAttempt(userId: string): Promise<User> {
-    return this.databaseService.user.update({
-      where: { id: userId, deletedAt: null },
-      data: {
-        twoFactor: {
-          update: {
-            attempt: 0,
-          },
-        },
-      },
-    });
-  }
-
   async importByAdmin(
     data: UserImportRequestDto[],
     usernames: string[],
     passwordHasheds: IAuthPassword[],
-    countryId: string,
     { id: roleId, type: roleType }: IRole,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     createdBy: string

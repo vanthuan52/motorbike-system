@@ -8,23 +8,23 @@ import {
   IAuthSocialPayload,
   IAuthAccessTokenGenerate,
 } from '@/modules/auth/interfaces/auth.interface';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
 } from '@/modules/user/enums/user.enum';
 import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
 import { UserLoginRequestDto } from '../dtos/request/auth.login.request.dto';
-import { UserCreateSocialRequestDto } from '@/modules/user/dtos/request/user.create-social.request.dto';
+import { UserCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
 import { AuthSignUpRequestDto } from '../dtos/request/auth.sign-up.request.dto';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
 import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
+import { UserModel } from '@/modules/user/models/user.model';
 
 export interface IAuthService {
   // Pure service
   createTokens(
-    user: IUserDoc,
+    user: UserModel,
     loginFrom: EnumUserLoginFrom,
     loginWith: EnumUserLoginWith
   ): IAuthAccessTokenGenerate;
@@ -62,13 +62,13 @@ export interface IAuthService {
     requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   refreshToken(
-    user: IUserDoc,
+    user: UserModel,
     refreshToken: string,
     requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   signUp(data: AuthSignUpRequestDto, requestLog: IRequestLog): Promise<void>;
   changePassword(
-    user: IUserDoc,
+    user: UserModel,
     data: AuthChangePasswordRequestDto,
     requestLog: IRequestLog
   ): Promise<void>;

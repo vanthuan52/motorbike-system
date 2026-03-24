@@ -16,13 +16,11 @@ import verifyAppleToken, {
   VerifyAppleIdTokenResponse,
 } from 'verify-apple-id-token';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { IUserDoc } from '@/modules/user/interfaces/user.interface';
 import { DefaultUserPassword } from '../constants/auth.constant';
 import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
 } from '@/modules/user/enums/user.enum';
-import { UserDoc } from '@/modules/user/entities/user.entity';
 
 /**
  * Authentication Utility Service.

@@ -13,8 +13,5 @@ export enum EnumPolicySubject {
   user = 'user',
   session = 'session',
   activityLog = 'activityLog',
-  passwordHistory = 'passwordHistory',
-  termPolicy = 'termPolicy',
-  featureFlag = 'featureFlag',
   device = 'device',
 }

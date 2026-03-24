@@ -1,18 +1,3 @@
-import {
-  CareRecordMediaDoc,
-  CareRecordMediaEntity,
-} from '../entities/care-record-media.entity';
-import {
-  CareRecordDoc,
-  CareRecordEntity,
-} from '@/modules/care-record/entities/care-record.entity';
+import { CareRecordMediaModel } from '../models/care-record-media.model';
 
-export interface ICareRecordMediaEntity
-  extends Omit<CareRecordMediaEntity, 'careRecord'> {
-  CareRecord: CareRecordEntity;
-}
-
-export interface ICareRecordMediaDoc
-  extends Omit<CareRecordMediaDoc, 'careRecord'> {
-  CareRecord: CareRecordDoc;
-}
+export interface ICareRecordMedia extends CareRecordMediaModel {}
