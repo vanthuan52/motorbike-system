@@ -1,10 +1,3 @@
-import { StoreDoc, StoreEntity } from '../entities/store.entity';
-import { UserDoc, UserEntity } from '@/modules/user/entities/user.entity';
+import { StoreModel } from '../models/store.model';
 
-export interface IStoreEntity extends Omit<StoreEntity, 'createdBy'> {
-  createdBy: UserEntity;
-}
-
-export interface IStoreDoc extends Omit<StoreDoc, 'createdBy'> {
-  createdBy: UserDoc;
-}
+export interface IStore extends StoreModel {}

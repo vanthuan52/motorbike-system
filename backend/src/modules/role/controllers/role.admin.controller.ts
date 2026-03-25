@@ -50,11 +50,8 @@ import {
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
-import {
-  EnumActivityLogAction,
-  EnumRoleType,
-  Prisma,
-} from '/@generated/prisma-client';
+import { EnumRoleType } from '../enums/role.enum';
+import { EnumActivityLogAction, Prisma } from '/@generated/prisma-client';
 
 @ApiTags('modules.admin.role')
 @Controller({

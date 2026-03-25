@@ -45,14 +45,12 @@ import { SessionService } from '@/modules/session/services/session.service';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
-  EnumActivityLogAction,
-  EnumRoleType,
   GeoLocation,
-  Prisma,
   UserAgent,
-} from '@/generated/prisma-client';
+} from '@/modules/user/interfaces/user.interface';
+import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user.session')
 @Controller({

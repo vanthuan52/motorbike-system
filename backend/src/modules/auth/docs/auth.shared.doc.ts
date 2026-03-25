@@ -16,7 +16,7 @@ export function AuthSharedRefreshDoc(): MethodDecorator {
       summary: 'refresh token',
     }),
     DocAuth({
-      xApiKey: true,
+      xApiKey: false,
       jwtRefreshToken: true,
     }),
     DocGuard({}),
@@ -35,7 +35,7 @@ export function AuthSharedChangePasswordDoc(): MethodDecorator {
       termPolicy: true,
     }),
     DocAuth({
-      xApiKey: true,
+      xApiKey: false,
       jwtAccessToken: true,
     }),
     DocRequest({

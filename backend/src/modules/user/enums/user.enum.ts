@@ -18,8 +18,8 @@ export enum EnumUserSignUpFrom {
 
 export enum EnumUserSignUpWith {
   credential = 'credential',
-  google = 'google',
-  apple = 'apple',
+  socialGoogle = 'socialGoogle',
+  socialApple = 'socialApple',
 }
 
 export enum EnumUserLoginFrom {
@@ -29,6 +29,11 @@ export enum EnumUserLoginFrom {
 
 export enum EnumUserLoginWith {
   credential = 'credential',
-  google = 'google',
-  apple = 'apple',
+  socialGoogle = 'socialGoogle',
+  socialApple = 'socialApple',
+}
+
+export enum EnumVerificationType {
+  mobileNumber = 'mobileNumber',
+  email = 'email',
 }

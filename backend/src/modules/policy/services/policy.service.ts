@@ -9,7 +9,7 @@ import { EnumPolicyStatusCodeError } from '@/modules/policy/enums/policy.status-
 import { PolicyAbilityFactory } from '@/modules/policy/factories/policy.factory';
 import { IPolicyService } from '@/modules/policy/interfaces/policy.service.interface';
 import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
-import { EnumRoleType } from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 @Injectable()
 export class PolicyService implements IPolicyService {

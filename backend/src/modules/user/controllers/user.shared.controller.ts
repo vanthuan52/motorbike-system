@@ -45,7 +45,10 @@ import {
 } from '@/modules/user/dtos/request/user.profile.request.dto';
 import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
 import { UserService } from '@/modules/user/services/user.service';
-import { GeoLocation, UserAgent } from '@/generated/prisma-client';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.shared.user')
 @Controller({

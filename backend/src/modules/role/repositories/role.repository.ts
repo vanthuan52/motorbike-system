@@ -11,7 +11,6 @@ import { IResponsePagingReturn } from '@/common/response/interfaces/response.int
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
 import { IRole } from '@/modules/role/interfaces/role.interface';
-
 import { Prisma, Role } from '@/generated/prisma-client';
 
 @Injectable()

@@ -1,5 +1,9 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { Store, Prisma } from '@/generated/prisma-client';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto';
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
@@ -12,12 +16,13 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumStoreStatusCodeError } from '../enums/store.status-code.enum';
 import { StoreUtil } from '../utils/store.util';
+import { Store, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class StoreService implements IStoreService {
   constructor(
     private readonly storeRepository: StoreRepository,
-    private readonly storeUtil: StoreUtil,
+    private readonly storeUtil: StoreUtil
   ) {}
 
   async getListOffset(
@@ -26,11 +31,8 @@ export class StoreService implements IStoreService {
       skip,
       where,
       orderBy,
-    }: IPaginationQueryOffsetParams<
-      Prisma.StoreSelect,
-      Prisma.StoreWhereInput
-    >,
-    status?: Record<string, IPaginationIn>,
+    }: IPaginationQueryOffsetParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
+    status?: Record<string, IPaginationIn>
   ): Promise<{ data: Store[]; total: number }> {
     const mergedWhere: Prisma.StoreWhereInput = {
       ...where,
@@ -72,11 +74,8 @@ export class StoreService implements IStoreService {
       cursor,
       cursorField,
       includeCount,
-    }: IPaginationQueryCursorParams<
-      Prisma.StoreSelect,
-      Prisma.StoreWhereInput
-    >,
-    status?: Record<string, IPaginationIn>,
+    }: IPaginationQueryCursorParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
+    status?: Record<string, IPaginationIn>
   ): Promise<{ data: Store[]; total?: number }> {
     const mergedWhere: Prisma.StoreWhereInput = {
       ...where,
@@ -146,7 +145,8 @@ export class StoreService implements IStoreService {
       }
     }
 
-    const slug = payload.slug ?? (await this.storeUtil.createSlug(payload.name));
+    const slug =
+      payload.slug ?? (await this.storeUtil.createSlug(payload.name));
 
     const data: Prisma.StoreCreateInput = {
       name: payload.name,
@@ -161,10 +161,7 @@ export class StoreService implements IStoreService {
     return { id: created.id };
   }
 
-  async update(
-    storeId: string,
-    payload: StoreUpdateRequestDto
-  ): Promise<void> {
+  async update(storeId: string, payload: StoreUpdateRequestDto): Promise<void> {
     const store = await this.storeRepository.findOneById(storeId);
     if (!store) {
       throw new NotFoundException({

@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { RoleService } from '@/modules/role/services/role.service';
 import { RoleRequiredMetaKey } from '@/modules/role/constants/role.constant';
-import { EnumRoleType } from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 /**
  * Guard that validates user access based on role types

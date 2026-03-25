@@ -20,7 +20,6 @@ import {
   AuthSocialAppleProtected,
   AuthSocialGoogleProtected,
 } from '@/modules/auth/decorators/auth.social.decorator';
-import { AuthTokenResponseDto } from '@/modules/auth/dtos/response/auth.token.response.dto';
 import { IAuthSocialPayload } from '@/modules/auth/interfaces/auth.interface';
 import {
   AuthPublicLoginSocialAppleDoc,
@@ -32,20 +31,17 @@ import {
   AuthPublicSignUpDoc,
   AuthPublicVerifyEmailDoc,
 } from '@/modules/auth/docs/auth.public.doc';
-import { UserCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
-import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
-import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
-import { UserLoginRequestDto } from '@/modules/user/dtos/request/user.login.request.dto';
-import { UserSendEmailVerificationRequestDto } from '@/modules/user/dtos/request/user.send-email-verification.request.dto';
-import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
-import { UserVerifyEmailRequestDto } from '@/modules/user/dtos/request/user.verify-email.request.dto';
-import { UserLoginResponseDto } from '@/modules/auth/dtos/response/auth.login.response.dto';
-import {
-  EnumUserLoginWith,
-  GeoLocation,
-  UserAgent,
-} from '@/generated/prisma-client';
+import { AuthCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
+import { AuthForgotPasswordResetRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password-reset.request.dto';
+import { AuthForgotPasswordRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password.request.dto';
+import { AuthLoginRequestDto } from '@/modules/auth/dtos/request/auth.login.request.dto';
+import { AuthSendEmailVerificationRequestDto } from '@/modules/auth/dtos/request/auth.send-email-verification.request.dto';
+import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
+import { AuthVerifyEmailRequestDto } from '@/modules/auth/dtos/request/auth.verify-email.request.dto';
+import { AuthLoginResponseDto } from '@/modules/auth/dtos/response/auth.login.response.dto';
 import { AuthService } from '../services/auth.service';
+import { EnumUserLoginWith } from '@/modules/user/enums/user.enum';
+import { GeoLocation, UserAgent } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.auth')
 @Controller({
@@ -61,11 +57,11 @@ export class AuthPublicController {
   @HttpCode(HttpStatus.OK)
   @Post('/login/credential')
   async loginWithCredential(
-    @Body() body: UserLoginRequestDto,
+    @Body() body: AuthLoginRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
-  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+  ): Promise<IResponseReturn<AuthLoginResponseDto>> {
     return this.authService.loginCredential(body, {
       ipAddress,
       userAgent,
@@ -82,11 +78,11 @@ export class AuthPublicController {
   async loginWithGoogle(
     @AuthJwtPayload<IAuthSocialPayload>('email')
     email: string,
-    @Body() body: UserCreateSocialRequestDto,
+    @Body() body: AuthCreateSocialRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
-  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+  ): Promise<IResponseReturn<AuthLoginResponseDto>> {
     return this.authService.loginWithSocial(
       email,
       EnumUserLoginWith.socialGoogle,
@@ -108,11 +104,11 @@ export class AuthPublicController {
   async loginWithApple(
     @AuthJwtPayload<IAuthSocialPayload>('email')
     email: string,
-    @Body() body: UserCreateSocialRequestDto,
+    @Body() body: AuthCreateSocialRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
-  ): Promise<IResponseReturn<UserLoginResponseDto>> {
+  ): Promise<IResponseReturn<AuthLoginResponseDto>> {
     return this.authService.loginWithSocial(
       email,
       EnumUserLoginWith.socialApple,
@@ -131,7 +127,7 @@ export class AuthPublicController {
   @Post('/sign-up')
   async signUp(
     @Body()
-    body: UserSignUpRequestDto,
+    body: AuthSignUpRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
@@ -148,7 +144,7 @@ export class AuthPublicController {
   @ApiKeyProtected()
   @Patch('/verify/email')
   async verifyEmail(
-    @Body() body: UserVerifyEmailRequestDto,
+    @Body() body: AuthVerifyEmailRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
@@ -166,7 +162,7 @@ export class AuthPublicController {
   @HttpCode(HttpStatus.OK)
   @Post('/send/email')
   async sendEmailVerification(
-    @Body() body: UserSendEmailVerificationRequestDto,
+    @Body() body: AuthSendEmailVerificationRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
@@ -184,7 +180,7 @@ export class AuthPublicController {
   @HttpCode(HttpStatus.OK)
   @Post('/password/forgot')
   async forgotPassword(
-    @Body() body: UserForgotPasswordRequestDto,
+    @Body() body: AuthForgotPasswordRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
@@ -202,7 +198,7 @@ export class AuthPublicController {
   @HttpCode(HttpStatus.OK)
   @Patch('/password/reset')
   async reset(
-    @Body() body: UserForgotPasswordResetRequestDto,
+    @Body() body: AuthForgotPasswordResetRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null

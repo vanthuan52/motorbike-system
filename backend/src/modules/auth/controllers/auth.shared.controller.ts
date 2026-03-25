@@ -31,8 +31,11 @@ import {
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
 import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
-import { UserChangePasswordRequestDto } from '@/modules/user/dtos/request/user.change-password.request.dto';
-import { IUser } from '@/modules/user/interfaces/user.interface';
+import {
+  GeoLocation,
+  IUser,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.shared.auth')
 @Controller({
@@ -50,7 +53,7 @@ export class AuthSharedController {
   @Patch('/change-password')
   async changePassword(
     @UserCurrent() user: IUser,
-    @Body() body: UserChangePasswordRequestDto,
+    @Body() body: AuthChangePasswordRequestDto,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null

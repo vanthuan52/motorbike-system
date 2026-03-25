@@ -33,7 +33,11 @@ import { SessionService } from '@/modules/session/services/session.service';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { GeoLocation, Prisma, UserAgent } from '@/generated/prisma-client';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.shared.user.session')
 @Controller({
@@ -63,7 +67,10 @@ export class SessionSharedController {
     >,
     @AuthJwtPayload('userId') userId: string
   ): Promise<IResponsePagingReturn<SessionResponseDto>> {
-    const { data, total } = await this.sessionService.getListCursor(userId, pagination);
+    const { data, total } = await this.sessionService.getListCursor(
+      userId,
+      pagination
+    );
     const mapped = this.sessionUtil.mapList(data);
     return this.paginationUtil.formatCursor(mapped, total, pagination);
   }
