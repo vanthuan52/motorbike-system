@@ -26,7 +26,8 @@ import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.e
 import { IRoleService } from '@/modules/role/interfaces/role.service.interface';
 import { RoleRepository } from '@/modules/role/repositories/role.repository';
 import { RoleUtil } from '@/modules/role/utils/role.util';
-import { EnumRoleType, Prisma } from '@/generated/prisma-client';
+import { EnumRoleType } from '../enums/role.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class RoleService implements IRoleService {
@@ -192,5 +193,10 @@ export class RoleService implements IRoleService {
     }
 
     return this.roleUtil.mapOne(__user.role).abilities;
+  }
+
+  /* ======================== Service to Service call ============================== */
+  async findRoleByName(name: string): Promise<RoleDto> {
+    return this.roleRepository.existByName(name);
   }
 }

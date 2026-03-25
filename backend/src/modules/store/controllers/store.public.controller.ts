@@ -22,7 +22,7 @@ import {
   IPaginationQueryCursorParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_STORE_STATUS } from '../enums/store.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { StoreUtil } from '../utils/store.util';
@@ -37,7 +37,7 @@ export class StorePublicController {
   constructor(
     private readonly storeService: StoreService,
     private readonly storeUtil: StoreUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @StorePublicGetDoc()
@@ -45,7 +45,7 @@ export class StorePublicController {
   @HttpCode(HttpStatus.OK)
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<StoreDto>> {
     const store = await this.storeService.findOneBySlug(slug);
     const mapped = this.storeUtil.mapOne(store);
@@ -62,14 +62,14 @@ export class StorePublicController {
     })
     pagination: IPaginationQueryCursorParams,
     @PaginationQueryFilterInEnum('status', [
-      ENUM_STORE_STATUS.ACTIVE,
-      ENUM_STORE_STATUS.INACTIVE,
+      EnumStoreStatus.active,
+      EnumStoreStatus.inactive,
     ])
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
     const { data, total } = await this.storeService.getListCursor(
       pagination,
-      status,
+      status
     );
     const mapped = this.storeUtil.mapList(data);
     return this.paginationUtil.formatCursor(mapped, total, pagination);

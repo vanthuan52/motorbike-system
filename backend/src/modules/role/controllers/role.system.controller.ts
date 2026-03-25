@@ -30,7 +30,8 @@ import {
 import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { RoleService } from '@/modules/role/services/role.service';
-import { EnumRoleType, Prisma } from '@/generated/prisma-client';
+import { EnumRoleType } from '../enums/role.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.system.role')
 @Controller({

@@ -18,11 +18,9 @@ import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
 import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
 import { IRole } from '@/modules/role/interfaces/role.interface';
 import { UserClaimUsernameRequestDto } from '@/modules/user/dtos/request/user.claim-username.request.dto';
-import { UserCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
 import { UserCreateRequestDto } from '@/modules/user/dtos/request/user.create.request.dto';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
 import { UserUpdateProfileRequestDto } from '@/modules/user/dtos/request/user.profile.request.dto';
-import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
 import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
 import {
   IUser,
@@ -34,7 +32,6 @@ import {
 } from '@/modules/user/interfaces/user.interface';
 
 import {
-  Country,
   EnumActivityLogAction,
   EnumDeviceNotificationProvider,
   EnumDevicePlatform,
@@ -53,9 +50,9 @@ import {
   Prisma,
   TermPolicyUserAcceptance,
   User,
-  UserMobileNumber,
   Verification,
 } from '@/generated/prisma-client';
+import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
 
 @Injectable()
 export class UserRepository {
@@ -290,44 +287,7 @@ export class UserRepository {
     });
   }
 
-  async findOneActiveByVerificationEmailToken(
-    token: string
-  ): Promise<Verification | null> {
-    const today = this.helperService.dateCreate();
 
-    return this.databaseService.verification.findFirst({
-      where: {
-        token,
-        isUsed: false,
-        type: EnumVerificationType.email,
-        expiredAt: {
-          gt: today,
-        },
-        user: {
-          deletedAt: null,
-          status: EnumUserStatus.active,
-        },
-      },
-    });
-  }
-
-  async findOneLatestByVerificationEmail(
-    userId: string
-  ): Promise<Verification | null> {
-    return this.databaseService.verification.findFirst({
-      where: {
-        userId,
-        type: EnumVerificationType.email,
-        user: {
-          deletedAt: null,
-          status: EnumUserStatus.active,
-        },
-      },
-      orderBy: {
-        createdAt: EnumPaginationOrderDirectionType.desc,
-      },
-    });
-  }
 
   async existByEmail(email: string): Promise<{ id: string } | null> {
     return this.databaseService.user.findFirst({
@@ -984,43 +944,20 @@ export class UserRepository {
     });
   }
 
-  async signUp(
+  async createWithNestedRelations(
     userId: string,
     username: string,
     roleId: string,
-    { countryId, email, marketing, name, from, cookies }: UserSignUpRequestDto,
-    {
-      passwordCreated,
-      passwordExpired,
-      passwordHash,
-      passwordPeriodExpired,
-    }: IAuthPassword,
+    { email, name, from }: AuthSignUpRequestDto,
+    { passwordHash }: IAuthPassword,
     { expiredAt, reference, hashedToken, type }: IUserVerificationCreate,
     { ipAddress, userAgent, geoLocation }: IRequestLog
   ): Promise<User> {
-    const termPolicies = await this.databaseService.termPolicy.findMany({
-      where: {
-        type: {
-          in: [
-            EnumTermPolicyType.termsOfService,
-            EnumTermPolicyType.privacy,
-            cookies ? EnumTermPolicyType.cookies : null,
-            marketing ? EnumTermPolicyType.marketing : null,
-          ].filter(Boolean) as EnumTermPolicyType[],
-        },
-        status: EnumTermPolicyStatus.published,
-      },
-      select: {
-        id: true,
-      },
-    });
-
     const [user] = await this.databaseService.$transaction([
       this.databaseService.user.create({
         data: {
           id: userId,
           email,
-          countryId,
           name,
           roleId,
           signUpFrom: from,
@@ -1028,25 +965,8 @@ export class UserRepository {
           username,
           isVerified: false,
           status: EnumUserStatus.active,
-          passwordCreated,
-          passwordExpired,
           password: passwordHash,
           passwordAttempt: 0,
-          passwordHistories: {
-            create: {
-              password: passwordHash,
-              type: EnumPasswordHistoryType.signUp,
-              expiredAt: passwordPeriodExpired,
-              createdAt: passwordCreated,
-              createdBy: userId,
-            },
-          },
-          termPolicy: {
-            [EnumTermPolicyType.cookies]: cookies,
-            [EnumTermPolicyType.marketing]: marketing,
-            [EnumTermPolicyType.privacy]: true,
-            [EnumTermPolicyType.termsOfService]: true,
-          },
           createdBy: userId,
           deletedAt: null,
           activityLogs: {
@@ -1092,27 +1012,11 @@ export class UserRepository {
               createdBy: userId,
             },
           },
-          twoFactor: {
-            create: {
-              enabled: false,
-              requiredSetup: false,
-              createdBy: userId,
-            },
-          },
         },
         include: {
           role: true,
         },
       }),
-      ...termPolicies.map(termPolicy =>
-        this.databaseService.termPolicyUserAcceptance.create({
-          data: {
-            userId,
-            termPolicyId: termPolicy.id,
-            createdBy: userId,
-          },
-        })
-      ),
     ]);
 
     return user;
@@ -1227,98 +1131,9 @@ export class UserRepository {
     });
   }
 
-  async verifyEmail(
-    id: string,
-    userId: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<Verification> {
-    const today = this.helperService.dateCreate();
 
-    return this.databaseService.verification.update({
-      where: {
-        id,
-      },
-      data: {
-        isUsed: true,
-        verifiedAt: today,
-        user: {
-          update: {
-            verifiedAt: today,
-            isVerified: true,
-            activityLogs: {
-              create: {
-                action: EnumActivityLogAction.userVerifiedEmail,
-                ipAddress,
-                userAgent: this.databaseUtil.toPlainObject(userAgent),
-                geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-                createdBy: userId,
-              },
-            },
-          },
-        },
-      },
-    });
-  }
 
-  async requestVerificationEmail(
-    userId: string,
-    userEmail: string,
-    { expiredAt, reference, hashedToken, type }: IUserVerificationCreate,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    const today = this.helperService.dateCreate();
-
-    return this.databaseService.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        const [_, newVerification] = await Promise.all([
-          tx.verification.updateMany({
-            where: {
-              userId,
-              type,
-              isUsed: false,
-              expiredAt: {
-                gt: today,
-              },
-            },
-            data: {
-              expiredAt: today,
-            },
-          }),
-          tx.user.update({
-            where: {
-              id: userId,
-            },
-            data: {
-              verifications: {
-                create: {
-                  expiredAt,
-                  reference,
-                  token: hashedToken,
-                  type,
-                  to: userEmail,
-                  createdBy: userId,
-                  createdAt: today,
-                },
-              },
-              activityLogs: {
-                create: {
-                  action: EnumActivityLogAction.userSendVerificationEmail,
-                  ipAddress,
-                  userAgent: this.databaseUtil.toPlainObject(userAgent),
-                  geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-                  createdBy: userId,
-                },
-              },
-            },
-          }),
-        ]);
-
-        return newVerification;
-      }
-    );
-  }
-
-  async refresh(
+  async updateLoginMetadata(
     userId: string,
     { loginFrom, loginWith, sessionId, jti }: IUserLogin,
     { ipAddress, userAgent, geoLocation }: IRequestLog

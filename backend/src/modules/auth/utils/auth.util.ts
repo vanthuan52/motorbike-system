@@ -3,14 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { LoginTicket, OAuth2Client, TokenPayload } from 'google-auth-library';
 import { Algorithm } from 'jsonwebtoken';
 import {
+  IAuthAccessTokenGenerate,
   IAuthJwtAccessTokenPayload,
   IAuthJwtRefreshTokenPayload,
   IAuthPassword,
   IAuthPasswordOptions,
+  IAuthRefreshTokenGenerate,
   IAuthSocialPayload,
 } from '@/modules/auth/interfaces/auth.interface';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { HelperService } from '@/common/helper/services/helper.service';
+
 import { createPrivateKey, createPublicKey } from 'crypto';
 import verifyAppleToken, {
   VerifyAppleIdTokenResponse,
@@ -21,6 +23,10 @@ import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
 } from '@/modules/user/enums/user.enum';
+import { HelperService } from '@/common/helper/services/helper.service';
+import { DatabaseUtil } from '@/common/database/utils/database.util';
+import { IUser } from '@/modules/user/interfaces/user.interface';
+import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
 
 /**
  * Authentication Utility Service.
@@ -301,7 +307,7 @@ export class AuthUtil {
    * @returns Formatted access token payload
    */
   createPayloadAccessToken(
-    data: User,
+    data: IUser,
     sessionId: string,
     deviceOwnershipId: string,
     loginAt: Date,
@@ -359,7 +365,7 @@ export class AuthUtil {
    * @param user - User entity
    * @returns True if attempts exceeded limit
    */
-  checkPasswordAttempt(user: User): boolean {
+  checkPasswordAttempt(user: IUser): boolean {
     return this.passwordAttempt
       ? user.passwordAttempt >= this.passwordMaxAttempt
       : false;
@@ -656,26 +662,6 @@ export class AuthUtil {
       sessionId,
       expiredInMs: newRefreshTokenExpire.milliseconds,
     };
-  }
-
-  /**
-   * Checks if provided password matches any password in user's history.
-   * Used to prevent reusing recent passwords during password change.
-   * @param histories - Array of password history records (bcrypt hashed)
-   * @param password - Plain text password to check against history
-   * @returns Password history record if found, null if password is not in history
-   */
-  checkPasswordPeriod(
-    histories: PasswordHistory[],
-    password: string
-  ): PasswordHistory | null {
-    for (const history of histories) {
-      if (this.helperService.bcryptCompare(password, history.password)) {
-        return history;
-      }
-    }
-
-    return null;
   }
 
   /**

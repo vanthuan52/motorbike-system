@@ -1,7 +1,7 @@
 import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common';
 import { RoleRequiredMetaKey } from '@/modules/role/constants/role.constant';
 import { RoleGuard } from '@/modules/role/guards/role.guard';
-import { EnumRoleType } from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 /**
  * Method decorator that applies role-based protection guards

@@ -63,7 +63,11 @@ import {
 import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
 import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
 import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
-import { IUser } from '@/modules/user/interfaces/user.interface';
+import {
+  IUser,
+  IUserLogin,
+  IUserVerificationCreate,
+} from '@/modules/user/interfaces/user.interface';
 import { IUserService } from '@/modules/user/interfaces/user.service.interface';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { UserUtil } from '@/modules/user/utils/user.util';
@@ -72,7 +76,7 @@ import { UserExportResponseDto } from '@/modules/user/dtos/response/user.export.
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
 import { EnumAwsStatusCodeError } from '@/common/aws/enums/aws.status-code.enum';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
-import { EnumUserStatus } from '../enums/user.enum';
+import { EnumUserLoginWith, EnumUserStatus } from '../enums/user.enum';
 import { Prisma } from '@/generated/prisma-client';
 @Injectable()
 export class UserService implements IUserService {
@@ -729,5 +733,99 @@ export class UserService implements IUserService {
       data: csvString,
       extension: EnumFileExtensionDocument.csv,
     };
+  }
+
+  // =========================== Service to Service calll ==============================
+  async findOneWithRoleByEmail(email: string): Promise<IUser | null> {
+    return this.userRepository.findOneWithRoleByEmail(email);
+  }
+
+  async findOneByEmail(email: string): Promise<IUser | null> {
+    return this.userRepository.findOneByEmail(email);
+  }
+
+  async createBySocial(
+    email: string,
+    username: string,
+    roleId: string,
+    loginWith: EnumUserLoginWith,
+    { from, device, ...others },
+    requestLog: IRequestLog
+  ): Promise<IUser> {
+    return this.userRepository.createBySocial(
+      email,
+      username,
+      roleId,
+      loginWith,
+      { from, device, ...others },
+      requestLog
+    );
+  }
+
+
+  async updateLoginMetadata(
+    userId: string,
+    data: IUserLogin,
+    { ipAddress, userAgent, geoLocation }: IRequestLog
+  ): Promise<void> {
+    return this.userRepository.updateLoginMetadata(userId, data, {
+      ipAddress,
+      userAgent,
+      geoLocation,
+    });
+  }
+
+  async createFromRegistration(
+    userId: string,
+    username: string,
+    roleId: string,
+    { from, device, ...others }: any,
+    password: IAuthPassword,
+    emailVerification: IUserVerificationCreate,
+    requestLog: IRequestLog
+  ): Promise<IUser> {
+    return this.userRepository.createWithNestedRelations(
+      userId,
+      username,
+      roleId,
+
+      { from, device, ...others },
+      password,
+      emailVerification,
+      requestLog
+    );
+  }
+
+
+  async findOneActiveByEmail(email: string): Promise<IUser | null> {
+    return this.userRepository.findOneActiveByEmail(email);
+  }
+
+
+  async findOneLatestByForgotPassword(userId: string): Promise<IUser | null> {
+    return this.userRepository.findOneLatestByForgotPassword(userId);
+  }
+
+  async forgotPassword(
+    userId: string,
+    email: string,
+    passwordReset: IUserPasswordResetCreate,
+    requestLog: IRequestLog
+  ): Promise<void> {
+    return this.userRepository.forgotPassword(
+      userId,
+      email,
+      passwordReset,
+      requestLog
+    );
+  }
+
+  async resetPassword(
+    userId: string,
+    password: IAuthPassword,
+    passwordReset: IUserPasswordResetCreate,
+    requestLog: IRequestLog
+  ): Promise<void> {
+    return this.userRepository.resetPassword(userId, password, requestLog);
   }
 }

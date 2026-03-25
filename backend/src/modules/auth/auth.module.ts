@@ -5,6 +5,7 @@ import { AuthJwtAccessStrategy } from '@/modules/auth/guards/jwt/strategies/auth
 import { AuthJwtRefreshStrategy } from '@/modules/auth/guards/jwt/strategies/auth.jwt.refresh.strategy';
 import { AuthService } from '@/modules/auth/services/auth.service';
 import { AuthUtil } from '@/modules/auth/utils/auth.util';
+import { VerificationModule } from '@/modules/verification/verification.module';
 
 @Global()
 @Module({
@@ -28,6 +29,7 @@ import { AuthUtil } from '@/modules/auth/utils/auth.util';
         },
       }),
     }),
+    VerificationModule,
   ],
 })
 export class AuthModule {}

@@ -79,14 +79,10 @@ import { EnumFileExtensionDocument } from '@/common/file/enums/file.enum';
 import { FileCsvParsePipe } from '@/common/file/pipes/file.csv-parse.pipe';
 import { FilCsvValidationPipe } from '@/common/file/pipes/file.csv-validation.pipe';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
-import {
-  EnumActivityLogAction,
-  EnumRoleType,
-  EnumUserStatus,
-  GeoLocation,
-  Prisma,
-  UserAgent,
-} from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { EnumUserStatus } from '@/modules/user/enums/user.enum';
+import { GeoLocation, UserAgent } from '../interfaces/user.interface';
+import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user')
 @Controller({
@@ -241,33 +237,6 @@ export class UserAdminController {
       },
       updatedBy
     );
-  }
-
-  @UserAdminResetTwoFactorDoc()
-  @Response('user.twoFactor.resetByAdmin')
-  @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read, EnumPolicyAction.update],
-  })
-  @RoleProtected(EnumRoleType.admin)
-  @ActivityLog(EnumActivityLogAction.adminUserResetTwoFactor)
-  @UserProtected()
-  @AuthJwtAccessProtected()
-  @ApiKeyProtected()
-  @Patch('/update/:userId/2fa/reset')
-  async resetTwoFactorByAdmin(
-    @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    userId: string,
-    @AuthJwtPayload('userId') updatedBy: string,
-    @RequestIPAddress() ipAddress: string,
-    @RequestUserAgent() userAgent: UserAgent,
-    @RequestGeoLocation() geoLocation: GeoLocation | null
-  ): Promise<IResponseReturn<void>> {
-    return this.userService.resetTwoFactorByAdmin(userId, updatedBy, {
-      ipAddress,
-      userAgent,
-      geoLocation,
-    });
   }
 
   @UserAdminImportDoc()

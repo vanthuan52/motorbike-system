@@ -13,18 +13,18 @@ import {
   EnumUserLoginWith,
 } from '@/modules/user/enums/user.enum';
 import { AuthTokenResponseDto } from '../dtos/response/auth.token.response.dto';
-import { UserLoginRequestDto } from '../dtos/request/auth.login.request.dto';
-import { UserCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
+import { AuthLoginRequestDto } from '../dtos/request/auth.login.request.dto';
+import { AuthCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
 import { AuthSignUpRequestDto } from '../dtos/request/auth.sign-up.request.dto';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
-import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
-import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
-import { UserModel } from '@/modules/user/models/user.model';
+import { AuthForgotPasswordRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password.request.dto';
+import { AuthForgotPasswordResetRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password-reset.request.dto';
+import { IUser } from '@/modules/user/interfaces/user.interface';
 
 export interface IAuthService {
   // Pure service
   createTokens(
-    user: UserModel,
+    user: IUser,
     loginFrom: EnumUserLoginFrom,
     loginWith: EnumUserLoginWith
   ): IAuthAccessTokenGenerate;
@@ -52,33 +52,33 @@ export interface IAuthService {
   ): Promise<boolean>;
   // API service
   loginCredential(
-    data: UserLoginRequestDto,
+    data: AuthLoginRequestDto,
     requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   loginWithSocial(
     email: string,
     loginWith: EnumUserLoginWith,
-    socialData: UserCreateSocialRequestDto,
+    socialData: AuthCreateSocialRequestDto,
     requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   refreshToken(
-    user: UserModel,
+    user: IUser,
     refreshToken: string,
     requestLog: IRequestLog
   ): Promise<AuthTokenResponseDto>;
   signUp(data: AuthSignUpRequestDto, requestLog: IRequestLog): Promise<void>;
   changePassword(
-    user: UserModel,
+    user: IUser,
     data: AuthChangePasswordRequestDto,
     requestLog: IRequestLog
   ): Promise<void>;
 
   forgotPassword(
-    data: UserForgotPasswordRequestDto,
+    data: AuthForgotPasswordRequestDto,
     requestLog: IRequestLog
   ): Promise<void>;
   resetPassword(
-    data: UserForgotPasswordResetRequestDto,
+    data: AuthForgotPasswordResetRequestDto,
     requestLog: IRequestLog
   ): Promise<void>;
 }

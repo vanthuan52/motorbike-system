@@ -1,7 +1,3 @@
-import { EnumRoleType } from '@generated/prisma-client';
+import { RoleModel } from '../models/role.model';
 
-export interface IRole {
-    id: string;
-    type: EnumRoleType;
-    name: string;
-}
+export interface IRole extends RoleModel {}

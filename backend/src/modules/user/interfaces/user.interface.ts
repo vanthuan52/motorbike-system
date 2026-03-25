@@ -53,3 +53,47 @@ export interface IUserVerificationCreate {
   link?: string;
   encryptedLink?: string;
 }
+
+export type GeoLocation = {
+  latitude: number;
+  longitude: number;
+  country: string;
+  region: string;
+  city: string;
+};
+
+export type UserAgent = {
+  ua: string;
+  browser: UserAgentBrowser;
+  cpu: UserAgentCpu;
+  device: UserAgentDevice;
+  engine: UserAgentEngine;
+  os: UserAgentOs;
+};
+
+export type UserAgentBrowser = {
+  name: string;
+  version: string;
+  major: string;
+  type: string;
+};
+
+export type UserAgentCpu = {
+  architecture: string;
+};
+
+export type UserAgentDevice = {
+  type: string;
+  vendor: string;
+  model: string;
+};
+
+export type UserAgentEngine = {
+  name: string;
+  version: string;
+};
+
+export type UserAgentOs = {
+  name: string;
+  version: string;
+};

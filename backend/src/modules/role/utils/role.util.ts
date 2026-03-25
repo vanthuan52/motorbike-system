@@ -4,25 +4,25 @@ import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity
 import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { RoleDto } from '@/modules/role/dtos/role.dto';
-import { Role } from '@/generated/prisma-client';
+import { IRole } from '../interfaces/role.interface';
 
 @Injectable()
 export class RoleUtil {
-  mapList(roles: Role[]): RoleListResponseDto[] {
+  mapList(roles: IRole[]): RoleListResponseDto[] {
     return plainToInstance(RoleListResponseDto, roles);
   }
 
-  mapOne(role: Role): RoleDto {
+  mapOne(role: IRole): RoleDto {
     return plainToInstance(RoleDto, role);
   }
 
-  mapAbilities(role: Role): RoleAbilitiesResponseDto {
+  mapAbilities(role: IRole): RoleAbilitiesResponseDto {
     return plainToInstance(RoleAbilitiesResponseDto, {
       abilities: role.abilities,
     });
   }
 
-  mapActivityLogMetadata(role: Role): IActivityLogMetadata {
+  mapActivityLogMetadata(role: IRole): IActivityLogMetadata {
     return {
       roleId: role.id,
       roleName: role.name,
