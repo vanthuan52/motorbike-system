@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { VerificationRepository } from '@/modules/verification/repositories/verification.repository';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
-import { Verification } from '@/generated/prisma-client';
 import { IUser } from '@/modules/user/interfaces/user.interface';
+import { VerificationModel } from '../models/verification.model';
 
 @Injectable()
 export class VerificationService {
@@ -12,7 +12,7 @@ export class VerificationService {
     private readonly userRepository: UserRepository
   ) {}
 
-  async findValidEmailToken(token: string): Promise<any> {
+  async findValidEmailToken(token: string): Promise<VerificationModel> {
     return this.verificationRepository.findOneActiveByVerificationEmailToken(
       token
     );
@@ -22,7 +22,7 @@ export class VerificationService {
     verificationId: string,
     userId: string,
     requestLog: IRequestLog
-  ): Promise<Verification> {
+  ): Promise<VerificationModel> {
     return this.verificationRepository.verifyEmail(
       verificationId,
       userId,

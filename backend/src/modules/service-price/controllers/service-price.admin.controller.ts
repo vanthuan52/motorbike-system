@@ -107,12 +107,15 @@ export class ServicePriceAdminController {
       filters.vehicleModelId = vehicleModelId;
     }
 
-    const { data, total } = await this.servicePriceService.getListOffset(
+    const result = await this.servicePriceService.getListOffset(
       pagination,
       filters,
     );
-    const mapped = this.servicePriceUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.servicePriceUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @ServicePriceAdminParamsIdDoc()
@@ -353,11 +356,14 @@ export class ServicePriceAdminController {
       vehicleModel: vehicleModelId,
     };
 
-    const { data, total } = await this.servicePriceService.getListOffset(
+    const result = await this.servicePriceService.getListOffset(
       pagination,
       filters,
     );
-    const mapped = this.servicePriceUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.servicePriceUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

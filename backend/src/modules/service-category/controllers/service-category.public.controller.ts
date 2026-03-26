@@ -29,6 +29,8 @@ import {
   SERVICE_CATEGORY_DEFAULT_STATUS,
 } from '../constants/service-category.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { ServiceCategoryUtil } from '../utils/service-category.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.service-category')
 @Controller({
@@ -38,13 +40,14 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 export class ServiceCategoryPublicController {
   constructor(
     private readonly serviceCategoryService: ServiceCategoryService,
+    private readonly serviceCategoryUtil: ServiceCategoryUtil
   ) {}
 
   @ServiceCategoryPublicGetOneDoc()
   @Response('service-category.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<ServiceCategoryDto>> {
     return this.serviceCategoryService.findBySlug(slug);
   }
@@ -57,10 +60,21 @@ export class ServiceCategoryPublicController {
       availableSearch: SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', SERVICE_CATEGORY_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
-    return this.serviceCategoryService.getListOffset(pagination, status);
+    const result = await this.serviceCategoryService.getListOffset(
+      pagination,
+      status
+    );
+    const mapped = this.serviceCategoryUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

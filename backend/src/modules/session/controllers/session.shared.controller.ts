@@ -67,12 +67,15 @@ export class SessionSharedController {
     >,
     @AuthJwtPayload('userId') userId: string
   ): Promise<IResponsePagingReturn<SessionResponseDto>> {
-    const { data, total } = await this.sessionService.getListCursor(
+    const result = await this.sessionService.getListCursor(
       userId,
       pagination
     );
-    const mapped = this.sessionUtil.mapList(data);
-    return this.paginationUtil.formatCursor(mapped, total, pagination);
+    const mapped = this.sessionUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @SessionSharedRevokeDoc()

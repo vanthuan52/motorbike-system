@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareRecordMedia, Prisma } from '@generated/prisma-client';
@@ -69,17 +71,8 @@ export class CareRecordMediaRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordMediaSelect,
     Prisma.CareRecordMediaWhereInput
-  >): Promise<{
-    data: CareRecordMedia[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<CareRecordMedia>(
+  >): Promise<IPaginationOffsetReturn<CareRecordMedia>> {
+    return this.paginationService.offset<CareRecordMedia>(
       this.databaseService.careRecordMedia,
       {
         ...params,
@@ -99,13 +92,8 @@ export class CareRecordMediaRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordMediaSelect,
     Prisma.CareRecordMediaWhereInput
-  >): Promise<{
-    data: CareRecordMedia[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<CareRecordMedia>(
+  >): Promise<IPaginationCursorReturn<CareRecordMedia>> {
+    return this.paginationService.cursor<CareRecordMedia>(
       this.databaseService.careRecordMedia,
       {
         ...params,

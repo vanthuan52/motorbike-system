@@ -14,6 +14,8 @@ import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumCareRecordChecklistStatusCodeError } from '../enums/care-record-checklist.status-code.enum';
 import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
@@ -31,8 +33,8 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordChecklist[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<CareRecordChecklist>> {
+    const { data, ...others } =
       await this.careRecordChecklistRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -41,8 +43,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
         },
       });
 
-    const careRecordChecklists: CareRecordChecklist[] = data;
-    return { data: careRecordChecklists, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -51,8 +52,8 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordChecklist[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<CareRecordChecklist>> {
+    const { data, ...others } =
       await this.careRecordChecklistRepository.findWithPaginationCursor({
         ...pagination,
         where: {
@@ -61,8 +62,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
         },
       });
 
-    const careRecordChecklists: CareRecordChecklist[] = data;
-    return { data: careRecordChecklists, total: count || 0 };
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<CareRecordChecklist> {

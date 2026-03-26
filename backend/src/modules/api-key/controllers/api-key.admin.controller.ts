@@ -99,21 +99,24 @@ export class ApiKeyAdminController {
       availableSearch: ApiKeyDefaultAvailableSearch,
     })
     pagination: IPaginationQueryOffsetParams<
-      Prisma.ActivityLogSelect,
-      Prisma.ActivityLogWhereInput
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
     >,
     @PaginationQueryFilterEqualBoolean('isActive')
     isActive?: Record<string, IPaginationEqual>,
     @PaginationQueryFilterInEnum<EnumApiKeyType>('type', ApiKeyDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ApiKeyDto>> {
-    const { data, total } = await this.apiKeyService.getListByAdmin(
+    const result = await this.apiKeyService.getListOffset(
       pagination,
       isActive,
       type
     );
-    const mapped = this.apiKeyUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.apiKeyUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @ApiKeyAdminCreateDoc()
@@ -147,9 +150,8 @@ export class ApiKeyAdminController {
           : null,
     };
 
-    const { created, secret } = await this.apiKeyService.createByAdmin(
-      transformed
-    );
+    const { created, secret } =
+      await this.apiKeyService.createByAdmin(transformed);
 
     return {
       data: this.apiKeyUtil.mapCreate(created, secret),
@@ -173,9 +175,7 @@ export class ApiKeyAdminController {
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     apiKeyId: string
   ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
-    const { updated, secret } = await this.apiKeyService.resetByAdmin(
-      apiKeyId
-    );
+    const { updated, secret } = await this.apiKeyService.resetByAdmin(apiKeyId);
 
     return {
       data: this.apiKeyUtil.mapCreate(updated, secret),
@@ -225,10 +225,7 @@ export class ApiKeyAdminController {
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     apiKeyId: string
   ): Promise<IResponseReturn<ApiKeyDto>> {
-    const updated = await this.apiKeyService.updateDatesByAdmin(
-      apiKeyId,
-      body
-    );
+    const updated = await this.apiKeyService.updateDatesByAdmin(apiKeyId, body);
 
     return {
       data: this.apiKeyUtil.mapOne(updated),
@@ -253,7 +250,10 @@ export class ApiKeyAdminController {
     apiKeyId: string,
     @Body() body: ApiKeyUpdateStatusRequestDto
   ): Promise<IResponseReturn<ApiKeyDto>> {
-    const updated = await this.apiKeyService.updateStatusByAdmin(apiKeyId, body);
+    const updated = await this.apiKeyService.updateStatusByAdmin(
+      apiKeyId,
+      body
+    );
 
     return {
       data: this.apiKeyUtil.mapOne(updated),

@@ -10,6 +10,8 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumHiringStatusCodeError } from '../enums/hiring.status-code.enum';
 import { EnumHiringStatus } from '../enums/hiring.enum';
@@ -32,8 +34,8 @@ export class HiringService implements IHiringService {
       Prisma.HiringWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: Hiring[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<Hiring>> {
+    const { data, ...others } =
       await this.hiringRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -42,7 +44,7 @@ export class HiringService implements IHiringService {
         },
       });
 
-    return { data, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -51,8 +53,8 @@ export class HiringService implements IHiringService {
       Prisma.HiringWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: Hiring[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<Hiring>> {
+    const { data, ...others } =
       await this.hiringRepository.findWithPaginationCursor({
         ...pagination,
         where: {
@@ -61,7 +63,7 @@ export class HiringService implements IHiringService {
         },
       });
 
-    return { data, total: count || 0 };
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<Hiring | null> {
@@ -90,7 +92,7 @@ export class HiringService implements IHiringService {
       status: EnumHiringStatus.draft,
     });
 
-    return { _id: created.id };
+    return { id: created.id };
   }
 
   async update(id: string, payload: HiringUpdateRequestDto): Promise<void> {

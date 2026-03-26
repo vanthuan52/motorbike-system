@@ -1,4 +1,10 @@
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
 import {
   IResponsePagingReturn,
   IResponseReturn,
@@ -14,43 +20,54 @@ import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-rec
 
 export interface ICareRecordChecklistService {
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
-    filters?: Record<string, any>,
-  ): Promise<IResponsePagingReturn<CareRecordChecklistListResponseDto>>;
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordChecklistSelect,
+      Prisma.CareRecordChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<CareRecordChecklist>>;
 
-  findOneById(id: string): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordChecklistSelect,
+      Prisma.CareRecordChecklistWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<CareRecordChecklist>>;
+
+  findOneById(
+    id: string
+  ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>>;
 
   create(
-    payload: CareRecordChecklistCreateRequestDto,
+    payload: CareRecordChecklistCreateRequestDto
   ): Promise<IResponseReturn<{ _id: string }>>;
 
-  createMany(
-    dtos: CareRecordChecklistCreateRequestDto[],
-  ): Promise<boolean>;
+  createMany(dtos: CareRecordChecklistCreateRequestDto[]): Promise<boolean>;
 
   update(
     id: string,
-    payload: CareRecordChecklistUpdateRequestDto,
+    payload: CareRecordChecklistUpdateRequestDto
   ): Promise<IResponseReturn<void>>;
 
   updateStatus(
     id: string,
-    payload: CareRecordChecklistUpdateStatusRequestDto,
+    payload: CareRecordChecklistUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>>;
 
   updateResult(
     id: string,
-    payload: CareRecordChecklistUpdateResultRequestDto,
+    payload: CareRecordChecklistUpdateResultRequestDto
   ): Promise<IResponseReturn<void>>;
 
   updateNote(
     id: string,
-    payload: CareRecordChecklistUpdateNoteRequestDto,
+    payload: CareRecordChecklistUpdateNoteRequestDto
   ): Promise<IResponseReturn<void>>;
 
   updateWearPercentage(
     id: string,
-    payload: CareRecordChecklistUpdateWearPercentageRequestDto,
+    payload: CareRecordChecklistUpdateWearPercentageRequestDto
   ): Promise<IResponseReturn<void>>;
 
   delete(id: string): Promise<IResponseReturn<void>>;

@@ -13,6 +13,8 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumServiceCategoryStatusCodeError } from '../enums/service-category.status-code.enum';
 import { ServiceCategory, Prisma } from '@/generated/prisma-client';
@@ -34,37 +36,18 @@ export class ServiceCategoryService implements IServiceCategoryService {
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: Record<string, IPaginationIn>
-  ): Promise<{ data: ServiceCategory[]; total: number }> {
+  ): Promise<IPaginationOffsetReturn<ServiceCategory>> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,
       ...filters,
     };
 
-    const [serviceCategories, total] = await Promise.all([
-      this.serviceCategoryRepository.findAll(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        filters
-      ),
-      this.serviceCategoryRepository.getTotal(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        filters
-      ),
-    ]);
-
-    return {
-      data: serviceCategories,
-      total,
-    };
+    return this.serviceCategoryRepository.findWithPaginationOffset({
+      limit,
+      skip,
+      where: mergedWhere,
+      orderBy,
+    });
   }
 
   async getListCursor(
@@ -79,24 +62,21 @@ export class ServiceCategoryService implements IServiceCategoryService {
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, any>
-  ): Promise<{ data: ServiceCategory[]; total?: number }> {
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<ServiceCategory>> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,
       ...filters,
     };
 
-    const { data, count } =
-      await this.serviceCategoryRepository.findWithPaginationCursor({
-        limit,
-        where: mergedWhere,
-        orderBy,
-        cursor,
-        cursorField,
-        includeCount,
-      });
-
-    return { data, total: count };
+    return this.serviceCategoryRepository.findWithPaginationCursor({
+      limit,
+      where: mergedWhere,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    });
   }
 
   async findOneById(id: string): Promise<ServiceCategory> {

@@ -1,7 +1,6 @@
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import { IPaginationQueryCursorParams, IPaginationCursorReturn } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
-  IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { NotificationUserSettingRequestDto } from '@/modules/notification/dtos/request/notification.user-setting.request.dto';
@@ -16,7 +15,7 @@ export interface INotificationService {
       Prisma.NotificationSelect,
       Prisma.NotificationWhereInput
     >
-  ): Promise<IResponsePagingReturn<NotificationResponseDto>>;
+  ): Promise<IPaginationCursorReturn<Prisma.NotificationGetPayload<{}>>>;
   getListUserSetting(
     userId: string
   ): Promise<IResponseReturn<NotificationUserSettingResponseDto>>;

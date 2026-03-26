@@ -14,11 +14,13 @@ import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPartStatusCodeError } from '../enums/part.status-code.enum';
-import { Part, Prisma } from '@/generated/prisma-client';
 import { PartTypeService } from '@/modules/part-type/services/part-type.services';
 import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
+import { Part, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class PartService implements IPartService {
@@ -38,7 +40,7 @@ export class PartService implements IPartService {
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
     vehicleBrandId?: string
-  ): Promise<{ data: Part[]; total: number }> {
+  ): Promise<IPaginationOffsetReturn<Part>> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...where,
       ...status,
@@ -51,30 +53,17 @@ export class PartService implements IPartService {
       mergedWhere.vehicleBrandId = vehicleBrandId;
     }
 
-    const [parts, total] = await Promise.all([
-      this.partRepository.findAll(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        status
-      ),
-      this.partRepository.getTotal(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        status
-      ),
-    ]);
+    const { data, ...others } =
+      await this.partRepository.findWithPaginationOffset({
+        limit,
+        skip,
+        where: mergedWhere,
+        orderBy,
+      });
 
     return {
-      data: parts,
-      total,
+      data,
+      ...others,
     };
   }
 
@@ -90,7 +79,7 @@ export class PartService implements IPartService {
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
     vehicleBrandId?: string
-  ): Promise<{ data: Part[]; total?: number }> {
+  ): Promise<IPaginationCursorReturn<Part>> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...where,
       ...status,
@@ -103,16 +92,17 @@ export class PartService implements IPartService {
       mergedWhere.vehicleBrandId = vehicleBrandId;
     }
 
-    const { data, count } = await this.partRepository.findWithPaginationCursor({
-      limit,
-      where: mergedWhere,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    });
+    const { data, ...others } =
+      await this.partRepository.findWithPaginationCursor({
+        limit,
+        where: mergedWhere,
+        orderBy,
+        cursor,
+        cursorField,
+        includeCount,
+      });
 
-    return { data, total: count };
+    return { data, ...others };
   }
 
   async findOneById(partId: string): Promise<Part> {

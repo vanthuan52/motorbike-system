@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
 import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto';
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
@@ -13,10 +12,14 @@ import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationEqual,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumStoreStatusCodeError } from '../enums/store.status-code.enum';
 import { StoreUtil } from '../utils/store.util';
-import { Store, Prisma } from '@/generated/prisma-client';
+import { StoreModel } from '../models/store.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class StoreService implements IStoreService {
@@ -26,75 +29,35 @@ export class StoreService implements IStoreService {
   ) {}
 
   async getListOffset(
-    {
-      limit,
-      skip,
-      where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >,
     status?: Record<string, IPaginationIn>
-  ): Promise<{ data: Store[]; total: number }> {
-    const mergedWhere: Prisma.StoreWhereInput = {
-      ...where,
-      ...status,
-    };
-
-    const [stores, total] = await Promise.all([
-      this.storeRepository.findAll(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        status
-      ),
-      this.storeRepository.getTotal(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        status
-      ),
-    ]);
+  ): Promise<IPaginationOffsetReturn<StoreModel>> {
+    const { data, ...others } =
+      await this.storeRepository.findWithPaginationOffset(pagination, status);
 
     return {
-      data: stores,
-      total,
+      data,
+      ...others,
     };
   }
 
   async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >,
     status?: Record<string, IPaginationIn>
-  ): Promise<{ data: Store[]; total?: number }> {
-    const mergedWhere: Prisma.StoreWhereInput = {
-      ...where,
-      ...status,
+  ): Promise<IPaginationCursorReturn<StoreModel>> {
+    const { data, ...others } =
+      await this.storeRepository.findWithPaginationCursor(pagination, status);
+
+    return {
+      data,
+      ...others,
     };
-
-    const { data, count } = await this.storeRepository.findWithPaginationCursor(
-      {
-        limit,
-        where: mergedWhere,
-        orderBy,
-        cursor,
-        cursorField,
-        includeCount,
-      },
-      status
-    );
-
-    return { data, total: count };
   }
 
   async findOne(find: Record<string, any>): Promise<Store> {

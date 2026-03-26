@@ -10,6 +10,8 @@ import { CareRecordServiceUtil } from '../utils/care-record-service.util';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import { EnumCareRecordServiceStatusCodeError } from '../enums/care-record-service.status-code.enum';
@@ -30,8 +32,8 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordService[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<CareRecordService>> {
+    const { data, ...others } =
       await this.careRecordServiceRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -40,8 +42,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
         },
       });
 
-    const careRecordServices: CareRecordService[] = data;
-    return { data: careRecordServices, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -50,8 +51,8 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordService[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<CareRecordService>> {
+    const { data, ...others } =
       await this.careRecordServiceRepository.findWithPaginationCursor({
         ...pagination,
         where: {
@@ -60,8 +61,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
         },
       });
 
-    const careRecordServices: CareRecordService[] = data;
-    return { data: careRecordServices, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListOffsetWithChecklists(
@@ -70,14 +70,13 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{
-    data: {
+  ): Promise<
+    IPaginationOffsetReturn<{
       service: CareRecordService;
       checklists: any[];
-    }[];
-    total: number;
-  }> {
-    const { data: careRecordServices, count: total } =
+    }>
+  > {
+    const { data: careRecordServices, ...others } =
       await this.careRecordServiceRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -112,7 +111,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
 
     return {
       data: result,
-      total,
+      ...others,
     };
   }
 
@@ -141,7 +140,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       status: EnumCareRecordServiceStatus.pending,
     });
 
-    return { _id: created.id };
+    return { id: created.id } as any;
   }
 
   async createMany(

@@ -3,6 +3,8 @@ import {
   IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { EnumSessionStatusCodeError } from '@/modules/session/enums/session.status-code.enum';
@@ -40,14 +42,12 @@ export class SessionService implements ISessionService {
       Prisma.SessionWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<{ data: ISession[]; total: number }> {
-    const { data, count } =
-      await this.sessionRepository.findWithPaginationOffsetByAdmin(
-        userId,
-        pagination,
-        isRevoked
-      );
-    return { data, total: count || 0 };
+  ): Promise<IPaginationOffsetReturn<ISession>> {
+    return this.sessionRepository.findWithPaginationOffsetByAdmin(
+      userId,
+      pagination,
+      isRevoked
+    );
   }
 
   /**
@@ -63,13 +63,11 @@ export class SessionService implements ISessionService {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >
-  ): Promise<{ data: ISession[]; total?: number }> {
-    const { data, count } =
-      await this.sessionRepository.findActiveWithPaginationCursor(
-        userId,
-        pagination
-      );
-    return { data, total: count || 0 };
+  ): Promise<IPaginationCursorReturn<ISession>> {
+    return this.sessionRepository.findActiveWithPaginationCursor(
+      userId,
+      pagination
+    );
   }
 
   /**

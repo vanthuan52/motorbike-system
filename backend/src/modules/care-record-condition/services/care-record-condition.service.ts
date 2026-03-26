@@ -1,20 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CareRecordCondition } from '@prisma/client';
+
 import { CareRecordConditionRepository } from '../repository/care-record-condition.repository';
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
 import { CareRecordRepository } from '@/modules/care-record/respository/care-record.repository';
 import {
-  ENUM_BODY_CONDITION,
-  ENUM_EXHAUST_COVER_CONDITION,
-  ENUM_OIL_LEVEL,
-  ENUM_REARVIEW_MIRROR_CONDITION,
-  ENUM_SEAT_CONDITION,
+  EnumBodyCondition,
+  EnumExhaustCoverCondition,
+  EnumOilLevel,
+  EnumMirrorCondition,
+  EnumSeatCondition,
 } from '../enums/care-record-condition.enum';
 import { ICareRecordConditionService } from '../interfaces/care-record-condition.service.interface';
-import { ENUM_CARE_RECORD_CONDITION_STATUS_CODE_ERROR } from '../enums/care-record-condition.status-code.enum';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { EnumCareRecordConditionStatusCodeError } from '../enums/care-record-condition.status-code.enum';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordConditionService implements ICareRecordConditionService {
@@ -24,28 +30,43 @@ export class CareRecordConditionService implements ICareRecordConditionService {
   ) {}
 
   async getListOffset(
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordConditionSelect,
+      Prisma.CareRecordConditionWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordCondition[]; total: number }> {
-    const find: Record<string, any> = {
-      ...where,
-      ...filters,
-    };
-
-    const [careRecordConditions, total] =
-      await this.careRecordConditionRepository.findWithPaginationOffset<CareRecordCondition>(
-        find,
-        {
-          limit,
-          offset: skip,
-          orderBy,
-        }
-      );
+  ): Promise<IPaginationOffsetReturn<CareRecordCondition>> {
+    const { data, ...others } =
+      await this.careRecordConditionRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
 
     return {
-      data: careRecordConditions,
-      total,
+      data,
+      ...others,
     };
+  }
+
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordConditionSelect,
+      Prisma.CareRecordConditionWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<CareRecordCondition>> {
+    const { data, ...others } =
+      await this.careRecordConditionRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<CareRecordCondition> {
@@ -80,13 +101,13 @@ export class CareRecordConditionService implements ICareRecordConditionService {
         odoKmFaulty: odoKmFaulty ?? false,
         fuelLevelPercent,
         fuelLevelFaulty: fuelLevelFaulty ?? false,
-        engineOilLevel: engineOilLevel ?? ENUM_OIL_LEVEL.FULL,
+        engineOilLevel: engineOilLevel ?? EnumOilLevel.full,
         rearviewMirrorCondition:
-          rearviewMirrorCondition ?? ENUM_REARVIEW_MIRROR_CONDITION.PRESENT,
-        seatCondition: seatCondition ?? ENUM_SEAT_CONDITION.OK,
-        bodyCondition: bodyCondition ?? ENUM_BODY_CONDITION.OK,
+          rearviewMirrorCondition ?? EnumMirrorCondition.present,
+        seatCondition: seatCondition ?? EnumSeatCondition.ok,
+        bodyCondition: bodyCondition ?? EnumBodyCondition.ok,
         exhaustCoverCondition:
-          exhaustCoverCondition ?? ENUM_EXHAUST_COVER_CONDITION.PRESENT,
+          exhaustCoverCondition ?? EnumExhaustCoverCondition.present,
         hasLuggageRack: hasLuggageRack ?? false,
         hasFootMat: hasFootMat ?? false,
         hasFootPegRubber: hasFootPegRubber ?? false,
@@ -113,7 +134,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       }
     }
 
-    return { _id: careRecordCondition.id };
+    return { id: careRecordCondition.id };
   }
 
   async update(
@@ -191,7 +212,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       );
     if (!careRecordCondition) {
       throw new NotFoundException({
-        statusCode: ENUM_CARE_RECORD_CONDITION_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumCareRecordConditionStatusCodeError.notFound,
         message: 'care-record-condition.error.notFound',
       });
     }

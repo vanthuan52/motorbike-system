@@ -7,9 +7,11 @@ import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-rec
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { ENUM_CARE_RECORD_ITEM_STATUS_CODE_ERROR } from '../enums/care-record-item.status-code.enum';
+import { EnumCareRecordItemStatusCodeError } from '../enums/care-record-item.status-code.enum';
 import { CareRecordItem, Prisma } from '@generated/prisma-client';
 
 @Injectable()
@@ -24,8 +26,8 @@ export class CareRecordItemService implements ICareRecordItemService {
       Prisma.CareRecordItemWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordItem[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<CareRecordItem>> {
+    const { data, ...others } =
       await this.careRecordItemRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -34,8 +36,7 @@ export class CareRecordItemService implements ICareRecordItemService {
         },
       });
 
-    const careRecordItems: CareRecordItem[] = data;
-    return { data: careRecordItems, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -44,8 +45,8 @@ export class CareRecordItemService implements ICareRecordItemService {
       Prisma.CareRecordItemWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordItem[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<CareRecordItem>> {
+    const { data, ...others } =
       await this.careRecordItemRepository.findWithPaginationCursor({
         ...pagination,
         where: {
@@ -54,8 +55,7 @@ export class CareRecordItemService implements ICareRecordItemService {
         },
       });
 
-    const careRecordItems: CareRecordItem[] = data;
-    return { data: careRecordItems, total: count || 0 };
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<CareRecordItem> {
@@ -95,7 +95,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       ...(technician && { technician: { connect: { id: technician } } }),
     });
 
-    return { _id: created.id };
+    return { id: created.id };
   }
 
   async update(
@@ -162,7 +162,7 @@ export class CareRecordItemService implements ICareRecordItemService {
     const careRecordItem = await this.careRecordItemRepository.findOneById(id);
     if (!careRecordItem) {
       throw new NotFoundException({
-        statusCode: ENUM_CARE_RECORD_ITEM_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumCareRecordItemStatusCodeError.notFound,
         message: 'care-record-item.error.notFound',
       });
     }

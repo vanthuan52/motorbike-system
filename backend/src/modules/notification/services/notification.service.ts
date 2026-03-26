@@ -3,15 +3,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import { IPaginationQueryCursorParams, IPaginationCursorReturn } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
-  IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { NotificationUserSettingDto } from '@/modules/notification/dtos/notification.user-setting.dto';
 import { NotificationUserSettingRequestDto } from '@/modules/notification/dtos/request/notification.user-setting.request.dto';
-import { NotificationResponseDto } from '@/modules/notification/dtos/response/notification.response.dto';
 import { NotificationUserSettingResponseDto } from '@/modules/notification/dtos/response/notification.user-setting.response.dto';
 import { EnumNotificationStatusCodeError } from '@/modules/notification/enums/notification.status-code.enum';
 import { INotificationService } from '@/modules/notification/interfaces/notification.service.interface';
@@ -32,20 +30,11 @@ export class NotificationService implements INotificationService {
       Prisma.NotificationSelect,
       Prisma.NotificationWhereInput
     >
-  ): Promise<IResponsePagingReturn<NotificationResponseDto>> {
-    const { data, ...others } =
-      await this.notificationRepository.findWithPaginationCursor(
-        userId,
-        pagination
-      );
-
-    const notifications: NotificationResponseDto[] =
-      this.notificationUtil.mapList(data);
-
-    return {
-      data: notifications,
-      ...others,
-    };
+  ): Promise<IPaginationCursorReturn<Prisma.NotificationGetPayload<{}>>> {
+    return this.notificationRepository.findWithPaginationCursor(
+      userId,
+      pagination
+    );
   }
 
   async getListUserSetting(

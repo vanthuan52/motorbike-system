@@ -6,6 +6,9 @@ import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checkl
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumServiceChecklistStatusCodeError } from '../enums/service-checklist.status-code.enum';
 import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
@@ -13,7 +16,7 @@ import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
 @Injectable()
 export class ServiceChecklistService implements IServiceChecklistService {
   constructor(
-    private readonly serviceChecklistRepository: ServiceChecklistRepository,
+    private readonly serviceChecklistRepository: ServiceChecklistRepository
   ) {}
 
   async existByName(name: string): Promise<boolean> {
@@ -33,38 +36,19 @@ export class ServiceChecklistService implements IServiceChecklistService {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceChecklist[]; total: number }> {
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<ServiceChecklist>> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...where,
       ...filters,
     };
 
-    const [serviceChecklists, total] = await Promise.all([
-      this.serviceChecklistRepository.findAll(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        filters
-      ),
-      this.serviceChecklistRepository.getTotal(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        filters
-      ),
-    ]);
-
-    return {
-      data: serviceChecklists,
-      total,
-    };
+    return this.serviceChecklistRepository.findWithPaginationOffset({
+      limit,
+      skip,
+      where: mergedWhere,
+      orderBy,
+    });
   }
 
   async getListCursor(
@@ -79,28 +63,26 @@ export class ServiceChecklistService implements IServiceChecklistService {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServiceChecklist[]; total?: number }> {
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<ServiceChecklist>> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...where,
       ...filters,
     };
 
-    const { data, count } =
-      await this.serviceChecklistRepository.findWithPaginationCursor({
-        limit,
-        where: mergedWhere,
-        orderBy,
-        cursor,
-        cursorField,
-        includeCount,
-      });
-
-    return { data, total: count };
+    return this.serviceChecklistRepository.findWithPaginationCursor({
+      limit,
+      where: mergedWhere,
+      orderBy,
+      cursor,
+      cursorField,
+      includeCount,
+    });
   }
 
   async findOneById(id: string): Promise<ServiceChecklist> {
-    const serviceChecklist = await this.serviceChecklistRepository.findOneById(id);
+    const serviceChecklist =
+      await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
       throw new NotFoundException({
         statusCode: EnumServiceChecklistStatusCodeError.notFound,
@@ -111,7 +93,8 @@ export class ServiceChecklistService implements IServiceChecklistService {
   }
 
   async findOne(find: Record<string, any>): Promise<ServiceChecklist | null> {
-    const serviceChecklist = await this.serviceChecklistRepository.findOne(find);
+    const serviceChecklist =
+      await this.serviceChecklistRepository.findOne(find);
     return serviceChecklist;
   }
 
@@ -144,9 +127,10 @@ export class ServiceChecklistService implements IServiceChecklistService {
       code,
       orderBy,
       careArea,
-    }: ServiceChecklistUpdateRequestDto,
+    }: ServiceChecklistUpdateRequestDto
   ): Promise<void> {
-    const serviceChecklist = await this.serviceChecklistRepository.findOneById(id);
+    const serviceChecklist =
+      await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
       throw new NotFoundException({
         statusCode: EnumServiceChecklistStatusCodeError.notFound,
@@ -159,16 +143,15 @@ export class ServiceChecklistService implements IServiceChecklistService {
       code: code ?? undefined,
       description: description ?? undefined,
       orderBy: orderBy ?? undefined,
-      careArea: careArea
-        ? { connect: { id: careArea } }
-        : undefined,
+      careArea: careArea ? { connect: { id: careArea } } : undefined,
     };
 
     await this.serviceChecklistRepository.update(id, data);
   }
 
   async delete(id: string): Promise<void> {
-    const serviceChecklist = await this.serviceChecklistRepository.findOneById(id);
+    const serviceChecklist =
+      await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
       throw new NotFoundException({
         statusCode: EnumServiceChecklistStatusCodeError.notFound,
@@ -179,10 +162,8 @@ export class ServiceChecklistService implements IServiceChecklistService {
     await this.serviceChecklistRepository.delete(id);
   }
 
-  async createMany(
-    data: ServiceChecklistCreateRequestDto[],
-  ): Promise<number> {
-    const create = data.map((item) => ({
+  async createMany(data: ServiceChecklistCreateRequestDto[]): Promise<number> {
+    const create = data.map(item => ({
       name: item.name,
       code: item.code,
       description: item.description ?? null,

@@ -1,37 +1,48 @@
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
-import { CareRecordService } from '@prisma/client';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CareRecordService, Prisma } from '@generated/prisma-client';
 
 export interface ICareRecordServiceService {
   getListOffset(
-    { where, ...params }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordServiceSelect,
+      Prisma.CareRecordServiceWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordService[]; total: number }>;
+  ): Promise<IPaginationOffsetReturn<CareRecordService>>;
 
   getListCursor(
-    { where, ...params }: IPaginationQueryCursorParams,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordServiceSelect,
+      Prisma.CareRecordServiceWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordService[]; total?: number }>;
+  ): Promise<IPaginationCursorReturn<CareRecordService>>;
 
   getListOffsetWithChecklists(
-    { where, ...params }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordServiceSelect,
+      Prisma.CareRecordServiceWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{
-    data: {
+  ): Promise<
+    IPaginationOffsetReturn<{
       service: CareRecordService;
       checklists: any[];
-    }[];
-    total: number;
-  }>;
+    }>
+  >;
 
   findOneById(id: string): Promise<CareRecordService>;
 
-  create(payload: CareRecordServiceCreateRequestDto): Promise<{ _id: string }>;
+  create(payload: CareRecordServiceCreateRequestDto): Promise<DatabaseIdDto>;
 
   update(id: string, payload: CareRecordServiceUpdateRequestDto): Promise<void>;
 

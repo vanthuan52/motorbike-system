@@ -1,9 +1,11 @@
 import {
   IPaginationEqual,
   IPaginationIn,
+  IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ApiKeyCreateRequestDto } from '@/modules/api-key/dtos/request/api-key.create.request.dto';
 import { ApiKeyUpdateDateRequestDto } from '@/modules/api-key/dtos/request/api-key.update-date.request.dto';
 import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api-key.update-status.request.dto';
@@ -11,17 +13,22 @@ import { ApiKeyUpdateRequestDto } from '@/modules/api-key/dtos/request/api-key.u
 import { ApiKey, EnumApiKeyType, Prisma } from '@/generated/prisma-client';
 
 export interface IApiKeyService {
-  getListByAdmin(
-    {
-      where,
-      ...params
-    }: IPaginationQueryOffsetParams<
-      Prisma.ActivityLogSelect,
-      Prisma.ActivityLogWhereInput
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<{ data: ApiKey[]; total: number }>;
+  ): Promise<IPaginationOffsetReturn<ApiKey>>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
+    >,
+    isActive?: Record<string, IPaginationEqual>,
+    type?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<ApiKey>>;
   createByAdmin({
     name,
     type,

@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareArea, Prisma } from '@/generated/prisma-client';
@@ -66,17 +68,8 @@ export class CareAreaRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareAreaSelect,
     Prisma.CareAreaWhereInput
-  >): Promise<{
-    data: CareArea[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<CareArea>(
+  >): Promise<IPaginationOffsetReturn<CareArea>> {
+    return this.paginationService.offset<CareArea>(
       this.databaseService.careArea,
       {
         ...params,
@@ -93,13 +86,8 @@ export class CareAreaRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareAreaSelect,
     Prisma.CareAreaWhereInput
-  >): Promise<{
-    data: CareArea[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<CareArea>(
+  >): Promise<IPaginationCursorReturn<CareArea>> {
+    return this.paginationService.cursor<CareArea>(
       this.databaseService.careArea,
       {
         ...params,

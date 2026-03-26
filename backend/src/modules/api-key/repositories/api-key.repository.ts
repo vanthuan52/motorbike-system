@@ -4,6 +4,8 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ApiKeyCreateRequestDto } from '@/modules/api-key/dtos/request/api-key.create.request.dto';
 import { ApiKeyUpdateDateRequestDto } from '@/modules/api-key/dtos/request/api-key.update-date.request.dto';
@@ -77,22 +79,13 @@ export class ApiKeyRepository {
       where,
       ...params
     }: IPaginationQueryOffsetParams<
-      Prisma.ActivityLogSelect,
-      Prisma.ActivityLogWhereInput
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<{
-    data: ApiKey[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<ApiKey>(
+  ): Promise<IPaginationOffsetReturn<ApiKey>> {
+    return this.paginationService.offset<ApiKey>(
       this.databaseService.apiKey,
       {
         ...params,
@@ -118,13 +111,8 @@ export class ApiKeyRepository {
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<{
-    data: ApiKey[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<ApiKey>(
+  ): Promise<IPaginationCursorReturn<ApiKey>> {
+    return this.paginationService.cursor<ApiKey>(
       this.databaseService.apiKey,
       {
         ...params,

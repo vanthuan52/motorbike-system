@@ -90,12 +90,15 @@ export class PartTypeAdminController {
     @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
-    const { data, total } = await this.partTypeService.getListOffset(
+    const result = await this.partTypeService.getListOffset(
       pagination,
       status
     );
-    const mapped = this.partTypeUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.partTypeUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @PartTypeAdminGetDoc()

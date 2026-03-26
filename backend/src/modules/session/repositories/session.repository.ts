@@ -6,6 +6,8 @@ import {
   IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -36,17 +38,8 @@ export class SessionRepository {
       Prisma.SessionWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<{
-    data: ISession[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<
+  ): Promise<IPaginationOffsetReturn<ISession>> {
+    return this.paginationService.offset<
       ISession,
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
@@ -72,13 +65,8 @@ export class SessionRepository {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >
-  ): Promise<{
-    data: ISession[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<
+  ): Promise<IPaginationCursorReturn<ISession>> {
+    return this.paginationService.cursor<
       ISession,
       Prisma.SessionSelect,
       Prisma.SessionWhereInput

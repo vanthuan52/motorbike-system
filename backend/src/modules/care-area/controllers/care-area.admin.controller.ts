@@ -86,10 +86,12 @@ export class CareAreaAdminController {
     })
     pagination: IPaginationQueryOffsetParams
   ): Promise<IResponsePagingReturn<CareAreaListResponseDto>> {
-    const { data, total } =
-      await this.careAreaService.getListOffset(pagination);
-    const mapped = this.careAreaUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const result = await this.careAreaService.getListOffset(pagination);
+    const mapped = this.careAreaUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareAreaAdminParamsIdDoc()
@@ -145,13 +147,13 @@ export class CareAreaAdminController {
     pagination: IPaginationQueryOffsetParams,
     @Query('vehicleType') vehicleType?: EnumVehicleModelType
   ): Promise<IResponsePagingReturn<CareAreaWithServiceChecklistResponseDto>> {
-    const { data, total, checklistMap } =
+    const { checklistMap, ...result } =
       await this.careAreaService.getListOffsetWithServiceChecklists(
         pagination,
         vehicleType
       );
 
-    const mapped = data.map(careArea => {
+    const mapped = result.data.map(careArea => {
       const checklists = checklistMap.get(careArea.id) || [];
       const mappedChecklists = this.serviceChecklistUtil.mapList(checklists);
       return this.careAreaUtil.mapWithServiceChecklists(
@@ -160,7 +162,10 @@ export class CareAreaAdminController {
       );
     });
 
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareAreaAdminUpdateDoc()

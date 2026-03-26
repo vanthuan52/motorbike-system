@@ -30,6 +30,7 @@ import {
 import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { RoleService } from '@/modules/role/services/role.service';
+import { RoleUtil } from '@/modules/role/utils/role.util';
 import { EnumRoleType } from '../enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
@@ -39,7 +40,10 @@ import { Prisma } from '@/generated/prisma-client';
   path: '/role',
 })
 export class RoleSystemController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService,
+    private readonly roleUtil: RoleUtil
+  ) {}
 
   @RoleSystemListDoc()
   @ResponsePaging('role.list')
@@ -56,7 +60,12 @@ export class RoleSystemController {
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    return this.roleService.getListCursor(pagination, type);
+    const result = await this.roleService.getListCursor(pagination, type);
+    const mapped = this.roleUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @RoleSystemGetAbilitiesDoc()

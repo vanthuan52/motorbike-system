@@ -8,6 +8,8 @@ import {
   IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -42,19 +44,10 @@ export class DeviceOwnershipRepository {
       Prisma.DeviceOwnershipWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<{
-    data: IDeviceOwnership[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
+  ): Promise<IPaginationOffsetReturn<IDeviceOwnership>> {
     const today = this.helperService.dateCreate();
 
-    return this.paginationService.offsetRaw<IDeviceOwnership>(
+    return this.paginationService.offset<IDeviceOwnership>(
       this.databaseService.deviceOwnership,
       {
         ...others,
@@ -93,15 +86,10 @@ export class DeviceOwnershipRepository {
       Prisma.DeviceOwnershipSelect,
       Prisma.DeviceOwnershipWhereInput
     >
-  ): Promise<{
-    data: IDeviceOwnership[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
+  ): Promise<IPaginationCursorReturn<IDeviceOwnership>> {
     const today = this.helperService.dateCreate();
 
-    return this.paginationService.cursorRaw<IDeviceOwnership>(
+    return this.paginationService.cursor<IDeviceOwnership>(
       this.databaseService.deviceOwnership,
       {
         ...others,

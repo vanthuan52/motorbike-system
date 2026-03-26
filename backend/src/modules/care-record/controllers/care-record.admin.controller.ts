@@ -51,9 +51,9 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_DEFAULT_AVAILABLE_SEARCH,
@@ -129,12 +129,15 @@ export class CareRecordAdminController {
       filters['userVehicleId'] = userVehicleId;
     }
 
-    const { data, total } = await this.careRecordService.getListOffset(
+    const result = await this.careRecordService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.careRecordUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.careRecordUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareRecordAdminParamsIdDoc()

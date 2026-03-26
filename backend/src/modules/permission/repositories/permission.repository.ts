@@ -3,16 +3,14 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import {
   IPaginationIn,
-  IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
 import { IPermission } from '@/modules/permission/interfaces/permission.interface';
-
-import { Prisma, Permission } from '@/generated/prisma-client';
 
 @Injectable()
 export class PermissionRepository {
@@ -31,7 +29,7 @@ export class PermissionRepository {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<Permission>> {
+  ): Promise<IPaginationOffsetReturn<Permission>> {
     return this.paginationService.offset<
       Permission,
       Prisma.PermissionSelect,
@@ -54,7 +52,7 @@ export class PermissionRepository {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<Permission>> {
+  ): Promise<IPaginationCursorReturn<Permission>> {
     return this.paginationService.cursor<
       Permission,
       Prisma.PermissionSelect,

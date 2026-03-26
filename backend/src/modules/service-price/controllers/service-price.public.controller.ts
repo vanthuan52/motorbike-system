@@ -21,7 +21,7 @@ export class ServicePricePublicController {
   constructor(
     private readonly servicePriceService: ServicePriceService,
     private readonly servicePriceUtil: ServicePriceUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @ServicePricePublicListDoc()
@@ -36,7 +36,7 @@ export class ServicePricePublicController {
     @Query('vehicleService', RequestOptionalParseUUIDPipe)
     vehicleServiceId: string,
     @Query('vehicleModel', RequestOptionalParseUUIDPipe)
-    vehicleModelId: string,
+    vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
     const filters: Record<string, any> = {};
 
@@ -48,11 +48,14 @@ export class ServicePricePublicController {
       filters['vehicleModel'] = vehicleModelId;
     }
 
-    const { data, total } = await this.servicePriceService.getListOffset(
+    const result = await this.servicePriceService.getListOffset(
       pagination,
-      filters,
+      filters
     );
-    const mapped = this.servicePriceUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.servicePriceUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

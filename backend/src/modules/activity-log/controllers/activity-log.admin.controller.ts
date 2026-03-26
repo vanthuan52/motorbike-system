@@ -60,11 +60,14 @@ export class ActivityLogAdminController {
     @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     userId: string
   ): Promise<IResponsePagingReturn<ActivityLogResponseDto>> {
-    const { data, total } = await this.activityLogService.getListOffset(
+    const result = await this.activityLogService.getListOffset(
       userId,
       pagination
     );
-    const mapped = this.activityLogUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.activityLogUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

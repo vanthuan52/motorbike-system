@@ -4,6 +4,8 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ServicePrice, Prisma } from '@/generated/prisma-client';
 
@@ -11,7 +13,7 @@ import { ServicePrice, Prisma } from '@/generated/prisma-client';
 export class ServicePriceRepository {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly paginationService: PaginationService,
+    private readonly paginationService: PaginationService
   ) {}
 
   async findAll(
@@ -24,7 +26,7 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>,
+    filters?: Record<string, any>
   ): Promise<ServicePrice[]> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
@@ -53,7 +55,7 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>,
+    filters?: Record<string, any>
   ): Promise<number> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
@@ -75,14 +77,18 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServicePrice[]; count: number }> {
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<ServicePrice>> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
       ...filters,
     };
 
-    return this.paginationService.offsetRaw<ServicePrice>(
+    return this.paginationService.offset<
+      ServicePrice,
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >(
       this.databaseService.servicePrice,
       {
         limit,
@@ -111,14 +117,18 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServicePrice[]; count?: number }> {
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<ServicePrice>> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
       ...filters,
     };
 
-    return this.paginationService.cursorRaw<ServicePrice>(
+    return this.paginationService.cursor<
+      ServicePrice,
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >(
       this.databaseService.servicePrice,
       {
         limit,

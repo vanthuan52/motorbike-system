@@ -8,6 +8,8 @@ import {
   IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
@@ -41,8 +43,8 @@ export class DeviceService implements IDeviceService {
       Prisma.DeviceOwnershipWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<{ data: DeviceOwnershipResponseDto[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<DeviceOwnershipResponseDto>> {
+    const { data, ...others } =
       await this.deviceOwnershipRepository.findWithPaginationOffsetByAdmin(
         userId,
         pagination,
@@ -51,7 +53,7 @@ export class DeviceService implements IDeviceService {
 
     const deviceOwnerships: DeviceOwnershipResponseDto[] =
       this.deviceUtil.mapList(data);
-    return { data: deviceOwnerships, total: count || 0 };
+    return { data: deviceOwnerships, ...others };
   }
 
   async getListCursor(
@@ -61,8 +63,8 @@ export class DeviceService implements IDeviceService {
       Prisma.DeviceOwnershipSelect,
       Prisma.DeviceOwnershipWhereInput
     >
-  ): Promise<{ data: DeviceOwnershipResponseDto[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<DeviceOwnershipResponseDto>> {
+    const { data, ...others } =
       await this.deviceOwnershipRepository.findActiveWithPaginationCursor(
         userId,
         sessionId,
@@ -72,7 +74,7 @@ export class DeviceService implements IDeviceService {
     const deviceOwnerships: DeviceOwnershipResponseDto[] =
       this.deviceUtil.mapList(data);
 
-    return { data: deviceOwnerships, total: count || 0 };
+    return { data: deviceOwnerships, ...others };
   }
 
   async refresh(

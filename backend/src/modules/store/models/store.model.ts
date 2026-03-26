@@ -1,4 +1,4 @@
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
 
 export class StoreModel {
   id: string;
@@ -7,7 +7,7 @@ export class StoreModel {
   workHours: string;
   description?: string;
   slug: string;
-  status: EnumStatus;
+  status: EnumStoreStatus;
 
   createdAt: Date;
   updatedAt: Date;
@@ -16,4 +16,12 @@ export class StoreModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<StoreModel>) {
+    Object.assign(this, data);
+  }
+
+  isActive(): boolean {
+    return this.status === EnumStoreStatus.active && !this.deletedAt;
+  }
 }

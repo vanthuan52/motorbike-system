@@ -44,6 +44,7 @@ import { NotificationUserSettingRequestDto } from '@/modules/notification/dtos/r
 import { NotificationResponseDto } from '@/modules/notification/dtos/response/notification.response.dto';
 import { NotificationUserSettingResponseDto } from '@/modules/notification/dtos/response/notification.user-setting.response.dto';
 import { NotificationService } from '@/modules/notification/services/notification.service';
+import { NotificationUtil } from '@/modules/notification/utils/notification.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { GeoLocation, Prisma, UserAgent } from '@/generated/prisma-client';
 
@@ -53,7 +54,10 @@ import { GeoLocation, Prisma, UserAgent } from '@/generated/prisma-client';
   path: '/notification',
 })
 export class NotificationSharedController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(
+    private readonly notificationService: NotificationService,
+    private readonly notificationUtil: NotificationUtil
+  ) {}
 
   @NotificationSharedListDoc()
   @ResponsePaging('notification.list')
@@ -69,7 +73,17 @@ export class NotificationSharedController {
     >,
     @AuthJwtPayload('userId') userId: string
   ): Promise<IResponsePagingReturn<NotificationResponseDto>> {
-    return this.notificationService.getListCursor(userId, pagination);
+    const result = await this.notificationService.getListCursor(
+      userId,
+      pagination
+    );
+
+    const mapped = this.notificationUtil.mapList(result.data);
+
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @NotificationSharedListUserSettingDoc()

@@ -46,7 +46,7 @@ export class StoreCreateRequestDto {
     example: 'Phụ tùng giúp lọc không khí trước khi vào động cơ.',
     description: 'Mô tả chi tiết (có thể bỏ trống)',
     required: false,
-    maxLength: 500,
+    maxLength: 255,
   })
   @IsOptional()
   @IsString()

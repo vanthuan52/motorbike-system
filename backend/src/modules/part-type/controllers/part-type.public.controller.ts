@@ -41,14 +41,14 @@ export class PartTypePublicController {
   constructor(
     private readonly partTypeService: PartTypeService,
     private readonly partTypeUtil: PartTypeUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly paginationUtil: PaginationUtil
   ) {}
 
   @PartTypePublicGetOneDoc()
   @Response('part-type.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<PartTypeDto>> {
     const partType = await this.partTypeService.findOneBySlug(slug);
     const mapped = this.partTypeUtil.mapOne(partType);
@@ -65,13 +65,13 @@ export class PartTypePublicController {
     })
     pagination: IPaginationQueryOffsetParams,
     @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
-    const { data, total } = await this.partTypeService.getListOffset(
-      pagination,
-      status,
-    );
-    const mapped = this.partTypeUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const result = await this.partTypeService.getListOffset(pagination, status);
+    const mapped = this.partTypeUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

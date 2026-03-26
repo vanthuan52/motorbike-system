@@ -11,6 +11,12 @@ import { MessageUpdateStatusRequestDto } from '../dtos/request/message-update-st
 import { UserService } from '@/modules/user/services/user.service';
 import { IMessageService } from '../interfaces/message.service.interface';
 import { Conversation, Message, Prisma } from '@/generated/prisma-client';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
 
 @Injectable()
 export class MessageService implements IMessageService {
@@ -68,16 +74,42 @@ export class MessageService implements IMessageService {
     });
   }
 
-  async findAllMessagesWithPopulate(
-    where?: Prisma.MessageWhereInput
-  ): Promise<Message[]> {
-    return this.messageRepository.findMany(where || {});
+  async getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.MessageSelect,
+      Prisma.MessageWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<Message>> {
+    const { data, ...others } =
+      await this.messageRepository.findWithPaginationOffset({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    return { data, ...others };
   }
 
-  async getTotalWithPopulate(
-    where?: Prisma.MessageWhereInput
-  ): Promise<number> {
-    return this.messageRepository.count(where || {});
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.MessageSelect,
+      Prisma.MessageWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<Message>> {
+    const { data, ...others } =
+      await this.messageRepository.findWithPaginationCursor({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<Message | null> {

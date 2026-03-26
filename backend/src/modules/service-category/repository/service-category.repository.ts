@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { ServiceCategory, Prisma } from '@/generated/prisma-client';
@@ -66,17 +68,12 @@ export class ServiceCategoryRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.ServiceCategorySelect,
     Prisma.ServiceCategoryWhereInput
-  >): Promise<{
-    data: ServiceCategory[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<ServiceCategory>(
+  ): Promise<IPaginationOffsetReturn<ServiceCategory>> {
+    return this.paginationService.offset<
+      ServiceCategory,
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >(
       this.databaseService.serviceCategory,
       {
         ...params,
@@ -93,13 +90,12 @@ export class ServiceCategoryRepository {
   }: IPaginationQueryCursorParams<
     Prisma.ServiceCategorySelect,
     Prisma.ServiceCategoryWhereInput
-  >): Promise<{
-    data: ServiceCategory[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<ServiceCategory>(
+  ): Promise<IPaginationCursorReturn<ServiceCategory>> {
+    return this.paginationService.cursor<
+      ServiceCategory,
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >(
       this.databaseService.serviceCategory,
       {
         ...params,

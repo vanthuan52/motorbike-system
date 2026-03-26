@@ -94,12 +94,15 @@ export class ServiceCategoryAdminController {
     @PaginationQueryFilterInEnum('status', SERVICE_CATEGORY_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
-    const { data, total } = await this.serviceCategoryService.getListOffset(
+    const result = await this.serviceCategoryService.getListOffset(
       pagination,
       status
     );
-    const mapped = this.serviceCategoryUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.serviceCategoryUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @ServiceCategoryAdminParamsIdDoc()

@@ -35,12 +35,11 @@ import {
   HiringAdminUpdateStatusDoc,
 } from '../docs/hiring.admin.doc';
 import { HiringService } from '../services/hiring.service';
-import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import {
@@ -51,9 +50,9 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_HIRING_STATUS } from '../enums/hiring.enum';
+import { EnumHiringStatus } from '../enums/hiring.enum';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { ENUM_HIRING_STATUS_CODE_ERROR } from '../enums/hiring.status-code.enum';
+import { EnumHiringStatusCodeError } from '../enums/hiring.status-code.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { HiringUtil } from '../utils/hiring.util';
 import { HiringResponseDto } from '../dtos/hiring-response.dto';
@@ -90,9 +89,9 @@ export class HiringAdminController {
       Prisma.HiringWhereInput
     >,
     @PaginationQueryFilterInEnum('status', [
-      ENUM_HIRING_STATUS.PUBLISHED,
-      ENUM_HIRING_STATUS.DRAFT,
-      ENUM_HIRING_STATUS.ARCHIVED,
+      EnumHiringStatus.published,
+      EnumHiringStatus.draft,
+      EnumHiringStatus.archived,
     ])
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<HiringResponseDto>> {
@@ -100,12 +99,15 @@ export class HiringAdminController {
       ...status,
     };
 
-    const { data, total } = await this.hiringService.getListOffset(
+    const result = await this.hiringService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.hiringUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.hiringUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @HiringAdminParamsIdDoc()
@@ -148,12 +150,12 @@ export class HiringAdminController {
       });
       if (existingHiringBySlug) {
         throw new ConflictException({
-          statusCode: ENUM_HIRING_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumHiringStatusCodeError.slugExisted,
           message: 'hiring.error.slugExisted',
         });
       }
       const hiring = await this.hiringService.create(body);
-      return { data: { _id: hiring._id } };
+      return { data: { id: hiring.id } };
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -193,14 +195,14 @@ export class HiringAdminController {
         existingBySlug._id.toString() !== hiring._id.toString()
       ) {
         throw new ConflictException({
-          statusCode: ENUM_HIRING_STATUS_CODE_ERROR.SLUG_EXISTED,
+          statusCode: EnumHiringStatusCodeError.slugExisted,
           message: 'hiring.error.slugExisted',
         });
       }
     }
     try {
-      const hiringUpdated = await this.hiringService.update(hiring, body);
-      return { data: { _id: hiringUpdated._id } };
+      await this.hiringService.update(hiring.id, body);
+      return { data: { id: hiring.id } };
     } catch (err) {
       if (err instanceof HttpException) throw err;
 
@@ -227,7 +229,7 @@ export class HiringAdminController {
       throw new NotFoundException('hiring.error.notFoundHiring');
     }
     try {
-      await this.hiringService.softDelete(hiring);
+      await this.hiringService.delete(hiring.id);
       return {};
     } catch (err) {
       throw new InternalServerErrorException({
@@ -257,9 +259,8 @@ export class HiringAdminController {
     }
     try {
       await this.hiringService.updateStatus(
-        hiring,
-        { status },
-        {} as IDatabaseSaveOptions
+        hiring.id,
+        { status }
       );
       return {
         metadata: {

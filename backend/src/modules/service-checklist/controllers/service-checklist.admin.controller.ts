@@ -88,12 +88,15 @@ export class ServiceChecklistAdminController {
       filters.vehicleType = { has: vehicleType };
     }
 
-    const { data, total } = await this.serviceChecklistService.getListOffset(
+    const result = await this.serviceChecklistService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.serviceChecklistUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.serviceChecklistUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @ServiceChecklistAdminParamsIdDoc()

@@ -1,24 +1,42 @@
 import { StoreModel } from '../models/store.model';
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import { EnumStoreStatus } from '../enums/store.enum';
+import { Store as PrismaStore, Prisma } from '@/generated/prisma-client';
 
 export class StoreMapper {
-  static toDomain(prismaStore: any): StoreModel {
-    const model = new StoreModel();
-    model.id = prismaStore.id;
-    model.name = prismaStore.name;
-    model.address = prismaStore.address;
-    model.workHours = prismaStore.workHours;
-    model.description = prismaStore.description;
-    model.slug = prismaStore.slug;
-    model.status = prismaStore.status?.toLowerCase() as EnumStatus;
+  static toDomain(prismaStore: PrismaStore): StoreModel {
+    return new StoreModel({
+      id: prismaStore.id,
+      name: prismaStore.name,
+      address: prismaStore.address,
+      workHours: prismaStore.workHours,
+      description: prismaStore.description || undefined,
+      slug: prismaStore.slug,
+      status: prismaStore.status as unknown as EnumStoreStatus,
 
-    model.createdAt = prismaStore.createdAt;
-    model.updatedAt = prismaStore.updatedAt;
-    model.deletedAt = prismaStore.deletedAt;
-    model.createdBy = prismaStore.createdBy;
-    model.updatedBy = prismaStore.updatedBy;
-    model.deletedBy = prismaStore.deletedBy;
+      createdAt: prismaStore.createdAt,
+      updatedAt: prismaStore.updatedAt,
+      deletedAt: prismaStore.deletedAt || undefined,
+      createdBy: prismaStore.createdBy || undefined,
+      updatedBy: prismaStore.updatedBy || undefined,
+      deletedBy: prismaStore.deletedBy || undefined,
+    });
+  }
 
-    return model;
+  /**
+   * Chuyển từ Model sang dữ liệu để Update DB
+   * Loại bỏ các trường không được phép update thủ công như id, createdAt
+   */
+  static toPersistence(model: StoreModel): Prisma.StoreUpdateInput {
+    return {
+      name: model.name,
+      address: model.address,
+      workHours: model.workHours,
+      description: model.description,
+      slug: model.slug,
+      status: model.status as any,
+      updatedBy: model.updatedBy,
+      deletedAt: model.deletedAt,
+      deletedBy: model.deletedBy,
+    };
   }
 }

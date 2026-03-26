@@ -1,13 +1,11 @@
 import {
   IPaginationIn,
-  IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
 import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
@@ -24,14 +22,14 @@ export interface IPermissionService {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<PermissionListResponseDto>>;
+  ): Promise<IPaginationOffsetReturn<Permission>>;
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<PermissionListResponseDto>>;
+  ): Promise<IPaginationCursorReturn<Permission>>;
   getOne(id: string): Promise<IResponseReturn<PermissionDto>>;
   createByAdmin(
     data: PermissionCreateRequestDto

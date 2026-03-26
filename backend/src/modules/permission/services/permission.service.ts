@@ -7,8 +7,9 @@ import {
 } from '@nestjs/common';
 import {
   IPaginationIn,
-  IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import {
@@ -18,7 +19,6 @@ import {
 import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
-import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import { PermissionDto } from '@/modules/permission/dtos/permission.dto';
 import { EnumPermissionStatusCodeError } from '@/modules/permission/enums/permission.status-code.enum';
 import { IPermissionService } from '@/modules/permission/interfaces/permission.service.interface';
@@ -39,18 +39,15 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
+  ): Promise<IPaginationOffsetReturn<Permission>> {
     const { data, ...others } =
       await this.PermissionRepository.findWithPaginationOffsetByAdmin(
         pagination,
         type
       );
 
-    const Permissions: PermissionListResponseDto[] =
-      this.PermissionUtil.mapList(data);
-
     return {
-      data: Permissions,
+      data,
       ...others,
     };
   }
@@ -61,18 +58,15 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
+  ): Promise<IPaginationCursorReturn<Permission>> {
     const { data, ...others } =
       await this.PermissionRepository.findWithPaginationCursor(
         pagination,
         type
       );
 
-    const Permissions: PermissionListResponseDto[] =
-      this.PermissionUtil.mapList(data);
-
     return {
-      data: Permissions,
+      data,
       ...others,
     };
   }

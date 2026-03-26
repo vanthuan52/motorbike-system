@@ -2,10 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
-import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
+import { IPaginationQueryCursorParams, IPaginationCursorReturn } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { NotificationUserSettingRequestDto } from '@/modules/notification/dtos/request/notification.user-setting.request.dto';
 import {
   INotificationEmailSendPayload,
@@ -42,7 +41,7 @@ export class NotificationRepository {
       Prisma.NotificationSelect,
       Prisma.NotificationWhereInput
     >
-  ): Promise<IResponsePagingReturn<Notification>> {
+  ): Promise<IPaginationCursorReturn<Notification>> {
     return this.paginationService.cursor<
       Notification,
       Prisma.NotificationSelect,

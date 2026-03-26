@@ -28,9 +28,10 @@ import {
   RoleSystemListDoc,
 } from '@/modules/role/docs/role.system.doc';
 import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
-import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
-import { EnumRoleType, Prisma } from '@/generated/prisma-client';
+import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import { PermissionService } from '../services/permission.service';
+import { PermissionUtil } from '../utils/permission.util';
+import { EnumRoleType, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.system.permission')
 @Controller({
@@ -38,7 +39,10 @@ import { PermissionService } from '../services/permission.service';
   path: '/permission',
 })
 export class PermissionSystemController {
-  constructor(private readonly permissionService: PermissionService) {}
+  constructor(
+    private readonly permissionService: PermissionService,
+    private readonly permissionUtil: PermissionUtil
+  ) {}
 
   @RoleSystemListDoc()
   @ResponsePaging('role.list')
@@ -49,12 +53,17 @@ export class PermissionSystemController {
       availableSearch: RoleDefaultAvailableSearch,
     })
     pagination: IPaginationQueryCursorParams<
-      Prisma.RoleSelect,
-      Prisma.RoleWhereInput
+      Prisma.PermissionSelect,
+      Prisma.PermissionWhereInput
     >,
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    return this.permissionService.getListCursor(pagination, type);
+  ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
+    const result = await this.permissionService.getListCursor(pagination, type);
+    const mapped = this.permissionUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

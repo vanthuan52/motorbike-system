@@ -45,7 +45,7 @@ import {
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
@@ -106,12 +106,15 @@ export class CareRecordChecklistController {
       filters['careRecordServiceId'] = careRecordServiceId;
     }
 
-    const { data, total } = await this.careRecordChecklistService.getListOffset(
+    const paginationResult = await this.careRecordChecklistService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.careRecordChecklistUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.careRecordChecklistUtil.mapList(paginationResult.data);
+    return {
+      ...paginationResult,
+      data: mapped,
+    };
   }
 
   @CareRecordChecklistParamsIdDoc()
