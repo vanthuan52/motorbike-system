@@ -28,7 +28,7 @@ export function MessageListDoc(): MethodDecorator {
     }),
     DocResponsePaging<MessageGetResponseDto>('message.list', {
       dto: MessageGetResponseDto,
-    }),
+    })
   );
 }
 
@@ -48,6 +48,6 @@ export function MessageUpdateStatusDoc(): MethodDecorator {
     }),
     DocResponse<MessageGetResponseDto>('message.updateStatus', {
       dto: MessageGetResponseDto,
-    }),
+    })
   );
 }

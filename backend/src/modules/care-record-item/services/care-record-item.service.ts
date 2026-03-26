@@ -12,7 +12,9 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { EnumCareRecordItemStatusCodeError } from '../enums/care-record-item.status-code.enum';
-import { CareRecordItem, Prisma } from '@generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { CareRecordItemModel } from '../models/care-record-item.model';
+import { Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordItemService implements ICareRecordItemService {
@@ -26,7 +28,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       Prisma.CareRecordItemWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecordItem>> {
+  ): Promise<IPaginationOffsetReturn<CareRecordItemModel>> {
     const { data, ...others } =
       await this.careRecordItemRepository.findWithPaginationOffset({
         ...pagination,
@@ -45,7 +47,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       Prisma.CareRecordItemWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecordItem>> {
+  ): Promise<IPaginationCursorReturn<CareRecordItemModel>> {
     const { data, ...others } =
       await this.careRecordItemRepository.findWithPaginationCursor({
         ...pagination,
@@ -58,28 +60,32 @@ export class CareRecordItemService implements ICareRecordItemService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<CareRecordItem> {
+  async findOneById(id: string): Promise<CareRecordItemModel> {
     return this.findOneByIdOrFail(id);
   }
 
-  async findOneWithRelationsById(id: string): Promise<CareRecordItem> {
+  async findOneWithRelationsById(id: string): Promise<CareRecordItemModel> {
     const careRecordItem = await this.findOneByIdOrFail(id);
     return careRecordItem;
   }
 
-  async create({
-    careRecord,
-    vehicleService,
-    source,
-    itemType,
-    name,
-    part,
-    quantity,
-    unitPrice,
-    technician,
-    approvedByOwner,
-    note,
-  }: CareRecordItemCreateRequestDto): Promise<DatabaseIdDto> {
+  async create(
+    {
+      careRecord,
+      vehicleService,
+      source,
+      itemType,
+      name,
+      part,
+      quantity,
+      unitPrice,
+      technician,
+      approvedByOwner,
+      note,
+    }: CareRecordItemCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto> {
     const created = await this.careRecordItemRepository.create({
       name,
       source,
@@ -93,6 +99,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       vehicleService: { connect: { id: vehicleService } },
       ...(part && { part: { connect: { id: part } } }),
       ...(technician && { technician: { connect: { id: technician } } }),
+      createdBy: actionBy,
     });
 
     return { id: created.id };
@@ -111,11 +118,15 @@ export class CareRecordItemService implements ICareRecordItemService {
       technician,
       approvedByOwner,
       note,
-    }: CareRecordItemUpdateRequestDto
+    }: CareRecordItemUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     const record = await this.findOneByIdOrFail(id);
 
-    const updateData: any = {};
+    const updateData: any = {
+      updatedBy: actionBy,
+    };
     if (vehicleService !== undefined)
       updateData.vehicleService = { connect: { id: vehicleService } };
     if (source !== undefined) updateData.source = source;
@@ -143,22 +154,34 @@ export class CareRecordItemService implements ICareRecordItemService {
 
   async updateApproval(
     id: string,
-    { approvedByOwner }: CareRecordItemUpdateApprovalRequestDto
+    { approvedByOwner }: CareRecordItemUpdateApprovalRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordItemRepository.update(id, { approvedByOwner });
+    await this.careRecordItemRepository.update(id, {
+      approvedByOwner,
+      updatedBy: actionBy,
+    });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordItemRepository.delete(id);
+    await this.careRecordItemRepository.update(id, {
+      deletedBy: actionBy,
+      deletedAt: new Date(),
+    });
   }
 
   async deleteMany(find?: Record<string, any>): Promise<boolean> {
     return true;
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareRecordItem> {
+  private async findOneByIdOrFail(id: string): Promise<CareRecordItemModel> {
     const careRecordItem = await this.careRecordItemRepository.findOneById(id);
     if (!careRecordItem) {
       throw new NotFoundException({

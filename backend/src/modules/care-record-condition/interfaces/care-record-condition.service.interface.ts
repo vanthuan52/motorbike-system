@@ -7,6 +7,7 @@ import {
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordConditionService {
@@ -28,14 +29,20 @@ export interface ICareRecordConditionService {
 
   findOneById(id: string): Promise<CareRecordCondition>;
 
-  create(payload: CareRecordConditionCreateRequestDto): Promise<DatabaseIdDto>;
+  create(
+    payload: CareRecordConditionCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto>;
 
   update(
     id: string,
-    payload: CareRecordConditionUpdateRequestDto
+    payload: CareRecordConditionUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
 
   deleteMany(find?: Record<string, any>): Promise<boolean>;
 }

@@ -15,6 +15,7 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareAreaUtil } from '../utils/care-area.util';
 import { CareArea, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 @Injectable()
 export class CareAreaService implements ICareAreaService {
@@ -114,11 +115,11 @@ export class CareAreaService implements ICareAreaService {
     return this.careAreaRepository.findOne(where);
   }
 
-  async create({
-    name,
-    description,
-    orderBy,
-  }: CareAreaCreateRequestDto): Promise<{ id: string }> {
+  async create(
+    { name, description, orderBy }: CareAreaCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<{ id: string }> {
     const created = await this.careAreaRepository.create({
       name,
       description,
@@ -130,7 +131,9 @@ export class CareAreaService implements ICareAreaService {
 
   async update(
     id: string,
-    { name, description, orderBy }: CareAreaUpdateRequestDto
+    { name, description, orderBy }: CareAreaUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     const careArea = await this.findOneByIdOrFail(id);
 
@@ -141,12 +144,20 @@ export class CareAreaService implements ICareAreaService {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careAreaRepository.delete(id);
   }
 
-  async createMany(data: CareAreaCreateRequestDto[]): Promise<boolean> {
+  async createMany(
+    data: CareAreaCreateRequestDto[],
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<boolean> {
     await Promise.all(
       data.map(item =>
         this.careAreaRepository.create({

@@ -10,7 +10,8 @@ import { IApiKeyGenerateCredential } from '@/modules/api-key/interfaces/api-key.
 import { ApiKeyCreateResponseDto } from '@/modules/api-key/dtos/response/api-key.create.response.dto';
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { CacheMainProvider } from '@/common/cache/constants/cache.constant';
-import { ApiKey, EnumApiKeyType } from '@/generated/prisma-client';
+import { ApiKeyModel } from '../models/api-key.model';
+import { EnumApiKeyType } from '@/generated/prisma-client';
 
 @Injectable()
 export class ApiKeyUtil {
@@ -30,21 +31,21 @@ export class ApiKeyUtil {
     this.header = this.configService.get<string>('auth.xApiKey.header');
   }
 
-  mapList(apiKeys: ApiKey[]): ApiKeyDto[] {
+  mapList(apiKeys: ApiKeyModel[]): ApiKeyDto[] {
     return plainToInstance(ApiKeyDto, apiKeys);
   }
 
-  mapOne(apiKey: ApiKey): ApiKeyDto {
+  mapOne(apiKey: ApiKeyModel): ApiKeyDto {
     return plainToInstance(ApiKeyDto, apiKey);
   }
 
-  mapCreate(apiKey: ApiKey, secret: string): ApiKeyCreateResponseDto {
+  mapCreate(apiKey: ApiKeyModel, secret: string): ApiKeyCreateResponseDto {
     return plainToInstance(ApiKeyCreateResponseDto, { ...apiKey, secret });
   }
 
-  async getCacheByKey(key: string): Promise<ApiKey | null> {
+  async getCacheByKey(key: string): Promise<ApiKeyModel | null> {
     const cacheKey = `${this.cachePrefixKey}:${key}`;
-    const cachedApiKey = await this.cacheManager.get<ApiKey>(cacheKey);
+    const cachedApiKey = await this.cacheManager.get<ApiKeyModel>(cacheKey);
     if (cachedApiKey) {
       return cachedApiKey;
     }
@@ -52,7 +53,7 @@ export class ApiKeyUtil {
     return null;
   }
 
-  async setCacheByKey(key: string, apiKey: ApiKey): Promise<void> {
+  async setCacheByKey(key: string, apiKey: ApiKeyModel): Promise<void> {
     const cacheKey = `${this.cachePrefixKey}:${key}`;
     await this.cacheManager.set(cacheKey, apiKey);
 
@@ -163,7 +164,7 @@ export class ApiKeyUtil {
     return { key, secret, hash };
   }
 
-  mapActivityLogMetadata(apiKey: ApiKey): IActivityLogMetadata {
+  mapActivityLogMetadata(apiKey: ApiKeyModel): IActivityLogMetadata {
     return {
       apiKeyId: apiKey.id,
       apiKeyName: apiKey.name,

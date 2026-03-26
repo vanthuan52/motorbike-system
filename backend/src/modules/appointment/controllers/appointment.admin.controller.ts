@@ -57,10 +57,18 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 import { AppointmentUtil } from '../utils/appointment.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.admin.appointment')
 @Controller({
@@ -70,8 +78,7 @@ import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-va
 export class AppointmentAdminController {
   constructor(
     private readonly appointmentService: AppointmentService,
-    private readonly appointmentUtil: AppointmentUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly appointmentUtil: AppointmentUtil
   ) {}
 
   @AppointmentAdminListDoc()
@@ -134,10 +141,17 @@ export class AppointmentAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: AppointmentCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.appointmentService.create(body);
+    const created = await this.appointmentService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return { data: { id: created._id } };
   }
 
@@ -153,10 +167,18 @@ export class AppointmentAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: AppointmentUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.update(id, body);
+    await this.appointmentService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -172,10 +194,18 @@ export class AppointmentAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: AppointmentUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.updateStatus(id, body);
+    await this.appointmentService.updateStatus(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -191,9 +221,16 @@ export class AppointmentAdminController {
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.delete(id);
+    await this.appointmentService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 }

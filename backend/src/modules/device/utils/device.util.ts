@@ -2,24 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/device.ownership.response';
-import { IDeviceOwnership } from '@/modules/device/interfaces/device.interface';
+import { DeviceOwnershipModel } from '../models/device.model';
 
 @Injectable()
 export class DeviceUtil {
-  mapList(devices: IDeviceOwnership[]): DeviceOwnershipResponseDto[] {
+  mapList(devices: DeviceOwnershipModel[]): DeviceOwnershipResponseDto[] {
     return plainToInstance(DeviceOwnershipResponseDto, devices);
   }
 
   mapActivityLogMetadata(
-    deviceOwnership: IDeviceOwnership
+    deviceOwnership: DeviceOwnershipModel
   ): IActivityLogMetadata {
     return {
       deviceOwnershipId: deviceOwnership.id,
-      deviceId: deviceOwnership.device.id,
+      deviceId: deviceOwnership.deviceId,
       userId: deviceOwnership.userId,
-      userUsername: deviceOwnership.user.username,
+      userUsername: (deviceOwnership as any).user?.username,
       timestamp: deviceOwnership.updatedAt ?? deviceOwnership.createdAt,
-      sessionCount: deviceOwnership._count.sessions,
+      sessionCount: (deviceOwnership as any)._count?.sessions,
     };
   }
 }

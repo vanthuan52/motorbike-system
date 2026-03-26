@@ -16,7 +16,7 @@ import { emitSocketError } from './utils/socket-error.util';
 import { EnumChatStatusCodeError } from './enums/message-status-code.enum';
 import { ReadMessageDto } from './dtos/request/read-message.dto';
 import { ConversationService } from './services/conversation.service';
-import { Message } from '@/generated/prisma-client';
+import { MessageModel } from './models/message.model';
 
 @WebSocketGateway(5002, {
   cors: {
@@ -88,7 +88,7 @@ export class MessageGateway
       return;
     }
 
-    const savedMessage: Message = await this.messageService.sendMessage(
+    const savedMessage: MessageModel = await this.messageService.sendMessage(
       conversation,
       payload
     );

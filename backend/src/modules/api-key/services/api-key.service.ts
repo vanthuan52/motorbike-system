@@ -21,11 +21,16 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import {
+  IRequestApp,
+  IRequestLog,
+} from '@/common/request/interfaces/request.interface';
 import { ApiKeyUtil } from '@/modules/api-key/utils/api-key.util';
 import { ApiKeyRepository } from '@/modules/api-key/repositories/api-key.repository';
 import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api-key.update-status.request.dto';
-import { ApiKey, EnumApiKeyType, Prisma } from '@/generated/prisma-client';
+import { EnumApiKeyType } from '../enums/api-key.enum';
+import { ApiKeyModel } from '../models/api-key.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ApiKeyService implements IApiKeyService {
@@ -42,7 +47,7 @@ export class ApiKeyService implements IApiKeyService {
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<ApiKey>> {
+  ): Promise<IPaginationOffsetReturn<ApiKeyModel>> {
     const { data, ...others } =
       await this.apiKeyRepository.findWithPaginationOffset(
         pagination,
@@ -63,7 +68,7 @@ export class ApiKeyService implements IApiKeyService {
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<ApiKey>> {
+  ): Promise<IPaginationCursorReturn<ApiKeyModel>> {
     const { data, ...others } =
       await this.apiKeyRepository.findWithPaginationCursor(
         pagination,
@@ -77,12 +82,11 @@ export class ApiKeyService implements IApiKeyService {
     };
   }
 
-  async createByAdmin({
-    name,
-    type,
-    startAt,
-    endAt,
-  }: ApiKeyCreateRequestDto): Promise<{ created: ApiKey; secret: string }> {
+  async createByAdmin(
+    { name, type, startAt, endAt }: ApiKeyCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<{ created: ApiKeyModel; secret: string }> {
     const { key, secret, hash } = this.apiKeyUtil.generateCredential();
     const created = await this.apiKeyRepository.create(
       {
@@ -100,8 +104,10 @@ export class ApiKeyService implements IApiKeyService {
 
   async updateStatusByAdmin(
     id: string,
-    data: ApiKeyUpdateStatusRequestDto
-  ): Promise<ApiKey> {
+    data: ApiKeyUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<ApiKeyModel> {
     const today = this.helperService.dateCreate();
     const apiKey = await this.apiKeyRepository.findOneById(id);
     if (!apiKey) {
@@ -126,8 +132,10 @@ export class ApiKeyService implements IApiKeyService {
 
   async updateByAdmin(
     id: string,
-    { name }: ApiKeyUpdateRequestDto
-  ): Promise<ApiKey> {
+    { name }: ApiKeyUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<ApiKeyModel> {
     const apiKey = await this.apiKeyRepository.findOneById(id);
     this.validateApiKey(apiKey, true);
 
@@ -141,8 +149,10 @@ export class ApiKeyService implements IApiKeyService {
 
   async updateDatesByAdmin(
     id: string,
-    { startAt, endAt }: ApiKeyUpdateDateRequestDto
-  ): Promise<ApiKey> {
+    { startAt, endAt }: ApiKeyUpdateDateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<ApiKeyModel> {
     const apiKey = await this.apiKeyRepository.findOneById(id);
     this.validateApiKey(apiKey, true);
 
@@ -161,7 +171,11 @@ export class ApiKeyService implements IApiKeyService {
     return updated;
   }
 
-  async resetByAdmin(id: string): Promise<{ updated: ApiKey; secret: string }> {
+  async resetByAdmin(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<{ updated: ApiKeyModel; secret: string }> {
     const apiKey = await this.apiKeyRepository.findOneById(id);
     this.validateApiKey(apiKey, true);
 
@@ -175,7 +189,11 @@ export class ApiKeyService implements IApiKeyService {
     return { updated, secret };
   }
 
-  async deleteByAdmin(id: string): Promise<ApiKey> {
+  async deleteByAdmin(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<ApiKeyModel> {
     const apiKey = await this.apiKeyRepository.findOneById(id);
     if (!apiKey) {
       throw new NotFoundException({
@@ -192,7 +210,7 @@ export class ApiKeyService implements IApiKeyService {
     return deleted;
   }
 
-  validateApiKey(apiKey: ApiKey, includeActive: boolean = false): void {
+  validateApiKey(apiKey: ApiKeyModel, includeActive: boolean = false): void {
     if (!apiKey) {
       throw new NotFoundException({
         statusCode: EnumApiKeyStatusCodeError.notFound,
@@ -208,7 +226,7 @@ export class ApiKeyService implements IApiKeyService {
     return;
   }
 
-  async findOneActiveByKeyAndCache(key: string): Promise<ApiKey | null> {
+  async findOneActiveByKeyAndCache(key: string): Promise<ApiKeyModel | null> {
     const cached = await this.apiKeyUtil.getCacheByKey(key);
     if (cached) {
       return cached;
@@ -222,7 +240,7 @@ export class ApiKeyService implements IApiKeyService {
     return apiKey;
   }
 
-  async validateXApiKeyGuard(request: IRequestApp): Promise<ApiKey> {
+  async validateXApiKeyGuard(request: IRequestApp): Promise<ApiKeyModel> {
     const xApiKeyHeader: string = this.apiKeyUtil
       .extractKeyFromRequest(request)
       ?.trim();
@@ -243,7 +261,7 @@ export class ApiKeyService implements IApiKeyService {
 
     const [key, secret] = xApiKey;
     const today = this.helperService.dateCreate();
-    const apiKey: ApiKey = await this.findOneActiveByKeyAndCache(key);
+    const apiKey: ApiKeyModel = await this.findOneActiveByKeyAndCache(key);
 
     if (!apiKey) {
       throw new ForbiddenException({

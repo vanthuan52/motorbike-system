@@ -63,8 +63,16 @@ import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-re
 import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/care-record-service.with-checklists.response.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordServiceUtil } from '../utils/care-record-service.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
 
 @ApiTags('modules.admin.care-record-service')
 @Controller({
@@ -74,8 +82,7 @@ import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request
 export class CareRecordServiceAdminController {
   constructor(
     private readonly careRecordServiceService: CareRecordServiceService,
-    private readonly careRecordServiceUtil: CareRecordServiceUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly careRecordServiceUtil: CareRecordServiceUtil
   ) {}
 
   @CareRecordServiceAdminListDoc()
@@ -188,9 +195,17 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: CareRecordServiceCreateRequestDto
+    @Body() body: CareRecordServiceCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordServiceService.create(body);
+    const created = await this.careRecordServiceService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      createdBy
+    );
     return { data: { id: created.id } };
   }
 
@@ -202,9 +217,18 @@ export class CareRecordServiceAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: CareRecordServiceUpdateRequestDto
+    @Body() body: CareRecordServiceUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordServiceService.update(id, body);
+    await this.careRecordServiceService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      updatedBy
+    );
     return {};
   }
 
@@ -216,9 +240,18 @@ export class CareRecordServiceAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: CareRecordServiceUpdateStatusRequestDto
+    @Body() body: CareRecordServiceUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordServiceService.updateStatus(id, body);
+    await this.careRecordServiceService.updateStatus(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      updatedBy
+    );
     return {};
   }
 
@@ -229,9 +262,17 @@ export class CareRecordServiceAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordServiceService.delete(id);
+    await this.careRecordServiceService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
     return {};
   }
 }

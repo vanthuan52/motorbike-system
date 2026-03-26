@@ -13,12 +13,14 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
-  IPaginationEqual,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumStoreStatusCodeError } from '../enums/store.status-code.enum';
 import { StoreUtil } from '../utils/store.util';
 import { StoreModel } from '../models/store.model';
+import { EnumStoreStatus } from '../enums/store.enum';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
@@ -60,7 +62,7 @@ export class StoreService implements IStoreService {
     };
   }
 
-  async findOne(find: Record<string, any>): Promise<Store> {
+  async findOne(find: Record<string, any>): Promise<StoreModel> {
     const store = await this.storeRepository.findOne(find);
     if (!store) {
       throw new NotFoundException({
@@ -72,7 +74,7 @@ export class StoreService implements IStoreService {
     return store;
   }
 
-  async findOneById(storeId: string): Promise<Store> {
+  async findOneById(storeId: string): Promise<StoreModel> {
     const store = await this.storeRepository.findOneById(storeId);
     if (!store) {
       throw new NotFoundException({
@@ -83,7 +85,7 @@ export class StoreService implements IStoreService {
     return store;
   }
 
-  async findOneBySlug(slug: string): Promise<Store> {
+  async findOneBySlug(slug: string): Promise<StoreModel> {
     const store = await this.storeRepository.findOneBySlug(slug);
     if (!store) {
       throw new NotFoundException({
@@ -94,8 +96,12 @@ export class StoreService implements IStoreService {
     return store;
   }
 
-  async create(payload: StoreCreateRequestDto): Promise<{ id: string }> {
-    // Validate slug uniqueness
+  async create(
+    payload: StoreCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<DatabaseIdDto> {
+    let slug = undefined;
     if (payload.slug) {
       const existingBySlug = await this.storeRepository.findOneBySlug(
         payload.slug
@@ -106,10 +112,9 @@ export class StoreService implements IStoreService {
           message: 'store.error.slugExisted',
         });
       }
-    }
 
-    const slug =
-      payload.slug ?? (await this.storeUtil.createSlug(payload.name));
+      slug = this.storeUtil.createSlug(payload.name);
+    }
 
     const data: Prisma.StoreCreateInput = {
       name: payload.name,
@@ -117,15 +122,21 @@ export class StoreService implements IStoreService {
       workHours: payload.workHours,
       description: payload.description ?? null,
       slug: slug,
-      status: 'active',
+      status: EnumStoreStatus.active,
     };
 
     const created = await this.storeRepository.create(data);
     return { id: created.id };
   }
 
-  async update(storeId: string, payload: StoreUpdateRequestDto): Promise<void> {
+  async update(
+    storeId: string,
+    payload: StoreUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void> {
     const store = await this.storeRepository.findOneById(storeId);
+    let slug = undefined;
     if (!store) {
       throw new NotFoundException({
         statusCode: EnumStoreStatusCodeError.notFound,
@@ -144,6 +155,7 @@ export class StoreService implements IStoreService {
           message: 'store.error.slugExisted',
         });
       }
+      slug = this.storeUtil.createSlug(payload.name);
     }
 
     const data: Prisma.StoreUpdateInput = {
@@ -151,7 +163,7 @@ export class StoreService implements IStoreService {
       address: payload.address ?? undefined,
       workHours: payload.workHours ?? undefined,
       description: payload.description ?? undefined,
-      slug: payload.slug ? payload.slug : undefined,
+      slug: slug ?? undefined,
     };
 
     await this.storeRepository.update(storeId, data);
@@ -159,7 +171,9 @@ export class StoreService implements IStoreService {
 
   async updateStatus(
     storeId: string,
-    { status }: StoreUpdateStatusRequestDto
+    { status }: StoreUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void> {
     const store = await this.storeRepository.findOneById(storeId);
     if (!store) {
@@ -177,7 +191,11 @@ export class StoreService implements IStoreService {
     return !!store;
   }
 
-  async delete(storeId: string): Promise<void> {
+  async delete(
+    storeId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void> {
     const store = await this.storeRepository.findOneById(storeId);
     if (!store) {
       throw new NotFoundException({

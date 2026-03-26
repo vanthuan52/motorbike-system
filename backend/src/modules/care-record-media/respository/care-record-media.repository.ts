@@ -7,7 +7,8 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { CareRecordMedia, Prisma } from '@generated/prisma-client';
+import { CareRecordMediaModel } from '../models/care-record-media.model';
+import { Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordMediaRepository {
@@ -28,10 +29,11 @@ export class CareRecordMediaRepository {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<CareRecordMedia[]> {
+  ): Promise<CareRecordMediaModel[]> {
     const mergedWhere: Prisma.CareRecordMediaWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecordMedia.findMany({
@@ -58,6 +60,7 @@ export class CareRecordMediaRepository {
     const mergedWhere: Prisma.CareRecordMediaWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecordMedia.count({
@@ -71,13 +74,14 @@ export class CareRecordMediaRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordMediaSelect,
     Prisma.CareRecordMediaWhereInput
-  >): Promise<IPaginationOffsetReturn<CareRecordMedia>> {
-    return this.paginationService.offset<CareRecordMedia>(
+  >): Promise<IPaginationOffsetReturn<CareRecordMediaModel>> {
+    return this.paginationService.offset<CareRecordMediaModel>(
       this.databaseService.careRecordMedia,
       {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
         include: {
           careRecord: true,
@@ -92,13 +96,14 @@ export class CareRecordMediaRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordMediaSelect,
     Prisma.CareRecordMediaWhereInput
-  >): Promise<IPaginationCursorReturn<CareRecordMedia>> {
-    return this.paginationService.cursor<CareRecordMedia>(
+  >): Promise<IPaginationCursorReturn<CareRecordMediaModel>> {
+    return this.paginationService.cursor<CareRecordMediaModel>(
       this.databaseService.careRecordMedia,
       {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
         include: {
           careRecord: true,
@@ -108,9 +113,12 @@ export class CareRecordMediaRepository {
     );
   }
 
-  async findOneById(id: string): Promise<CareRecordMedia | null> {
-    return this.databaseService.careRecordMedia.findUnique({
-      where: { id },
+  async findOneById(id: string): Promise<CareRecordMediaModel | null> {
+    return this.databaseService.careRecordMedia.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
       include: {
         careRecord: true,
       },
@@ -119,16 +127,21 @@ export class CareRecordMediaRepository {
 
   async findOne(
     where: Prisma.CareRecordMediaWhereInput
-  ): Promise<CareRecordMedia | null> {
+  ): Promise<CareRecordMediaModel | null> {
     return this.databaseService.careRecordMedia.findFirst({
-      where,
+      where: {
+        ...where,
+        deletedAt: null,
+      },
       include: {
         careRecord: true,
       },
     });
   }
 
-  async create(data: Prisma.CareRecordMediaCreateInput): Promise<CareRecordMedia> {
+  async create(
+    data: Prisma.CareRecordMediaCreateInput
+  ): Promise<CareRecordMediaModel> {
     return this.databaseService.careRecordMedia.create({
       data,
       include: {
@@ -140,7 +153,7 @@ export class CareRecordMediaRepository {
   async update(
     id: string,
     data: Prisma.CareRecordMediaUpdateInput
-  ): Promise<CareRecordMedia> {
+  ): Promise<CareRecordMediaModel> {
     return this.databaseService.careRecordMedia.update({
       where: { id },
       data,
@@ -150,7 +163,7 @@ export class CareRecordMediaRepository {
     });
   }
 
-  async delete(id: string): Promise<CareRecordMedia> {
+  async delete(id: string): Promise<CareRecordMediaModel> {
     return this.databaseService.careRecordMedia.delete({
       where: { id },
       include: {

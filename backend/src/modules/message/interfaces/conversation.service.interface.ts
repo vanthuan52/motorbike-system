@@ -1,15 +1,19 @@
-import { Conversation, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
+import { ConversationModel } from '../models/conversation.model';
 
 export interface IConversationService {
-  findAll(where?: Prisma.ConversationWhereInput): Promise<Conversation[]>;
+  findAll(where?: Prisma.ConversationWhereInput): Promise<ConversationModel[]>;
 
-  findOne(conversationId: string): Promise<Conversation | null>;
+  findOne(conversationId: string): Promise<ConversationModel | null>;
 
-  findByParticipants(participants: string[]): Promise<Conversation | null>;
+  findByParticipants(participants: string[]): Promise<ConversationModel | null>;
 
-  getConversationsByUser(userId: string): Promise<Conversation[]>;
+  getConversationsByUser(userId: string): Promise<ConversationModel[]>;
 
-  create(participants: string[]): Promise<Conversation>;
+  create(participants: string[]): Promise<ConversationModel>;
 
-  mapConversations(conversation: Conversation, userId: string): Promise<any>;
+  mapConversations(
+    conversation: ConversationModel,
+    userId: string
+  ): Promise<any>;
 }

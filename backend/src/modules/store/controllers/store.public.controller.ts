@@ -26,7 +26,6 @@ import { EnumStoreStatus } from '../enums/store.enum';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { StoreUtil } from '../utils/store.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.store')
 @Controller({
@@ -36,8 +35,7 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class StorePublicController {
   constructor(
     private readonly storeService: StoreService,
-    private readonly storeUtil: StoreUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly storeUtil: StoreUtil
   ) {}
 
   @StorePublicGetDoc()
@@ -60,18 +58,21 @@ export class StorePublicController {
     @PaginationCursorQuery({
       availableSearch: ['name', 'status'],
     })
-    pagination: IPaginationQueryCursorParams,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', [
       EnumStoreStatus.active,
       EnumStoreStatus.inactive,
     ])
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
-    const { data, total } = await this.storeService.getListCursor(
-      pagination,
-      status
-    );
-    const mapped = this.storeUtil.mapList(data);
-    return this.paginationUtil.formatCursor(mapped, total, pagination);
+    const result = await this.storeService.getListCursor(pagination, status);
+    const mapped = this.storeUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    } as any;
   }
 }

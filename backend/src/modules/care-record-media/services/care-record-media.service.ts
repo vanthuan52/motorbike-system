@@ -10,7 +10,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { CareRecordMedia, Prisma } from '@generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { CareRecordMediaModel } from '../models/care-record-media.model';
+import { Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordMediaService implements ICareRecordMediaService {
@@ -24,7 +26,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecordMedia>> {
+  ): Promise<IPaginationOffsetReturn<CareRecordMediaModel>> {
     const { data, ...others } =
       await this.careRecordMediaRepository.findWithPaginationOffset({
         ...pagination,
@@ -43,7 +45,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecordMedia>> {
+  ): Promise<IPaginationCursorReturn<CareRecordMediaModel>> {
     const { data, ...others } =
       await this.careRecordMediaRepository.findWithPaginationCursor({
         ...pagination,
@@ -56,23 +58,28 @@ export class CareRecordMediaService implements ICareRecordMediaService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<CareRecordMedia> {
+  async findOneById(id: string): Promise<CareRecordMediaModel> {
     return this.findOneByIdOrFail(id);
   }
 
-  async create({
-    careRecord,
-    stage,
-    type,
-    url,
-    description,
-  }: CareRecordMediaCreateRequestDto): Promise<DatabaseIdDto> {
+  async create(
+    {
+      careRecord,
+      stage,
+      type,
+      url,
+      description,
+    }: CareRecordMediaCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto> {
     const created = await this.careRecordMediaRepository.create({
       careRecord: { connect: { id: careRecord } },
       stage,
       type,
       url: url ?? undefined,
       description: description ?? undefined,
+      createdBy: actionBy,
     });
 
     return { id: created.id };
@@ -86,11 +93,15 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       type,
       url,
       description,
-    }: CareRecordMediaUpdateRequestDto
+    }: CareRecordMediaUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
 
-    const updateData: any = {};
+    const updateData: any = {
+      updatedBy: actionBy,
+    };
     if (careRecord !== undefined)
       updateData.careRecord = { connect: { id: careRecord } };
     if (stage !== undefined) updateData.stage = stage;
@@ -101,16 +112,23 @@ export class CareRecordMediaService implements ICareRecordMediaService {
     await this.careRecordMediaRepository.update(id, updateData);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordMediaRepository.delete(id);
+    await this.careRecordMediaRepository.update(id, {
+      deletedBy: actionBy,
+      deletedAt: new Date(),
+    });
   }
 
   async deleteMany(find?: Record<string, any>): Promise<boolean> {
     return true;
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareRecordMedia> {
+  private async findOneByIdOrFail(id: string): Promise<CareRecordMediaModel> {
     const careRecordMedia =
       await this.careRecordMediaRepository.findOneById(id);
     if (!careRecordMedia) {

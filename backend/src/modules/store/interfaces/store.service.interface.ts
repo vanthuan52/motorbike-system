@@ -9,7 +9,9 @@ import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto'
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
 import { StoreModel } from '../models/store.model';
-import { Prisma, Store } from '@/generated/prisma-client';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IStoreService {
   getListOffset(
@@ -28,22 +30,37 @@ export interface IStoreService {
     status?: Record<string, IPaginationIn>
   ): Promise<IPaginationCursorReturn<StoreModel>>;
 
-  findOne(find: Record<string, any>): Promise<Store>;
+  findOne(find: Record<string, any>): Promise<StoreModel>;
 
-  findOneById(storeId: string): Promise<Store>;
+  findOneById(storeId: string): Promise<StoreModel>;
 
-  findOneBySlug(slug: string): Promise<Store>;
+  findOneBySlug(slug: string): Promise<StoreModel>;
 
-  create(payload: StoreCreateRequestDto): Promise<{ id: string }>;
+  create(
+    payload: StoreCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<DatabaseIdDto>;
 
-  update(storeId: string, payload: StoreUpdateRequestDto): Promise<void>;
+  update(
+    storeId: string,
+    payload: StoreUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void>;
 
   updateStatus(
     storeId: string,
-    payload: StoreUpdateStatusRequestDto
+    payload: StoreUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void>;
 
   existBySlug(slug: string): Promise<boolean>;
 
-  delete(storeId: string): Promise<void>;
+  delete(
+    storeId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void>;
 }

@@ -4,19 +4,19 @@ import { SendMessageDto } from '../dtos/request/send-message.dto';
 import { EnumMessageStatus } from '../enums/message.enum';
 import { MessageRepository } from '../repository/message.repository';
 import { ConversationRepository } from '../repository/conversation.repository';
-import { ConversationGetResponseDto } from '../dtos/response/get-conversation-response.dto';
-import { IMessageEntity } from '../interfaces/message.interface';
 import { MessageGetResponseDto } from '../dtos/response/message-response.dto';
 import { MessageUpdateStatusRequestDto } from '../dtos/request/message-update-status.request.dto';
 import { UserService } from '@/modules/user/services/user.service';
 import { IMessageService } from '../interfaces/message.service.interface';
-import { Conversation, Message, Prisma } from '@/generated/prisma-client';
+import { MessageModel } from '../models/message.model';
+import { ConversationModel } from '../models/conversation.model';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class MessageService implements IMessageService {
@@ -27,9 +27,9 @@ export class MessageService implements IMessageService {
   ) {}
 
   async sendMessage(
-    conversation: Conversation,
+    conversation: ConversationModel,
     { content, messageType, receiver, sender }: SendMessageDto
-  ): Promise<Message> {
+  ): Promise<MessageModel> {
     const savedMessage = await this.messageRepository.create({
       conversation: { connect: { id: conversation.id } },
       content,
@@ -47,13 +47,16 @@ export class MessageService implements IMessageService {
     return savedMessage;
   }
 
-  async findAllMessages(conversationId: string): Promise<Message[]> {
+  async findAllMessages(conversationId: string): Promise<MessageModel[]> {
     return this.messageRepository.findMany({
       conversationId: conversationId,
     });
   }
 
-  async markMessageRead(message: Message, readerId: string): Promise<Message> {
+  async markMessageRead(
+    message: MessageModel,
+    readerId: string
+  ): Promise<MessageModel> {
     const readBy = message.readBy || [];
     if (!readBy.includes(readerId)) {
       readBy.push(readerId);
@@ -61,14 +64,14 @@ export class MessageService implements IMessageService {
 
     return this.messageRepository.update(message.id, {
       readBy,
-        status:
+      status:
         message.status !== EnumMessageStatus.read
           ? EnumMessageStatus.read
           : undefined,
     });
   }
 
-  async create(participants: string[]): Promise<Conversation> {
+  async create(participants: string[]): Promise<ConversationModel> {
     return this.conversationRepository.create({
       participantIds: participants,
     });
@@ -80,7 +83,7 @@ export class MessageService implements IMessageService {
       Prisma.MessageWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<Message>> {
+  ): Promise<IPaginationOffsetReturn<MessageModel>> {
     const { data, ...others } =
       await this.messageRepository.findWithPaginationOffset({
         ...pagination,
@@ -99,7 +102,7 @@ export class MessageService implements IMessageService {
       Prisma.MessageWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<Message>> {
+  ): Promise<IPaginationCursorReturn<MessageModel>> {
     const { data, ...others } =
       await this.messageRepository.findWithPaginationCursor({
         ...pagination,
@@ -112,18 +115,18 @@ export class MessageService implements IMessageService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<Message | null> {
+  async findOneById(id: string): Promise<MessageModel | null> {
     return this.messageRepository.findOneById(id);
   }
 
-  mapListMessage(messages: Message[]): MessageGetResponseDto[] {
+  mapListMessage(messages: MessageModel[]): MessageGetResponseDto[] {
     return plainToInstance(MessageGetResponseDto, messages);
   }
 
   async updateStatusMessage(
-    message: Message,
+    message: MessageModel,
     { status }: MessageUpdateStatusRequestDto
-  ): Promise<Message> {
+  ): Promise<MessageModel> {
     return this.messageRepository.update(message.id, {
       status,
     });

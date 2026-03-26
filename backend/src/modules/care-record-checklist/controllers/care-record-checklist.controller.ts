@@ -60,7 +60,15 @@ import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
 import { CareRecordChecklistUtil } from '../utils/care-record-checklist.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.care-record-checklist')
 @Controller({
@@ -70,17 +78,12 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class CareRecordChecklistController {
   constructor(
     private readonly careRecordChecklistService: CareRecordChecklistService,
-    private readonly careRecordChecklistUtil: CareRecordChecklistUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly careRecordChecklistUtil: CareRecordChecklistUtil
   ) {}
 
   @CareRecordChecklistListDoc()
   @ResponsePaging('care-record-checklist.list')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -106,10 +109,8 @@ export class CareRecordChecklistController {
       filters['careRecordServiceId'] = careRecordServiceId;
     }
 
-    const paginationResult = await this.careRecordChecklistService.getListOffset(
-      pagination,
-      filters
-    );
+    const paginationResult =
+      await this.careRecordChecklistService.getListOffset(pagination, filters);
     const mapped = this.careRecordChecklistUtil.mapList(paginationResult.data);
     return {
       ...paginationResult,
@@ -119,11 +120,7 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistParamsIdDoc()
   @Response('care-record-checklist.get')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -138,94 +135,112 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistCreateDoc()
   @Response('care-record-checklist.create')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordChecklistCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordChecklistService.create(body);
+    const created = await this.careRecordChecklistService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return { data: { id: created.id } };
   }
 
   @CareRecordChecklistUpdateDoc()
   @Response('care-record-checklist.update')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordChecklistUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordChecklistService.update(id, body);
+    await this.careRecordChecklistService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return;
   }
 
   @CareRecordChecklistUpdateStatusDoc()
   @Response('care-record-checklist.updateStatus')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordChecklistUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordChecklistService.updateStatus(id, body);
+    await this.careRecordChecklistService.updateStatus(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return;
   }
 
   @CareRecordChecklistUpdateResultDoc()
   @Response('care-record-checklist.updateResult')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/result')
   async updateResult(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordChecklistUpdateResultRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordChecklistService.updateResult(id, body);
+    await this.careRecordChecklistService.updateResult(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return;
   }
 
   @CareRecordChecklistDeleteDoc()
   @Response('care-record-checklist.delete')
-  @RoleProtected(
-    EnumRoleType.admin,
-    EnumRoleType.manager,
-    EnumRoleType.technician
-  )
+  @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') actionBy: string
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordChecklistService.delete(id);
+    await this.careRecordChecklistService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return;
   }
 }

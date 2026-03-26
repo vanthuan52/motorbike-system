@@ -7,7 +7,9 @@ import {
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
 import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-media.update.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { CareRecordMedia, Prisma } from '@generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { CareRecordMediaModel } from '../models/care-record-media.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordMediaService {
   getListOffset(
@@ -16,7 +18,7 @@ export interface ICareRecordMediaService {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecordMedia>>;
+  ): Promise<IPaginationOffsetReturn<CareRecordMediaModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -24,15 +26,24 @@ export interface ICareRecordMediaService {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecordMedia>>;
+  ): Promise<IPaginationCursorReturn<CareRecordMediaModel>>;
 
-  findOneById(id: string): Promise<CareRecordMedia>;
+  findOneById(id: string): Promise<CareRecordMediaModel>;
 
-  create(payload: CareRecordMediaCreateRequestDto): Promise<DatabaseIdDto>;
+  create(
+    payload: CareRecordMediaCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto>;
 
-  update(id: string, payload: CareRecordMediaUpdateRequestDto): Promise<void>;
+  update(
+    id: string,
+    payload: CareRecordMediaUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
 
   deleteMany(find?: Record<string, any>): Promise<boolean>;
 }

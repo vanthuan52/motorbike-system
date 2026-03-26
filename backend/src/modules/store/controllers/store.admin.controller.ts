@@ -16,7 +16,10 @@ import {
 } from '@/common/response/decorators/response.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import {
   EnumPolicyAction,
   EnumPolicySubject,
@@ -30,7 +33,6 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { EnumStoreStatus } from '../enums/store.enum';
 import {
   IResponseReturn,
   IResponsePagingReturn,
@@ -39,7 +41,6 @@ import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { StoreService } from '../services/store.services';
 import { StoreDto } from '../dtos/store.dto';
 import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
 import {
@@ -55,11 +56,21 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { StoreUtil } from '../utils/store.util';
 import { EnumRoleType } from '@/modules/role/enums/role.enum';
-import { Prisma } from '@/generated/prisma-client';
 import {
   StoreDefaultAvailableSearch,
   StoreDefaultStatus,
 } from '../constants/store.constant';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.store')
 @Controller({
@@ -110,11 +121,12 @@ export class StoreAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Get('/get/:id')
+  @Get('/get/:storeId')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    storeId: string
   ): Promise<IResponseReturn<StoreDto>> {
-    const store = await this.storeService.findOneById(id);
+    const store = await this.storeService.findOneById(storeId);
     const mapped = this.storeUtil.mapOne(store);
     return { data: mapped };
   }
@@ -130,9 +142,21 @@ export class StoreAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: StoreCreateRequestDto
-  ): Promise<IResponseReturn<{ id: string }>> {
-    const created = await this.storeService.create(body);
+    @Body() body: StoreCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const created = await this.storeService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
     return { data: created };
   }
 
@@ -145,12 +169,26 @@ export class StoreAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Put('/update/:id')
+  @Put('/update/:storeId')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: StoreUpdateRequestDto
+    @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    storeId: string,
+    @Body() body: StoreUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.storeService.update(id, body);
+    await this.storeService.update(
+      storeId,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -163,11 +201,24 @@ export class StoreAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Delete('/delete/:id')
+  @Delete('/delete/:storeId')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    storeId: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.storeService.delete(id);
+    await this.storeService.delete(
+      storeId,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
     return {};
   }
 
@@ -180,12 +231,26 @@ export class StoreAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @Patch('/update/:id/status')
+  @Patch('/update/:storeId/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: StoreUpdateStatusRequestDto
+    @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    storeId: string,
+    @Body() body: StoreUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.storeService.updateStatus(id, body);
+    await this.storeService.updateStatus(
+      storeId,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 }

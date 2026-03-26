@@ -7,7 +7,8 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { CareRecordItem, Prisma } from '@generated/prisma-client';
+import { CareRecordItemModel } from '../models/care-record-item.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordItemRepository {
@@ -28,10 +29,11 @@ export class CareRecordItemRepository {
       Prisma.CareRecordItemWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<CareRecordItem[]> {
+  ): Promise<CareRecordItemModel[]> {
     const mergedWhere: Prisma.CareRecordItemWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecordItem.findMany({
@@ -61,6 +63,7 @@ export class CareRecordItemRepository {
     const mergedWhere: Prisma.CareRecordItemWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecordItem.count({
@@ -74,13 +77,14 @@ export class CareRecordItemRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordItemSelect,
     Prisma.CareRecordItemWhereInput
-  >): Promise<IPaginationOffsetReturn<CareRecordItem>> {
-    return this.paginationService.offset<CareRecordItem>(
+  >): Promise<IPaginationOffsetReturn<CareRecordItemModel>> {
+    return this.paginationService.offset<CareRecordItemModel>(
       this.databaseService.careRecordItem,
       {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
         include: {
           careRecord: true,
@@ -98,13 +102,14 @@ export class CareRecordItemRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordItemSelect,
     Prisma.CareRecordItemWhereInput
-  >): Promise<IPaginationCursorReturn<CareRecordItem>> {
-    return this.paginationService.cursor<CareRecordItem>(
+  >): Promise<IPaginationCursorReturn<CareRecordItemModel>> {
+    return this.paginationService.cursor<CareRecordItemModel>(
       this.databaseService.careRecordItem,
       {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
         include: {
           careRecord: true,
@@ -117,9 +122,12 @@ export class CareRecordItemRepository {
     );
   }
 
-  async findOneById(id: string): Promise<CareRecordItem | null> {
-    return this.databaseService.careRecordItem.findUnique({
-      where: { id },
+  async findOneById(id: string): Promise<CareRecordItemModel | null> {
+    return this.databaseService.CareRecordItemModel.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
       include: {
         careRecord: true,
         vehicleService: true,
@@ -131,9 +139,12 @@ export class CareRecordItemRepository {
 
   async findOne(
     where: Prisma.CareRecordItemWhereInput
-  ): Promise<CareRecordItem | null> {
-    return this.databaseService.careRecordItem.findFirst({
-      where,
+  ): Promise<CareRecordItemModel | null> {
+    return this.databaseService.CareRecordItemModel.findFirst({
+      where: {
+        ...where,
+        deletedAt: null,
+      },
       include: {
         careRecord: true,
         vehicleService: true,
@@ -143,8 +154,10 @@ export class CareRecordItemRepository {
     });
   }
 
-  async create(data: Prisma.CareRecordItemCreateInput): Promise<CareRecordItem> {
-    return this.databaseService.careRecordItem.create({
+  async create(
+    data: Prisma.CareRecordItemCreateInput
+  ): Promise<CareRecordItemModel> {
+    return this.databaseService.CareRecordItemModel.create({
       data,
       include: {
         careRecord: true,
@@ -158,8 +171,8 @@ export class CareRecordItemRepository {
   async update(
     id: string,
     data: Prisma.CareRecordItemUpdateInput
-  ): Promise<CareRecordItem> {
-    return this.databaseService.careRecordItem.update({
+  ): Promise<CareRecordItemModel> {
+    return this.databaseService.CareRecordItemModel.update({
       where: { id },
       data,
       include: {
@@ -171,8 +184,8 @@ export class CareRecordItemRepository {
     });
   }
 
-  async delete(id: string): Promise<CareRecordItem> {
-    return this.databaseService.careRecordItem.delete({
+  async delete(id: string): Promise<CareRecordItemModel> {
+    return this.databaseService.CareRecordItemModel.delete({
       where: { id },
       include: {
         careRecord: true,
@@ -183,7 +196,7 @@ export class CareRecordItemRepository {
     });
   }
 
-  async save<T = CareRecordItem>(data: T): Promise<T> {
+  async save<T = CareRecordItemModel>(data: T): Promise<T> {
     const record = data as any;
     return this.databaseService.careRecordItem.update({
       where: { id: record.id },
@@ -191,7 +204,7 @@ export class CareRecordItemRepository {
     }) as Promise<T>;
   }
 
-  async softDelete<T = CareRecordItem>(data: any): Promise<T> {
+  async softDelete<T = CareRecordItemModel>(data: any): Promise<T> {
     return this.databaseService.careRecordItem.delete({
       where: { id: data.id },
     }) as Promise<T>;

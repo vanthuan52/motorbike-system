@@ -19,7 +19,9 @@ import { EnumAppointmentStatusCodeError } from '../enums/appointment.status-code
 import { EnumVehicleModelStatusCodeError } from '@/modules/vehicle-model/enums/vehicle-model.status-code.enum';
 import { EnumUserVehicleStatusCodeError } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
 import { EnumVehicleServiceStatusCodeError } from '@/modules/vehicle-service/enums/vehicle-service.status-code.enum';
-import { Appointment, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { AppointmentModel } from '../models/appointment.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -36,7 +38,7 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<Appointment>> {
+  ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const { data, ...others } =
       await this.appointmentRepository.findWithPaginationOffset(pagination);
 
@@ -49,29 +51,29 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<Appointment>> {
+  ): Promise<IPaginationCursorReturn<AppointmentModel>> {
     const { data, ...others } =
       await this.appointmentRepository.findWithPaginationCursor(pagination);
 
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<Appointment> {
+  async findOneById(id: string): Promise<AppointmentModel> {
     return this.findOneByIdOrFail(id);
   }
 
-  async findOneWithRelationsById(id: string): Promise<Appointment> {
+  async findOneWithRelationsById(id: string): Promise<AppointmentModel> {
     const appointment = await this.findOneByIdOrFail(id);
     return appointment;
   }
 
-  async findOne(find: Record<string, any>): Promise<Appointment | null> {
+  async findOne(find: Record<string, any>): Promise<AppointmentModel | null> {
     return this.appointmentRepository.findOne(find);
   }
 
   async findOneWithRelations(
     find: Record<string, any>
-  ): Promise<Appointment | null> {
+  ): Promise<AppointmentModel | null> {
     return this.appointmentRepository.findOne(find);
   }
 
@@ -85,7 +87,7 @@ export class AppointmentService implements IAppointmentService {
     appointmentDate,
     address,
     note,
-  }: AppointmentBookRequestDto): Promise<Appointment> {
+  }: AppointmentBookRequestDto): Promise<AppointmentModel> {
     // Validate vehicleModel
     const foundVehicleModel =
       await this.vehicleModelService.findOneById(vehicleModel);
@@ -125,20 +127,24 @@ export class AppointmentService implements IAppointmentService {
   }
 
   // Admin create an appointment
-  async create({
-    user,
-    userVehicle,
-    name,
-    phone,
-    vehicleModel,
-    vehicleServices,
-    licensePlateNumber,
-    appointmentDate,
-    customerRequests,
-    address,
-    note,
-    status,
-  }: AppointmentCreateRequestDto): Promise<{ _id: string }> {
+  async create(
+    {
+      user,
+      userVehicle,
+      name,
+      phone,
+      vehicleModel,
+      vehicleServices,
+      licensePlateNumber,
+      appointmentDate,
+      customerRequests,
+      address,
+      note,
+      status,
+    }: AppointmentCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<{ _id: string }> {
     // Validate vehicleModel
     const foundVehicleModel =
       await this.vehicleModelService.findOneById(vehicleModel);
@@ -208,7 +214,9 @@ export class AppointmentService implements IAppointmentService {
       address,
       note,
       status,
-    }: AppointmentUpdateRequestDto
+    }: AppointmentUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     // Find appointment
     const appointment = await this.findOneByIdOrFail(id);
@@ -277,21 +285,31 @@ export class AppointmentService implements IAppointmentService {
 
   async updateStatus(
     id: string,
-    { status }: AppointmentUpdateStatusRequestDto
+    { status }: AppointmentUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.appointmentRepository.update(id, { status });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.appointmentRepository.delete(id);
   }
 
-  async softDelete(id: string): Promise<void> {
+  async softDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     // Soft delete not implemented in Prisma version
     await this.appointmentRepository.delete(id);
   }
 
-  private async findOneByIdOrFail(id: string): Promise<Appointment> {
+  private async findOneByIdOrFail(id: string): Promise<AppointmentModel> {
     const appointment = await this.appointmentRepository.findOneById(id);
     if (!appointment) {
       throw new NotFoundException({

@@ -11,6 +11,7 @@ import {
   CareRecordUpdateStatusRequestDto,
 } from '../dtos/request/care-record.update-status.request.dto';
 import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecord, Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordService {
@@ -34,41 +35,59 @@ export interface ICareRecordService {
 
   findOne(where: Prisma.CareRecordWhereInput): Promise<CareRecord | null>;
 
-  create(payload: CareRecordCreateRequestDto): Promise<CareRecord>;
+  create(
+    payload: CareRecordCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<CareRecord>;
 
   createWithAppointment(
     payload: CareRecordCreateRequestDto,
-    createdBy?: string
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<CareRecord>;
 
-  update(id: string, payload: CareRecordUpdateRequestDto): Promise<void>;
+  update(
+    id: string,
+    payload: CareRecordUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   updateStatus(
     id: string,
-    payload: CareRecordUpdateStatusRequestDto
+    payload: CareRecordUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 
   updatePaymentStatus(
     id: string,
-    payload: CareRecordUpdatePaymentStatusRequestDto
+    payload: CareRecordUpdatePaymentStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 
   updateTechnician(
     id: string,
-    payload: CareRecordUpdateTechnicianRequestDto
+    payload: CareRecordUpdateTechnicianRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
 
   createCareRecordServices(
     appointment: any,
     careRecordId: string,
-    createdBy: string
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 
   createCareRecordChecklists(
     appointment: any,
     careRecordId: string,
-    createdBy: string
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 }

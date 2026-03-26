@@ -30,7 +30,6 @@ import { CareRecordMediaUtil } from '../utils/care-record-media.util';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -42,7 +41,10 @@ import {
   IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
@@ -51,6 +53,15 @@ import {
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
 
 @ApiTags('modules.admin.care-record-media')
 @Controller({
@@ -60,8 +71,7 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 export class CareRecordMediaAdminController {
   constructor(
     private readonly careRecordMediaService: CareRecordMediaService,
-    private readonly careRecordMediaUtil: CareRecordMediaUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly careRecordMediaUtil: CareRecordMediaUtil
   ) {}
 
   @CareRecordMediaAdminListDoc()
@@ -130,9 +140,17 @@ export class CareRecordMediaAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: CareRecordMediaCreateRequestDto
+    @Body() body: CareRecordMediaCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordMediaService.create(body);
+    const created = await this.careRecordMediaService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      createdBy
+    );
     return { data: { id: created.id } };
   }
 
@@ -148,9 +166,18 @@ export class CareRecordMediaAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: CareRecordMediaUpdateRequestDto
+    @Body() body: CareRecordMediaUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordMediaService.update(id, body);
+    await this.careRecordMediaService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      updatedBy
+    );
     return {};
   }
 
@@ -165,9 +192,17 @@ export class CareRecordMediaAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordMediaService.delete(id);
+    await this.careRecordMediaService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
     return {};
   }
 }

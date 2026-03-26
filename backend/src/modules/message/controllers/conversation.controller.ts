@@ -45,7 +45,7 @@ export class ConversationController {
   @AuthJwtAccessProtected()
   @Get('/get')
   async get(
-    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user', UserActiveParsePipe)
+    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user')
     user: User
   ): Promise<IResponseReturn<ConversationGetResponseDto[]>> {
     const conversations = await this.conversationService.getConversationsByUser(

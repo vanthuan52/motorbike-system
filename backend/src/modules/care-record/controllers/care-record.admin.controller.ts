@@ -68,7 +68,15 @@ import {
 } from '../dtos/request/care-record.update-status.request.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordUtil } from '../utils/care-record.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.admin.care-record')
 @Controller({
@@ -78,8 +86,7 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class CareRecordAdminController {
   constructor(
     private readonly careRecordService: CareRecordService,
-    private readonly careRecordUtil: CareRecordUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly careRecordUtil: CareRecordUtil
   ) {}
 
   @CareRecordAdminListDoc()
@@ -171,12 +178,16 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careRecordService.createWithAppointment(
       body,
-      createdBy
+      { ipAddress, userAgent, geoLocation },
+      userId
     );
     return {
       data: {
@@ -197,9 +208,18 @@ export class CareRecordAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.update(id, body);
+    await this.careRecordService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -215,9 +235,18 @@ export class CareRecordAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updateStatus(id, body);
+    await this.careRecordService.updateStatus(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -233,9 +262,18 @@ export class CareRecordAdminController {
   @Patch('/update/:id/paymentStatus')
   async updatePaymentStatus(
     @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdatePaymentStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updatePaymentStatus(id, body);
+    await this.careRecordService.updatePaymentStatus(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -251,9 +289,18 @@ export class CareRecordAdminController {
   @Patch('/update/:id/technician')
   async updateTechnician(
     @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdateTechnicianRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updateTechnician(id, body);
+    await this.careRecordService.updateTechnician(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -268,9 +315,17 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe) id: string
+    @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.delete(id);
+    await this.careRecordService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -285,12 +340,16 @@ export class CareRecordAdminController {
   @AuthJwtAccessProtected()
   @Post('/create/:id/checklist')
   async createChecklist(
-    @AuthJwtPayload('user') createdBy: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careRecordService.createWithAppointment(
       body,
-      createdBy
+      { ipAddress, userAgent, geoLocation },
+      userId
     );
     return {
       data: {

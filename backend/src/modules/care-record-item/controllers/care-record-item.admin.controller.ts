@@ -34,7 +34,10 @@ import {
   CareRecordItemUpdateApprovalDoc,
 } from '../docs/care-record-item.admin.doc';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
@@ -52,7 +55,15 @@ import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CareRecordItemUtil } from '../utils/care-record-item.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
 
 @ApiTags('modules.admin.care-record-item')
 @Controller({
@@ -62,8 +73,7 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class CareRecordItemAdminController {
   constructor(
     private readonly careRecordItemService: CareRecordItemService,
-    private readonly careRecordItemUtil: CareRecordItemUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly careRecordItemUtil: CareRecordItemUtil
   ) {}
 
   @CareRecordItemAdminListDoc()
@@ -131,9 +141,17 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: CareRecordItemCreateRequestDto
+    @Body() body: CareRecordItemCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordItemService.create(body);
+    const created = await this.careRecordItemService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      createdBy
+    );
     return { data: { id: created.id } };
   }
 
@@ -149,9 +167,18 @@ export class CareRecordItemAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: CareRecordItemUpdateRequestDto
+    @Body() body: CareRecordItemUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordItemService.update(id, body);
+    await this.careRecordItemService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      updatedBy
+    );
     return {};
   }
 
@@ -167,9 +194,18 @@ export class CareRecordItemAdminController {
   @Patch('/update/:id/approval')
   async updateApproval(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: CareRecordItemUpdateApprovalRequestDto
+    @Body() body: CareRecordItemUpdateApprovalRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordItemService.updateApproval(id, body);
+    await this.careRecordItemService.updateApproval(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      updatedBy
+    );
     return {};
   }
 
@@ -184,9 +220,17 @@ export class CareRecordItemAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordItemService.delete(id);
+    await this.careRecordItemService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
     return {};
   }
 }

@@ -2,21 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { CareAreaDto } from '../dtos/care-area.dto';
 import { CareAreaWithServiceChecklistResponseDto } from '../dtos/response/care-area.with-service-checklist.response.dto';
-import { CareArea } from '@/generated/prisma-client';
+import { CareAreaModel } from '../models/care-area.model';
 
 @Injectable()
 export class CareAreaUtil {
-  mapList(careAreas: CareArea[]): CareAreaDto[] {
+  mapList(careAreas: CareAreaModel[]): CareAreaDto[] {
     return plainToInstance(CareAreaDto, careAreas);
   }
 
-  mapGet(careArea: CareArea): CareAreaDto {
+  mapGet(careArea: CareAreaModel): CareAreaDto {
     return plainToInstance(CareAreaDto, careArea);
   }
 
   mapWithServiceChecklists(
-    careArea: CareArea,
-    serviceChecklists: any[],
+    careArea: CareAreaModel,
+    serviceChecklists: any[]
   ): CareAreaWithServiceChecklistResponseDto {
     return plainToInstance(CareAreaWithServiceChecklistResponseDto, {
       ...careArea,

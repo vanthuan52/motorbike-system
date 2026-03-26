@@ -8,6 +8,7 @@ import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.reque
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
 import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { CareArea, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 export interface ICareAreaService {
   getListOffset(
@@ -40,13 +41,26 @@ export interface ICareAreaService {
 
   findOne(where: Prisma.CareAreaWhereInput): Promise<CareArea | null>;
 
-  create(payload: CareAreaCreateRequestDto): Promise<{ id: string }>;
+  create(
+    payload: CareAreaCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<{ id: string }>;
 
-  createMany(data: CareAreaCreateRequestDto[]): Promise<boolean>;
+  createMany(
+    data: CareAreaCreateRequestDto[],
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<boolean>;
 
-  update(id: string, payload: CareAreaUpdateRequestDto): Promise<void>;
+  update(
+    id: string,
+    payload: CareAreaUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
 
   existByName(name: string): Promise<boolean>;
 }

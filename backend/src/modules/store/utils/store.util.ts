@@ -4,17 +4,17 @@ import { plainToInstance } from 'class-transformer';
 import slugify from 'slugify';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { StoreDto } from '../dtos/store.dto';
-import { Store } from '@/generated/prisma-client';
+import { StoreModel } from '../models/store.model';
 
 @Injectable()
 export class StoreUtil {
   constructor(private readonly configService: ConfigService) {}
 
-  mapList(stores: Store[]): StoreListResponseDto[] {
+  mapList(stores: StoreModel[]): StoreListResponseDto[] {
     return plainToInstance(StoreListResponseDto, stores);
   }
 
-  mapOne(store: Store): StoreDto {
+  mapOne(store: StoreModel): StoreDto {
     return plainToInstance(StoreDto, store);
   }
 

@@ -21,6 +21,7 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 @Injectable()
 export class CareRecordConditionService implements ICareRecordConditionService {
@@ -74,27 +75,31 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     return careRecordCondition;
   }
 
-  async create({
-    careRecord,
-    odoKm,
-    odoKmFaulty,
-    fuelLevelPercent,
-    fuelLevelFaulty,
-    engineOilLevel,
-    rearviewMirrorCondition,
-    seatCondition,
-    bodyCondition,
-    exhaustCoverCondition,
-    hasLuggageRack,
-    hasFootMat,
-    hasFootPegRubber,
-    hasRaincoat,
-    hasHelmet,
-    accessoriesAndInoxNotes,
-    currentConditionNotes,
-    videoUrl,
-    imageUrls,
-  }: CareRecordConditionCreateRequestDto): Promise<DatabaseIdDto> {
+  async create(
+    {
+      careRecord,
+      odoKm,
+      odoKmFaulty,
+      fuelLevelPercent,
+      fuelLevelFaulty,
+      engineOilLevel,
+      rearviewMirrorCondition,
+      seatCondition,
+      bodyCondition,
+      exhaustCoverCondition,
+      hasLuggageRack,
+      hasFootMat,
+      hasFootPegRubber,
+      hasRaincoat,
+      hasHelmet,
+      accessoriesAndInoxNotes,
+      currentConditionNotes,
+      videoUrl,
+      imageUrls,
+    }: CareRecordConditionCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto> {
     const careRecordCondition = await this.careRecordConditionRepository.create(
       {
         odoKm,
@@ -120,6 +125,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
         careRecord: {
           connect: { id: careRecord },
         },
+        createdBy: actionBy,
       }
     );
 
@@ -158,11 +164,15 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       currentConditionNotes,
       videoUrl,
       imageUrls,
-    }: CareRecordConditionUpdateRequestDto
+    }: CareRecordConditionUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
 
-    const updateData: any = {};
+    const updateData: any = {
+      updatedBy: actionBy,
+    };
     if (odoKm !== undefined) updateData.odoKm = odoKm;
     if (odoKmFaulty !== undefined) updateData.odoKmFaulty = odoKmFaulty;
     if (fuelLevelPercent !== undefined)
@@ -194,9 +204,16 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     await this.careRecordConditionRepository.update(id, updateData);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordConditionRepository.delete(id);
+    await this.careRecordConditionRepository.update(id, {
+      deletedBy: actionBy,
+      deletedAt: new Date(),
+    });
   }
 
   async deleteMany(find?: Record<string, any>): Promise<boolean> {
