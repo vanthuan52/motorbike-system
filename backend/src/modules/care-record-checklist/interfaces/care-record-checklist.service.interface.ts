@@ -4,7 +4,8 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   IResponsePagingReturn,
   IResponseReturn,
@@ -17,6 +18,7 @@ import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/reque
 import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-record-checklist.update-note.request.dto';
 import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
+import { CareRecordChecklist, Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordChecklistService {
   getListOffset(
@@ -35,42 +37,60 @@ export interface ICareRecordChecklistService {
     filters?: Record<string, any>
   ): Promise<IPaginationCursorReturn<CareRecordChecklist>>;
 
-  findOneById(
-    id: string
-  ): Promise<IResponseReturn<CareRecordChecklistGetFullResponseDto>>;
+  findOneById(id: string): Promise<CareRecordChecklist>;
 
   create(
-    payload: CareRecordChecklistCreateRequestDto
-  ): Promise<IResponseReturn<{ _id: string }>>;
+    payload: CareRecordChecklistCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto>;
 
-  createMany(dtos: CareRecordChecklistCreateRequestDto[]): Promise<boolean>;
+  createMany(
+    dtos: CareRecordChecklistCreateRequestDto[],
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<boolean>;
 
   update(
     id: string,
-    payload: CareRecordChecklistUpdateRequestDto
-  ): Promise<IResponseReturn<void>>;
+    payload: CareRecordChecklistUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   updateStatus(
     id: string,
-    payload: CareRecordChecklistUpdateStatusRequestDto
-  ): Promise<IResponseReturn<void>>;
+    payload: CareRecordChecklistUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   updateResult(
     id: string,
-    payload: CareRecordChecklistUpdateResultRequestDto
-  ): Promise<IResponseReturn<void>>;
+    payload: CareRecordChecklistUpdateResultRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   updateNote(
     id: string,
-    payload: CareRecordChecklistUpdateNoteRequestDto
-  ): Promise<IResponseReturn<void>>;
+    payload: CareRecordChecklistUpdateNoteRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   updateWearPercentage(
     id: string,
-    payload: CareRecordChecklistUpdateWearPercentageRequestDto
-  ): Promise<IResponseReturn<void>>;
+    payload: CareRecordChecklistUpdateWearPercentageRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
-  delete(id: string): Promise<IResponseReturn<void>>;
+  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
 
-  deleteMany(find?: Record<string, any>): Promise<boolean>;
+  deleteMany(
+    find: Record<string, any>,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<boolean>;
 }

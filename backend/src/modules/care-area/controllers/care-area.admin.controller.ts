@@ -53,8 +53,16 @@ import { CareAreaWithServiceChecklistResponseDto } from '../dtos/response/care-a
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { CareAreaUtil } from '../utils/care-area.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { ServiceChecklistUtil } from '@/modules/service-checklist/utils/service-checklist.util';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.admin.care-area')
 @Controller({
@@ -65,7 +73,6 @@ export class CareAreaAdminController {
   constructor(
     private readonly careAreaService: CareAreaService,
     private readonly careAreaUtil: CareAreaUtil,
-    private readonly paginationUtil: PaginationUtil,
     private readonly serviceChecklistUtil: ServiceChecklistUtil
   ) {}
 
@@ -123,9 +130,17 @@ export class CareAreaAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareAreaCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careAreaService.create(body);
+    const created = await this.careAreaService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return { data: { id: created.id } };
   }
 
@@ -180,9 +195,18 @@ export class CareAreaAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareAreaUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careAreaService.update(id, body);
+    await this.careAreaService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 
@@ -197,9 +221,17 @@ export class CareAreaAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe) id: string
+    @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careAreaService.delete(id);
+    await this.careAreaService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
     return {};
   }
 }

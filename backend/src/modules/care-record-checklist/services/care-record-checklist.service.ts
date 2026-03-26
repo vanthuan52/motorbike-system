@@ -18,8 +18,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumCareRecordChecklistStatusCodeError } from '../enums/care-record-checklist.status-code.enum';
-import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CareRecordChecklist, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordChecklistService implements ICareRecordChecklistService {
@@ -69,12 +70,16 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     return this.findOneByIdOrFail(id);
   }
 
-  async create({
-    careRecordService,
-    serviceChecklist,
-    name,
-    wearPercentage,
-  }: CareRecordChecklistCreateRequestDto): Promise<DatabaseIdDto> {
+  async create(
+    {
+      careRecordService,
+      serviceChecklist,
+      name,
+      wearPercentage,
+    }: CareRecordChecklistCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto> {
     const created = await this.careRecordChecklistRepository.create({
       name,
       wearPercentage: wearPercentage ?? undefined,
@@ -90,11 +95,13 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       }),
     });
 
-    return { _id: created.id };
+    return { id: created.id };
   }
 
   async createMany(
-    dtos: CareRecordChecklistCreateRequestDto[]
+    dtos: CareRecordChecklistCreateRequestDto[],
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<boolean> {
     await Promise.all(
       dtos.map(dto =>
@@ -125,7 +132,9 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       result,
       note,
       wearPercentage,
-    }: CareRecordChecklistUpdateRequestDto
+    }: CareRecordChecklistUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     const record = await this.findOneByIdOrFail(id);
 
@@ -133,7 +142,8 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     if (status !== undefined) updateData.status = status;
     if (result !== undefined) updateData.result = result;
     if (note !== undefined) updateData.note = note;
-    if (wearPercentage !== undefined) updateData.wearPercentage = wearPercentage;
+    if (wearPercentage !== undefined)
+      updateData.wearPercentage = wearPercentage;
 
     if (Object.keys(updateData).length > 0) {
       await this.careRecordChecklistRepository.update(id, updateData);
@@ -142,7 +152,9 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
 
   async updateStatus(
     id: string,
-    { status }: CareRecordChecklistUpdateStatusRequestDto
+    { status }: CareRecordChecklistUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordChecklistRepository.update(id, { status });
@@ -150,7 +162,9 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
 
   async updateResult(
     id: string,
-    { result }: CareRecordChecklistUpdateResultRequestDto
+    { result }: CareRecordChecklistUpdateResultRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordChecklistRepository.update(id, { result });
@@ -158,7 +172,9 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
 
   async updateNote(
     id: string,
-    { note }: CareRecordChecklistUpdateNoteRequestDto
+    { note }: CareRecordChecklistUpdateNoteRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordChecklistRepository.update(id, { note });
@@ -166,19 +182,35 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
 
   async updateWearPercentage(
     id: string,
-    { wearPercentage }: CareRecordChecklistUpdateWearPercentageRequestDto
+    { wearPercentage }: CareRecordChecklistUpdateWearPercentageRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordChecklistRepository.update(id, { wearPercentage });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordChecklistRepository.delete(id);
   }
 
+  async deleteMany(
+    find: Record<string, any>,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<boolean> {
+    await this.careRecordChecklistRepository.deleteMany(find);
+    return true;
+  }
+
   private async findOneByIdOrFail(id: string): Promise<CareRecordChecklist> {
-    const careRecordChecklist = await this.careRecordChecklistRepository.findOneById(id);
+    const careRecordChecklist =
+      await this.careRecordChecklistRepository.findOneById(id);
 
     if (!careRecordChecklist) {
       throw new NotFoundException({

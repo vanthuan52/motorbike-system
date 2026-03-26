@@ -28,7 +28,10 @@ export class CareRecordConditionRepository {
       this.databaseService.careRecordCondition,
       {
         ...params,
-        where: { ...where },
+        where: {
+          ...where,
+          deletedAt: null,
+        },
         include: { careRecord: true },
       }
     );
@@ -45,7 +48,10 @@ export class CareRecordConditionRepository {
       this.databaseService.careRecordCondition,
       {
         ...params,
-        where: { ...where },
+        where: {
+          ...where,
+          deletedAt: null,
+        },
         include: { careRecord: true },
         includeCount: true,
       }
@@ -58,8 +64,11 @@ export class CareRecordConditionRepository {
   ): Promise<T | null> {
     const include = options?.join ? { careRecord: true } : undefined;
 
-    return this.databaseService.careRecordCondition.findUnique({
-      where: { id },
+    return this.databaseService.careRecordCondition.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
       include,
     }) as Promise<T | null>;
   }

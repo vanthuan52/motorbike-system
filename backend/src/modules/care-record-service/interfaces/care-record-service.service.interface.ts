@@ -8,7 +8,9 @@ import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-s
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
 import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-record-service.update-status.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { CareRecordService, Prisma } from '@generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { CareRecordServiceModel } from '../models/care-record-service.model';
+import { Prisma } from '@generated/prisma-client';
 
 export interface ICareRecordServiceService {
   getListOffset(
@@ -17,7 +19,7 @@ export interface ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecordService>>;
+  ): Promise<IPaginationOffsetReturn<CareRecordServiceModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -25,7 +27,7 @@ export interface ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecordService>>;
+  ): Promise<IPaginationCursorReturn<CareRecordServiceModel>>;
 
   getListOffsetWithChecklists(
     pagination: IPaginationQueryOffsetParams<
@@ -35,25 +37,40 @@ export interface ICareRecordServiceService {
     filters?: Record<string, any>
   ): Promise<
     IPaginationOffsetReturn<{
-      service: CareRecordService;
+      service: CareRecordServiceModel;
       checklists: any[];
     }>
   >;
 
-  findOneById(id: string): Promise<CareRecordService>;
+  findOneById(id: string): Promise<CareRecordServiceModel>;
 
-  create(payload: CareRecordServiceCreateRequestDto): Promise<DatabaseIdDto>;
+  create(
+    payload: CareRecordServiceCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto>;
 
-  update(id: string, payload: CareRecordServiceUpdateRequestDto): Promise<void>;
+  update(
+    id: string,
+    payload: CareRecordServiceUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   updateStatus(
     id: string,
-    payload: CareRecordServiceUpdateStatusRequestDto
+    payload: CareRecordServiceUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
 
-  createMany(dtos: CareRecordServiceCreateRequestDto[]): Promise<boolean>;
+  createMany(
+    dtos: CareRecordServiceCreateRequestDto[],
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<boolean>;
 
   deleteMany(find?: Record<string, any>): Promise<boolean>;
 }

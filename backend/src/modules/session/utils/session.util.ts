@@ -5,11 +5,9 @@ import { plainToInstance } from 'class-transformer';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { SessionCacheProvider } from '@/modules/session/constants/session.constant';
 import { SessionResponseDto } from '@/modules/session/dtos/response/session.response.dto';
-import {
-  ISession,
-  ISessionCache,
-} from '@/modules/session/interfaces/session.interface';
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
+import { ISessionCache } from '../interfaces/session.interface';
+import { SessionModel } from '../models/session.model';
 
 /**
  * Session Management Utility Service
@@ -186,7 +184,7 @@ export class SessionUtil {
    *
    * @see {@link SessionResponseDto} for the response DTO structure
    */
-  mapList(sessions: ISession[]): SessionResponseDto[] {
+  mapList(sessions: SessionModel[]): SessionResponseDto[] {
     return plainToInstance(SessionResponseDto, sessions);
   }
 
@@ -201,11 +199,11 @@ export class SessionUtil {
    *
    * @see {@link IActivityLogMetadata} for the metadata structure
    */
-  mapActivityLogMetadata(session: ISession): IActivityLogMetadata {
+  mapActivityLogMetadata(session: SessionModel): IActivityLogMetadata {
     return {
       sessionId: session.id,
       userId: session.userId,
-      userUsername: session.user.username,
+      userUsername: (session as any).user?.username,
       timestamp: session.updatedAt ?? session.createdAt,
     };
   }

@@ -15,8 +15,10 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import { EnumCareRecordServiceStatusCodeError } from '../enums/care-record-service.status-code.enum';
-import { CareRecordService, Prisma } from '@generated/prisma-client';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { CareRecordServiceModel } from '../models/care-record-service.model';
+import { Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordServiceService implements ICareRecordServiceService {
@@ -32,7 +34,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecordService>> {
+  ): Promise<IPaginationOffsetReturn<CareRecordServiceModel>> {
     const { data, ...others } =
       await this.careRecordServiceRepository.findWithPaginationOffset({
         ...pagination,
@@ -51,7 +53,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecordService>> {
+  ): Promise<IPaginationCursorReturn<CareRecordServiceModel>> {
     const { data, ...others } =
       await this.careRecordServiceRepository.findWithPaginationCursor({
         ...pagination,
@@ -72,7 +74,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
     filters?: Record<string, any>
   ): Promise<
     IPaginationOffsetReturn<{
-      service: CareRecordService;
+      service: CareRecordServiceModel;
       checklists: any[];
     }>
   > {
@@ -86,7 +88,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       });
 
     const result: {
-      service: CareRecordService;
+      service: CareRecordServiceModel;
       checklists: any[];
     }[] = [];
 
@@ -115,21 +117,25 @@ export class CareRecordServiceService implements ICareRecordServiceService {
     };
   }
 
-  async findOneById(id: string): Promise<CareRecordService> {
+  async findOneById(id: string): Promise<CareRecordServiceModel> {
     return this.findOneByIdOrFail(id);
   }
 
-  async findOneWithRelationsById(id: string): Promise<CareRecordService> {
+  async findOneWithRelationsById(id: string): Promise<CareRecordServiceModel> {
     const careRecordService = await this.findOneByIdOrFail(id);
     return careRecordService;
   }
 
-  async create({
-    careRecord,
-    name,
-    vehicleService,
-    type,
-  }: CareRecordServiceCreateRequestDto): Promise<DatabaseIdDto> {
+  async create(
+    {
+      careRecord,
+      name,
+      vehicleService,
+      type,
+    }: CareRecordServiceCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<DatabaseIdDto> {
     const created = await this.careRecordServiceRepository.create({
       careRecord: { connect: { id: careRecord } },
       name,
@@ -138,13 +144,16 @@ export class CareRecordServiceService implements ICareRecordServiceService {
         : undefined,
       type,
       status: EnumCareRecordServiceStatus.pending,
+      createdBy: actionBy,
     });
 
     return { id: created.id } as any;
   }
 
   async createMany(
-    dtos: CareRecordServiceCreateRequestDto[]
+    dtos: CareRecordServiceCreateRequestDto[],
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<boolean> {
     const data = dtos.map(dto => ({
       careRecord: { connect: { id: dto.careRecord } },
@@ -154,6 +163,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
         : undefined,
       type: dto.type,
       status: EnumCareRecordServiceStatus.pending,
+      createdBy: actionBy,
     }));
 
     await this.careRecordServiceRepository.createMany(data as any);
@@ -163,29 +173,49 @@ export class CareRecordServiceService implements ICareRecordServiceService {
 
   async update(
     id: string,
-    payload: CareRecordServiceUpdateRequestDto
+    payload: CareRecordServiceUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    // Update fields if needed in future
+    await this.careRecordServiceRepository.update(id, {
+      updatedBy: actionBy,
+    });
     return;
   }
 
   async updateStatus(
     id: string,
-    { status }: CareRecordServiceUpdateStatusRequestDto
+    { status }: CareRecordServiceUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordServiceRepository.update(id, { status });
+    await this.careRecordServiceRepository.update(id, {
+      status,
+      updatedBy: actionBy,
+    });
     return;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordServiceRepository.delete(id);
+    await this.careRecordServiceRepository.update(id, {
+      deletedBy: actionBy,
+      deletedAt: new Date(),
+    });
     return;
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareRecordService> {
+  async deleteMany(find?: Record<string, any>): Promise<boolean> {
+    return true;
+  }
+
+  private async findOneByIdOrFail(id: string): Promise<CareRecordServiceModel> {
     const careRecordService =
       await this.careRecordServiceRepository.findOneById(id);
     if (!careRecordService) {

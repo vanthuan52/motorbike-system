@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { MediaRepository } from '../repositories/media.repository';
-import { IMediaService } from '../interfaces/media.interface';
+import { IMediaService } from '../interfaces/media.service.interface';
 import { MediaCreateRequestDto } from '../dtos/request/media.create.request.dto';
 import { MediaUpdateRequestDto } from '../dtos/request/media.update.request.dto';
 import { MediaUpdateStatusRequestDto } from '../dtos/request/media.update-status.request.dto';
@@ -18,13 +19,14 @@ import {
   MediaAllowedAudioTypes,
 } from '../constants/media.constant';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { Media, Prisma } from '@/generated/prisma-client';
+import { MediaModel } from '../models/media.model';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 /**
  * Media service
@@ -40,7 +42,7 @@ export class MediaService implements IMediaService {
       Prisma.MediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<Media>> {
+  ): Promise<IPaginationOffsetReturn<MediaModel>> {
     const { data, ...others } =
       await this.mediaRepository.findWithPaginationOffset({
         ...pagination,
@@ -59,7 +61,7 @@ export class MediaService implements IMediaService {
       Prisma.MediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<Media>> {
+  ): Promise<IPaginationCursorReturn<MediaModel>> {
     const { data, ...others } =
       await this.mediaRepository.findWithPaginationCursor({
         ...pagination,
@@ -72,11 +74,11 @@ export class MediaService implements IMediaService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<Media | null> {
+  async findOneById(id: string): Promise<MediaModel | null> {
     return this.mediaRepository.findOneById(id);
   }
 
-  async findByKey(key: string): Promise<Media | null> {
+  async findByKey(key: string): Promise<MediaModel | null> {
     return this.mediaRepository.findByKey(key);
   }
 
@@ -91,20 +93,20 @@ export class MediaService implements IMediaService {
       completedUrl: dto.completedUrl,
       cdnUrl: dto.cdnUrl,
       type: this.determineMediaType(dto.mimeType),
-      purpose: dto.purpose || EnumMediaPurpose.General,
+      purpose: dto.purpose || EnumMediaPurpose.general,
       status: EnumMediaStatus.pending,
       accessibility: dto.access || EnumAwsS3Accessibility.public,
     });
 
-    return { _id: created.id };
+    return { id: created.id };
   }
 
   async createFromS3(
     s3Data: AwsS3Dto,
     filename: string,
-    purpose: EnumMediaPurpose = EnumMediaPurpose.General,
+    purpose: EnumMediaPurpose = EnumMediaPurpose.general,
     ownerId?: string,
-    ownerType?: string,
+    ownerType?: string
   ): Promise<DatabaseIdDto> {
     const created = await this.mediaRepository.create({
       key: s3Data.key,
@@ -121,13 +123,10 @@ export class MediaService implements IMediaService {
       accessibility: s3Data.access,
     });
 
-    return { _id: created.id };
+    return { id: created.id };
   }
 
-  async update(
-    id: string,
-    dto: MediaUpdateRequestDto
-  ): Promise<void> {
+  async update(id: string, dto: MediaUpdateRequestDto): Promise<void> {
     const media = await this.findOneByIdOrFail(id);
 
     const updateData: any = {};
@@ -164,27 +163,21 @@ export class MediaService implements IMediaService {
   determineMediaType(mimeType: string): EnumMediaType {
     const normalizedMime = mimeType.toLowerCase();
 
-    if (
-      MediaAllowedImageTypes.some((type) => normalizedMime.startsWith(type))
-    ) {
+    if (MediaAllowedImageTypes.some(type => normalizedMime.startsWith(type))) {
       return EnumMediaType.image;
     }
 
-    if (
-      MediaAllowedVideoTypes.some((type) => normalizedMime.startsWith(type))
-    ) {
+    if (MediaAllowedVideoTypes.some(type => normalizedMime.startsWith(type))) {
       return EnumMediaType.video;
     }
 
     if (
-      MediaAllowedDocumentTypes.some((type) => normalizedMime.startsWith(type))
+      MediaAllowedDocumentTypes.some(type => normalizedMime.startsWith(type))
     ) {
       return EnumMediaType.document;
     }
 
-    if (
-      MediaAllowedAudioTypes.some((type) => normalizedMime.startsWith(type))
-    ) {
+    if (MediaAllowedAudioTypes.some(type => normalizedMime.startsWith(type))) {
       return EnumMediaType.audio;
     }
 
@@ -202,7 +195,7 @@ export class MediaService implements IMediaService {
     return EnumMediaType.other;
   }
 
-  private async findOneByIdOrFail(id: string): Promise<Media> {
+  private async findOneByIdOrFail(id: string): Promise<MediaModel> {
     const media = await this.mediaRepository.findOneById(id);
 
     if (!media) {
@@ -212,82 +205,5 @@ export class MediaService implements IMediaService {
     }
 
     return media;
-  }
-}
-
-
-    if (
-      MediaAllowedDocumentTypes.some((type) => normalizedMime.startsWith(type))
-    ) {
-      return EnumMediaType.document;
-    }
-
-    if (
-      MediaAllowedAudioTypes.some((type) => normalizedMime.startsWith(type))
-    ) {
-      return EnumMediaType.audio;
-    }
-
-    // Fallback: check prefix
-    if (normalizedMime.startsWith('image/')) {
-      return EnumMediaType.image;
-    }
-    if (normalizedMime.startsWith('video/')) {
-      return EnumMediaType.video;
-    }
-    if (normalizedMime.startsWith('audio/')) {
-      return EnumMediaType.audio;
-    }
-
-    return EnumMediaType.other;
-  }
-
-  // ============================================
-  // Mapping Methods
-  // ============================================
-
-  /**
-   * Map media document to embedded DTO
-   * @description Creates a lightweight representation for embedding in other entities
-   */
-  mapToEmbedded(doc: MediaDoc | IMediaEntity): MediaEmbeddedResponseDto {
-    const data = doc instanceof Document ? doc.toObject() : doc;
-
-    return plainToInstance(MediaEmbeddedResponseDto, {
-      _id: data._id,
-      key: data.key,
-      mimeType: data.mimeType,
-      completedUrl: data.completedUrl,
-      cdnUrl: data.cdnUrl,
-    });
-  }
-
-  /**
-   * Map array of media documents to embedded DTOs
-   */
-  mapToEmbeddedList(
-    docs: MediaDoc[] | IMediaEntity[],
-  ): MediaEmbeddedResponseDto[] {
-    return docs.map((doc) => this.mapToEmbedded(doc));
-  }
-
-  /**
-   * Map media document to full get response DTO
-   */
-  mapGet(doc: MediaDoc | IMediaEntity): MediaGetResponseDto {
-    return plainToInstance(
-      MediaGetResponseDto,
-      doc instanceof Document ? doc.toObject() : doc,
-    );
-  }
-
-  /**
-   * Map array of media documents to list response DTOs
-   */
-  mapList(docs: MediaDoc[] | IMediaEntity[]): MediaListResponseDto[] {
-    return plainToInstance(
-      MediaListResponseDto,
-      docs.map((doc) => (doc instanceof Document ? doc.toObject() : doc)),
-    );
   }
 }

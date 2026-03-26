@@ -10,20 +10,14 @@ import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity
 import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
 import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
 import { UserDto } from '@/modules/user/dtos/user.dto';
-import { UserMobileNumberResponseDto } from '@/modules/user/dtos/user.mobile-number.dto';
 import {
   IUser,
   IUserForgotPasswordCreate,
   IUserProfile,
-  IUserVerificationCreate,
 } from '@/modules/user/interfaces/user.interface';
-import { UserTwoFactorStatusResponseDto } from '@/modules/user/dtos/response/user.two-factor-status.response.dto';
-import { UserExportResponseDto } from '@/modules/user/dtos/response/user.export.response.dto';
-import {
-  EnumVerificationType,
-  TwoFactor,
-  User,
-} from '@/generated/prisma-client';
+import { IUserVerificationCreate } from '@/modules/verification/interfaces/verification.interface';
+import { UserModel } from '../models/user.model';
+import { EnumVerificationType } from '@/modules/verification/enums/verification.enum';
 
 @Injectable()
 export class UserUtil {
@@ -143,41 +137,27 @@ export class UserUtil {
     return this.profanity.exists(str);
   }
 
-  mapList(users: IUser[]): UserListResponseDto[] {
+  mapList(users: UserModel[]): UserListResponseDto[] {
     return plainToInstance(UserListResponseDto, users);
   }
 
-  mapExport(users: IUser[]): UserExportResponseDto[] {
-    return plainToInstance(UserExportResponseDto, users);
+  mapExport(users: UserModel[]): any[] {
+    return plainToInstance(UserListResponseDto, users);
   }
 
-  mapOne(user: User): UserDto {
+  mapOne(user: UserModel): UserDto {
     return plainToInstance(UserDto, user);
   }
 
-  mapProfile(user: IUserProfile): UserProfileResponseDto {
-    return plainToInstance(UserProfileResponseDto, user);
-  }
-
-  mapTwoFactor(twoFactor: TwoFactor): UserTwoFactorStatusResponseDto {
-    return {
-      isEnabled: twoFactor.enabled,
-      isPendingConfirmation:
-        !twoFactor.enabled &&
-        !!twoFactor.secret &&
-        !!twoFactor.iv &&
-        !twoFactor.confirmedAt,
-      backupCodesRemaining: twoFactor.backupCodes.length,
-      confirmedAt: twoFactor.confirmedAt,
-      lastUsedAt: twoFactor.lastUsedAt,
-    };
+  mapProfile(user: UserModel): UserProfileResponseDto {
+    return plainToInstance(UserProfileResponseDto, user as any);
   }
 
   checkMobileNumber(phoneCodes: string[], phoneCode: string): boolean {
     return phoneCodes.includes(phoneCode);
   }
 
-  mapActivityLogMetadata(user: User): IActivityLogMetadata {
+  mapActivityLogMetadata(user: UserModel): IActivityLogMetadata {
     return {
       userId: user.id,
       userUsername: user.username,

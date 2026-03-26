@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
@@ -8,6 +7,7 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
 
 @Injectable()
 export class CareRecordChecklistRepository {
@@ -133,7 +133,9 @@ export class CareRecordChecklistRepository {
     });
   }
 
-  async create(data: Prisma.CareRecordChecklistCreateInput): Promise<CareRecordChecklist> {
+  async create(
+    data: Prisma.CareRecordChecklistCreateInput
+  ): Promise<CareRecordChecklist> {
     return this.databaseService.careRecordChecklist.create({
       data,
       include: {
@@ -164,6 +166,12 @@ export class CareRecordChecklistRepository {
         careRecordService: true,
         serviceChecklist: true,
       },
+    });
+  }
+
+  async deleteMany(where: Prisma.CareRecordChecklistWhereInput): Promise<void> {
+    await this.databaseService.careRecordChecklist.deleteMany({
+      where,
     });
   }
 }

@@ -55,10 +55,7 @@ export class MessageSharedController {
       filters.conversationId = conversationId;
     }
 
-    const result = await this.messageService.getListOffset(
-      pagination,
-      filters
-    );
+    const result = await this.messageService.getListOffset(pagination, filters);
 
     const mapped = this.messageService.mapListMessage(result.data);
 

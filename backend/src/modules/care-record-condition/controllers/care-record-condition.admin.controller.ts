@@ -27,7 +27,10 @@ import {
   CareRecordConditionAdminUpdateDoc,
   CareRecordConditionAdminDeleteDoc,
 } from '../docs/care-record-condition.admin.doc';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
@@ -42,8 +45,16 @@ import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { CareRecordConditionUtil } from '../utils/care-record-condition.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
 
 @ApiTags('modules.admin.care-record-condition')
 @Controller({
@@ -53,8 +64,7 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 export class CareRecordConditionAdminController {
   constructor(
     private readonly careRecordConditionService: CareRecordConditionService,
-    private readonly careRecordConditionUtil: CareRecordConditionUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly careRecordConditionUtil: CareRecordConditionUtil
   ) {}
 
   @ResponsePaging('care-record-condition.list')
@@ -73,7 +83,7 @@ export class CareRecordConditionAdminController {
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('careRecord', RequestOptionalParseObjectIdPipe)
-    careRecordId: string,
+    careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordConditionDto>> {
     const filters: Record<string, any> = {};
 
@@ -83,7 +93,7 @@ export class CareRecordConditionAdminController {
 
     const result = await this.careRecordConditionService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.careRecordConditionUtil.mapList(result.data);
     return {
@@ -103,7 +113,7 @@ export class CareRecordConditionAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<CareRecordConditionDto>> {
     const careRecordCondition =
       await this.careRecordConditionService.findOneById(id);
@@ -120,8 +130,16 @@ export class CareRecordConditionAdminController {
   @Post('/create')
   async create(
     @Body() body: CareRecordConditionCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordConditionService.create(body);
+    const created = await this.careRecordConditionService.create(
+      body,
+      { ipAddress, userAgent, geoLocation },
+      createdBy
+    );
     return { data: { id: created.id } };
   }
 
@@ -134,8 +152,17 @@ export class CareRecordConditionAdminController {
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @Body() body: CareRecordConditionUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordConditionService.update(id, body);
+    await this.careRecordConditionService.update(
+      id,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      updatedBy
+    );
     return {};
   }
 
@@ -151,8 +178,16 @@ export class CareRecordConditionAdminController {
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordConditionService.delete(id);
+    await this.careRecordConditionService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
     return {};
   }
 }

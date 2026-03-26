@@ -22,7 +22,7 @@ export function ConversationGetDoc(): MethodDecorator {
     }),
     DocResponse<ConversationGetResponseDto>('conversation.get', {
       dto: ConversationGetResponseDto,
-    }),
+    })
   );
 }
 
@@ -46,6 +46,6 @@ export function ConversationCreateDoc(): MethodDecorator {
     DocResponse<ConversationGetResponseDto>('conversation.create', {
       dto: ConversationGetResponseDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }

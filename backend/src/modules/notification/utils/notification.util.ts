@@ -26,9 +26,11 @@ import { EnumQueue, EnumQueuePriority } from '@/queues/enums/queue.enum';
 import {
   EnumNotificationChannel,
   EnumNotificationType,
-  Notification,
-  NotificationUserSetting,
-} from '@/generated/prisma-client';
+} from '@/modules/notification/enums/notification.enum';
+import {
+  NotificationModel,
+  NotificationUserSettingModel,
+} from '../models/notification.model';
 
 /**
  * Central notification utility for multi-channel notifications.
@@ -511,7 +513,7 @@ export class NotificationUtil {
    * @param notifications - Array of notification entities from database
    * @returns Array of notification response DTOs
    */
-  mapList(notifications: Notification[]): NotificationResponseDto[] {
+  mapList(notifications: NotificationModel[]): NotificationResponseDto[] {
     return plainToInstance(NotificationResponseDto, notifications);
   }
 
@@ -522,7 +524,7 @@ export class NotificationUtil {
    * @returns Array of notification setting response DTOs
    */
   mapUserSettingList(
-    settings: NotificationUserSetting[]
+    settings: NotificationUserSettingModel[]
   ): NotificationUserSettingDto[] {
     return plainToInstance(NotificationUserSettingDto, settings);
   }

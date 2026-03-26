@@ -31,6 +31,7 @@ import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle
 import { EnumAppointmentStatusCodeError } from '@/modules/appointment/enums/appointment.status-code.enum';
 import { EnumUserVehicleStatusCodeError } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
 import { CareRecord, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 @Injectable()
 export class CareRecordService implements ICareRecordService {
@@ -95,14 +96,18 @@ export class CareRecordService implements ICareRecordService {
     return this.careRecordRepository.findOne(where);
   }
 
-  async create({
-    appointment,
-    userVehicle,
-    vehicleModelName,
-    technician,
-    store,
-    confirmedByOwner,
-  }: CareRecordCreateRequestDto): Promise<CareRecord> {
+  async create(
+    {
+      appointment,
+      userVehicle,
+      vehicleModelName,
+      technician,
+      store,
+      confirmedByOwner,
+    }: CareRecordCreateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<CareRecord> {
     const created = await this.careRecordRepository.create({
       appointmentId: appointment,
       userVehicleId: userVehicle,
@@ -124,7 +129,8 @@ export class CareRecordService implements ICareRecordService {
    */
   async createWithAppointment(
     body: CareRecordCreateRequestDto,
-    createdBy?: string
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<CareRecord> {
     const checkAppointment = await this.appointmentService.findOneById(
       body.appointment
@@ -147,13 +153,14 @@ export class CareRecordService implements ICareRecordService {
     }
 
     // Create care record
-    const result = await this.create(body);
+    const result = await this.create(body, requestLog, actionBy);
 
     // Auto create care-record-services from appointment
     await this.createCareRecordServices(
       checkAppointment,
       result.id,
-      createdBy || ''
+      requestLog,
+      actionBy
     );
 
     return result;
@@ -161,7 +168,9 @@ export class CareRecordService implements ICareRecordService {
 
   async update(
     id: string,
-    { confirmedByOwner }: CareRecordUpdateRequestDto
+    { confirmedByOwner }: CareRecordUpdateRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     const careRecord = await this.findOneByIdOrFail(id);
 
@@ -172,7 +181,9 @@ export class CareRecordService implements ICareRecordService {
 
   async updateStatus(
     id: string,
-    { status }: CareRecordUpdateStatusRequestDto
+    { status }: CareRecordUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
 
@@ -183,7 +194,9 @@ export class CareRecordService implements ICareRecordService {
 
   async updatePaymentStatus(
     id: string,
-    { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto
+    { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
 
@@ -194,7 +207,9 @@ export class CareRecordService implements ICareRecordService {
 
   async updateTechnician(
     id: string,
-    { technician }: CareRecordUpdateTechnicianRequestDto
+    { technician }: CareRecordUpdateTechnicianRequestDto,
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
 
@@ -203,7 +218,11 @@ export class CareRecordService implements ICareRecordService {
     });
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordRepository.delete(id);
   }
@@ -211,7 +230,8 @@ export class CareRecordService implements ICareRecordService {
   async createCareRecordServices(
     appointment: any,
     careRecordId: string,
-    createdBy: string
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     const allServiceDtos: CareRecordServiceCreateRequestDto[] = [];
 
@@ -255,7 +275,8 @@ export class CareRecordService implements ICareRecordService {
       await this.createCareRecordChecklists(
         appointment,
         careRecordId,
-        createdBy
+        requestLog,
+        actionBy
       );
     }
   }
@@ -263,7 +284,8 @@ export class CareRecordService implements ICareRecordService {
   async createCareRecordChecklists(
     appointment: any,
     careRecordId: string,
-    createdBy: string
+    requestLog: IRequestLog,
+    actionBy: string
   ): Promise<void> {
     const allChecklistDtos: CareRecordChecklistCreateRequestDto[] = [];
 
@@ -323,7 +345,9 @@ export class CareRecordService implements ICareRecordService {
 
     if (allChecklistDtos.length > 0) {
       await this.careRecordChecklistService.createMany(
-        allChecklistDtos
+        allChecklistDtos,
+        requestLog,
+        actionBy
       );
     }
   }

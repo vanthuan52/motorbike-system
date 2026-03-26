@@ -52,23 +52,32 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { ApiKeyDto } from '@/modules/api-key/dtos/api-key.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api-key.update-status.request.dto';
 import { ApiKeyUtil } from '@/modules/api-key/utils/api-key.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { EnumHelperDateDayOf } from '@/common/helper/enums/helper.enum';
-import {
-  EnumActivityLogAction,
-  EnumApiKeyType,
-  EnumRoleType,
-  Prisma,
-} from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { EnumApiKeyType } from '@/modules/api-key/enums/api-key.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.apiKey')
 @Controller({
@@ -79,7 +88,6 @@ export class ApiKeyAdminController {
   constructor(
     private readonly apiKeyService: ApiKeyService,
     private readonly apiKeyUtil: ApiKeyUtil,
-    private readonly paginationUtil: PaginationUtil,
     private readonly helperService: HelperService
   ) {}
 
@@ -132,7 +140,11 @@ export class ApiKeyAdminController {
   @ApiKeyProtected()
   @Post('/create')
   async create(
-    @Body() body: ApiKeyCreateRequestDto
+    @Body() body: ApiKeyCreateRequestDto,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
     const transformed = {
       ...body,
@@ -150,8 +162,11 @@ export class ApiKeyAdminController {
           : null,
     };
 
-    const { created, secret } =
-      await this.apiKeyService.createByAdmin(transformed);
+    const { created, secret } = await this.apiKeyService.createByAdmin(
+      transformed,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
 
     return {
       data: this.apiKeyUtil.mapCreate(created, secret),
@@ -173,9 +188,17 @@ export class ApiKeyAdminController {
   @Patch('/update/:apiKeyId/reset')
   async reset(
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    apiKeyId: string
+    apiKeyId: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
-    const { updated, secret } = await this.apiKeyService.resetByAdmin(apiKeyId);
+    const { updated, secret } = await this.apiKeyService.resetByAdmin(
+      apiKeyId,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
 
     return {
       data: this.apiKeyUtil.mapCreate(updated, secret),
@@ -198,9 +221,18 @@ export class ApiKeyAdminController {
   async update(
     @Body() body: ApiKeyUpdateRequestDto,
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    apiKeyId: string
+    apiKeyId: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<ApiKeyDto>> {
-    const updated = await this.apiKeyService.updateByAdmin(apiKeyId, body);
+    const updated = await this.apiKeyService.updateByAdmin(
+      apiKeyId,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
 
     return {
       data: this.apiKeyUtil.mapOne(updated),
@@ -223,9 +255,18 @@ export class ApiKeyAdminController {
   async updateDate(
     @Body() body: ApiKeyUpdateDateRequestDto,
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    apiKeyId: string
+    apiKeyId: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<ApiKeyDto>> {
-    const updated = await this.apiKeyService.updateDatesByAdmin(apiKeyId, body);
+    const updated = await this.apiKeyService.updateDatesByAdmin(
+      apiKeyId,
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
 
     return {
       data: this.apiKeyUtil.mapOne(updated),
@@ -248,11 +289,17 @@ export class ApiKeyAdminController {
   async updateStatus(
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     apiKeyId: string,
-    @Body() body: ApiKeyUpdateStatusRequestDto
+    @Body() body: ApiKeyUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<ApiKeyDto>> {
     const updated = await this.apiKeyService.updateStatusByAdmin(
       apiKeyId,
-      body
+      body,
+      { ipAddress, userAgent, geoLocation },
+      userId
     );
 
     return {
@@ -275,9 +322,17 @@ export class ApiKeyAdminController {
   @Delete('/delete/:apiKeyId')
   async delete(
     @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    apiKeyId: string
+    apiKeyId: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<ApiKeyDto>> {
-    const deleted = await this.apiKeyService.deleteByAdmin(apiKeyId);
+    const deleted = await this.apiKeyService.deleteByAdmin(
+      apiKeyId,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
 
     return {
       data: this.apiKeyUtil.mapOne(deleted),

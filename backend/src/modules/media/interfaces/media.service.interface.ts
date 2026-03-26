@@ -1,49 +1,73 @@
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { MediaCreateRequestDto } from '../dtos/request/media.create.request.dto';
+import { MediaUpdateRequestDto } from '../dtos/request/media.update.request.dto';
 import { MediaUpdateStatusRequestDto } from '../dtos/request/media.update-status.request.dto';
-import { MediaGetResponseDto } from '../dtos/response/media.get.response.dto';
-import { MediaListResponseDto } from '../dtos/response/media.list.response.dto';
-import { MediaEmbeddedResponseDto } from '../dtos/response/media.embedded.response.dto';
 import { EnumMediaPurpose, EnumMediaType } from '../enums/media.enum';
 import { MediaModel } from '../models/media.model';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { MediaEmbeddedResponseDto } from '../dtos/response/media.embedded.response.dto';
+import { MediaGetResponseDto } from '../dtos/response/media.get.response.dto';
+import { MediaListResponseDto } from '../dtos/response/media.list.response.dto';
+import { Prisma } from '@/generated/prisma-client';
 
 /**
  * Media service interface
  * @description Defines the contract for media service operations
  */
 export interface IMediaService {
+  // Pagination Operations
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.MediaSelect,
+      Prisma.MediaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<MediaModel>>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.MediaSelect,
+      Prisma.MediaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<MediaModel>>;
+
   // CRUD Operations
-  findAll(find?: Record<string, any>): Promise<MediaModel[]>;
+  findOneById(id: string): Promise<MediaModel | null>;
 
-  findOneById(_id: string): Promise<MediaModel | null>;
+  findByKey(key: string): Promise<MediaModel | null>;
 
-  findOneByKey(key: string): Promise<MediaModel | null>;
-
-  findByOwner(ownerId: string, ownerType: string): Promise<MediaModel[]>;
-
-  getTotal(find?: Record<string, any>): Promise<number>;
-
-  create(dto: MediaCreateRequestDto): Promise<MediaModel>;
+  create(dto: MediaCreateRequestDto): Promise<DatabaseIdDto>;
 
   createFromS3(
     s3Data: AwsS3Dto,
     filename: string,
-    purpose?: EnumMediaPurpose,
+    purpose: EnumMediaPurpose,
     ownerId?: string,
     ownerType?: string
-  ): Promise<MediaModel>;
+  ): Promise<DatabaseIdDto>;
 
-  updateStatus(
-    repository: MediaModel,
-    dto: MediaUpdateStatusRequestDto
-  ): Promise<MediaModel>;
+  update(id: string, dto: MediaUpdateRequestDto): Promise<void>;
 
-  softDelete(repository: MediaModel): Promise<MediaModel>;
+  updateStatus(id: string, dto: MediaUpdateStatusRequestDto): Promise<void>;
 
-  deleteMany(find?: Record<string, any>): Promise<boolean>;
-
-  existByKey(key: string): Promise<boolean>;
+  delete(id: string): Promise<void>;
 
   // Utility Methods
   determineMediaType(mimeType: string): EnumMediaType;
+
+  // Mapping Methods
+  mapToEmbedded(doc: MediaModel): MediaEmbeddedResponseDto;
+
+  mapToEmbeddedList(docs: MediaModel[]): MediaEmbeddedResponseDto[];
+
+  mapGet(doc: MediaModel): MediaGetResponseDto;
+
+  mapList(docs: MediaModel[]): MediaListResponseDto[];
 }

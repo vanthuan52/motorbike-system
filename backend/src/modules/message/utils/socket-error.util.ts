@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
-import { ENUM_MESSAGE_GW_EVENTS } from '../enums/message.gateway-events.enum';
+import { EnumMessageGwEvents } from '../enums/message.gateway-events.enum';
 
 function emitSocketError(client: Socket, code: string, message: string): void {
-  client.emit(ENUM_MESSAGE_GW_EVENTS.ERROR, {
+  client.emit(EnumMessageGwEvents.error, {
     code,
     message,
   });

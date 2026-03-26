@@ -32,6 +32,7 @@ export class CareRecordServiceRepository {
     const mergedWhere: Prisma.CareRecordServiceWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecordService.findMany({
@@ -60,6 +61,7 @@ export class CareRecordServiceRepository {
     const mergedWhere: Prisma.CareRecordServiceWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecordService.count({
@@ -80,6 +82,7 @@ export class CareRecordServiceRepository {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
         include: {
           careRecord: true,
@@ -103,6 +106,7 @@ export class CareRecordServiceRepository {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
         include: {
           careRecord: true,
@@ -115,8 +119,11 @@ export class CareRecordServiceRepository {
   }
 
   async findOneById(id: string): Promise<CareRecordService | null> {
-    return this.databaseService.careRecordService.findUnique({
-      where: { id },
+    return this.databaseService.careRecordService.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
       include: {
         careRecord: true,
         vehicleService: true,
@@ -129,7 +136,10 @@ export class CareRecordServiceRepository {
     where: Prisma.CareRecordServiceWhereInput
   ): Promise<CareRecordService | null> {
     return this.databaseService.careRecordService.findFirst({
-      where,
+      where: {
+        ...where,
+        deletedAt: null,
+      },
       include: {
         careRecord: true,
         vehicleService: true,

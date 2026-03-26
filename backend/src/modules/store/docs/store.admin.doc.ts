@@ -17,6 +17,7 @@ import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto'
 import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto';
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
 import { StoreDto } from '../dtos/store.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 export function StoreAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -32,7 +33,7 @@ export function StoreAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<StoreListResponseDto>('store.list', {
       dto: StoreListResponseDto,
-    }),
+    })
   );
 }
 
@@ -49,10 +50,10 @@ export function StoreAdminCreateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<StoreDto>('store.create', {
-      dto: StoreDto,
+    DocResponse<DatabaseIdDto>('store.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -70,7 +71,7 @@ export function StoreAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('store.update'),
+    DocResponse('store.update')
   );
 }
 
@@ -86,7 +87,7 @@ export function StoreAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('store.delete'),
+    DocResponse('store.delete')
   );
 }
 
@@ -104,7 +105,7 @@ export function StoreAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('store.updateStatus'),
+    DocResponse('store.updateStatus')
   );
 }
 
@@ -122,6 +123,6 @@ export function StoreAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<StoreDto>('store.getById', {
       dto: StoreDto,
-    }),
+    })
   );
 }

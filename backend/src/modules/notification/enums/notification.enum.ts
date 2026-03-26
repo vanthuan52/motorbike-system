@@ -23,3 +23,17 @@ export enum EnumNotificationPushProcess {
   resetPassword = 'resetPassword',
   newDeviceLogin = 'newDeviceLogin',
 }
+
+export enum EnumNotificationType {
+  securityAlert = 'securityAlert',
+  transactional = 'transactional',
+  userActivity = 'userActivity',
+  marketing = 'marketing',
+}
+
+export enum EnumNotificationChannel {
+  push = 'push',
+  email = 'email',
+  inApp = 'inApp',
+  silent = 'silent',
+}

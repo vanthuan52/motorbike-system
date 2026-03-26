@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import slugify from 'slugify';
-import { VehicleModel } from '@/generated/prisma-client';
+import { VehicleModelModel } from '../models/vehicle-model.model';
 import { VehicleModelListResponseDto } from '../dtos/response/vehicle-model.list.response.dto';
 import { VehicleModelDto } from '../dtos/vehicle-model.dto';
 
 @Injectable()
 export class VehicleModelUtil {
-  mapList(vehicleModels: VehicleModel[]): VehicleModelListResponseDto[] {
+  mapList(vehicleModels: VehicleModelModel[]): VehicleModelListResponseDto[] {
     return vehicleModels.map(
-      c => this.mapGet(c) as VehicleModelListResponseDto
+      c => this.mapGet(c) as any as VehicleModelListResponseDto
     );
   }
 
-  mapGet(vehicleModel: VehicleModel): VehicleModelDto {
+  mapGet(vehicleModel: VehicleModelModel): VehicleModelDto {
     const obj = plainToInstance(VehicleModelDto, vehicleModel);
     if (vehicleModel.vehicleBrandId) {
       obj.vehicleBrand = vehicleModel.vehicleBrandId;

@@ -8,9 +8,9 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { Store, Prisma } from '@/generated/prisma-client';
 import { StoreModel } from '../models/store.model';
 import { StoreMapper } from '../mappers/store.mapper';
+import { Store, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class StoreRepository {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { CareRecordService } from '@prisma/client';
+import { CareRecordServiceModel } from '../models/care-record-service.model';
 import { CareRecordServiceListResponseDto } from '../dtos/response/care-record-service.list.response.dto';
 import { CareRecordServiceDto } from '../dtos/care-record-service.dto';
 import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
@@ -9,7 +9,7 @@ import { CareRecordServiceWithChecklistsResponseDto } from '../dtos/response/car
 @Injectable()
 export class CareRecordServiceUtil {
   mapList(
-    careRecordServices: CareRecordService[]
+    careRecordServices: CareRecordServiceModel[]
   ): CareRecordServiceListResponseDto[] {
     return plainToInstance(
       CareRecordServiceListResponseDto,
@@ -17,12 +17,12 @@ export class CareRecordServiceUtil {
     );
   }
 
-  mapGet(careRecordService: CareRecordService): CareRecordServiceDto {
+  mapGet(careRecordService: CareRecordServiceModel): CareRecordServiceDto {
     return plainToInstance(CareRecordServiceDto, careRecordService);
   }
 
   mapGetFull(
-    careRecordService: CareRecordService
+    careRecordService: CareRecordServiceModel
   ): CareRecordServiceGetFullResponseDto {
     return plainToInstance(
       CareRecordServiceGetFullResponseDto,

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { EnumStoreStatus } from '../enums/store.enum';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
+import { EnumStoreStatus } from '../enums/store.enum';
 
 export const StoreDocParamsId: ApiParamOptions[] = [
   {

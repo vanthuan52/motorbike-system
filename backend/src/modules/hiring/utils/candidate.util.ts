@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { CandidateDoc, CandidateEntity } from '../entities/candidate.entity';
 import { CandidateResponseDto } from '../dtos/candidate-response.dto';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CandidateUtil {
   mapList(
-    candidates: CandidateDoc[] | CandidateEntity[],
+    candidates: CandidateDoc[] | CandidateEntity[]
   ): CandidateResponseDto[] {
     return plainToInstance(CandidateResponseDto, candidates);
   }

@@ -1,20 +1,25 @@
 import { SendMessageDto } from '../dtos/request/send-message.dto';
-import { Conversation, Message, Prisma } from '@/generated/prisma-client';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { ConversationModel } from '../models/conversation.model';
+import { MessageModel } from '../models/message.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IMessageService {
   sendMessage(
-    conversation: Conversation,
+    conversation: ConversationModel,
     payload: SendMessageDto
-  ): Promise<Message>;
+  ): Promise<MessageModel>;
 
-  findAllMessages(conversationId: string): Promise<Message[]>;
-  markMessageRead(message: Message, readerId: string): Promise<Message>;
+  findAllMessages(conversationId: string): Promise<MessageModel[]>;
+  markMessageRead(
+    message: MessageModel,
+    readerId: string
+  ): Promise<MessageModel>;
 
   getListOffset(
     pagination: IPaginationQueryOffsetParams<
@@ -22,7 +27,7 @@ export interface IMessageService {
       Prisma.MessageWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<Message>>;
+  ): Promise<IPaginationOffsetReturn<MessageModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -30,5 +35,5 @@ export interface IMessageService {
       Prisma.MessageWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<Message>>;
+  ): Promise<IPaginationCursorReturn<MessageModel>>;
 }

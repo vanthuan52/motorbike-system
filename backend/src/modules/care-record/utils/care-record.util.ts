@@ -3,19 +3,19 @@ import { plainToInstance } from 'class-transformer';
 import { CareRecordListResponseDto } from '../dtos/response/care-record.list.response.dto';
 import { CareRecordDto } from '../dtos/care-record.dto';
 import { CareRecordGetFullResponseDto } from '../dtos/response/care-record.full.response.dto';
-import { CareRecord } from '@/generated/prisma-client';
+import { CareRecordModel } from '../models/care-record.model';
 
 @Injectable()
 export class CareRecordUtil {
-  mapList(careRecords: CareRecord[]): CareRecordListResponseDto[] {
+  mapList(careRecords: CareRecordModel[]): CareRecordListResponseDto[] {
     return plainToInstance(CareRecordListResponseDto, careRecords);
   }
 
-  mapGet(careRecord: CareRecord): CareRecordDto {
+  mapGet(careRecord: CareRecordModel): CareRecordDto {
     return plainToInstance(CareRecordDto, careRecord);
   }
 
-  mapGetFull(careRecord: CareRecord): CareRecordGetFullResponseDto {
+  mapGetFull(careRecord: CareRecordModel): CareRecordGetFullResponseDto {
     return plainToInstance(CareRecordGetFullResponseDto, careRecord);
   }
 }
