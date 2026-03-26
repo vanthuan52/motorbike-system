@@ -30,7 +30,7 @@ import { IPaginationService } from '@/common/pagination/interfaces/pagination.se
 @Injectable()
 export class PaginationService implements IPaginationService {
   /**
-   * Performs offset-based pagination using page number and limit approach - returns raw data.
+   * Performs offset-based pagination using page number and limit approach.
    *
    * **Default Values:**
    * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
@@ -43,22 +43,12 @@ export class PaginationService implements IPaginationService {
    * @template TReturn - The type of items being paginated
    * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
    * @param {IPaginationQueryOffsetParams} args - Pagination parameters (validated by pipe).
-   * @returns {Promise<{data, count, page, totalPage, hasNext, hasPrevious, nextPage, previousPage, perPage}>} Promise that resolves to raw paginated result
+   * @returns {Promise<IPaginationOffsetReturn<TReturn>>} Promise that resolves to paginated result with items, metadata (count, page, totalPage, hasNext, hasPrevious, nextPage, previousPage)
    */
-  async offsetRaw<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
+  async offset<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
     repository: IPaginationRepository,
     args: IPaginationQueryOffsetParams<TArgsSelect, TArgsWhere>
-  ): Promise<{
-    data: TReturn[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-    perPage: number;
-  }> {
+  ): Promise<IPaginationOffsetReturn<TReturn>> {
     const { limit, skip, where, select, include } = args;
     const orderBy = this.resolveOrderBy(args.orderBy);
 
@@ -85,51 +75,21 @@ export class PaginationService implements IPaginationService {
     const previousPage = hasPrevious ? currentPage - 1 : undefined;
 
     return {
-      data: items as TReturn[],
+      type: EnumPaginationType.offset,
       count,
       perPage: limit,
       page: currentPage,
       totalPage,
       hasNext,
       hasPrevious,
+      data: items as TReturn[],
       ...(nextPage && { nextPage }),
       ...(previousPage && { previousPage }),
     };
   }
 
   /**
-   * Performs offset-based pagination using page number and limit approach.
-   *
-   * **Default Values:**
-   * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
-   * - orderBy accepts an ordered array of order objects
-   * - if orderBy is omitted, the default is always an array with a single order object
-   *
-   * **Assumptions:**
-   * Input parameters are assumed to be valid as they are validated by PaginationOffsetPipe before reaching this service.
-   *
-   * @template TReturn - The type of items being paginated
-   * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
-   * @param {IPaginationQueryOffsetParams} args - Pagination parameters (validated by pipe).
-   * @returns {Promise<IPaginationOffsetReturn<TReturn>>} Promise that resolves to paginated result with items, metadata (count, page, totalPage, hasNext, hasPrevious, nextPage, previousPage)
-   */
-  async offset<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
-    repository: IPaginationRepository,
-    args: IPaginationQueryOffsetParams<TArgsSelect, TArgsWhere>
-  ): Promise<IPaginationOffsetReturn<TReturn>> {
-    const raw = await this.offsetRaw<TReturn, TArgsSelect, TArgsWhere>(
-      repository,
-      args
-    );
-
-    return {
-      type: EnumPaginationType.offset,
-      ...raw,
-    };
-  }
-
-  /**
-   * Performs cursor-based pagination using cursor tokens for efficient traversal - returns raw data.
+   * Performs cursor-based pagination using cursor tokens for efficient traversal.
    *
    * **Default Values:**
    * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
@@ -149,19 +109,13 @@ export class PaginationService implements IPaginationService {
    * @template TReturn - The type of items being paginated
    * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
    * @param {IPaginationQueryCursorParams} args - Cursor pagination parameters (validated by pipe)
-   * @returns {Promise<{data, cursor, hasNext, perPage, count}>} Promise that resolves to raw cursor paginated result
+   * @returns {Promise<IPaginationCursorReturn<TReturn>>} Promise that resolves to cursor paginated result with items, cursor token, hasNext flag, and optional count
    * @throws {UnprocessableEntityException} If pagination conditions have changed
    */
-  async cursorRaw<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
+  async cursor<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
     repository: IPaginationRepository,
     args: IPaginationQueryCursorParams<TArgsSelect, TArgsWhere>
-  ): Promise<{
-    data: TReturn[];
-    cursor?: string;
-    hasNext: boolean;
-    perPage: number;
-    count?: number;
-  }> {
+  ): Promise<IPaginationCursorReturn<TReturn>> {
     const {
       limit,
       where,
@@ -242,50 +196,12 @@ export class PaginationService implements IPaginationService {
     }
 
     return {
-      data: data as TReturn[],
-      cursor: nextCursor,
-      hasNext,
-      perPage: limit,
-      ...(includeCount && { count }),
-    };
-  }
-
-  /**
-   * Performs cursor-based pagination using cursor tokens for efficient traversal.
-   *
-   * **Default Values:**
-   * - orderBy: `[{ createdAt: 'desc' }]` - Results are sorted by creation date in descending order
-   * - orderBy accepts an ordered array of order objects
-   * - if orderBy is omitted, the default is always an array with a single order object
-   * - cursorField: `PaginationDefaultCursorField` - Field used for cursor positioning
-   *
-   * **Cursor Behavior:**
-   * - The cursor is encoded using URL-safe base64 encoding
-   * - If cursor is invalid or conditions changed, returns error (see Point 8)
-   * - The exact orderBy payload is stored in the cursor and must match on the next request
-   * - Fetches `limit + 1` items to determine if there are more results
-   *
-   * **Assumptions:**
-   * Input parameters are assumed to be valid as they are validated by PaginationCursorPipe before reaching this service.
-   *
-   * @template TReturn - The type of items being paginated
-   * @param {IPaginationRepository} repository - Repository instance that implements IPaginationRepository
-   * @param {IPaginationQueryCursorParams} args - Cursor pagination parameters (validated by pipe)
-   * @returns {Promise<IPaginationCursorReturn<TReturn>>} Promise that resolves to cursor paginated result with items, cursor token, hasNext flag, and optional count
-   * @throws {UnprocessableEntityException} If pagination conditions have changed
-   */
-  async cursor<TReturn, TArgsSelect = unknown, TArgsWhere = unknown>(
-    repository: IPaginationRepository,
-    args: IPaginationQueryCursorParams<TArgsSelect, TArgsWhere>
-  ): Promise<IPaginationCursorReturn<TReturn>> {
-    const raw = await this.cursorRaw<TReturn, TArgsSelect, TArgsWhere>(
-      repository,
-      args
-    );
-
-    return {
       type: EnumPaginationType.cursor,
-      ...raw,
+      cursor: nextCursor,
+      perPage: limit,
+      hasNext,
+      data: data as TReturn[],
+      ...(includeCount && { count }),
     };
   }
 

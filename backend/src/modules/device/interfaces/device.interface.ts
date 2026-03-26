@@ -1,15 +1,13 @@
-import {
-  Device,
-  DeviceOwnership,
-  Session,
-  User,
-} from '@/generated/prisma-client';
+import { SessionModel } from '@/modules/session/models/session.model';
+import { UserModel } from '@/modules/user/models/user.model';
+import { DeviceModel, DeviceOwnershipModel } from '../models/device.model';
 
-export interface IDeviceOwnership extends DeviceOwnership {
-  device: Device;
-  user: User;
+export interface IDevice extends DeviceModel {}
+export interface IDeviceOwnership extends DeviceOwnershipModel {
+  device: IDevice;
+  user: UserModel;
   _count: {
     sessions: number;
   };
-  sessions?: Session[];
+  sessions?: SessionModel[];
 }

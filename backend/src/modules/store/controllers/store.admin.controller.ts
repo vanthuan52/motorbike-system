@@ -54,9 +54,12 @@ import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { StoreUtil } from '../utils/store.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
+import {
+  StoreDefaultAvailableSearch,
+  StoreDefaultStatus,
+} from '../constants/store.constant';
 
 @ApiTags('modules.admin.store')
 @Controller({
@@ -66,8 +69,7 @@ import { Prisma } from '@/generated/prisma-client';
 export class StoreAdminController {
   constructor(
     private readonly storeService: StoreService,
-    private readonly storeUtil: StoreUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly storeUtil: StoreUtil
   ) {}
 
   @StoreAdminListDoc()
@@ -82,24 +84,21 @@ export class StoreAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: ['name', 'status'],
+      availableSearch: StoreDefaultAvailableSearch,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', [
-      EnumStoreStatus.active,
-      EnumStoreStatus.inactive,
-    ])
-    status: Record<string, IPaginationIn>
+    @PaginationQueryFilterInEnum('status', StoreDefaultStatus)
+    status?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
-    const { data, total } = await this.storeService.getListOffset(
-      pagination,
-      status
-    );
-    const mapped = this.storeUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const result = await this.storeService.getListOffset(pagination, status);
+    const mapped = this.storeUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @StoreAdminParamsIdDoc()

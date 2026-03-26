@@ -42,48 +42,28 @@ export class MessageSharedController {
   @Get('/:conversationId/messages')
   async listMessages(
     @PaginationOffsetQuery({})
-    {
-      limit,
-      skip,
-      where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<
+    pagination: IPaginationQueryOffsetParams<
       Prisma.MessageSelect,
       Prisma.MessageWhereInput
     >,
     @Param('conversationId', RequestOptionalParseObjectIdPipe)
     conversationId: string
   ): Promise<IResponsePagingReturn<MessageGetResponseDto>> {
-    const where_query: Prisma.MessageWhereInput = {
-      ...where,
-    };
+    const filters: Record<string, any> = {};
 
     if (conversationId) {
-      where_query.conversationId = conversationId;
+      filters.conversationId = conversationId;
     }
 
-    const messages =
-      await this.messageService.findAllMessagesWithPopulate(where_query);
+    const result = await this.messageService.getListOffset(
+      pagination,
+      filters
+    );
 
-    const total: number =
-      await this.messageService.getTotalWithPopulate(where_query);
-    const totalPage: number = Math.ceil(total / limit);
-    const mapped = this.messageService.mapListMessage(messages);
-
-    const page = Math.floor(skip / limit) + 1;
-    const hasNext = page < totalPage;
-    const hasPrevious = page > 1;
+    const mapped = this.messageService.mapListMessage(result.data);
 
     return {
-      type: EnumPaginationType.offset,
-      count: total,
-      perPage: limit,
-      page,
-      totalPage,
-      hasNext,
-      hasPrevious,
-      nextPage: hasNext ? page + 1 : undefined,
-      previousPage: hasPrevious ? page - 1 : undefined,
+      ...result,
       data: mapped,
     };
   }

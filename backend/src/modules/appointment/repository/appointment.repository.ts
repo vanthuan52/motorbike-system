@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { Appointment, Prisma } from '@/generated/prisma-client';
@@ -70,19 +72,10 @@ export class AppointmentRepository {
     where,
     ...params
   }: IPaginationQueryOffsetParams<
-    Prisma.ActivityLogSelect,
-    Prisma.ActivityLogWhereInput
-  >): Promise<{
-    data: Appointment[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<Appointment>(
+    Prisma.AppointmentSelect,
+    Prisma.AppointmentWhereInput
+  >): Promise<IPaginationOffsetReturn<Appointment>> {
+    return this.paginationService.offset<Appointment>(
       this.databaseService.appointment,
       {
         ...params,
@@ -100,15 +93,10 @@ export class AppointmentRepository {
     where,
     ...params
   }: IPaginationQueryCursorParams<
-    Prisma.ApiKeySelect,
-    Prisma.ApiKeyWhereInput
-  >): Promise<{
-    data: Appointment[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<Appointment>(
+    Prisma.AppointmentSelect,
+    Prisma.AppointmentWhereInput
+  >): Promise<IPaginationCursorReturn<Appointment>> {
+    return this.paginationService.cursor<Appointment>(
       this.databaseService.appointment,
       {
         ...params,

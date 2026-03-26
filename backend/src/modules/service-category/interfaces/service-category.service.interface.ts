@@ -2,6 +2,9 @@ import { Prisma, ServiceCategory } from '@/generated/prisma-client';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ServiceCategoryCreateRequestDto } from '../dtos/request/service-category.create.request.dto';
 import { ServiceCategoryUpdateRequestDto } from '../dtos/request/service-category.update.request.dto';
@@ -13,16 +16,16 @@ export interface IServiceCategoryService {
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, any>
-  ): Promise<{ data: ServiceCategory[]; total: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<ServiceCategory>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, any>
-  ): Promise<{ data: ServiceCategory[]; total?: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<ServiceCategory>>;
 
   findOneById(id: string): Promise<ServiceCategory>;
 

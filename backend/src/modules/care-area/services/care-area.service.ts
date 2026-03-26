@@ -10,6 +10,8 @@ import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagi
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareAreaUtil } from '../utils/care-area.util';
 import { CareArea, Prisma } from '@/generated/prisma-client';
@@ -19,7 +21,7 @@ export class CareAreaService implements ICareAreaService {
   constructor(
     private readonly careAreaRepository: CareAreaRepository,
     private readonly serviceChecklistService: ServiceChecklistService,
-    private readonly careAreaUtil: CareAreaUtil,
+    private readonly careAreaUtil: CareAreaUtil
   ) {}
 
   async getListOffset(
@@ -27,21 +29,20 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: CareArea[]; total: number }> {
-    const { data, count } = await this.careAreaRepository.findWithPaginationOffset(
-      {
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<CareArea>> {
+    const { data, ...others } =
+      await this.careAreaRepository.findWithPaginationOffset({
         ...pagination,
         where: {
           ...pagination.where,
           ...filters,
         },
-      }
-    );
+      });
 
     return {
       data,
-      total: count || 0,
+      ...others,
     };
   }
 
@@ -50,19 +51,18 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: CareArea[]; total?: number }> {
-    const { data, count } = await this.careAreaRepository.findWithPaginationCursor(
-      {
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<CareArea>> {
+    const { data, ...others } =
+      await this.careAreaRepository.findWithPaginationCursor({
         ...pagination,
         where: {
           ...pagination.where,
           ...filters,
         },
-      }
-    );
+      });
 
-    return { data, total: count };
+    return { data, ...others };
   }
 
   async getListOffsetWithServiceChecklists(
@@ -70,13 +70,11 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    vehicleType?: EnumVehicleModelType,
-  ): Promise<{
-    data: CareArea[];
-    total: number;
-    checklistMap: Map<string, any[]>;
-  }> {
-    const { data: careAreas, count: total } =
+    vehicleType?: EnumVehicleModelType
+  ): Promise<
+    IPaginationOffsetReturn<CareArea> & { checklistMap: Map<string, any[]> }
+  > {
+    const { data: careAreas, ...others } =
       await this.careAreaRepository.findWithPaginationOffset(pagination);
 
     const checklistMap = new Map<string, any[]>();
@@ -103,7 +101,7 @@ export class CareAreaService implements ICareAreaService {
 
     return {
       data: careAreas,
-      total: total || 0,
+      ...others,
       checklistMap,
     };
   }
@@ -116,9 +114,11 @@ export class CareAreaService implements ICareAreaService {
     return this.careAreaRepository.findOne(where);
   }
 
-  async create(
-    { name, description, orderBy }: CareAreaCreateRequestDto,
-  ): Promise<{ id: string }> {
+  async create({
+    name,
+    description,
+    orderBy,
+  }: CareAreaCreateRequestDto): Promise<{ id: string }> {
     const created = await this.careAreaRepository.create({
       name,
       description,
@@ -130,7 +130,7 @@ export class CareAreaService implements ICareAreaService {
 
   async update(
     id: string,
-    { name, description, orderBy }: CareAreaUpdateRequestDto,
+    { name, description, orderBy }: CareAreaUpdateRequestDto
   ): Promise<void> {
     const careArea = await this.findOneByIdOrFail(id);
 
@@ -146,17 +146,15 @@ export class CareAreaService implements ICareAreaService {
     await this.careAreaRepository.delete(id);
   }
 
-  async createMany(
-    data: CareAreaCreateRequestDto[],
-  ): Promise<boolean> {
+  async createMany(data: CareAreaCreateRequestDto[]): Promise<boolean> {
     await Promise.all(
-      data.map((item) =>
+      data.map(item =>
         this.careAreaRepository.create({
           name: item.name,
           description: item.description,
           orderBy: item.orderBy,
-        }),
-      ),
+        })
+      )
     );
     return true;
   }

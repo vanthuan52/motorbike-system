@@ -39,9 +39,9 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_RECORD_ITEM_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_ITEM_DEFAULT_AVAILABLE_SEARCH,
@@ -91,12 +91,15 @@ export class CareRecordItemAdminController {
       filters['careRecordId'] = careRecordId;
     }
 
-    const { data, total } = await this.careRecordItemService.getListOffset(
+    const result = await this.careRecordItemService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.careRecordItemUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.careRecordItemUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareRecordItemParamsIdDoc()
@@ -131,7 +134,7 @@ export class CareRecordItemAdminController {
     @Body() body: CareRecordItemCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careRecordItemService.create(body);
-    return { data: { id: created._id } };
+    return { data: { id: created.id } };
   }
 
   @CareRecordItemUpdateDoc()

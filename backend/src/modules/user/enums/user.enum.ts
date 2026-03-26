@@ -32,8 +32,3 @@ export enum EnumUserLoginWith {
   socialGoogle = 'socialGoogle',
   socialApple = 'socialApple',
 }
-
-export enum EnumVerificationType {
-  mobileNumber = 'mobileNumber',
-  email = 'email',
-}

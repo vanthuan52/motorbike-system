@@ -1,62 +1,55 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/common/database/services/prisma.service';
-import { CareRecordCondition, Prisma } from '@prisma/client';
-import { DatabaseRepositoryBase } from '@/common/database/bases/database.repository';
+
+import { PaginationService } from '@/common/pagination/services/pagination.service';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseService } from '@/common/database/services/database.service';
+import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
-export class CareRecordConditionRepository extends DatabaseRepositoryBase {
-  constructor(private readonly databaseService: PrismaService) {
-    super(databaseService);
+export class CareRecordConditionRepository {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly paginationService: PaginationService
+  ) {}
+
+  async findWithPaginationOffset({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.CareRecordConditionSelect,
+    Prisma.CareRecordConditionWhereInput
+  >): Promise<IPaginationOffsetReturn<CareRecordCondition>> {
+    return this.paginationService.offset<CareRecordCondition>(
+      this.databaseService.careRecordCondition,
+      {
+        ...params,
+        where: { ...where },
+        include: { careRecord: true },
+      }
+    );
   }
 
-  async findAll<T = CareRecordCondition>(
-    find: Prisma.CareRecordConditionWhereInput,
-    options: {
-      paging?: { limit: number; offset: number };
-      order?: Record<string, 'asc' | 'desc'>;
-      join?: boolean;
-    } = {}
-  ): Promise<T[]> {
-    const { limit, offset } = options.paging || { limit: 10, offset: 0 };
-    const include = options.join ? { careRecord: true } : undefined;
-
-    return this.databaseService.careRecordCondition.findMany({
-      where: find,
-      include,
-      skip: offset,
-      take: limit,
-      orderBy: options.order,
-    }) as Promise<T[]>;
-  }
-
-  async getTotal(find: Prisma.CareRecordConditionWhereInput): Promise<number> {
-    return this.databaseService.careRecordCondition.count({ where: find });
-  }
-
-  async findWithPaginationOffset<T = CareRecordCondition>(
-    find: Prisma.CareRecordConditionWhereInput,
-    options: {
-      limit: number;
-      offset: number;
-      orderBy?: Record<string, 'asc' | 'desc'>;
-      join?: boolean;
-    }
-  ): Promise<[T[], number]> {
-    const { limit, offset, orderBy, join } = options;
-    const include = join ? { careRecord: true } : undefined;
-
-    const [data, total] = await Promise.all([
-      this.databaseService.careRecordCondition.findMany({
-        where: find,
-        include,
-        skip: offset,
-        take: limit,
-        orderBy,
-      }) as Promise<T[]>,
-      this.databaseService.careRecordCondition.count({ where: find }),
-    ]);
-
-    return [data, total];
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.CareRecordConditionSelect,
+    Prisma.CareRecordConditionWhereInput
+  >): Promise<IPaginationCursorReturn<CareRecordCondition>> {
+    return this.paginationService.cursor<CareRecordCondition>(
+      this.databaseService.careRecordCondition,
+      {
+        ...params,
+        where: { ...where },
+        include: { careRecord: true },
+        includeCount: true,
+      }
+    );
   }
 
   async findOneById<T = CareRecordCondition>(

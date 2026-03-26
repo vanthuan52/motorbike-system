@@ -14,6 +14,8 @@ import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPartTypeStatusCodeError } from '../enums/part-type.status-code.enum';
 import { PartType, Prisma } from '@/generated/prisma-client';
@@ -33,36 +35,23 @@ export class PartTypeService implements IPartTypeService {
       Prisma.PartTypeWhereInput
     >,
     status?: Record<string, IPaginationIn>
-  ): Promise<{ data: PartType[]; total: number }> {
+  ): Promise<IPaginationOffsetReturn<PartType>> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
       ...status,
     };
 
-    const [partTypes, total] = await Promise.all([
-      this.partTypeRepository.findAll(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        status
-      ),
-      this.partTypeRepository.getTotal(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        status
-      ),
-    ]);
+    const { data, ...others } =
+      await this.partTypeRepository.findWithPaginationOffset({
+        limit,
+        skip,
+        where: mergedWhere,
+        orderBy,
+      });
 
     return {
-      data: partTypes,
-      total,
+      data,
+      ...others,
     };
   }
 
@@ -79,13 +68,13 @@ export class PartTypeService implements IPartTypeService {
       Prisma.PartTypeWhereInput
     >,
     status?: Record<string, IPaginationIn>
-  ): Promise<{ data: PartType[]; total?: number }> {
+  ): Promise<IPaginationCursorReturn<PartType>> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
       ...status,
     };
 
-    const { data, count } =
+    const { data, ...others } =
       await this.partTypeRepository.findWithPaginationCursor({
         limit,
         where: mergedWhere,
@@ -95,7 +84,7 @@ export class PartTypeService implements IPartTypeService {
         includeCount,
       });
 
-    return { data, total: count };
+    return { data, ...others };
   }
 
   async findOneById(partTypeId: string): Promise<PartType> {

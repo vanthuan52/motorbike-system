@@ -1,23 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ServicePriceRepository } from '../respository/service-price.repository';
 import { IServicePriceService } from '../interfaces/service-price.service.interface';
-import { ServicePrice, Prisma } from '@/generated/prisma-client';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ENUM_SERVICE_PRICE_STATUS_CODE_ERROR } from '../enums/service-price.status-code.enum';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
 import { VehicleServiceRepository } from '@/modules/vehicle-service/repository/vehicle-service.repository';
+import { ServicePrice, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ServicePriceService implements IServicePriceService {
   constructor(
     private readonly servicePriceRepository: ServicePriceRepository,
     private readonly vehicleModelRepository: VehicleModelRepository,
-    private readonly vehicleServiceRepository: VehicleServiceRepository,
+    private readonly vehicleServiceRepository: VehicleServiceRepository
   ) {}
 
   async getListOffset(
@@ -30,38 +32,17 @@ export class ServicePriceService implements IServicePriceService {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServicePrice[]; total: number }> {
-    const mergedWhere: Prisma.ServicePriceWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    const [servicePrices, total] = await Promise.all([
-      this.servicePriceRepository.findAll(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        filters
-      ),
-      this.servicePriceRepository.getTotal(
-        {
-          limit,
-          skip,
-          where: mergedWhere,
-          orderBy,
-        },
-        filters
-      ),
-    ]);
-
-    return {
-      data: servicePrices,
-      total,
-    };
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<ServicePrice>> {
+    return this.servicePriceRepository.findWithPaginationOffset(
+      {
+        limit,
+        skip,
+        where,
+        orderBy,
+      },
+      filters
+    );
   }
 
   async getListCursor(
@@ -76,24 +57,19 @@ export class ServicePriceService implements IServicePriceService {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: ServicePrice[]; total?: number }> {
-    const mergedWhere: Prisma.ServicePriceWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    const { data, count } =
-      await this.servicePriceRepository.findWithPaginationCursor({
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<ServicePrice>> {
+    return this.servicePriceRepository.findWithPaginationCursor(
+      {
         limit,
-        where: mergedWhere,
+        where,
         orderBy,
         cursor,
         cursorField,
         includeCount,
-      });
-
-    return { data, total: count };
+      },
+      filters
+    );
   }
 
   async findOneById(id: string): Promise<ServicePrice> {
@@ -121,9 +97,8 @@ export class ServicePriceService implements IServicePriceService {
     // Validate relationships
     const checkVehicleService =
       await this.vehicleServiceRepository.findOneById(vehicleService);
-    const checkVehicleModel = await this.vehicleModelRepository.findOneById(
-      vehicleModel
-    );
+    const checkVehicleModel =
+      await this.vehicleModelRepository.findOneById(vehicleModel);
 
     if (!checkVehicleService) {
       throw new NotFoundException({
@@ -182,9 +157,8 @@ export class ServicePriceService implements IServicePriceService {
     }
 
     if (vehicleModel && vehicleModel !== servicePrice.vehicleModelId) {
-      const checkVehicleModel = await this.vehicleModelRepository.findOneById(
-        vehicleModel
-      );
+      const checkVehicleModel =
+        await this.vehicleModelRepository.findOneById(vehicleModel);
       if (!checkVehicleModel) {
         throw new NotFoundException({
           statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
@@ -218,27 +192,5 @@ export class ServicePriceService implements IServicePriceService {
     }
 
     await this.servicePriceRepository.delete(id);
-  }
-}
-
-    return this.vehicleModelRepository.getTotalAggregate(pipeline, options);
-  }
-
-  private async findOneByIdOrFail(
-    id: string,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<ServicePriceDoc> {
-    const servicePrice =
-      await this.servicePriceRepository.findOneById<ServicePriceDoc>(
-        id,
-        options,
-      );
-    if (!servicePrice) {
-      throw new NotFoundException({
-        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
-        message: 'service-price.error.notFound',
-      });
-    }
-    return servicePrice;
   }
 }

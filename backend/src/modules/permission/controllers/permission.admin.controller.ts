@@ -49,13 +49,16 @@ import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
+import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import {
   EnumActivityLogAction,
   EnumRoleType,
   Prisma,
 } from '/@generated/prisma-client';
 import { PermissionAdminListDoc } from '../docs/permission.admin.doc';
+import { PermissionUtil } from '../utils/permission.util';
+import { PermissionDto } from '../dtos/permission.dto';
+import { PermissionService } from '../services/permission.service';
 
 @ApiTags('modules.admin.permission')
 @Controller({
@@ -63,7 +66,10 @@ import { PermissionAdminListDoc } from '../docs/permission.admin.doc';
   path: '/permission',
 })
 export class PermissionAdminController {
-  constructor(private readonly permissionService: PermissionService) {}
+  constructor(
+    private readonly permissionService: PermissionService,
+    private readonly permissionUtil: PermissionUtil
+  ) {}
 
   @PermissionAdminListDoc()
   @Response('permission.list')
@@ -81,13 +87,18 @@ export class PermissionAdminController {
       availableSearch: RoleDefaultAvailableSearch,
     })
     pagination: IPaginationQueryOffsetParams<
-      Prisma.RoleSelect,
-      Prisma.RoleWhereInput
+      Prisma.PermissionSelect,
+      Prisma.PermissionWhereInput
     >,
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    return this.permissionService.getListOffsetByAdmin(pagination, type);
+  ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
+    const result = await this.permissionService.getListOffsetByAdmin(pagination, type);
+    const mapped = this.permissionUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @PermissionAdminGetDoc()

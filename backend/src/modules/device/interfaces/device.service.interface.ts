@@ -2,6 +2,8 @@ import {
   IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
@@ -20,7 +22,7 @@ export interface IDeviceService {
       Prisma.DeviceOwnershipWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<DeviceOwnershipResponseDto>>;
+  ): Promise<IPaginationOffsetReturn<DeviceOwnershipResponseDto>>;
   getListCursor(
     userId: string,
     sessionId: string,
@@ -28,7 +30,7 @@ export interface IDeviceService {
       Prisma.DeviceOwnershipSelect,
       Prisma.DeviceOwnershipWhereInput
     >
-  ): Promise<IResponsePagingReturn<DeviceOwnershipResponseDto>>;
+  ): Promise<IPaginationCursorReturn<DeviceOwnershipResponseDto>>;
   refresh(
     userId: string,
     deviceOwnershipId: string,

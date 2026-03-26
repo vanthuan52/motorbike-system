@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { Hiring, Prisma } from '@/generated/prisma-client';
@@ -22,17 +24,8 @@ export class HiringRepository {
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
     >
-  ): Promise<{
-    data: Hiring[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<Hiring>(
+  ): Promise<IPaginationOffsetReturn<Hiring>> {
+    return this.paginationService.offset<Hiring>(
       this.databaseService.hiring,
       {
         ...params,
@@ -54,13 +47,8 @@ export class HiringRepository {
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
     >
-  ): Promise<{
-    data: Hiring[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<Hiring>(
+  ): Promise<IPaginationCursorReturn<Hiring>> {
+    return this.paginationService.cursor<Hiring>(
       this.databaseService.hiring,
       {
         ...params,
@@ -134,6 +122,4 @@ export class HiringRepository {
       },
     });
   }
-}
-
 }

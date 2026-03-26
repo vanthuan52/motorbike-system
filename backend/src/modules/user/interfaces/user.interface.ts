@@ -1,16 +1,12 @@
-import {
-  Device,
-  DeviceOwnership,
-  EnumUserLoginFrom,
-  EnumUserLoginWith,
-  EnumVerificationType,
-  Role,
-  User,
-} from '@/generated/prisma-client';
+import { RoleModel } from '@/modules/role/models/role.model';
 import { UserModel } from '../models/user.model';
-
+import { EnumUserLoginFrom, EnumUserLoginWith } from '../enums/user.enum';
+import {
+  DeviceModel,
+  DeviceOwnershipModel,
+} from '@/modules/device/models/device.model';
 export interface IUser extends UserModel {
-  roles: Role[];
+  roles: RoleModel[];
 }
 
 export interface IUserProfile extends IUser {}
@@ -24,9 +20,9 @@ export interface IUserLogin {
 }
 
 export interface IUserLoginResult {
-  user: User;
-  device: Device;
-  deviceOwnership: DeviceOwnership;
+  user: UserModel;
+  device: DeviceModel;
+  deviceOwnership: DeviceOwnershipModel;
   isNewDevice: boolean;
   sessionShouldBeInactive?: { id: string }[];
 }
@@ -40,18 +36,6 @@ export interface IUserForgotPasswordCreate {
   hashedToken: string;
   link: string;
   encryptedLink: string;
-}
-
-export interface IUserVerificationCreate {
-  type: EnumVerificationType;
-  expiredAt: Date;
-  expiredInMinutes: number;
-  resendInMinutes: number;
-  reference: string;
-  token: string;
-  hashedToken: string;
-  link?: string;
-  encryptedLink?: string;
 }
 
 export type GeoLocation = {

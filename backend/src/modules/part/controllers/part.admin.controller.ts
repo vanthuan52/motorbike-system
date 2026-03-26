@@ -95,14 +95,17 @@ export class PartAdminController {
     @Query('partType') partTypeId: string,
     @Query('vehicleBrand') vehicleBrandId: string
   ): Promise<IResponsePagingReturn<PartListResponseDto>> {
-    const { data, total } = await this.partService.getListOffset(
+    const result = await this.partService.getListOffset(
       pagination,
       status,
       partTypeId,
       vehicleBrandId
     );
-    const mapped = this.partUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.partUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @PartAdminParamsIdDoc()

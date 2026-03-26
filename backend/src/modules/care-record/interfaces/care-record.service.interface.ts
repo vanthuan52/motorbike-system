@@ -1,6 +1,8 @@
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.request.dto';
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
@@ -18,7 +20,7 @@ export interface ICareRecordService {
       Prisma.CareRecordWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecord[]; total: number }>;
+  ): Promise<IPaginationOffsetReturn<CareRecord>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -26,7 +28,7 @@ export interface ICareRecordService {
       Prisma.CareRecordWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecord[]; total?: number }>;
+  ): Promise<IPaginationCursorReturn<CareRecord>>;
 
   findOneById(id: string): Promise<CareRecord>;
 

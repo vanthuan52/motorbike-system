@@ -93,12 +93,15 @@ export class AppointmentAdminController {
     @PaginationQueryFilterInEnum('status', APPOINTMENTS_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<AppointmentListResponseDto>> {
-    const { data, total } = await this.appointmentService.getListOffset(
+    const result = await this.appointmentService.getListOffset(
       pagination,
       status
     );
-    const mapped = this.appointmentUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.appointmentUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @AppointmentAdminParamsIdDoc()

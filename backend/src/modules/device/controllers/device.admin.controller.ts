@@ -100,12 +100,11 @@ export class DeviceAdminController {
     @PaginationQueryFilterEqualBoolean('isRevoked')
     isRevoked?: Record<string, IPaginationEqual>
   ): Promise<IResponsePagingReturn<DeviceOwnershipResponseDto>> {
-    const { data, total } = await this.deviceService.getListOffsetByAdmin(
+    return this.deviceService.getListOffsetByAdmin(
       userId,
       pagination,
       isRevoked
     );
-    return this.paginationUtil.formatOffset(data, total, pagination);
   }
 
   @DeviceAdminRemoveDoc()

@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { Part, Prisma } from '@/generated/prisma-client';
@@ -64,17 +66,8 @@ export class PartRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.PartSelect,
     Prisma.PartWhereInput
-  >): Promise<{
-    data: Part[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<Part>(this.databaseService.part, {
+  >): Promise<IPaginationOffsetReturn<Part>> {
+    return this.paginationService.offset<Part>(this.databaseService.part, {
       ...params,
       where: {
         ...where,
@@ -92,13 +85,8 @@ export class PartRepository {
   }: IPaginationQueryCursorParams<
     Prisma.PartSelect,
     Prisma.PartWhereInput
-  >): Promise<{
-    data: Part[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<Part>(this.databaseService.part, {
+  >): Promise<IPaginationCursorReturn<Part>> {
+    return this.paginationService.cursor<Part>(this.databaseService.part, {
       ...params,
       where: {
         ...where,

@@ -4,6 +4,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 
@@ -70,17 +72,8 @@ export class CareRecordChecklistRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordChecklistSelect,
     Prisma.CareRecordChecklistWhereInput
-  >): Promise<{
-    data: CareRecordChecklist[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<CareRecordChecklist>(
+  >): Promise<IPaginationOffsetReturn<CareRecordChecklist>> {
+    return this.paginationService.offset<CareRecordChecklist>(
       this.databaseService.careRecordChecklist,
       {
         ...params,
@@ -101,13 +94,8 @@ export class CareRecordChecklistRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordChecklistSelect,
     Prisma.CareRecordChecklistWhereInput
-  >): Promise<{
-    data: CareRecordChecklist[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<CareRecordChecklist>(
+  >): Promise<IPaginationCursorReturn<CareRecordChecklist>> {
+    return this.paginationService.cursor<CareRecordChecklist>(
       this.databaseService.careRecordChecklist,
       {
         ...params,

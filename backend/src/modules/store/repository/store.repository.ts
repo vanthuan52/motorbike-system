@@ -4,121 +4,71 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { Store, Prisma } from '@/generated/prisma-client';
+import { StoreModel } from '../models/store.model';
+import { StoreMapper } from '../mappers/store.mapper';
 
 @Injectable()
 export class StoreRepository {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly paginationService: PaginationService,
+    private readonly paginationService: PaginationService
   ) {}
-
-  async findAll(
-    {
-      limit,
-      skip,
-      where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<
-      Prisma.StoreSelect,
-      Prisma.StoreWhereInput
-    >,
-    filters?: Record<string, any>,
-  ): Promise<Store[]> {
-    const mergedWhere: Prisma.StoreWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    return this.databaseService.store.findMany({
-      where: mergedWhere,
-      take: limit,
-      skip,
-      orderBy,
-    });
-  }
-
-  async getTotal(
-    {
-      limit,
-      skip,
-      where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<
-      Prisma.StoreSelect,
-      Prisma.StoreWhereInput
-    >,
-    filters?: Record<string, any>,
-  ): Promise<number> {
-    const mergedWhere: Prisma.StoreWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    return this.databaseService.store.count({
-      where: mergedWhere,
-    });
-  }
 
   async findWithPaginationOffset(
     {
-      limit,
-      skip,
       where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<
+      ...params
+    }: IPaginationQueryOffsetParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
+    status?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<StoreModel>> {
+    const paginatedResult = await this.paginationService.offset<
+      Store,
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
-    >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: Store[]; count: number }> {
-    const mergedWhere: Prisma.StoreWhereInput = {
-      ...where,
-      ...filters,
-    };
+    >(this.databaseService.store, {
+      ...params,
+      where: {
+        ...where,
+        ...status,
+        deletedAt: null,
+      },
+    });
 
-    return this.paginationService.offsetRaw<Store>(
-      this.databaseService.store,
-      {
-        limit,
-        skip,
-        where: mergedWhere,
-        orderBy,
-      }
-    );
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => StoreMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor(
     {
-      limit,
       where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams<
+      ...params
+    }: IPaginationQueryCursorParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
+    status?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<StoreModel>> {
+    const paginatedResult = await this.paginationService.cursor<
+      Store,
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
-    >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: Store[]; count?: number }> {
-    const mergedWhere: Prisma.StoreWhereInput = {
-      ...where,
-      ...filters,
-    };
+    >(this.databaseService.store, {
+      ...params,
+      where: {
+        ...where,
+        ...status,
+        deletedAt: null,
+      },
+    });
 
-    return this.paginationService.cursorRaw<Store>(
-      this.databaseService.store,
-      {
-        limit,
-        where: mergedWhere,
-        orderBy,
-        cursor,
-        cursorField,
-        includeCount,
-      }
-    );
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => StoreMapper.toDomain(item)),
+    };
   }
 
   async findOneById(id: string): Promise<Store | null> {

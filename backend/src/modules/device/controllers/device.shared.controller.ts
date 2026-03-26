@@ -71,15 +71,11 @@ export class DeviceSharedController {
     @AuthJwtPayload('userId') userId: string,
     @AuthJwtPayload('sessionId') sessionId: string
   ): Promise<IResponsePagingReturn<DeviceOwnershipResponseDto>> {
-    const { data, total } = await this.deviceService.getListCursor(
+    return this.deviceService.getListCursor(
       userId,
       sessionId,
       pagination
     );
-    return this.paginationUtil.formatCursor(data, total, {
-      limit: pagination.limit,
-      cursorField: 'createdAt',
-    });
   }
 
   @DeviceSharedRefreshDoc()

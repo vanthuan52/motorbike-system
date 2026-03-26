@@ -13,8 +13,31 @@ import { HiringCreateRequestDto } from '../dtos/request/hiring.create.request.dt
 import { HiringUpdateRequestDto } from '../dtos/request/hiring.update.request.dto';
 import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
 import { HiringListResponseDto } from '../dtos/response/hiring.list.response.dto';
+import {
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { Prisma, Hiring } from '@/generated/prisma-client';
 
 export interface IHiringService {
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.HiringSelect,
+      Prisma.HiringWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<Hiring>>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.HiringSelect,
+      Prisma.HiringWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<Hiring>>;
+
   findAll(
     find?: Record<string, any>,
     options?: IDatabaseFindAllOptions,

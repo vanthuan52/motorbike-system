@@ -5,9 +5,11 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
+
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
 import { IRole } from '@/modules/role/interfaces/role.interface';
@@ -27,7 +29,7 @@ export class RoleRepository {
       ...params
     }: IPaginationQueryOffsetParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<Role>> {
+  ): Promise<IPaginationOffsetReturn<Role>> {
     return this.paginationService.offset<
       Role,
       Prisma.RoleSelect,
@@ -47,7 +49,7 @@ export class RoleRepository {
       ...params
     }: IPaginationQueryCursorParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<Role>> {
+  ): Promise<IPaginationCursorReturn<Role>> {
     return this.paginationService.cursor<
       Role,
       Prisma.RoleSelect,

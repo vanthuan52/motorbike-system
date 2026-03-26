@@ -3,7 +3,7 @@ import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { DeviceResponseDto } from '@/modules/device/dtos/response/device.response.dto';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
-import { Session } from '@/generated/prisma-client';
+import { SessionModel } from '@/modules/session/models/session.model';
 
 export class DeviceOwnershipResponseDto extends DatabaseDto {
   @ApiProperty({
@@ -75,5 +75,5 @@ export class DeviceOwnershipResponseDto extends DatabaseDto {
 
   @Exclude()
   @ApiHideProperty()
-  sessions?: Session[];
+  sessions?: SessionModel[];
 }

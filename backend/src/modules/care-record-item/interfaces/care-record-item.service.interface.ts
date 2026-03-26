@@ -1,23 +1,31 @@
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
-import { CareRecordItem } from '@/generated/prisma-client';
+import { CareRecordItem, Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordItemService {
   getListOffset(
-    { where, ...params }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordItemSelect,
+      Prisma.CareRecordItemWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordItem[]; total: number }>;
+  ): Promise<IPaginationOffsetReturn<CareRecordItem>>;
 
   getListCursor(
-    { where, ...params }: IPaginationQueryCursorParams,
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordItemSelect,
+      Prisma.CareRecordItemWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordItem[]; total?: number }>;
+  ): Promise<IPaginationCursorReturn<CareRecordItem>>;
 
   findOneById(id: string): Promise<CareRecordItem>;
 

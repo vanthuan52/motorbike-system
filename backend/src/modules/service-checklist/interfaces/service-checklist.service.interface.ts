@@ -1,10 +1,13 @@
-import { Prisma, ServiceChecklist } from '@/generated/prisma-client';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
+import { Prisma, ServiceChecklist } from '@/generated/prisma-client';
 
 export interface IServiceChecklistService {
   existByName(name: string): Promise<boolean>;
@@ -15,7 +18,7 @@ export interface IServiceChecklistService {
       Prisma.ServiceChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: ServiceChecklist[]; total: number }>;
+  ): Promise<IPaginationOffsetReturn<ServiceChecklist>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -23,7 +26,7 @@ export interface IServiceChecklistService {
       Prisma.ServiceChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: ServiceChecklist[]; total?: number }>;
+  ): Promise<IPaginationCursorReturn<ServiceChecklist>>;
 
   findOneById(id: string): Promise<ServiceChecklist>;
 

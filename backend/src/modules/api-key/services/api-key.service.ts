@@ -17,6 +17,9 @@ import {
   IPaginationEqual,
   IPaginationIn,
   IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ApiKeyUtil } from '@/modules/api-key/utils/api-key.util';
@@ -34,24 +37,43 @@ export class ApiKeyService implements IApiKeyService {
 
   async getListOffset(
     pagination: IPaginationQueryOffsetParams<
-      Prisma.ActivityLogSelect,
-      Prisma.ActivityLogWhereInput
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<{ data: ApiKey[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<ApiKey>> {
+    const { data, ...others } =
       await this.apiKeyRepository.findWithPaginationOffset(
         pagination,
         isActive,
         type
       );
 
-    const apiKeys: ApiKey[] = data;
+    return {
+      data,
+      ...others,
+    };
+  }
+
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
+    >,
+    isActive?: Record<string, IPaginationEqual>,
+    type?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<ApiKey>> {
+    const { data, ...others } =
+      await this.apiKeyRepository.findWithPaginationCursor(
+        pagination,
+        isActive,
+        type
+      );
 
     return {
-      data: apiKeys,
-      total: count || 0,
+      data,
+      ...others,
     };
   }
 

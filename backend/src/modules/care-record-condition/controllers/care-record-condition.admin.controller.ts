@@ -32,18 +32,18 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { CareRecordConditionUtil } from '../utils/care-record-condition.util';
 import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 @ApiTags('modules.admin.care-record-condition')
 @Controller({
@@ -72,7 +72,7 @@ export class CareRecordConditionAdminController {
       availableOrderBy: ['createdAt', 'updatedAt'],
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('careRecord', RequestOptionalParseUUIDPipe)
+    @Query('careRecord', RequestOptionalParseObjectIdPipe)
     careRecordId: string,
   ): Promise<IResponsePagingReturn<CareRecordConditionDto>> {
     const filters: Record<string, any> = {};
@@ -81,12 +81,15 @@ export class CareRecordConditionAdminController {
       filters['careRecordId'] = careRecordId;
     }
 
-    const { data, total } = await this.careRecordConditionService.getListOffset(
+    const result = await this.careRecordConditionService.getListOffset(
       pagination,
       filters,
     );
-    const mapped = this.careRecordConditionUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.careRecordConditionUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareRecordConditionAdminParamsIdDoc()
@@ -100,7 +103,7 @@ export class CareRecordConditionAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
   ): Promise<IResponseReturn<CareRecordConditionDto>> {
     const careRecordCondition =
       await this.careRecordConditionService.findOneById(id);
@@ -119,7 +122,7 @@ export class CareRecordConditionAdminController {
     @Body() body: CareRecordConditionCreateRequestDto,
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.careRecordConditionService.create(body);
-    return { data: { _id: created._id } };
+    return { data: { id: created.id } };
   }
 
   @CareRecordConditionAdminUpdateDoc()
@@ -129,7 +132,7 @@ export class CareRecordConditionAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
     @Body() body: CareRecordConditionUpdateRequestDto,
   ): Promise<IResponseReturn<void>> {
     await this.careRecordConditionService.update(id, body);
@@ -147,7 +150,7 @@ export class CareRecordConditionAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
   ): Promise<IResponseReturn<void>> {
     await this.careRecordConditionService.delete(id);
     return {};

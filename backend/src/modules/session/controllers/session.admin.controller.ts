@@ -94,13 +94,16 @@ export class SessionAdminController {
     @PaginationQueryFilterEqualBoolean('isRevoked')
     isRevoked?: Record<string, IPaginationEqual>
   ): Promise<IResponsePagingReturn<SessionResponseDto>> {
-    const { data, total } = await this.sessionService.getListOffsetByAdmin(
+    const result = await this.sessionService.getListOffsetByAdmin(
       userId,
       pagination,
       isRevoked
     );
-    const mapped = this.sessionUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.sessionUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @SessionAdminRevokeDoc()

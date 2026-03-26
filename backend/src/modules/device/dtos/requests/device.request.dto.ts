@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumDevicePlatform } from '@/generated/prisma-client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { EnumDevicePlatform } from '../../enums/device.enum';
 
 export class DeviceRequestDto {
   @ApiProperty({

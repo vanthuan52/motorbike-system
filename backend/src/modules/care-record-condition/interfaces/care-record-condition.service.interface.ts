@@ -1,14 +1,30 @@
-import { CareRecordCondition } from '@prisma/client';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordConditionService {
   getListOffset(
-    pagination: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordConditionSelect,
+      Prisma.CareRecordConditionWhereInput
+    >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordCondition[]; total: number }>;
+  ): Promise<IPaginationOffsetReturn<CareRecordCondition>>;
+
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CareRecordConditionSelect,
+      Prisma.CareRecordConditionWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationCursorReturn<CareRecordCondition>>;
 
   findOneById(id: string): Promise<CareRecordCondition>;
 

@@ -22,6 +22,8 @@ import { Media, Prisma } from '@/generated/prisma-client';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 
 /**
@@ -38,8 +40,8 @@ export class MediaService implements IMediaService {
       Prisma.MediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: Media[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<Media>> {
+    const { data, ...others } =
       await this.mediaRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -48,7 +50,7 @@ export class MediaService implements IMediaService {
         },
       });
 
-    return { data, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -57,8 +59,8 @@ export class MediaService implements IMediaService {
       Prisma.MediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: Media[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<Media>> {
+    const { data, ...others } =
       await this.mediaRepository.findWithPaginationCursor({
         ...pagination,
         where: {
@@ -67,7 +69,7 @@ export class MediaService implements IMediaService {
         },
       });
 
-    return { data, total: count || 0 };
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<Media | null> {

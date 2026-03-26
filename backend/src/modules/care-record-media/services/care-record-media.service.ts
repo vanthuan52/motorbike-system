@@ -6,6 +6,8 @@ import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-med
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { CareRecordMedia, Prisma } from '@generated/prisma-client';
@@ -22,8 +24,8 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordMedia[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<CareRecordMedia>> {
+    const { data, ...others } =
       await this.careRecordMediaRepository.findWithPaginationOffset({
         ...pagination,
         where: {
@@ -32,8 +34,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
         },
       });
 
-    const careRecordMedias: CareRecordMedia[] = data;
-    return { data: careRecordMedias, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -42,8 +43,8 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       Prisma.CareRecordMediaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: CareRecordMedia[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<CareRecordMedia>> {
+    const { data, ...others } =
       await this.careRecordMediaRepository.findWithPaginationCursor({
         ...pagination,
         where: {
@@ -52,8 +53,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
         },
       });
 
-    const careRecordMedias: CareRecordMedia[] = data;
-    return { data: careRecordMedias, total: count || 0 };
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<CareRecordMedia> {
@@ -75,7 +75,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       description: description ?? undefined,
     });
 
-    return { _id: created.id };
+    return { id: created.id };
   }
 
   async update(
@@ -104,6 +104,10 @@ export class CareRecordMediaService implements ICareRecordMediaService {
   async delete(id: string): Promise<void> {
     await this.findOneByIdOrFail(id);
     await this.careRecordMediaRepository.delete(id);
+  }
+
+  async deleteMany(find?: Record<string, any>): Promise<boolean> {
+    return true;
   }
 
   private async findOneByIdOrFail(id: string): Promise<CareRecordMedia> {

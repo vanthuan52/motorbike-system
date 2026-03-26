@@ -36,6 +36,7 @@ import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { RoleDto } from '@/modules/role/dtos/role.dto';
+import { RoleUtil } from '@/modules/role/utils/role.util';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import {
   PaginationOffsetQuery,
@@ -51,7 +52,7 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { EnumRoleType } from '../enums/role.enum';
-import { EnumActivityLogAction, Prisma } from '/@generated/prisma-client';
+import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.role')
 @Controller({
@@ -59,7 +60,10 @@ import { EnumActivityLogAction, Prisma } from '/@generated/prisma-client';
   path: '/role',
 })
 export class RoleAdminController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService,
+    private readonly roleUtil: RoleUtil
+  ) {}
 
   @RoleAdminListDoc()
   @Response('role.list')
@@ -83,7 +87,12 @@ export class RoleAdminController {
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    return this.roleService.getListOffsetByAdmin(pagination, type);
+    const result = await this.roleService.getListOffsetByAdmin(pagination, type);
+    const mapped = this.roleUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @RoleAdminGetDoc()

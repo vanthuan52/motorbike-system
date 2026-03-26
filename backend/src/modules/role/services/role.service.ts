@@ -9,12 +9,11 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
@@ -42,7 +41,7 @@ export class RoleService implements IRoleService {
       Prisma.RoleWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
+  ): Promise<IPaginationOffsetReturn<RoleListResponseDto[]>> {
     const { data, ...others } =
       await this.roleRepository.findWithPaginationOffsetByAdmin(
         pagination,
@@ -63,7 +62,7 @@ export class RoleService implements IRoleService {
       Prisma.RoleWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
+  ): Promise<IPaginationCursorReturn<Prisma.RoleGetPayload<Prisma.RoleArgs>>> {
     const { data, ...others } =
       await this.roleRepository.findWithPaginationCursor(pagination, type);
 

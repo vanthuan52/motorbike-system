@@ -4,6 +4,8 @@ import { DatabaseUtil } from '@/common/database/utils/database.util';
 import {
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -76,17 +78,8 @@ export class ActivityLogRepository {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >
-  ): Promise<{
-    data: ActivityLog[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<ActivityLog>(
+  ): Promise<IPaginationOffsetReturn<ActivityLog>> {
+    return this.paginationService.offset<ActivityLog>(
       this.databaseService.activityLog,
       {
         ...params,
@@ -110,13 +103,8 @@ export class ActivityLogRepository {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >
-  ): Promise<{
-    data: ActivityLog[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<ActivityLog>(
+  ): Promise<IPaginationCursorReturn<ActivityLog>> {
+    return this.paginationService.cursor<ActivityLog>(
       this.databaseService.activityLog,
       {
         ...params,

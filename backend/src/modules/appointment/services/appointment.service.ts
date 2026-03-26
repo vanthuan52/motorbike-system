@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppointmentRepository } from '../repository/appointment.repository';
 import { IAppointmentService } from '../interfaces/appointment.service.interface';
-import { Appointment, Prisma } from '@/generated/prisma-client';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { EnumAppointmentStatus } from '../enums/appointment.enum';
@@ -10,6 +9,8 @@ import { AppointmentBookRequestDto } from '../dtos/request/appointment.book.requ
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
@@ -18,6 +19,7 @@ import { EnumAppointmentStatusCodeError } from '../enums/appointment.status-code
 import { EnumVehicleModelStatusCodeError } from '@/modules/vehicle-model/enums/vehicle-model.status-code.enum';
 import { EnumUserVehicleStatusCodeError } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
 import { EnumVehicleServiceStatusCodeError } from '@/modules/vehicle-service/enums/vehicle-service.status-code.enum';
+import { Appointment, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -34,12 +36,11 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: Appointment[]; total: number }> {
-    const { data, count } =
+  ): Promise<IPaginationOffsetReturn<Appointment>> {
+    const { data, ...others } =
       await this.appointmentRepository.findWithPaginationOffset(pagination);
 
-    const appointments: Appointment[] = data;
-    return { data: appointments, total: count || 0 };
+    return { data, ...others };
   }
 
   async getListCursor(
@@ -48,13 +49,11 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<{ data: Appointment[]; total?: number }> {
-    const { data, count } =
+  ): Promise<IPaginationCursorReturn<Appointment>> {
+    const { data, ...others } =
       await this.appointmentRepository.findWithPaginationCursor(pagination);
 
-    const appointments: Appointment[] = data;
-
-    return { data: appointments, total: count || 0 };
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<Appointment> {
@@ -168,7 +167,7 @@ export class AppointmentService implements IAppointmentService {
         const service = await this.vehicleServiceService.findOneById(id);
         if (!service) {
           throw new NotFoundException({
-        statusCode: EnumVehicleServiceStatusCodeError.notFound,
+            statusCode: EnumVehicleServiceStatusCodeError.notFound,
             message: 'vehicle-service.error.notFound',
           });
         }

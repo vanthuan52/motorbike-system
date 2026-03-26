@@ -49,9 +49,9 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_RECORD_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_SERVICE_DEFAULT_AVAILABLE_SEARCH,
@@ -107,12 +107,15 @@ export class CareRecordServiceAdminController {
       filters['careRecordId'] = careRecordId;
     }
 
-    const { data, total } = await this.careRecordServiceService.getListOffset(
+    const result = await this.careRecordServiceService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.careRecordServiceUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.careRecordServiceUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareRecordServiceAdminListWithChecklistsDoc()
@@ -142,20 +145,23 @@ export class CareRecordServiceAdminController {
       filters['careRecordId'] = careRecordId;
     }
 
-    const { data, total } =
+    const result =
       await this.careRecordServiceService.getListOffsetWithChecklists(
         pagination,
         filters
       );
 
-    const mapped = data.map(item =>
+    const mapped = result.data.map(item =>
       this.careRecordServiceUtil.mapWithChecklists(
         item.service,
         item.checklists
       )
     );
 
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CareRecordServiceAdminParamsIdDoc()

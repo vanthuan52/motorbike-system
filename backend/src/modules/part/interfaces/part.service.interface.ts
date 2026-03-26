@@ -1,4 +1,3 @@
-import { Part, Prisma } from '@/generated/prisma-client';
 import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
 import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
@@ -6,7 +5,10 @@ import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { Part, Prisma } from '@/generated/prisma-client';
 
 export interface IPartService {
   getListOffset(
@@ -16,8 +18,8 @@ export interface IPartService {
     >,
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
-    vehicleBrandId?: string,
-  ): Promise<{ data: Part[]; total: number }>;
+    vehicleBrandId?: string
+  ): Promise<IPaginationOffsetReturn<Part>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -26,8 +28,8 @@ export interface IPartService {
     >,
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
-    vehicleBrandId?: string,
-  ): Promise<{ data: Part[]; total?: number }>;
+    vehicleBrandId?: string
+  ): Promise<IPaginationCursorReturn<Part>>;
 
   findOneById(partId: string): Promise<Part>;
 
@@ -41,7 +43,7 @@ export interface IPartService {
 
   updateStatus(
     partId: string,
-    payload: PartUpdateStatusRequestDto,
+    payload: PartUpdateStatusRequestDto
   ): Promise<void>;
 
   delete(partId: string): Promise<void>;

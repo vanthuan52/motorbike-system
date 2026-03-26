@@ -3,6 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
@@ -69,17 +71,12 @@ export class ServiceChecklistRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.ServiceChecklistSelect,
     Prisma.ServiceChecklistWhereInput
-  >): Promise<{
-    data: ServiceChecklist[];
-    count: number;
-    page: number;
-    totalPage: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    nextPage?: number;
-    previousPage?: number;
-  }> {
-    return this.paginationService.offsetRaw<ServiceChecklist>(
+  ): Promise<IPaginationOffsetReturn<ServiceChecklist>> {
+    return this.paginationService.offset<
+      ServiceChecklist,
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >(
       this.databaseService.serviceChecklist,
       {
         ...params,
@@ -99,13 +96,12 @@ export class ServiceChecklistRepository {
   }: IPaginationQueryCursorParams<
     Prisma.ServiceChecklistSelect,
     Prisma.ServiceChecklistWhereInput
-  >): Promise<{
-    data: ServiceChecklist[];
-    count?: number;
-    cursor?: string;
-    hasNext: boolean;
-  }> {
-    return this.paginationService.cursorRaw<ServiceChecklist>(
+  ): Promise<IPaginationCursorReturn<ServiceChecklist>> {
+    return this.paginationService.cursor<
+      ServiceChecklist,
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >(
       this.databaseService.serviceChecklist,
       {
         ...params,
