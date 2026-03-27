@@ -4,14 +4,14 @@ import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IUserVerificationCreate } from '@/modules/user/interfaces/user.interface';
+import { IUserVerificationCreate } from '@/modules/verification/interfaces/verification.interface';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { EnumUserStatus } from '@/modules/user/enums/user.enum';
 import {
-  EnumActivityLogAction,
-  EnumUserStatus,
   EnumVerificationType,
-  Prisma,
-  Verification,
-} from '@/generated/prisma-client';
+} from '@/modules/verification/enums/verification.enum';
+import { VerificationModel } from '@/modules/verification/models/verification.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class VerificationRepository {
@@ -23,7 +23,7 @@ export class VerificationRepository {
 
   async findOneActiveByVerificationEmailToken(
     token: string
-  ): Promise<Verification | null> {
+  ): Promise<VerificationModel | null> {
     const today = this.helperService.dateCreate();
 
     return this.databaseService.verification.findFirst({
@@ -44,7 +44,7 @@ export class VerificationRepository {
 
   async findOneLatestByVerificationEmail(
     userId: string
-  ): Promise<Verification | null> {
+  ): Promise<VerificationModel | null> {
     return this.databaseService.verification.findFirst({
       where: {
         userId,
@@ -64,7 +64,7 @@ export class VerificationRepository {
     id: string,
     userId: string,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<Verification> {
+  ): Promise<VerificationModel> {
     const today = this.helperService.dateCreate();
 
     return this.databaseService.verification.update({

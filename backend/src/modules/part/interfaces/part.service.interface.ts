@@ -8,7 +8,9 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { Part, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { PartModel } from '../models/part.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IPartService {
   getListOffset(
@@ -19,7 +21,7 @@ export interface IPartService {
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
     vehicleBrandId?: string
-  ): Promise<IPaginationOffsetReturn<Part>>;
+  ): Promise<IPaginationOffsetReturn<PartModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -29,22 +31,37 @@ export interface IPartService {
     status?: Record<string, IPaginationIn>,
     partTypeId?: string,
     vehicleBrandId?: string
-  ): Promise<IPaginationCursorReturn<Part>>;
+  ): Promise<IPaginationCursorReturn<PartModel>>;
 
-  findOneById(partId: string): Promise<Part>;
+  findOneById(partId: string): Promise<PartModel>;
 
-  findOneWithRelationsById(partId: string): Promise<Part>;
+  findOneWithRelationsById(partId: string): Promise<PartModel>;
 
-  findOneBySlug(slug: string): Promise<Part>;
+  findOneBySlug(slug: string): Promise<PartModel>;
 
-  create(payload: PartCreateRequestDto): Promise<{ id: string }>;
+  create(
+    payload: PartCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<{ id: string }>;
 
-  update(partId: string, payload: PartUpdateRequestDto): Promise<void>;
+  update(
+    partId: string,
+    payload: PartUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void>;
 
   updateStatus(
     partId: string,
-    payload: PartUpdateStatusRequestDto
+    payload: PartUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void>;
 
-  delete(partId: string): Promise<void>;
+  delete(
+    partId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void>;
 }

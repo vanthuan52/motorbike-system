@@ -24,7 +24,6 @@ import {
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
 import { ServiceCategoryDto } from '../dtos/service-category.dto';
 import { ServiceCategoryUtil } from '../utils/service-category.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
@@ -47,7 +46,6 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
@@ -57,7 +55,18 @@ import {
 } from '../constants/service-category.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-category')
@@ -68,8 +77,7 @@ import { Prisma } from '@/generated/prisma-client';
 export class ServiceCategoryAdminController {
   constructor(
     private readonly serviceCategoryService: ServiceCategoryService,
-    private readonly serviceCategoryUtil: ServiceCategoryUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly serviceCategoryUtil: ServiceCategoryUtil
   ) {}
 
   @ServiceCategoryAdminListDoc()
@@ -116,7 +124,7 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<ServiceCategoryDto>> {
     const serviceCategory = await this.serviceCategoryService.findOneById(id);
     const mapped = this.serviceCategoryUtil.mapGet(serviceCategory);
@@ -134,9 +142,21 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: ServiceCategoryCreateRequestDto
+    @Body() body: ServiceCategoryCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<{ id: string }>> {
-    const created = await this.serviceCategoryService.create(body);
+    const created = await this.serviceCategoryService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
     return { data: created };
   }
 
@@ -151,10 +171,23 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: ServiceCategoryUpdateRequestDto
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: ServiceCategoryUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.serviceCategoryService.update(id, body);
+    await this.serviceCategoryService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -169,10 +202,23 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: ServiceCategoryUpdateStatusRequestDto
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: ServiceCategoryUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.serviceCategoryService.updateStatus(id, body);
+    await this.serviceCategoryService.updateStatus(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -187,9 +233,21 @@ export class ServiceCategoryAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.serviceCategoryService.delete(id);
+    await this.serviceCategoryService.delete(
+      id,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
     return {};
   }
 }

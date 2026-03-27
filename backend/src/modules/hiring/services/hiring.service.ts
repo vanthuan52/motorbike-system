@@ -12,6 +12,7 @@ import {
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumHiringStatusCodeError } from '../enums/hiring.status-code.enum';
 import { EnumHiringStatus } from '../enums/hiring.enum';
@@ -33,18 +34,12 @@ export class HiringService implements IHiringService {
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: Record<string, IPaginationIn>
   ): Promise<IPaginationOffsetReturn<Hiring>> {
-    const { data, ...others } =
-      await this.hiringRepository.findWithPaginationOffset({
-        ...pagination,
-        where: {
-          ...pagination.where,
-          ...filters,
-        },
-      });
-
-    return { data, ...others };
+    return this.hiringRepository.findWithPaginationOffset(
+      pagination,
+      filters
+    );
   }
 
   async getListCursor(
@@ -52,30 +47,20 @@ export class HiringService implements IHiringService {
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: Record<string, IPaginationIn>
   ): Promise<IPaginationCursorReturn<Hiring>> {
-    const { data, ...others } =
-      await this.hiringRepository.findWithPaginationCursor({
-        ...pagination,
-        where: {
-          ...pagination.where,
-          ...filters,
-        },
-      });
-
-    return { data, ...others };
+    return this.hiringRepository.findWithPaginationCursor(
+      pagination,
+      filters
+    );
   }
 
   async findOneById(id: string): Promise<Hiring | null> {
     return this.hiringRepository.findOneById(id);
   }
 
-  async findOne(find: Record<string, any>): Promise<Hiring | null> {
-    return this.hiringRepository.findOne(find);
-  }
-
-  async findBySlug(slug: string): Promise<Hiring | null> {
-    return this.hiringRepository.findBySlug(slug);
+  async findOne(where: Prisma.HiringWhereInput): Promise<Hiring | null> {
+    return this.hiringRepository.findOne(where);
   }
 
   async create(payload: HiringCreateRequestDto): Promise<DatabaseIdDto> {
@@ -88,17 +73,17 @@ export class HiringService implements IHiringService {
       salaryRange: payload.salaryRange,
       applicationDeadline: new Date(payload.applicationDeadline),
       category: payload.category,
-      jobType: payload.jobType,
-      status: EnumHiringStatus.draft,
+      jobType: payload.jobType as any,
+      status: EnumHiringStatus.draft as any,
     });
 
     return { id: created.id };
   }
 
   async update(id: string, payload: HiringUpdateRequestDto): Promise<void> {
-    const hiring = await this.findOneByIdOrFail(id);
+    await this.findOneByIdOrFail(id);
 
-    const updateData: any = {};
+    const updateData: Prisma.HiringUpdateInput = {};
     if (payload.title !== undefined) updateData.title = payload.title;
     if (payload.slug !== undefined) updateData.slug = payload.slug;
     if (payload.description !== undefined)
@@ -111,7 +96,7 @@ export class HiringService implements IHiringService {
     if (payload.applicationDeadline !== undefined)
       updateData.applicationDeadline = new Date(payload.applicationDeadline);
     if (payload.category !== undefined) updateData.category = payload.category;
-    if (payload.jobType !== undefined) updateData.jobType = payload.jobType;
+    if (payload.jobType !== undefined) updateData.jobType = payload.jobType as any;
 
     if (Object.keys(updateData).length > 0) {
       await this.hiringRepository.update(id, updateData);
@@ -123,7 +108,7 @@ export class HiringService implements IHiringService {
     { status }: HiringUpdateStatusRequestDto
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.hiringRepository.update(id, { status });
+    await this.hiringRepository.update(id, { status: status as any });
   }
 
   async delete(id: string): Promise<void> {

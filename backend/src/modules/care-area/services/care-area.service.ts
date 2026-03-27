@@ -14,8 +14,10 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareAreaUtil } from '../utils/care-area.util';
-import { CareArea, Prisma } from '@/generated/prisma-client';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
+import { CareAreaModel } from '../models/care-area.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareAreaService implements ICareAreaService {
@@ -31,7 +33,7 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareArea>> {
+  ): Promise<IPaginationOffsetReturn<CareAreaModel>> {
     const { data, ...others } =
       await this.careAreaRepository.findWithPaginationOffset({
         ...pagination,
@@ -53,7 +55,7 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareArea>> {
+  ): Promise<IPaginationCursorReturn<CareAreaModel>> {
     const { data, ...others } =
       await this.careAreaRepository.findWithPaginationCursor({
         ...pagination,
@@ -73,7 +75,9 @@ export class CareAreaService implements ICareAreaService {
     >,
     vehicleType?: EnumVehicleModelType
   ): Promise<
-    IPaginationOffsetReturn<CareArea> & { checklistMap: Map<string, any[]> }
+    IPaginationOffsetReturn<CareAreaModel> & {
+      checklistMap: Map<string, any[]>;
+    }
   > {
     const { data: careAreas, ...others } =
       await this.careAreaRepository.findWithPaginationOffset(pagination);
@@ -107,11 +111,13 @@ export class CareAreaService implements ICareAreaService {
     };
   }
 
-  async findOneById(id: string): Promise<CareArea> {
+  async findOneById(id: string): Promise<CareAreaModel> {
     return this.findOneByIdOrFail(id);
   }
 
-  async findOne(where: Prisma.CareAreaWhereInput): Promise<CareArea | null> {
+  async findOne(
+    where: Prisma.CareAreaWhereInput
+  ): Promise<CareAreaModel | null> {
     return this.careAreaRepository.findOne(where);
   }
 
@@ -119,14 +125,17 @@ export class CareAreaService implements ICareAreaService {
     { name, description, orderBy }: CareAreaCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<{ id: string }> {
+  ): Promise<IResponseReturn<{ id: string }>> {
     const created = await this.careAreaRepository.create({
       name,
       description,
       orderBy,
     });
 
-    return { id: created.id };
+    return {
+      data: { id: created.id },
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(created),
+    };
   }
 
   async update(
@@ -134,30 +143,37 @@ export class CareAreaService implements ICareAreaService {
     { name, description, orderBy }: CareAreaUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<IResponseReturn<void>> {
     const careArea = await this.findOneByIdOrFail(id);
 
-    await this.careAreaRepository.update(id, {
+    const updated = await this.careAreaRepository.update(id, {
       name: name ?? careArea.name,
       description: description ?? careArea.description,
       orderBy: orderBy ?? (careArea.orderBy as string),
     });
+
+    return {
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<IResponseReturn<void>> {
     await this.findOneByIdOrFail(id);
-    await this.careAreaRepository.delete(id);
+    const deleted = await this.careAreaRepository.delete(id);
+    return {
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(deleted),
+    };
   }
 
   async createMany(
     data: CareAreaCreateRequestDto[],
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<boolean> {
+  ): Promise<IResponseReturn<boolean>> {
     await Promise.all(
       data.map(item =>
         this.careAreaRepository.create({
@@ -167,10 +183,10 @@ export class CareAreaService implements ICareAreaService {
         })
       )
     );
-    return true;
+    return { data: true };
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareArea> {
+  private async findOneByIdOrFail(id: string): Promise<CareAreaModel> {
     const careArea = await this.careAreaRepository.findOneById(id);
     if (!careArea) {
       throw new NotFoundException({

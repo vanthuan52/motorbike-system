@@ -30,8 +30,9 @@ import { AppointmentService } from '@/modules/appointment/services/appointment.s
 import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
 import { EnumAppointmentStatusCodeError } from '@/modules/appointment/enums/appointment.status-code.enum';
 import { EnumUserVehicleStatusCodeError } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
-import { CareRecord, Prisma } from '@/generated/prisma-client';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { CareRecordModel } from '../models/care-record.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordService implements ICareRecordService {
@@ -51,7 +52,7 @@ export class CareRecordService implements ICareRecordService {
       Prisma.CareRecordWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecord>> {
+  ): Promise<IPaginationOffsetReturn<CareRecordModel>> {
     const { data, ...others } =
       await this.careRecordRepository.findWithPaginationOffset({
         ...pagination,
@@ -73,7 +74,7 @@ export class CareRecordService implements ICareRecordService {
       Prisma.CareRecordWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecord>> {
+  ): Promise<IPaginationCursorReturn<CareRecordModel>> {
     const { data, ...others } =
       await this.careRecordRepository.findWithPaginationCursor({
         ...pagination,
@@ -86,13 +87,13 @@ export class CareRecordService implements ICareRecordService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<CareRecord> {
+  async findOneById(id: string): Promise<CareRecordModel> {
     return this.findOneByIdOrFail(id);
   }
 
   async findOne(
     where: Prisma.CareRecordWhereInput
-  ): Promise<CareRecord | null> {
+  ): Promise<CareRecordModel | null> {
     return this.careRecordRepository.findOne(where);
   }
 
@@ -107,7 +108,7 @@ export class CareRecordService implements ICareRecordService {
     }: CareRecordCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<CareRecord> {
+  ): Promise<CareRecordModel> {
     const created = await this.careRecordRepository.create({
       appointmentId: appointment,
       userVehicleId: userVehicle,
@@ -131,7 +132,7 @@ export class CareRecordService implements ICareRecordService {
     body: CareRecordCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<CareRecord> {
+  ): Promise<CareRecordModel> {
     const checkAppointment = await this.appointmentService.findOneById(
       body.appointment
     );
@@ -330,8 +331,7 @@ export class CareRecordService implements ICareRecordService {
           }
         }
       } else if (
-        careRecordService.type ===
-        EnumCareRecordServiceType.customerRequest
+        careRecordService.type === EnumCareRecordServiceType.customerRequest
       ) {
         const customerRequestChecklistDto: CareRecordChecklistCreateRequestDto =
           {
@@ -352,7 +352,7 @@ export class CareRecordService implements ICareRecordService {
     }
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareRecord> {
+  private async findOneByIdOrFail(id: string): Promise<CareRecordModel> {
     const careRecord = await this.careRecordRepository.findOneById(id);
     if (!careRecord) {
       throw new NotFoundException({

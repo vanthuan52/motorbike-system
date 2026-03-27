@@ -39,7 +39,7 @@ import {
   VehicleModelAdminUpdateDoc,
   VehicleModelAdminUpdateStatusDoc,
 } from '../docs/vehicle-model.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -48,7 +48,6 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
@@ -63,7 +62,16 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { VehicleModelUtil } from '../utils/vehicle-model.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.vehicle-model')
@@ -74,8 +82,7 @@ import { Prisma } from '@/generated/prisma-client';
 export class VehicleModelAdminController {
   constructor(
     private readonly vehicleModelService: VehicleModelService,
-    private readonly vehicleModelUtil: VehicleModelUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly vehicleModelUtil: VehicleModelUtil
   ) {}
 
   @VehicleModelAdminListDoc()
@@ -108,7 +115,7 @@ export class VehicleModelAdminController {
     @Query('engineDisplacement')
     engineDisplacement?: number,
     @Query('modelYear')
-    modelYear?: number,
+    modelYear?: number
   ): Promise<IResponsePagingReturn<VehicleModelListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
@@ -126,12 +133,15 @@ export class VehicleModelAdminController {
       filters['vehicleBrandId'] = vehicleBrandId;
     }
 
-    const { data, total } = await this.vehicleModelService.getListOffset(
+    const result = await this.vehicleModelService.getListOffset(
       pagination,
-      filters,
+      filters
     );
-    const mapped = this.vehicleModelUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.vehicleModelUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @VehicleModelAdminGetDoc()
@@ -145,10 +155,10 @@ export class VehicleModelAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<VehicleModelDto>> {
     const vehicleModel = await this.vehicleModelService.findOneById(id);
-    const mapped = this.vehicleModelUtil.mapGet(vehicleModel);
+    const mapped = this.vehicleModelUtil.mapOne(vehicleModel);
     return { data: mapped };
   }
 
@@ -156,25 +166,36 @@ export class VehicleModelAdminController {
   @Response('vehicle-model.create')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.create],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
     @Body() body: VehicleModelCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.vehicleModelService.create(body);
-    return { data: { _id: created.id } };
+    const created = await this.vehicleModelService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
+    return { data: created };
   }
 
   @VehicleModelAdminUpdateDoc()
   @Response('vehicle-model.update')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.update],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -182,10 +203,22 @@ export class VehicleModelAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
     @Body() body: VehicleModelUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleModelService.update(id, body);
+    await this.vehicleModelService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -193,7 +226,7 @@ export class VehicleModelAdminController {
   @Response('vehicle-model.updateStatus')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.update],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -201,10 +234,22 @@ export class VehicleModelAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
     @Body() body: VehicleModelUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleModelService.updateStatus(id, body);
+    await this.vehicleModelService.updateStatus(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -212,7 +257,7 @@ export class VehicleModelAdminController {
   @Response('vehicle-model.delete')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.delete],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -220,9 +265,20 @@ export class VehicleModelAdminController {
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleModelService.delete(id);
+    await this.vehicleModelService.delete(
+      id,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
     return {};
   }
 }

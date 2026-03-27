@@ -8,10 +8,14 @@ import {
 import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import {
+  IRequestApp,
+  IRequestLog,
+} from '@/common/request/interfaces/request.interface';
 import {
   IResponsePagingReturn,
   IResponseReturn,
@@ -24,7 +28,8 @@ import { EnumPermissionStatusCodeError } from '@/modules/permission/enums/permis
 import { IPermissionService } from '@/modules/permission/interfaces/permission.service.interface';
 import { PermissionRepository } from '@/modules/permission/repositories/permission.repository';
 import { PermissionUtil } from '@/modules/permission/utils/permission.util';
-import { EnumPermissionType, Prisma } from '@/generated/prisma-client';
+import { PermissionModel } from '../models/permission.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class PermissionService implements IPermissionService {
@@ -39,7 +44,7 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<Permission>> {
+  ): Promise<IPaginationOffsetReturn<PermissionModel>> {
     const { data, ...others } =
       await this.PermissionRepository.findWithPaginationOffsetByAdmin(
         pagination,
@@ -58,7 +63,7 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<Permission>> {
+  ): Promise<IPaginationCursorReturn<PermissionModel>> {
     const { data, ...others } =
       await this.PermissionRepository.findWithPaginationCursor(
         pagination,
@@ -83,10 +88,11 @@ export class PermissionService implements IPermissionService {
     return { data: this.PermissionUtil.mapOne(Permission) };
   }
 
-  async createByAdmin({
-    name,
-    ...others
-  }: PermissionCreateRequestDto): Promise<IResponseReturn<PermissionDto>> {
+  async createByAdmin(
+    { name, ...others }: PermissionCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<IResponseReturn<PermissionDto>> {
     const exist = await this.PermissionRepository.existByName(name);
     if (exist) {
       throw new ConflictException({
@@ -95,7 +101,11 @@ export class PermissionService implements IPermissionService {
       });
     }
 
-    const created = await this.PermissionRepository.create({ name, ...others });
+    const created = await this.PermissionRepository.create({
+      name,
+      ...others,
+      createdBy,
+    });
     return {
       data: this.PermissionUtil.mapOne(created),
       metadataActivityLog: this.PermissionUtil.mapActivityLogMetadata(created),
@@ -104,7 +114,9 @@ export class PermissionService implements IPermissionService {
 
   async updateByAdmin(
     id: string,
-    data: PermissionUpdateRequestDto
+    data: PermissionUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<IResponseReturn<PermissionDto>> {
     const Permission = await this.PermissionRepository.existById(id);
     if (!Permission) {
@@ -114,14 +126,21 @@ export class PermissionService implements IPermissionService {
       });
     }
 
-    const updated = await this.PermissionRepository.update(id, data);
+    const updated = await this.PermissionRepository.update(id, {
+      ...data,
+      updatedBy,
+    });
     return {
       data: this.PermissionUtil.mapOne(updated),
       metadataActivityLog: this.PermissionUtil.mapActivityLogMetadata(updated),
     };
   }
 
-  async deleteByAdmin(id: string): Promise<IResponseReturn<void>> {
+  async deleteByAdmin(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>> {
     const [Permission, PermissionUsed] = await Promise.all([
       this.PermissionRepository.existById(id),
       this.PermissionRepository.used(id),
@@ -139,7 +158,10 @@ export class PermissionService implements IPermissionService {
       });
     }
 
-    const deleted = await this.PermissionRepository.delete(id);
+    const deleted = await this.PermissionRepository.update(id, {
+      deletedAt: new Date(),
+      deletedBy,
+    });
 
     return {
       metadataActivityLog: this.PermissionUtil.mapActivityLogMetadata(deleted),

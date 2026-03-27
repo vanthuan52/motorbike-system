@@ -7,7 +7,12 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { CareRecordService, Prisma } from '@generated/prisma-client';
+import { CareRecordServiceModel } from '../models/care-record-service.model';
+import { CareRecordServiceMapper } from '../mappers/care-record-service.mapper';
+import {
+  CareRecordService as PrismaCareRecordService,
+  Prisma,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordServiceRepository {
@@ -28,14 +33,14 @@ export class CareRecordServiceRepository {
       Prisma.CareRecordServiceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<CareRecordService[]> {
+  ): Promise<CareRecordServiceModel[]> {
     const mergedWhere: Prisma.CareRecordServiceWhereInput = {
       ...baseWhere,
       ...filters,
       deletedAt: null,
     };
 
-    return this.databaseService.careRecordService.findMany({
+    const results = await this.databaseService.careRecordService.findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -47,6 +52,10 @@ export class CareRecordServiceRepository {
       },
       ...rest,
     });
+
+    return results.map((item: PrismaCareRecordService) =>
+      CareRecordServiceMapper.toDomain(item)
+    );
   }
 
   async getTotal(
@@ -75,22 +84,30 @@ export class CareRecordServiceRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordServiceSelect,
     Prisma.CareRecordServiceWhereInput
-  >): Promise<IPaginationOffsetReturn<CareRecordService>> {
-    return this.paginationService.offset<CareRecordService>(
-      this.databaseService.careRecordService,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: {
-          careRecord: true,
-          vehicleService: true,
-          careRecordChecklists: true,
-        },
-      }
-    );
+  >): Promise<IPaginationOffsetReturn<CareRecordServiceModel>> {
+    const paginatedResult =
+      await this.paginationService.offset<PrismaCareRecordService>(
+        this.databaseService.careRecordService,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: {
+            careRecord: true,
+            vehicleService: true,
+            careRecordChecklists: true,
+          },
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordServiceMapper.toDomain(item)
+      ),
+    };
   }
 
   async findWithPaginationCursor({
@@ -99,27 +116,35 @@ export class CareRecordServiceRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordServiceSelect,
     Prisma.CareRecordServiceWhereInput
-  >): Promise<IPaginationCursorReturn<CareRecordService>> {
-    return this.paginationService.cursor<CareRecordService>(
-      this.databaseService.careRecordService,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: {
-          careRecord: true,
-          vehicleService: true,
-          careRecordChecklists: true,
-        },
-        includeCount: true,
-      }
-    );
+  >): Promise<IPaginationCursorReturn<CareRecordServiceModel>> {
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaCareRecordService>(
+        this.databaseService.careRecordService,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: {
+            careRecord: true,
+            vehicleService: true,
+            careRecordChecklists: true,
+          },
+          includeCount: true,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordServiceMapper.toDomain(item)
+      ),
+    };
   }
 
-  async findOneById(id: string): Promise<CareRecordService | null> {
-    return this.databaseService.careRecordService.findFirst({
+  async findOneById(id: string): Promise<CareRecordServiceModel | null> {
+    const result = await this.databaseService.careRecordService.findFirst({
       where: {
         id,
         deletedAt: null,
@@ -130,12 +155,14 @@ export class CareRecordServiceRepository {
         careRecordChecklists: true,
       },
     });
+
+    return result ? CareRecordServiceMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.CareRecordServiceWhereInput
-  ): Promise<CareRecordService | null> {
-    return this.databaseService.careRecordService.findFirst({
+  ): Promise<CareRecordServiceModel | null> {
+    const result = await this.databaseService.careRecordService.findFirst({
       where: {
         ...where,
         deletedAt: null,
@@ -146,12 +173,14 @@ export class CareRecordServiceRepository {
         careRecordChecklists: true,
       },
     });
+
+    return result ? CareRecordServiceMapper.toDomain(result) : null;
   }
 
   async create(
     data: Prisma.CareRecordServiceCreateInput
-  ): Promise<CareRecordService> {
-    return this.databaseService.careRecordService.create({
+  ): Promise<CareRecordServiceModel> {
+    const result = await this.databaseService.careRecordService.create({
       data,
       include: {
         careRecord: true,
@@ -159,6 +188,8 @@ export class CareRecordServiceRepository {
         careRecordChecklists: true,
       },
     });
+
+    return CareRecordServiceMapper.toDomain(result);
   }
 
   async createMany(
@@ -172,8 +203,8 @@ export class CareRecordServiceRepository {
   async update(
     id: string,
     data: Prisma.CareRecordServiceUpdateInput
-  ): Promise<CareRecordService> {
-    return this.databaseService.careRecordService.update({
+  ): Promise<CareRecordServiceModel> {
+    const result = await this.databaseService.careRecordService.update({
       where: { id },
       data,
       include: {
@@ -182,10 +213,12 @@ export class CareRecordServiceRepository {
         careRecordChecklists: true,
       },
     });
+
+    return CareRecordServiceMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecordService> {
-    return this.databaseService.careRecordService.delete({
+  async delete(id: string): Promise<CareRecordServiceModel> {
+    const result = await this.databaseService.careRecordService.delete({
       where: { id },
       include: {
         careRecord: true,
@@ -193,5 +226,7 @@ export class CareRecordServiceRepository {
         careRecordChecklists: true,
       },
     });
+
+    return CareRecordServiceMapper.toDomain(result);
   }
 }

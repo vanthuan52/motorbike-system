@@ -22,10 +22,15 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumVehicleModelStatusCodeError } from '../enums/vehicle-model.status-code.enum';
-import { VehicleModel, Prisma } from '@/generated/prisma-client';
 import { VehicleBrandRepository } from '@/modules/vehicle-brand/repository/vehicle-brand.repository';
+import { VehicleModelModel } from '../models/vehicle-model.model';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class VehicleModelService implements IVehicleModelService {
@@ -36,14 +41,10 @@ export class VehicleModelService implements IVehicleModelService {
     private readonly configService: ConfigService,
     private readonly helperService: HelperService,
     private readonly vehicleModelUtil: VehicleModelUtil,
-    private readonly vehicleBrandRepository: VehicleBrandRepository, // injected
+    private readonly vehicleBrandRepository: VehicleBrandRepository
   ) {
     this.uploadPath =
       this.configService.get<string>('VehicleModel.uploadPath') || '';
-  }
-
-  async findAll(find?: Prisma.VehicleModelWhereInput): Promise<VehicleModel[]> {
-    return this.vehicleModelRepository.findAll({ where: find } as any);
   }
 
   async getListOffset(
@@ -51,18 +52,12 @@ export class VehicleModelService implements IVehicleModelService {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: VehicleModel[]; total: number }> {
-    const { data, count } =
-      await this.vehicleModelRepository.findWithPaginationOffset(
-        pagination,
-        filters,
-      );
-
-    return {
-      data,
-      total: count,
-    };
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<VehicleModelModel>> {
+    return this.vehicleModelRepository.findWithPaginationOffset(
+      pagination,
+      filters
+    );
   }
 
   async getListCursor(
@@ -70,42 +65,39 @@ export class VehicleModelService implements IVehicleModelService {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: VehicleModel[]; total?: number }> {
-    const { data, count } =
-      await this.vehicleModelRepository.findWithPaginationCursor(
-        pagination,
-        filters,
-      );
-
-    return { data, total: count };
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<VehicleModelModel>> {
+    return this.vehicleModelRepository.findWithPaginationCursor(
+      pagination,
+      filters
+    );
   }
 
-  async findOneById(id: string): Promise<VehicleModel> {
-    const vehicleModel = await this.findOneByIdOrFail(id);
-    return vehicleModel;
-  }
-
-  async findOneWithVehicleBrandById(id: string): Promise<VehicleModel | null> {
-    return this.vehicleModelRepository.findOneById(id);
-  }
-
-  async findOne(find: Prisma.VehicleModelWhereInput): Promise<VehicleModel> {
-    const vehicleModel = await this.vehicleModelRepository.findOne(find);
+  async findOneById(id: string): Promise<VehicleModelModel> {
+    const vehicleModel = await this.vehicleModelRepository.findOneById(id);
     if (!vehicleModel) {
-      return null as any;
+      throw new NotFoundException({
+        statusCode: EnumVehicleModelStatusCodeError.notFound,
+        message: 'vehicle-model.error.notFound',
+      });
     }
     return vehicleModel;
   }
 
-  async getTotal(find?: Prisma.VehicleModelWhereInput): Promise<number> {
-    return this.vehicleModelRepository.getTotal({ where: find } as any);
+  async findOne(
+    find: Prisma.VehicleModelWhereInput
+  ): Promise<VehicleModelModel | null> {
+    return this.vehicleModelRepository.findOne(find);
   }
 
-  async create(payload: VehicleModelCreateRequestDto): Promise<VehicleModel> {
+  async create(
+    payload: VehicleModelCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<DatabaseIdDto> {
     // Check slug conflict
     const existingSlug = await this.vehicleModelRepository.findOneBySlug(
-      payload.slug,
+      payload.slug
     );
     if (existingSlug) {
       throw new ConflictException({
@@ -117,7 +109,7 @@ export class VehicleModelService implements IVehicleModelService {
     // Check brand
     if (payload.vehicleBrand) {
       const brand = await this.vehicleBrandRepository.findOneById(
-        payload.vehicleBrand,
+        payload.vehicleBrand
       );
       if (!brand) {
         throw new NotFoundException({
@@ -134,8 +126,8 @@ export class VehicleModelService implements IVehicleModelService {
       description: payload.description,
       engineDisplacement: payload.engineDisplacement,
       modelYear: payload.modelYear,
-      orderBy: payload.orderBy ? parseInt(payload.orderBy, 10) : 0,
-      vehicleBrandId: payload.vehicleBrand,
+      orderBy: payload.orderBy ? payload.orderBy : '0',
+      vehicleBrand: { connect: { id: payload.vehicleBrand } },
       status: payload.status ? payload.status : EnumVehicleModelStatus.active,
       type: payload.type ? payload.type : EnumVehicleModelType.unknown,
       fuelType: payload.fuelType
@@ -143,18 +135,24 @@ export class VehicleModelService implements IVehicleModelService {
         : EnumVehicleModelFuelType.unknown,
       yearStart: payload.yearStart,
       yearEnd: payload.yearEnd,
+      createdBy: createdBy,
     });
 
-    return created;
+    return { id: created.id };
   }
 
-  async update(id: string, payload: VehicleModelUpdateRequestDto): Promise<void> {
-    const repository = await this.findOneByIdOrFail(id);
+  async update(
+    id: string,
+    payload: VehicleModelUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void> {
+    const vehicleModel = await this.findOneById(id);
 
     // Check slug conflict if slug is being updated
-    if (payload.slug && payload.slug !== repository.slug) {
+    if (payload.slug && payload.slug !== vehicleModel.slug) {
       const existingSlug = await this.vehicleModelRepository.findOneBySlug(
-        payload.slug,
+        payload.slug
       );
       if (existingSlug && existingSlug.id !== id) {
         throw new ConflictException({
@@ -166,7 +164,7 @@ export class VehicleModelService implements IVehicleModelService {
 
     if (payload.vehicleBrand) {
       const brand = await this.vehicleBrandRepository.findOneById(
-        payload.vehicleBrand,
+        payload.vehicleBrand
       );
       if (!brand) {
         throw new NotFoundException({
@@ -176,21 +174,23 @@ export class VehicleModelService implements IVehicleModelService {
       }
     }
 
-    const updateData: Prisma.VehicleModelUpdateInput = {};
-    if (payload.name !== undefined) updateData.name = payload.name;
-    if (payload.fullName !== undefined) updateData.fullName = payload.fullName;
-    if (payload.slug !== undefined) updateData.slug = payload.slug.toLowerCase();
-    if (payload.description !== undefined) updateData.description = payload.description;
-    if (payload.engineDisplacement !== undefined)
-      updateData.engineDisplacement = payload.engineDisplacement;
-    if (payload.modelYear !== undefined) updateData.modelYear = payload.modelYear;
-    if (payload.orderBy !== undefined) updateData.orderBy = parseInt(payload.orderBy, 10);
-    if (payload.vehicleBrand !== undefined)
-      updateData.vehicleBrandId = payload.vehicleBrand;
-    if (payload.type !== undefined) updateData.type = payload.type;
-    if (payload.fuelType !== undefined) updateData.fuelType = payload.fuelType;
-    if (payload.yearStart !== undefined) updateData.yearStart = payload.yearStart;
-    if (payload.yearEnd !== undefined) updateData.yearEnd = payload.yearEnd;
+    const updateData: Prisma.VehicleModelUpdateInput = {
+      name: payload.name ?? undefined,
+      fullName: payload.fullName ?? undefined,
+      slug: payload.slug ? payload.slug.toLowerCase() : undefined,
+      description: payload.description ?? undefined,
+      engineDisplacement: payload.engineDisplacement ?? undefined,
+      modelYear: payload.modelYear ?? undefined,
+      orderBy: payload.orderBy ?? undefined,
+      vehicleBrand: payload.vehicleBrand
+        ? { connect: { id: payload.vehicleBrand } }
+        : undefined,
+      type: payload.type ?? undefined,
+      fuelType: payload.fuelType ?? undefined,
+      yearStart: payload.yearStart ?? undefined,
+      yearEnd: payload.yearEnd ?? undefined,
+      updatedBy: updatedBy,
+    };
 
     await this.vehicleModelRepository.update(id, updateData);
   }
@@ -198,22 +198,29 @@ export class VehicleModelService implements IVehicleModelService {
   async updateStatus(
     id: string,
     payload: VehicleModelUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void> {
-    await this.findOneByIdOrFail(id);
-    await this.vehicleModelRepository.update(id, { status: payload.status });
+    await this.findOneById(id);
+    await this.vehicleModelRepository.update(id, {
+      status: payload.status,
+      updatedBy: updatedBy,
+    });
   }
 
-  async delete(id: string): Promise<void> {
-    await this.findOneByIdOrFail(id);
-    await this.vehicleModelRepository.update(id, { deletedAt: new Date() } as any);
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void> {
+    await this.findOneById(id);
+    await this.vehicleModelRepository.update(id, {
+      deletedAt: new Date(),
+      deletedBy: deletedBy,
+    });
   }
 
-  async deleteMany(find?: Prisma.VehicleModelWhereInput): Promise<boolean> {
-    await this.vehicleModelRepository.deleteMany(find || {});
-    return true;
-  }
-
-  async findBySlug(slug: string): Promise<VehicleModel> {
+  async findBySlug(slug: string): Promise<VehicleModelModel> {
     const vehicleModel = await this.vehicleModelRepository.findOneBySlug(slug);
     if (!vehicleModel) {
       throw new NotFoundException({
@@ -226,7 +233,7 @@ export class VehicleModelService implements IVehicleModelService {
 
   createRandomFilenamePhoto(
     vehicleModel: string,
-    { mime }: VehicleModelUploadPhotoRequestDto,
+    { mime }: VehicleModelUploadPhotoRequestDto
   ): string {
     let path: string = this.uploadPath.replace('{vehicleModel}', vehicleModel);
     const randomPath = this.helperService.randomString(10);
@@ -239,26 +246,14 @@ export class VehicleModelService implements IVehicleModelService {
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
   }
 
-  async updatePhoto(
-    repository: VehicleModel,
-    photo: AwsS3Dto,
-  ): Promise<VehicleModel> {
-    return this.vehicleModelRepository.update(repository.id, {
-      photo: {
-        ...photo,
-        size: photo.size,
-      } as any,
+  async updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleModelModel> {
+    return this.vehicleModelRepository.update(id, {
+      photo: photo.path,
     });
   }
-
-  private async findOneByIdOrFail(id: string): Promise<VehicleModel> {
-    const vehicleModel = await this.vehicleModelRepository.findOneById(id);
-    if (!vehicleModel) {
-      throw new NotFoundException({
-        statusCode: EnumVehicleModelStatusCodeError.notFound,
-        message: 'vehicle-model.error.notFound',
-      });
-    }
-    return vehicleModel;
+  async findAll(
+    where: Prisma.VehicleModelWhereInput
+  ): Promise<VehicleModelModel[]> {
+    return this.vehicleModelRepository.findAll(where);
   }
 }

@@ -32,14 +32,9 @@ import {
   UserVehicleAdminUpdateDoc,
 } from '../docs/user-vehicle.admin.doc';
 import { UserVehicleUtil } from '../utils/user-vehicle.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import {
-  AuthJwtAccessProtected,
-  AuthJwtPayload,
-} from '@/modules/auth/decorators/auth.jwt.decorator';
+import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
 import {
   USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
   USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
@@ -47,6 +42,13 @@ import {
 import { UserVehicleService } from '../services/user-vehicle.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
+import {
+  EnumPolicyAction,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user-vehicle')
@@ -57,12 +59,15 @@ import { Prisma } from '@/generated/prisma-client';
 export class UserVehicleAdminController {
   constructor(
     private readonly userVehicleService: UserVehicleService,
-    private readonly userVehicleUtil: UserVehicleUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly userVehicleUtil: UserVehicleUtil
   ) {}
 
   @UserVehicleAdminListDoc()
   @ResponsePaging('user-vehicle.list')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -85,20 +90,27 @@ export class UserVehicleAdminController {
       filters['vehicleModelId'] = vehicleModelId;
     }
 
-    const { data, total } = await this.userVehicleService.getListOffset(
+    const result = await this.userVehicleService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.userVehicleUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.userVehicleUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @UserVehicleAdminListByUserDoc()
-  @Get('/get/user/:userId')
-  @ResponsePaging('user-vehicle.list')
+  @ResponsePaging('user-vehicle.listByUser')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @Get('/get/user/:userId')
   async getByUserId(
     @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     userId: string,
@@ -114,16 +126,23 @@ export class UserVehicleAdminController {
     const filters: Record<string, any> = {
       userId: userId,
     };
-    const { data, total } = await this.userVehicleService.getListOffset(
+    const result = await this.userVehicleService.getListOffset(
       pagination,
       filters
     );
-    const mapped = this.userVehicleUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.userVehicleUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @UserVehicleAdminGetDoc()
   @Response('user-vehicle.get')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -139,20 +158,27 @@ export class UserVehicleAdminController {
 
   @UserVehicleAdminCreateDoc()
   @Response('user-vehicle.create')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.create],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
     @Body() body: UserVehicleCreateRequestDto
-  ): Promise<IResponseReturn<{ id: string }>> {
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.userVehicleService.create(body);
-    return { data: { id: created.id } };
+    return { data: created };
   }
 
   @UserVehicleAdminUpdateDoc()
   @Response('user-vehicle.update')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.update],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -160,7 +186,6 @@ export class UserVehicleAdminController {
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     id: string,
-    @AuthJwtPayload('user') updatedBy: string,
     @Body() body: UserVehicleUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.userVehicleService.update(id, body);
@@ -169,6 +194,10 @@ export class UserVehicleAdminController {
 
   @UserVehicleAdminDeleteDoc()
   @Response('user-vehicle.delete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.delete],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -176,8 +205,8 @@ export class UserVehicleAdminController {
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     id: string
-  ): Promise<IResponseReturn<boolean>> {
+  ): Promise<IResponseReturn<void>> {
     await this.userVehicleService.delete(id);
-    return { data: true };
+    return {};
   }
 }

@@ -5,9 +5,12 @@ import {
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { Hiring, Prisma } from '@/generated/prisma-client';
+import { HiringModel } from '../models/hiring.model';
+import { HiringMapper } from '../mappers/hiring.mapper';
+import { Hiring as PrismaHiring, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class HiringRepository {
@@ -23,20 +26,26 @@ export class HiringRepository {
     }: IPaginationQueryOffsetParams<
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
-    >
-  ): Promise<IPaginationOffsetReturn<Hiring>> {
-    return this.paginationService.offset<Hiring>(
-      this.databaseService.hiring,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          candidates: true,
-        },
-      }
-    );
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<HiringModel>> {
+    const paginatedResult = await this.paginationService.offset<
+      PrismaHiring,
+      Prisma.HiringSelect,
+      Prisma.HiringWhereInput
+    >(this.databaseService.hiring, {
+      ...params,
+      where: {
+        ...where,
+        ...filters,
+        deletedAt: null,
+      },
+    } as any);
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => HiringMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor(
@@ -46,79 +55,73 @@ export class HiringRepository {
     }: IPaginationQueryCursorParams<
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
-    >
-  ): Promise<IPaginationCursorReturn<Hiring>> {
-    return this.paginationService.cursor<Hiring>(
-      this.databaseService.hiring,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          candidates: true,
-        },
-        includeCount: true,
-      }
-    );
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<HiringModel>> {
+    const paginatedResult = await this.paginationService.cursor<
+      PrismaHiring,
+      Prisma.HiringSelect,
+      Prisma.HiringWhereInput
+    >(this.databaseService.hiring, {
+      ...params,
+      where: {
+        ...where,
+        ...filters,
+        deletedAt: null,
+      },
+      includeCount: true,
+    } as any);
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => HiringMapper.toDomain(item)),
+    };
   }
 
-  async findOneById(id: string): Promise<Hiring | null> {
-    return this.databaseService.hiring.findUnique({
+  async findOneById(id: string): Promise<HiringModel | null> {
+    const result = await this.databaseService.hiring.findUnique({
       where: { id },
-      include: {
-        candidates: true,
-      },
     });
+    return result ? HiringMapper.toDomain(result) : null;
   }
 
-  async findOne(
-    where: Prisma.HiringWhereInput
-  ): Promise<Hiring | null> {
-    return this.databaseService.hiring.findFirst({
+  async findOne(where: Prisma.HiringWhereInput): Promise<HiringModel | null> {
+    const result = await this.databaseService.hiring.findFirst({
       where,
-      include: {
-        candidates: true,
-      },
     });
+    return result ? HiringMapper.toDomain(result) : null;
   }
 
-  async findBySlug(slug: string): Promise<Hiring | null> {
-    return this.databaseService.hiring.findUnique({
-      where: { slug },
-      include: {
-        candidates: true,
-      },
-    });
-  }
-
-  async create(data: Prisma.HiringCreateInput): Promise<Hiring> {
-    return this.databaseService.hiring.create({
+  async create(data: Prisma.HiringCreateInput): Promise<HiringModel> {
+    const result = await this.databaseService.hiring.create({
       data,
-      include: {
-        candidates: true,
-      },
     });
+    return HiringMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.HiringUpdateInput
-  ): Promise<Hiring> {
-    return this.databaseService.hiring.update({
+  ): Promise<HiringModel> {
+    const result = await this.databaseService.hiring.update({
       where: { id },
       data,
-      include: {
-        candidates: true,
-      },
     });
+    return HiringMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<Hiring> {
-    return this.databaseService.hiring.delete({
+  async delete(id: string): Promise<HiringModel> {
+    const result = await this.databaseService.hiring.delete({
       where: { id },
-      include: {
-        candidates: true,
+    });
+    return HiringMapper.toDomain(result);
+  }
+
+  async getTotal(where: Prisma.HiringWhereInput): Promise<number> {
+    return this.databaseService.hiring.count({
+      where: {
+        ...where,
+        deletedAt: null,
       },
     });
   }

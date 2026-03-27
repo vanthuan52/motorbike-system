@@ -44,13 +44,13 @@ import { SessionResponseDto } from '@/modules/session/dtos/response/session.resp
 import { SessionService } from '@/modules/session/services/session.service';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
-import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user.session')
 @Controller({
@@ -60,8 +60,7 @@ import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
 export class SessionAdminController {
   constructor(
     private readonly sessionService: SessionService,
-    private readonly sessionUtil: SessionUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly sessionUtil: SessionUtil
   ) {}
 
   @SessionAdminListDoc()

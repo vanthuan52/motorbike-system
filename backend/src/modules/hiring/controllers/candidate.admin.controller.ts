@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  InternalServerErrorException,
   NotFoundException,
   Param,
   Patch,
@@ -21,7 +20,6 @@ import {
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
@@ -40,13 +38,12 @@ import {
   IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
 import { CandidateResponseDto } from '../dtos/candidate-response.dto';
-import { CandidateDoc } from '../entities/candidate.entity';
 import { CandidateService } from '../services/candidate.service';
-import { IDatabaseSaveOptions } from '@/common/database/interfaces/database.interface';
 import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.update-status.request.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CandidateUtil } from '../utils/candidate.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { Prisma } from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -57,7 +54,6 @@ export class CandidateAdminController {
   constructor(
     private readonly candidateService: CandidateService,
     private readonly candidateUtil: CandidateUtil,
-    private readonly paginationUtil: PaginationUtil,
   ) {}
 
   @CandidateAdminListDoc()
@@ -74,60 +70,51 @@ export class CandidateAdminController {
     @PaginationOffsetQuery({
       availableSearch: ['name', 'status'],
     })
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CandidateSelect,
+      Prisma.CandidateWhereInput
+    >,
     @PaginationQueryFilterInEnum('status', [
       EnumCandidateStatus.hired,
       EnumCandidateStatus.interviewScheduled,
       EnumCandidateStatus.new,
       EnumCandidateStatus.rejected,
       EnumCandidateStatus.reviewed,
+      EnumCandidateStatus.interviewing,
     ])
     status: Record<string, IPaginationIn>,
     @Query('hiring') hiring: string,
     @Query('appliedAtFrom') appliedAtFrom: string,
     @Query('appliedAtTo') appliedAtTo: string,
   ): Promise<IResponsePagingReturn<CandidateResponseDto>> {
-    const find: Record<string, any> = {
-      ...where,
+    const filters: Record<string, any> = {
       ...status,
     };
     if (hiring) {
-      find.hiring = hiring;
+      filters.hiringId = hiring;
     }
     if (appliedAtFrom && appliedAtTo) {
-      find.appliedAt = {
-        $gte: new Date(appliedAtFrom),
-        $lte: new Date(appliedAtTo),
+      filters.appliedAt = {
+        gte: new Date(appliedAtFrom),
+        lte: new Date(appliedAtTo),
       };
     } else if (appliedAtFrom) {
-      find.appliedAt = { $gte: new Date(appliedAtFrom) };
+      filters.appliedAt = { gte: new Date(appliedAtFrom) };
     } else if (appliedAtTo) {
-      find.appliedAt = { $lte: new Date(appliedAtTo) };
+      filters.appliedAt = { lte: new Date(appliedAtTo) };
     }
 
-    // Manual pagination using findAll and getTotal because Service doesn't have getListOffset yet used in other modules.
-    // However, I should probably stick to what Service provides if I don't want to change Service extensively to standard getListOffset.
-    // Given the task is about standardizing Service return type (Raw Data), using findAll and getTotal separately is fine as they return raw data.
+    const result = await this.candidateService.getListOffset(
+      pagination,
+      filters
+    );
 
-    // Ideally I should refactor Service to have getListOffset if I want to be consistent with others, but let's see.
-    // The previous modules (CareRecord) had getListOffset.
-    // Hiring Service has findAll.
-    // I will use findAll and getTotal here, and use PaginationUtil to format.
+    const mapped = this.candidateUtil.mapList(result.data);
 
-    const [candidates, total] = await Promise.all([
-      this.candidateService.findAll(find, {
-        paging: { limit, offset: skip },
-        order: orderBy,
-      }),
-      this.candidateService.getTotal(find),
-    ]);
-
-    const mapped = this.candidateUtil.mapList(candidates);
-
-    return this.paginationUtil.formatOffset(mapped, total, {
-      limit,
-      skip,
-    });
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @CandidateAdminParamsIdDoc()
@@ -165,32 +152,15 @@ export class CandidateAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
-    @Body() { status }: CandidateUpdateStatusRequestDto,
+    @Body() payload: CandidateUpdateStatusRequestDto,
   ): Promise<IResponseReturn<void>> {
-    const candidate = await this.candidateService.findOneById(id);
-    if (!candidate) {
-      throw new NotFoundException({
-        message: 'candidate.error.notFound',
-      });
-    }
-    try {
-      await this.candidateService.updateStatus(
-        candidate,
-        { status },
-        {} as IDatabaseSaveOptions,
-      );
-      return {
-        metadata: {
-          messageProperties: {
-            status: status.toLowerCase(),
-          },
+    await this.candidateService.updateStatus(id, payload);
+    return {
+      metadata: {
+        messageProperties: {
+          status: payload.status.toLowerCase(),
         },
-      };
-    } catch (err) {
-      throw new InternalServerErrorException({
-        message: 'candidate.error.updateStatusFailed',
-        _error: err,
-      });
-    }
+      },
+    };
   }
 }

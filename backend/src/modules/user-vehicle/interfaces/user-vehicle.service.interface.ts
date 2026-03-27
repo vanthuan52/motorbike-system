@@ -1,4 +1,3 @@
-import { UserVehicle, Prisma } from '@/generated/prisma-client';
 import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create.request.dto';
 import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
@@ -7,60 +6,44 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { UserVehicleModel } from '../models/user-vehicle.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IUserVehicleService {
-  findAll(find?: Prisma.UserVehicleWhereInput): Promise<UserVehicle[]>;
-
   getListOffset(
     pagination: IPaginationQueryOffsetParams<
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: UserVehicle[]; total: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<UserVehicleModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: UserVehicle[]; total?: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<UserVehicleModel>>;
 
-  findAllWithVehicleModel(
-    find?: Prisma.UserVehicleWhereInput,
-  ): Promise<UserVehicle[]>;
+  findOneById(id: string): Promise<UserVehicleModel>;
 
-  getTotalWithVehicleModel(
-    find?: Prisma.UserVehicleWhereInput,
-  ): Promise<number>;
+  findOne(find: Prisma.UserVehicleWhereInput): Promise<UserVehicleModel | null>;
 
-  findOneById(id: string): Promise<UserVehicle>;
-
-  findOneWithVehicleModelById(id: string): Promise<UserVehicle | null>;
-
-  findOne(find: Prisma.UserVehicleWhereInput): Promise<UserVehicle>;
-
-  getTotal(find?: Prisma.UserVehicleWhereInput): Promise<number>;
-
-  create(payload: UserVehicleCreateRequestDto): Promise<UserVehicle>;
+  create(payload: UserVehicleCreateRequestDto): Promise<DatabaseIdDto>;
 
   update(id: string, payload: UserVehicleUpdateRequestDto): Promise<void>;
 
-  delete(id: string): Promise<boolean>;
+  delete(id: string): Promise<void>;
 
-  softDelete(repository: UserVehicle): Promise<UserVehicle>;
-
-  deleteMany(find?: Prisma.UserVehicleWhereInput): Promise<boolean>;
-
-  updatePhoto(
-    repository: UserVehicle,
-    photo: AwsS3Dto,
-  ): Promise<UserVehicle>;
+  updatePhoto(id: string, photo: AwsS3Dto): Promise<UserVehicleModel>;
 
   createRandomFilenamePhoto(
-    user: string,
-    payload: UserVehicleUploadPhotoRequestDto,
+    userId: string,
+    payload: UserVehicleUploadPhotoRequestDto
   ): string;
 }

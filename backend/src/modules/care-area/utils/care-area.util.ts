@@ -23,4 +23,11 @@ export class CareAreaUtil {
       serviceChecklists,
     });
   }
+
+  mapActivityLogMetadata(data: CareAreaModel): Record<string, any> {
+    return {
+      id: data.id,
+      name: data.name,
+    };
+  }
 }

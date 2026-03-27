@@ -29,7 +29,6 @@ import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { Prisma } from '@/generated/prisma-client';
 import { VehicleServiceUtil } from '../utils/vehicle-service.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.vehicle-service')
 @Controller({
@@ -39,18 +38,17 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class VehicleServicePublicController {
   constructor(
     private readonly vehicleServiceService: VehicleServiceService,
-    private readonly vehicleServiceUtil: VehicleServiceUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly vehicleServiceUtil: VehicleServiceUtil
   ) {}
 
   @VehicleServicePublicGetOneDoc()
   @Response('vehicle-service.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<VehicleServiceDto>> {
     const vehicleService = await this.vehicleServiceService.findBySlug(slug);
-    const mapped = this.vehicleServiceUtil.mapGet(vehicleService);
+    const mapped = this.vehicleServiceUtil.mapOne(vehicleService);
     return { data: mapped };
   }
 
@@ -69,7 +67,7 @@ export class VehicleServicePublicController {
     @PaginationQueryFilterInEnum('status', VEHICLE_SERVICE_DEFAULT_STATUS)
     status: Record<string, any>,
     @Query('serviceCategory', OptionalParseUUIDPipe)
-    serviceCategoryId?: string,
+    serviceCategoryId?: string
   ): Promise<IResponsePagingReturn<VehicleServiceListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
@@ -79,11 +77,14 @@ export class VehicleServicePublicController {
       filters['serviceCategoryId'] = serviceCategoryId; // mapped to Prisma
     }
 
-    const { data, total } = await this.vehicleServiceService.getListOffset(
+    const result = await this.vehicleServiceService.getListOffset(
       pagination,
-      filters,
+      filters
     );
-    const mapped = this.vehicleServiceUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.vehicleServiceUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

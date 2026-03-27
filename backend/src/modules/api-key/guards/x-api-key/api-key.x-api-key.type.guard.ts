@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ApiKeyXTypeMetaKey } from '@/modules/api-key/constants/api-key.constant';
 import { ApiKeyService } from '@/modules/api-key/services/api-key.service';
-import { EnumApiKeyType } from '@/generated/prisma-client';
+import { EnumApiKeyType } from '@/modules/api-key/enums/api-key.enum';
 
 /**
  * Guard that validates API key type authorization.

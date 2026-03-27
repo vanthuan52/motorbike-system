@@ -1,29 +1,39 @@
 import {
-  IDatabaseCreateOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseGetTotalOptions,
-} from '@/common/database/interfaces/database.interface';
-import {
-  CandidateReviewDoc,
-  CandidateReviewEntity,
-} from '../entities/candidate-review.entity';
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { CandidateReviewCreateRequestDto } from '../dtos/request/candidate-review.create.request.dto';
-import { CandidateReviewListResponseDto } from '../dtos/response/candidate-review.list.response.dto';
-import { CandidateReviewGetResponseDto } from '../dtos/response/candidate-review.get.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CandidateReviewModel } from '../models/candidate-review.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface ICandidateReviewService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CandidateReviewDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CandidateReviewSelect,
+      Prisma.CandidateReviewWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<CandidateReviewModel>>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CandidateReviewSelect,
+      Prisma.CandidateReviewWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<CandidateReviewModel>>;
 
-  create(
-    payload: CandidateReviewCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<CandidateReviewDoc>;
+  findOneById(id: string): Promise<CandidateReviewModel | null>;
+
+  findOne(
+    where: Prisma.CandidateReviewWhereInput
+  ): Promise<CandidateReviewModel | null>;
+
+  create(payload: CandidateReviewCreateRequestDto): Promise<DatabaseIdDto>;
+
+  delete(id: string): Promise<void>;
 }

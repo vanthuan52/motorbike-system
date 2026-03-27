@@ -18,12 +18,24 @@ import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
-import { IResponseReturn, IResponsePagingReturn, } from '@/common/response/interfaces/response.interface';
-import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
+import {
+  IResponseReturn,
+  IResponsePagingReturn,
+} from '@/common/response/interfaces/response.interface';
 import { ServicePriceDto } from '../dtos/service-price.dto';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { Prisma } from '@/generated/prisma-client';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import {
   ServicePriceAdminCreateDoc,
   ServicePriceAdminDeleteDoc,
@@ -34,13 +46,12 @@ import {
   ServicePriceAdminParamsIdDoc,
   ServicePriceAdminUpdateDoc,
 } from '../docs/service-price.admin.doc';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
@@ -49,14 +60,18 @@ import {
 } from '../constants/service-price.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { IModelServicePrice } from '../interfaces/service-price.interface';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
-import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
+import { EnumServicePriceStatus } from '../enums/service-price.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { ServicePriceUtil } from '../utils/service-price.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
+import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-price')
 @Controller({
@@ -69,8 +84,7 @@ export class ServicePriceAdminController {
     private readonly vehicleServiceService: VehicleServiceService,
     private readonly vehicleModelService: VehicleModelService,
     private readonly servicePriceService: ServicePriceService,
-    private readonly servicePriceUtil: ServicePriceUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly servicePriceUtil: ServicePriceUtil
   ) {}
 
   @ServicePriceAdminListDoc()
@@ -92,10 +106,10 @@ export class ServicePriceAdminController {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    @Query('vehicleService', RequestOptionalParseUUIDPipe)
+    @Query('vehicleService', RequestOptionalParseObjectIdPipe)
     vehicleServiceId: string,
-    @Query('vehicleModel', RequestOptionalParseUUIDPipe)
-    vehicleModelId: string,
+    @Query('vehicleModel', RequestOptionalParseObjectIdPipe)
+    vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
     const filters: Prisma.ServicePriceWhereInput = {};
 
@@ -109,7 +123,7 @@ export class ServicePriceAdminController {
 
     const result = await this.servicePriceService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.servicePriceUtil.mapList(result.data);
     return {
@@ -129,12 +143,12 @@ export class ServicePriceAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe)
-    id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    id: string
   ): Promise<IResponseReturn<ServicePriceDto>> {
     const servicePrice = await this.servicePriceService.findOneById(id);
     return {
-      data: this.servicePriceUtil.mapGet(servicePrice),
+      data: this.servicePriceUtil.mapOne(servicePrice),
     };
   }
 
@@ -147,12 +161,24 @@ export class ServicePriceAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServicePriceCreate)
   @Post('/create')
   async create(
     @Body() body: ServicePriceCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<{ id: string }>> {
-    const created = await this.servicePriceService.create(body);
-    return { data: created };
+    return this.servicePriceService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
   }
 
   @ServicePriceAdminUpdateDoc()
@@ -164,14 +190,27 @@ export class ServicePriceAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServicePriceUpdate)
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe)
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     id: string,
     @Body() body: ServicePriceUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.servicePriceService.update(id, body);
-    return {};
+    return this.servicePriceService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
   }
 
   @ServicePriceAdminDeleteDoc()
@@ -183,13 +222,25 @@ export class ServicePriceAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServicePriceDelete)
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe)
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.servicePriceService.delete(id);
-    return {};
+    return this.servicePriceService.delete(
+      id,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
   }
 
   @ServicePriceAdminListCombinedDoc()
@@ -207,65 +258,67 @@ export class ServicePriceAdminController {
       availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    { limit, skip, where }: IPaginationQueryOffsetParams,
-    @Query('vehicleService', RequestOptionalParseUUIDPipe)
+    pagination: IPaginationQueryOffsetParams,
+    @Query('vehicleService', RequestOptionalParseObjectIdPipe)
     vehicleServiceId: string,
-    @Query('vehicleModel', RequestOptionalParseUUIDPipe)
-    vehicleModelId: string,
-  ): Promise<IResponsePagingReturn<ModelServicePriceListResponseDto>> {
+    @Query('vehicleModel', RequestOptionalParseObjectIdPipe)
+    vehicleModelId: string
+  ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
+    const { limit, skip, where } = pagination;
     const find: Record<string, any> = {
       ...where,
     };
 
     if (vehicleServiceId) {
-      find['_id'] = vehicleServiceId;
+      find['id'] = vehicleServiceId;
     }
 
     const allServices = await this.vehicleServiceService.findAll(find);
 
-    const modelQuery = {};
+    const modelQuery: Record<string, any> = {};
     if (vehicleModelId) {
-      modelQuery['_id'] = vehicleModelId;
+      modelQuery['id'] = vehicleModelId;
     }
 
     const allModels = await this.vehicleModelService.findAll(modelQuery);
 
-    const latestPrices: IModelServicePrice[] =
+    const latestPrices =
       await this.servicePriceService.getLatestServicePrices();
     const priceMap = new Map();
-    latestPrices.forEach((p) =>
-      priceMap.set(`${p.vehicleServiceId}_${p.vehicleModelId}`, p),
+    latestPrices.forEach(p =>
+      priceMap.set(`${p.vehicleServiceId}_${p.vehicleModelId}`, p)
     );
 
     const combinedList: IModelServicePrice[] = [];
-    allServices.forEach((vehicleService) => {
-      allModels.forEach((vehicleModel) => {
-        const key = `${vehicleService._id}_${vehicleModel._id}`;
+    allServices.forEach(vehicleService => {
+      allModels.forEach(vehicleModel => {
+        const key = `${vehicleService.id}_${vehicleModel.id}`;
         const existingPrice = priceMap.get(key);
 
         if (existingPrice) {
           combinedList.push({
-            _id: existingPrice.servicePriceId,
-            vehicleServiceId: vehicleService._id.toString(),
+            _id: existingPrice.id,
+            servicePriceId: existingPrice.id,
+            vehicleServiceId: vehicleService.id,
             vehicleServiceName: vehicleService.name,
-            vehicleModelId: vehicleModel._id.toString(),
+            vehicleModelId: vehicleModel.id,
             vehicleModelName: vehicleModel.fullName,
             price: existingPrice.price,
             dateStart: existingPrice.dateStart,
             dateEnd: existingPrice.dateEnd,
-            status: existingPrice.status,
+            status: existingPrice.status as any,
           } as IModelServicePrice);
         } else {
           combinedList.push({
             _id: null,
-            vehicleServiceId: vehicleService._id.toString(),
+            vehicleServiceId: vehicleService.id,
             vehicleServiceName: vehicleService.name,
-            vehicleModelId: vehicleModel._id.toString(),
+            vehicleModelId: vehicleModel.id,
             vehicleModelName: vehicleModel.fullName,
             price: null,
             dateStart: null,
             dateEnd: null,
-            status: ENUM_SERVICE_PRICE_STATUS.NO_PRICE,
+            status: EnumServicePriceStatus.noPrice as any,
           } as IModelServicePrice);
         }
       });
@@ -276,17 +329,17 @@ export class ServicePriceAdminController {
     const paginatedList = combinedList.slice(startIndex, endIndex);
 
     const total: number = combinedList.length;
-    const totalPage: number = Math.ceil(total / limit);
 
-    const page1 = Math.floor(skip / limit) + 1;
-    const hasNext1 = page1 < totalPage;
-    const hasPrevious1 = page1 > 1;
-
-    // Manually constructed pagination return since PaginationUtil expects total, skip, limit which we have but logic is manual
-    return this.paginationUtil.formatOffset(paginatedList, total, {
-      limit,
-      skip,
-    } as IPaginationQueryOffsetParams);
+    return {
+      type: pagination.type,
+      count: total,
+      perPage: limit,
+      page: Math.floor(skip / limit) + 1,
+      totalPage: Math.ceil(total / limit),
+      hasNext: skip + limit < total,
+      hasPrevious: skip > 0,
+      data: paginatedList as any,
+    };
   }
 
   @ServicePriceAdminListCombinedByServiceDoc()
@@ -306,13 +359,13 @@ export class ServicePriceAdminController {
       availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
-    pagination: IPaginationQueryOffsetParams,
-  ): Promise<IResponsePagingReturn<ModelServicePriceListResponseDto>> {
-    const filters: Record<string, any> = {
+    pagination: IPaginationQueryOffsetParams
+  ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
+    const filters: Prisma.ServicePriceWhereInput = {
       vehicleServiceId,
     };
 
-    const servicePrices: IModelServicePrice[] =
+    const servicePrices =
       await this.servicePriceService.getLatestPricesForService(
         pagination.where,
         {
@@ -320,14 +373,23 @@ export class ServicePriceAdminController {
             limit: pagination.limit,
             offset: pagination.skip,
           },
-          order: pagination.orderBy,
-        },
+          order: pagination.orderBy as any,
+        }
       );
 
     const total: number =
       await this.servicePriceService.getTotalLatestPricesForService(filters);
 
-    return this.paginationUtil.formatOffset(servicePrices, total, pagination);
+    return {
+      type: EnumPaginationType.offset,
+      count: total,
+      perPage: pagination.limit,
+      page: Math.floor(pagination.skip / pagination.limit) + 1,
+      totalPage: Math.ceil(total / pagination.limit),
+      hasNext: pagination.skip + pagination.limit < total,
+      hasPrevious: pagination.skip > 0,
+      data: servicePrices as any,
+    };
   }
 
   @ServicePriceAdminListHistoryDoc()
@@ -346,10 +408,10 @@ export class ServicePriceAdminController {
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Param('vehicleServiceId', RequestRequiredPipe)
+    @Param('vehicleServiceId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     vehicleServiceId: string,
-    @Param('vehicleModelId', RequestRequiredPipe)
-    vehicleModelId: string,
+    @Param('vehicleModelId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
     const filters: Record<string, any> = {
       vehicleService: vehicleServiceId,
@@ -358,7 +420,7 @@ export class ServicePriceAdminController {
 
     const result = await this.servicePriceService.getListOffset(
       pagination,
-      filters,
+      filters
     );
     const mapped = this.servicePriceUtil.mapList(result.data);
     return {

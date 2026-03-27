@@ -8,7 +8,9 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { PartType, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { PartTypeModel } from '../models/part-type.model';
 
 export interface IPartTypeService {
   getListOffset(
@@ -16,27 +18,42 @@ export interface IPartTypeService {
       Prisma.PartTypeSelect,
       Prisma.PartTypeWhereInput
     >
-  ): Promise<IPaginationOffsetReturn<PartType>>;
+  ): Promise<IPaginationOffsetReturn<PartTypeModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.PartTypeSelect,
       Prisma.PartTypeWhereInput
     >
-  ): Promise<IPaginationCursorReturn<PartType>>;
+  ): Promise<IPaginationCursorReturn<PartTypeModel>>;
 
-  findOneById(partTypeId: string): Promise<PartType>;
+  findOneById(partTypeId: string): Promise<PartTypeModel>;
 
-  findOneBySlug(slug: string): Promise<PartType>;
+  findOneBySlug(slug: string): Promise<PartTypeModel>;
 
-  create(payload: PartTypeCreateRequestDto): Promise<{ id: string }>;
+  create(
+    payload: PartTypeCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<{ id: string }>;
 
-  update(partTypeId: string, payload: PartTypeUpdateRequestDto): Promise<void>;
+  update(
+    partTypeId: string,
+    payload: PartTypeUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void>;
 
   updateStatus(
     partTypeId: string,
-    payload: PartTypeUpdateStatusRequestDto
+    payload: PartTypeUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void>;
 
-  delete(partTypeId: string): Promise<void>;
+  delete(
+    partTypeId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void>;
 }

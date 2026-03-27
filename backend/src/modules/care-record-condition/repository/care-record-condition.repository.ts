@@ -8,7 +8,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseService } from '@/common/database/services/database.service';
-import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
+import { CareRecordConditionModel } from '../models/care-record-condition.model';
+import { CareRecordConditionMapper } from '../mappers/care-record-condition.mapper';
+import { CareRecordCondition as PrismaCareRecordCondition, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordConditionRepository {
@@ -23,8 +25,8 @@ export class CareRecordConditionRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordConditionSelect,
     Prisma.CareRecordConditionWhereInput
-  >): Promise<IPaginationOffsetReturn<CareRecordCondition>> {
-    return this.paginationService.offset<CareRecordCondition>(
+  >): Promise<IPaginationOffsetReturn<CareRecordConditionModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaCareRecordCondition>(
       this.databaseService.careRecordCondition,
       {
         ...params,
@@ -35,6 +37,11 @@ export class CareRecordConditionRepository {
         include: { careRecord: true },
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareRecordConditionMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor({
@@ -43,8 +50,8 @@ export class CareRecordConditionRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordConditionSelect,
     Prisma.CareRecordConditionWhereInput
-  >): Promise<IPaginationCursorReturn<CareRecordCondition>> {
-    return this.paginationService.cursor<CareRecordCondition>(
+  >): Promise<IPaginationCursorReturn<CareRecordConditionModel>> {
+    const paginatedResult = await this.paginationService.cursor<PrismaCareRecordCondition>(
       this.databaseService.careRecordCondition,
       {
         ...params,
@@ -56,58 +63,75 @@ export class CareRecordConditionRepository {
         includeCount: true,
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareRecordConditionMapper.toDomain(item)),
+    };
   }
 
-  async findOneById<T = CareRecordCondition>(
+  async findOneById(
     id: string,
     options?: { join?: boolean }
-  ): Promise<T | null> {
+  ): Promise<CareRecordConditionModel | null> {
     const include = options?.join ? { careRecord: true } : undefined;
 
-    return this.databaseService.careRecordCondition.findFirst({
+    const result = await this.databaseService.careRecordCondition.findFirst({
       where: {
         id,
         deletedAt: null,
       },
       include,
-    }) as Promise<T | null>;
+    });
+
+    return result ? CareRecordConditionMapper.toDomain(result) : null;
   }
 
-  async create<T = CareRecordCondition>(
+  async create(
     data: Prisma.CareRecordConditionCreateInput
-  ): Promise<T> {
-    return this.databaseService.careRecordCondition.create({
+  ): Promise<CareRecordConditionModel> {
+    const result = await this.databaseService.careRecordCondition.create({
       data,
-    }) as Promise<T>;
+    });
+
+    return CareRecordConditionMapper.toDomain(result);
   }
 
-  async update<T = CareRecordCondition>(
+  async update(
     id: string,
     data: Prisma.CareRecordConditionUpdateInput
-  ): Promise<T> {
-    return this.databaseService.careRecordCondition.update({
+  ): Promise<CareRecordConditionModel> {
+    const result = await this.databaseService.careRecordCondition.update({
       where: { id },
       data,
-    }) as Promise<T>;
+    });
+
+    return CareRecordConditionMapper.toDomain(result);
   }
 
-  async delete<T = CareRecordCondition>(id: string): Promise<T> {
-    return this.databaseService.careRecordCondition.delete({
+  async delete(id: string): Promise<CareRecordConditionModel> {
+    const result = await this.databaseService.careRecordCondition.delete({
       where: { id },
-    }) as Promise<T>;
+    });
+
+    return CareRecordConditionMapper.toDomain(result);
   }
 
-  async save<T = CareRecordCondition>(data: T): Promise<T> {
+  async save(data: CareRecordConditionModel): Promise<CareRecordConditionModel> {
     const record = data as any;
-    return this.databaseService.careRecordCondition.update({
-      where: { id: record.id },
-      data: record,
-    }) as Promise<T>;
+    const result = await this.databaseService.careRecordCondition.update({
+      where: { id: data.id },
+      data: data as any,
+    });
+
+    return CareRecordConditionMapper.toDomain(result);
   }
 
-  async softDelete<T = CareRecordCondition>(data: any): Promise<T> {
-    return this.databaseService.careRecordCondition.delete({
+  async softDelete(data: any): Promise<CareRecordConditionModel> {
+    const result = await this.databaseService.careRecordCondition.delete({
       where: { id: data.id },
-    }) as Promise<T>;
+    });
+
+    return CareRecordConditionMapper.toDomain(result);
   }
 }

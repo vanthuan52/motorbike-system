@@ -33,19 +33,29 @@ import {
 } from '../docs/service-checklist.admin.doc';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@/modules/policy/enums/policy.enum';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   SERVICE_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
 } from '../constants/service-checklist.list.constant';
-import { ENUM_VEHICLE_MODEL_TYPE } from '@/modules/vehicle-model/enums/vehicle-model.enum';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RequestIsValidUuidPipe } from '@/common/request/pipes/request.is-valid-uuid.pipe';
 import { ServiceChecklistUtil } from '../utils/service-checklist.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 
 @ApiTags('modules.admin.service-checklist')
 @Controller({
@@ -55,8 +65,7 @@ import { Prisma } from '@/generated/prisma-client';
 export class ServiceChecklistAdminController {
   constructor(
     private readonly serviceChecklistService: ServiceChecklistService,
-    private readonly serviceChecklistUtil: ServiceChecklistUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly serviceChecklistUtil: ServiceChecklistUtil
   ) {}
 
   @ServiceChecklistAdminListDoc()
@@ -74,9 +83,9 @@ export class ServiceChecklistAdminController {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    @Query('careArea', RequestOptionalParseUUIDPipe)
+    @Query('careArea', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     careAreaId: string,
-    @Query('vehicleType') vehicleType: ENUM_VEHICLE_MODEL_TYPE
+    @Query('vehicleType') vehicleType: EnumVehicleModelType
   ): Promise<IResponsePagingReturn<ServiceChecklistListResponseDto>> {
     const filters: Prisma.ServiceChecklistWhereInput = {};
 
@@ -106,7 +115,7 @@ export class ServiceChecklistAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<ServiceChecklistDto>> {
     const serviceChecklist = await this.serviceChecklistService.findOneById(id);
     return {
@@ -119,12 +128,24 @@ export class ServiceChecklistAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceChecklistCreate)
   @Post('/create')
   async create(
-    @Body() body: ServiceChecklistCreateRequestDto
+    @Body() body: ServiceChecklistCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<{ id: string }>> {
-    const created = await this.serviceChecklistService.create(body);
-    return { data: created };
+    return this.serviceChecklistService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
   }
 
   @ServiceChecklistAdminUpdateDoc()
@@ -132,13 +153,26 @@ export class ServiceChecklistAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceChecklistUpdate)
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string,
-    @Body() body: ServiceChecklistUpdateRequestDto
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Body() body: ServiceChecklistUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.serviceChecklistService.update(id, body);
-    return {};
+    return this.serviceChecklistService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
   }
 
   @ServiceChecklistAdminDeleteDoc()
@@ -146,11 +180,23 @@ export class ServiceChecklistAdminController {
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceChecklistDelete)
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidUuidPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.serviceChecklistService.delete(id);
-    return {};
+    return this.serviceChecklistService.delete(
+      id,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
   }
 }

@@ -1,7 +1,8 @@
-import { Session, User } from '@/generated/prisma-client';
+import { UserModel } from '@/modules/user/models/user.model';
+import { SessionModel } from '../models/session.model';
 
-export interface ISession extends Session {
-  user: User;
+export interface ISession extends SessionModel {
+  user: UserModel;
 }
 
 export interface ISessionCache {

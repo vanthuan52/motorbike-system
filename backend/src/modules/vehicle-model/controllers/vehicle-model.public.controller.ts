@@ -31,9 +31,7 @@ import {
 } from '../constants/vehicle-model.list.constant';
 import { VehicleModelDto } from '../dtos/vehicle-model.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-
 import { VehicleModelUtil } from '../utils/vehicle-model.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.vehicle-model')
@@ -44,18 +42,17 @@ import { Prisma } from '@/generated/prisma-client';
 export class VehicleModelPublicController {
   constructor(
     private readonly vehicleModelService: VehicleModelService,
-    private readonly vehicleModelUtil: VehicleModelUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly vehicleModelUtil: VehicleModelUtil
   ) {}
 
   @VehicleModelPublicGetOneDoc()
   @Response('vehicle-model.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<VehicleModelDto>> {
     const vehicleModel = await this.vehicleModelService.findBySlug(slug);
-    const mapped = this.vehicleModelUtil.mapGet(vehicleModel);
+    const mapped = this.vehicleModelUtil.mapOne(vehicleModel);
     return { data: mapped };
   }
 
@@ -82,7 +79,7 @@ export class VehicleModelPublicController {
     @Query('engineDisplacement')
     engineDisplacement?: number,
     @Query('modelYear')
-    modelYear?: number,
+    modelYear?: number
   ): Promise<IResponsePagingReturn<VehicleModelListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
@@ -100,11 +97,14 @@ export class VehicleModelPublicController {
       filters['vehicleBrandId'] = vehicleBrandId;
     }
 
-    const { data, total } = await this.vehicleModelService.getListOffset(
+    const result = await this.vehicleModelService.getListOffset(
       pagination,
-      filters,
+      filters
     );
-    const mapped = this.vehicleModelUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.vehicleModelUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

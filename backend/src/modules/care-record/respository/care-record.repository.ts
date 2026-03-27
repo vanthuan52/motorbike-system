@@ -7,7 +7,12 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { CareRecord, Prisma } from '@/generated/prisma-client';
+import {
+  CareRecord as PrismaCareRecord,
+  Prisma,
+} from '@/generated/prisma-client';
+import { CareRecordModel } from '../models/care-record.model';
+import { CareRecordMapper } from '../mappers/care-record.mapper';
 
 @Injectable()
 export class CareRecordRepository {
@@ -28,13 +33,13 @@ export class CareRecordRepository {
       Prisma.CareRecordWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<CareRecord[]> {
+  ): Promise<CareRecordModel[]> {
     const mergedWhere: Prisma.CareRecordWhereInput = {
       ...baseWhere,
       ...filters,
     };
 
-    return this.databaseService.careRecord.findMany({
+    const results = await this.databaseService.careRecord.findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -47,6 +52,8 @@ export class CareRecordRepository {
       },
       ...rest,
     });
+
+    return results.map(item => CareRecordMapper.toDomain(item));
   }
 
   async getTotal(
@@ -74,8 +81,8 @@ export class CareRecordRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordSelect,
     Prisma.CareRecordWhereInput
-  >): Promise<IPaginationOffsetReturn<CareRecord>> {
-    return this.paginationService.offset<CareRecord>(
+  >): Promise<IPaginationOffsetReturn<CareRecordModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaCareRecord>(
       this.databaseService.careRecord,
       {
         ...params,
@@ -90,6 +97,11 @@ export class CareRecordRepository {
         },
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareRecordMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor({
@@ -98,8 +110,8 @@ export class CareRecordRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordSelect,
     Prisma.CareRecordWhereInput
-  >): Promise<IPaginationCursorReturn<CareRecord>> {
-    return this.paginationService.cursor<CareRecord>(
+  >): Promise<IPaginationCursorReturn<CareRecordModel>> {
+    const paginatedResult = await this.paginationService.cursor<PrismaCareRecord>(
       this.databaseService.careRecord,
       {
         ...params,
@@ -115,10 +127,15 @@ export class CareRecordRepository {
         includeCount: true,
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareRecordMapper.toDomain(item)),
+    };
   }
 
-  async findOneById(id: string): Promise<CareRecord | null> {
-    return this.databaseService.careRecord.findUnique({
+  async findOneById(id: string): Promise<CareRecordModel | null> {
+    const result = await this.databaseService.careRecord.findUnique({
       where: { id },
       include: {
         appointment: true,
@@ -127,12 +144,14 @@ export class CareRecordRepository {
         store: true,
       },
     });
+
+    return result ? CareRecordMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.CareRecordWhereInput
-  ): Promise<CareRecord | null> {
-    return this.databaseService.careRecord.findFirst({
+  ): Promise<CareRecordModel | null> {
+    const result = await this.databaseService.careRecord.findFirst({
       where,
       include: {
         appointment: true,
@@ -141,10 +160,12 @@ export class CareRecordRepository {
         store: true,
       },
     });
+
+    return result ? CareRecordMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.CareRecordCreateInput): Promise<CareRecord> {
-    return this.databaseService.careRecord.create({
+  async create(data: Prisma.CareRecordCreateInput): Promise<CareRecordModel> {
+    const result = await this.databaseService.careRecord.create({
       data,
       include: {
         appointment: true,
@@ -153,13 +174,15 @@ export class CareRecordRepository {
         store: true,
       },
     });
+
+    return CareRecordMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.CareRecordUpdateInput
-  ): Promise<CareRecord> {
-    return this.databaseService.careRecord.update({
+  ): Promise<CareRecordModel> {
+    const result = await this.databaseService.careRecord.update({
       where: { id },
       data,
       include: {
@@ -169,11 +192,15 @@ export class CareRecordRepository {
         store: true,
       },
     });
+
+    return CareRecordMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecord> {
-    return this.databaseService.careRecord.delete({
+  async delete(id: string): Promise<CareRecordModel> {
+    const result = await this.databaseService.careRecord.delete({
       where: { id },
     });
+
+    return CareRecordMapper.toDomain(result);
   }
 }

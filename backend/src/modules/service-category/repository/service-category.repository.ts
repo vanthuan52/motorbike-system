@@ -7,7 +7,12 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { ServiceCategory, Prisma } from '@/generated/prisma-client';
+import { ServiceCategoryModel } from '../models/service-category.model';
+import { ServiceCategoryMapper } from '../mappers/service-category.mapper';
+import {
+  ServiceCategory as PrismaServiceCategory,
+  Prisma,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class ServiceCategoryRepository {
@@ -28,19 +33,23 @@ export class ServiceCategoryRepository {
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<ServiceCategory[]> {
+  ): Promise<ServiceCategoryModel[]> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...baseWhere,
       ...filters,
     };
 
-    return this.databaseService.serviceCategory.findMany({
+    const results = await this.databaseService.serviceCategory.findMany({
       where: mergedWhere,
       skip,
       take: limit,
       orderBy: orderBy || { createdAt: 'desc' },
       ...rest,
     });
+
+    return results.map((item: PrismaServiceCategory) =>
+      ServiceCategoryMapper.toDomain(item)
+    );
   }
 
   async getTotal(
@@ -68,20 +77,24 @@ export class ServiceCategoryRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.ServiceCategorySelect,
     Prisma.ServiceCategoryWhereInput
-  ): Promise<IPaginationOffsetReturn<ServiceCategory>> {
-    return this.paginationService.offset<
-      ServiceCategory,
+  >): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
+    const paginatedResult = await this.paginationService.offset<
+      PrismaServiceCategory,
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
-    >(
-      this.databaseService.serviceCategory,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-      }
-    );
+    >(this.databaseService.serviceCategory, {
+      ...params,
+      where: {
+        ...where,
+      },
+    });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        ServiceCategoryMapper.toDomain(item)
+      ),
+    };
   }
 
   async findWithPaginationCursor({
@@ -90,62 +103,80 @@ export class ServiceCategoryRepository {
   }: IPaginationQueryCursorParams<
     Prisma.ServiceCategorySelect,
     Prisma.ServiceCategoryWhereInput
-  ): Promise<IPaginationCursorReturn<ServiceCategory>> {
-    return this.paginationService.cursor<
-      ServiceCategory,
+  >): Promise<IPaginationCursorReturn<ServiceCategoryModel>> {
+    const paginatedResult = await this.paginationService.cursor<
+      PrismaServiceCategory,
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
-    >(
-      this.databaseService.serviceCategory,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        includeCount: true,
-      }
-    );
+    >(this.databaseService.serviceCategory, {
+      ...params,
+      where: {
+        ...where,
+      },
+      includeCount: true,
+    });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        ServiceCategoryMapper.toDomain(item)
+      ),
+    };
   }
 
-  async findOneById(id: string): Promise<ServiceCategory | null> {
-    return this.databaseService.serviceCategory.findUnique({
+  async findOneById(id: string): Promise<ServiceCategoryModel | null> {
+    const result = await this.databaseService.serviceCategory.findUnique({
       where: { id },
     });
+
+    return result ? ServiceCategoryMapper.toDomain(result) : null;
   }
 
-  async findOneBySlug(slug: string): Promise<ServiceCategory | null> {
-    return this.databaseService.serviceCategory.findFirst({
+  async findOneBySlug(slug: string): Promise<ServiceCategoryModel | null> {
+    const result = await this.databaseService.serviceCategory.findFirst({
       where: { slug },
     });
+
+    return result ? ServiceCategoryMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.ServiceCategoryWhereInput
-  ): Promise<ServiceCategory | null> {
-    return this.databaseService.serviceCategory.findFirst({
+  ): Promise<ServiceCategoryModel | null> {
+    const result = await this.databaseService.serviceCategory.findFirst({
       where,
     });
+
+    return result ? ServiceCategoryMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.ServiceCategoryCreateInput): Promise<ServiceCategory> {
-    return this.databaseService.serviceCategory.create({
+  async create(
+    data: Prisma.ServiceCategoryCreateInput
+  ): Promise<ServiceCategoryModel> {
+    const result = await this.databaseService.serviceCategory.create({
       data,
     });
+
+    return ServiceCategoryMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.ServiceCategoryUpdateInput
-  ): Promise<ServiceCategory> {
-    return this.databaseService.serviceCategory.update({
+  ): Promise<ServiceCategoryModel> {
+    const result = await this.databaseService.serviceCategory.update({
       where: { id },
       data,
     });
+
+    return ServiceCategoryMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<ServiceCategory> {
-    return this.databaseService.serviceCategory.delete({
+  async delete(id: string): Promise<ServiceCategoryModel> {
+    const result = await this.databaseService.serviceCategory.delete({
       where: { id },
     });
+
+    return ServiceCategoryMapper.toDomain(result);
   }
 }

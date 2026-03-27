@@ -29,9 +29,7 @@ import {
   VEHICLE_BRAND_DEFAULT_STATUS,
 } from '../constants/vehicle-brand.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.vehicle-brand')
@@ -42,18 +40,17 @@ import { Prisma } from '@/generated/prisma-client';
 export class VehicleBrandPublicController {
   constructor(
     private readonly vehicleBrandService: VehicleBrandService,
-    private readonly vehicleBrandUtil: VehicleBrandUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly vehicleBrandUtil: VehicleBrandUtil
   ) {}
 
   @VehicleBrandPublicGetOneDoc()
   @Response('vehicle-brand.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<VehicleBrandDto>> {
     const vehicleBrand = await this.vehicleBrandService.findBySlug(slug);
-    const mapped = this.vehicleBrandUtil.mapGet(vehicleBrand);
+    const mapped = this.vehicleBrandUtil.mapOne(vehicleBrand);
     return { data: mapped };
   }
 
@@ -70,13 +67,16 @@ export class VehicleBrandPublicController {
       Prisma.VehicleBrandWhereInput
     >,
     @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>,
+    status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {
-    const { data, total } = await this.vehicleBrandService.getListOffset(
+    const result = await this.vehicleBrandService.getListOffset(
       pagination,
-      status,
+      status
     );
-    const mapped = this.vehicleBrandUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.vehicleBrandUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 }

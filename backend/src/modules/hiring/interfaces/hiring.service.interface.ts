@@ -1,25 +1,16 @@
 import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { HiringDoc, HiringEntity } from '../entities/hiring.entity';
-import { HiringCreateRequestDto } from '../dtos/request/hiring.create.request.dto';
-import { HiringUpdateRequestDto } from '../dtos/request/hiring.update.request.dto';
-import { HiringGetResponseDto } from '../dtos/response/hiring.get.response.dto';
-import { HiringListResponseDto } from '../dtos/response/hiring.list.response.dto';
-import {
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { Prisma, Hiring } from '@/generated/prisma-client';
+import { HiringCreateRequestDto } from '../dtos/request/hiring.create.request.dto';
+import { HiringUpdateRequestDto } from '../dtos/request/hiring.update.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { HiringUpdateStatusRequestDto } from '../dtos/request/hiring.update-status.request.dto';
+import { HiringModel } from '../models/hiring.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IHiringService {
   getListOffset(
@@ -27,69 +18,31 @@ export interface IHiringService {
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
     >,
-    filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<Hiring>>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<HiringModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.HiringSelect,
       Prisma.HiringWhereInput
     >,
-    filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<Hiring>>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<HiringModel>>;
 
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<HiringDoc[]>;
+  findOneById(id: string): Promise<HiringModel | null>;
 
-  findAllActive(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<HiringDoc[]>;
+  findOne(where: Prisma.HiringWhereInput): Promise<HiringModel | null>;
 
-  findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<HiringDoc | null>;
+  create(payload: HiringCreateRequestDto): Promise<DatabaseIdDto>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<HiringDoc | null>;
+  update(id: string, payload: HiringUpdateRequestDto): Promise<void>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  updateStatus(
+    id: string,
+    payload: HiringUpdateStatusRequestDto
+  ): Promise<void>;
 
-  create(
-    payload: HiringCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<HiringDoc>;
+  delete(id: string): Promise<void>;
 
-  update(
-    repository: HiringDoc,
-    payload: HiringUpdateRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<HiringDoc>;
-
-  softDelete(
-    repository: HiringDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<HiringDoc>;
-
-  deleteMany(
-    find: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
-
-  existByTitle(
-    title: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean>;
-
-  existBySlug(slug: string, options?: IDatabaseExistsOptions): Promise<boolean>;
-
-  findBySlug(slug: string): Promise<HiringDoc | null>;
+  createSlug(name: string): string;
 }

@@ -11,12 +11,17 @@ import {
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumServiceChecklistStatusCodeError } from '../enums/service-checklist.status-code.enum';
-import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
+import { ServiceChecklistUtil } from '../utils/service-checklist.util';
+import { ServiceChecklistModel } from '../models/service-checklist.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ServiceChecklistService implements IServiceChecklistService {
   constructor(
-    private readonly serviceChecklistRepository: ServiceChecklistRepository
+    private readonly serviceChecklistRepository: ServiceChecklistRepository,
+    private readonly serviceChecklistUtil: ServiceChecklistUtil
   ) {}
 
   async existByName(name: string): Promise<boolean> {
@@ -37,7 +42,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       Prisma.ServiceChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<ServiceChecklist>> {
+  ): Promise<IPaginationOffsetReturn<ServiceChecklistModel>> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...where,
       ...filters,
@@ -64,7 +69,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       Prisma.ServiceChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<ServiceChecklist>> {
+  ): Promise<IPaginationCursorReturn<ServiceChecklistModel>> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...where,
       ...filters,
@@ -80,7 +85,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
     });
   }
 
-  async findOneById(id: string): Promise<ServiceChecklist> {
+  async findOneById(id: string): Promise<ServiceChecklistModel> {
     const serviceChecklist =
       await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
@@ -92,19 +97,25 @@ export class ServiceChecklistService implements IServiceChecklistService {
     return serviceChecklist;
   }
 
-  async findOne(find: Record<string, any>): Promise<ServiceChecklist | null> {
+  async findOne(
+    find: Record<string, any>
+  ): Promise<ServiceChecklistModel | null> {
     const serviceChecklist =
       await this.serviceChecklistRepository.findOne(find);
     return serviceChecklist;
   }
 
-  async create({
-    name,
-    code,
-    description,
-    orderBy,
-    careArea,
-  }: ServiceChecklistCreateRequestDto): Promise<{ id: string }> {
+  async create(
+    {
+      name,
+      code,
+      description,
+      orderBy,
+      careArea,
+    }: ServiceChecklistCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<IResponseReturn<{ id: string }>> {
     const data: Prisma.ServiceChecklistCreateInput = {
       name,
       code,
@@ -112,11 +123,16 @@ export class ServiceChecklistService implements IServiceChecklistService {
       orderBy: orderBy ?? '0',
       vehicleType: [],
       careArea: { connect: { id: careArea } },
+      createdBy,
     };
 
     const created = await this.serviceChecklistRepository.create(data);
 
-    return { id: created.id };
+    return {
+      data: { id: created.id },
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(created),
+    };
   }
 
   async update(
@@ -127,8 +143,10 @@ export class ServiceChecklistService implements IServiceChecklistService {
       code,
       orderBy,
       careArea,
-    }: ServiceChecklistUpdateRequestDto
-  ): Promise<void> {
+    }: ServiceChecklistUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<void>> {
     const serviceChecklist =
       await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
@@ -144,12 +162,21 @@ export class ServiceChecklistService implements IServiceChecklistService {
       description: description ?? undefined,
       orderBy: orderBy ?? undefined,
       careArea: careArea ? { connect: { id: careArea } } : undefined,
+      updatedBy,
     };
 
-    await this.serviceChecklistRepository.update(id, data);
+    const updated = await this.serviceChecklistRepository.update(id, data);
+    return {
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(updated),
+    };
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>> {
     const serviceChecklist =
       await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
@@ -159,7 +186,15 @@ export class ServiceChecklistService implements IServiceChecklistService {
       });
     }
 
-    await this.serviceChecklistRepository.delete(id);
+    const deleted = await this.serviceChecklistRepository.update(id, {
+      deletedAt: new Date(),
+      deletedBy,
+    } as any);
+
+    return {
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(deleted),
+    };
   }
 
   async createMany(data: ServiceChecklistCreateRequestDto[]): Promise<number> {

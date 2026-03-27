@@ -15,4 +15,13 @@ export class ServiceChecklistUtil {
   mapGet(serviceChecklist: ServiceChecklistModel): ServiceChecklistDto {
     return plainToInstance(ServiceChecklistDto, serviceChecklist);
   }
+
+  mapActivityLogMetadata(
+    serviceChecklist: ServiceChecklistModel
+  ): Record<string, any> {
+    return {
+      id: serviceChecklist.id,
+      name: serviceChecklist.name,
+    };
+  }
 }

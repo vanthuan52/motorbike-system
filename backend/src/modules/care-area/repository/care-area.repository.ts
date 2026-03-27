@@ -7,7 +7,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { CareArea, Prisma } from '@/generated/prisma-client';
+import { CareAreaModel } from '../models/care-area.model';
+import { CareAreaMapper } from '../mappers/care-area.mapper';
+import { CareArea as PrismaCareArea, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareAreaRepository {
@@ -28,19 +30,21 @@ export class CareAreaRepository {
       Prisma.CareAreaWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<CareArea[]> {
+  ): Promise<CareAreaModel[]> {
     const mergedWhere: Prisma.CareAreaWhereInput = {
       ...baseWhere,
       ...filters,
     };
 
-    return this.databaseService.careArea.findMany({
+    const results = await this.databaseService.careArea.findMany({
       where: mergedWhere,
       skip,
       take: limit,
       orderBy: orderBy || { createdAt: 'desc' },
       ...rest,
     });
+
+    return results.map((item: PrismaCareArea) => CareAreaMapper.toDomain(item));
   }
 
   async getTotal(
@@ -68,8 +72,8 @@ export class CareAreaRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareAreaSelect,
     Prisma.CareAreaWhereInput
-  >): Promise<IPaginationOffsetReturn<CareArea>> {
-    return this.paginationService.offset<CareArea>(
+  >): Promise<IPaginationOffsetReturn<CareAreaModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaCareArea>(
       this.databaseService.careArea,
       {
         ...params,
@@ -78,6 +82,11 @@ export class CareAreaRepository {
         },
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareAreaMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor({
@@ -86,8 +95,8 @@ export class CareAreaRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareAreaSelect,
     Prisma.CareAreaWhereInput
-  >): Promise<IPaginationCursorReturn<CareArea>> {
-    return this.paginationService.cursor<CareArea>(
+  >): Promise<IPaginationCursorReturn<CareAreaModel>> {
+    const paginatedResult = await this.paginationService.cursor<PrismaCareArea>(
       this.databaseService.careArea,
       {
         ...params,
@@ -97,39 +106,56 @@ export class CareAreaRepository {
         includeCount: true,
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareAreaMapper.toDomain(item)),
+    };
   }
 
-  async findOneById(id: string): Promise<CareArea | null> {
-    return this.databaseService.careArea.findUnique({
+  async findOneById(id: string): Promise<CareAreaModel | null> {
+    const result = await this.databaseService.careArea.findUnique({
       where: { id },
     });
+
+    return result ? CareAreaMapper.toDomain(result) : null;
   }
 
-  async findOne(where: Prisma.CareAreaWhereInput): Promise<CareArea | null> {
-    return this.databaseService.careArea.findFirst({
+  async findOne(
+    where: Prisma.CareAreaWhereInput
+  ): Promise<CareAreaModel | null> {
+    const result = await this.databaseService.careArea.findFirst({
       where,
     });
+
+    return result ? CareAreaMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.CareAreaCreateInput): Promise<CareArea> {
-    return this.databaseService.careArea.create({
+  async create(data: Prisma.CareAreaCreateInput): Promise<CareAreaModel> {
+    const result = await this.databaseService.careArea.create({
       data,
     });
+
+    return CareAreaMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.CareAreaUpdateInput
-  ): Promise<CareArea> {
-    return this.databaseService.careArea.update({
+  ): Promise<CareAreaModel> {
+    const result = await this.databaseService.careArea.update({
       where: { id },
       data,
     });
+
+    return CareAreaMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareArea> {
-    return this.databaseService.careArea.delete({
+  async delete(id: string): Promise<CareAreaModel> {
+    const result = await this.databaseService.careArea.delete({
       where: { id },
     });
+
+    return CareAreaMapper.toDomain(result);
   }
 }

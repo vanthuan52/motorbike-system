@@ -7,7 +7,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { Part, Prisma } from '@/generated/prisma-client';
+import { Part as PrismaPart, Prisma } from '@/generated/prisma-client';
+import { PartModel } from '../models/part.model';
+import { PartMapper } from '../mappers/part.mapper';
 
 @Injectable()
 export class PartRepository {
@@ -25,13 +27,13 @@ export class PartRepository {
       ...rest
     }: IPaginationQueryOffsetParams<Prisma.PartSelect, Prisma.PartWhereInput>,
     filters?: Record<string, any>
-  ): Promise<Part[]> {
+  ): Promise<PartModel[]> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...baseWhere,
       ...filters,
     };
 
-    return this.databaseService.part.findMany({
+    const results = await this.databaseService.part.findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -42,6 +44,8 @@ export class PartRepository {
       },
       ...rest,
     });
+
+    return results.map((item: PrismaPart) => PartMapper.toDomain(item));
   }
 
   async getTotal(
@@ -66,17 +70,25 @@ export class PartRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.PartSelect,
     Prisma.PartWhereInput
-  >): Promise<IPaginationOffsetReturn<Part>> {
-    return this.paginationService.offset<Part>(this.databaseService.part, {
-      ...params,
-      where: {
-        ...where,
-      },
-      include: {
-        partType: true,
-        vehicleBrand: true,
-      },
-    });
+  >): Promise<IPaginationOffsetReturn<PartModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaPart>(
+      this.databaseService.part,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          partType: true,
+          vehicleBrand: true,
+        },
+      }
+    );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => PartMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor({
@@ -85,62 +97,78 @@ export class PartRepository {
   }: IPaginationQueryCursorParams<
     Prisma.PartSelect,
     Prisma.PartWhereInput
-  >): Promise<IPaginationCursorReturn<Part>> {
-    return this.paginationService.cursor<Part>(this.databaseService.part, {
-      ...params,
-      where: {
-        ...where,
-      },
-      include: {
-        partType: true,
-        vehicleBrand: true,
-      },
-      includeCount: true,
-    });
+  >): Promise<IPaginationCursorReturn<PartModel>> {
+    const paginatedResult = await this.paginationService.cursor<PrismaPart>(
+      this.databaseService.part,
+      {
+        ...params,
+        where: {
+          ...where,
+        },
+        include: {
+          partType: true,
+          vehicleBrand: true,
+        },
+        includeCount: true,
+      }
+    );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => PartMapper.toDomain(item)),
+    };
   }
 
-  async findOneById(id: string): Promise<Part | null> {
-    return this.databaseService.part.findUnique({
+  async findOneById(id: string): Promise<PartModel | null> {
+    const result = await this.databaseService.part.findUnique({
       where: { id },
       include: {
         partType: true,
         vehicleBrand: true,
       },
     });
+
+    return result ? PartMapper.toDomain(result) : null;
   }
 
-  async findOneBySlug(slug: string): Promise<Part | null> {
-    return this.databaseService.part.findFirst({
+  async findOneBySlug(slug: string): Promise<PartModel | null> {
+    const result = await this.databaseService.part.findFirst({
       where: { slug },
       include: {
         partType: true,
         vehicleBrand: true,
       },
     });
+
+    return result ? PartMapper.toDomain(result) : null;
   }
 
-  async findOne(where: Prisma.PartWhereInput): Promise<Part | null> {
-    return this.databaseService.part.findFirst({
+  async findOne(where: Prisma.PartWhereInput): Promise<PartModel | null> {
+    const result = await this.databaseService.part.findFirst({
       where,
       include: {
         partType: true,
         vehicleBrand: true,
       },
     });
+
+    return result ? PartMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.PartCreateInput): Promise<Part> {
-    return this.databaseService.part.create({
+  async create(data: Prisma.PartCreateInput): Promise<PartModel> {
+    const result = await this.databaseService.part.create({
       data,
       include: {
         partType: true,
         vehicleBrand: true,
       },
     });
+
+    return PartMapper.toDomain(result);
   }
 
-  async update(id: string, data: Prisma.PartUpdateInput): Promise<Part> {
-    return this.databaseService.part.update({
+  async update(id: string, data: Prisma.PartUpdateInput): Promise<PartModel> {
+    const result = await this.databaseService.part.update({
       where: { id },
       data,
       include: {
@@ -148,15 +176,19 @@ export class PartRepository {
         vehicleBrand: true,
       },
     });
+
+    return PartMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<Part> {
-    return this.databaseService.part.delete({
+  async delete(id: string): Promise<PartModel> {
+    const result = await this.databaseService.part.delete({
       where: { id },
       include: {
         partType: true,
         vehicleBrand: true,
       },
     });
+
+    return PartMapper.toDomain(result);
   }
 }

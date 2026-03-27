@@ -32,6 +32,16 @@ import {
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
@@ -52,7 +62,8 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { EnumRoleType } from '../enums/role.enum';
-import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.role')
 @Controller({
@@ -87,7 +98,10 @@ export class RoleAdminController {
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    const result = await this.roleService.getListOffsetByAdmin(pagination, type);
+    const result = await this.roleService.getListOffsetByAdmin(
+      pagination,
+      type
+    );
     const mapped = this.roleUtil.mapList(result.data);
     return {
       ...result,
@@ -127,9 +141,21 @@ export class RoleAdminController {
   @Post('/create')
   async create(
     @Body()
-    body: RoleCreateRequestDto
+    body: RoleCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<RoleDto>> {
-    return this.roleService.createByAdmin(body);
+    return this.roleService.createByAdmin(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
   }
 
   @RoleAdminUpdateDoc()
@@ -148,9 +174,22 @@ export class RoleAdminController {
     @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     roleId: string,
     @Body()
-    body: RoleUpdateRequestDto
+    body: RoleUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<RoleDto>> {
-    return this.roleService.updateByAdmin(roleId, body);
+    return this.roleService.updateByAdmin(
+      roleId,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
   }
 
   @RoleAdminDeleteDoc()
@@ -167,8 +206,20 @@ export class RoleAdminController {
   @Delete('/delete/:roleId')
   async delete(
     @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    roleId: string
+    roleId: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.roleService.deleteByAdmin(roleId);
+    return this.roleService.deleteByAdmin(
+      roleId,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
   }
 }

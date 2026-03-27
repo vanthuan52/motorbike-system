@@ -11,7 +11,7 @@ import { ApiKeyCreateResponseDto } from '@/modules/api-key/dtos/response/api-key
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { CacheMainProvider } from '@/common/cache/constants/cache.constant';
 import { ApiKeyModel } from '../models/api-key.model';
-import { EnumApiKeyType } from '@/generated/prisma-client';
+import { EnumApiKeyType } from '../enums/api-key.enum';
 
 @Injectable()
 export class ApiKeyUtil {

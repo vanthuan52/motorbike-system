@@ -7,11 +7,13 @@ import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
 } from '../enums/user.enum';
+import { User as PrismaUser } from '@/generated/prisma-client';
 
 export class UserMapper {
-  static toDomain(prismaUser: any): UserModel {
+  static toDomain(prismaUser: PrismaUser): UserModel {
     const user = new UserModel();
     user.id = prismaUser.id;
+    user.username = prismaUser.username;
     user.name = prismaUser.name;
     user.email = prismaUser.email;
     user.phone = prismaUser.phone;

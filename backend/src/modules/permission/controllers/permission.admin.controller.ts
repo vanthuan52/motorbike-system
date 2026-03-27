@@ -29,9 +29,19 @@ import {
   IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
-import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
-import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
+import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
+import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
@@ -51,14 +61,17 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import {
-  EnumActivityLogAction,
-  EnumRoleType,
-  Prisma,
-} from '/@generated/prisma-client';
-import { PermissionAdminListDoc } from '../docs/permission.admin.doc';
+  PermissionAdminGetDoc,
+  PermissionAdminListDoc,
+  PermissionAdminUpdateDoc,
+  PermissionAdminDeleteDoc,
+} from '../docs/permission.admin.doc';
 import { PermissionUtil } from '../utils/permission.util';
 import { PermissionDto } from '../dtos/permission.dto';
 import { PermissionService } from '../services/permission.service';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.permission')
 @Controller({
@@ -93,7 +106,10 @@ export class PermissionAdminController {
     @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
-    const result = await this.permissionService.getListOffsetByAdmin(pagination, type);
+    const result = await this.permissionService.getListOffsetByAdmin(
+      pagination,
+      type
+    );
     const mapped = this.permissionUtil.mapList(result.data);
     return {
       ...result,
@@ -115,15 +131,15 @@ export class PermissionAdminController {
   async get(
     @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     roleId: string
-  ): Promise<IResponseReturn<RoleDto>> {
+  ): Promise<IResponseReturn<PermissionDto>> {
     return this.permissionService.getOne(roleId);
   }
 
-  @RoleAdminCreateDoc()
-  @Response('role.create')
+  @PermissionAdminListDoc()
+  @Response('permission.create')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.role,
-    action: [EnumPolicyAction.read, EnumPolicyAction.create],
+    action: [EnumPolicyAction.read],
   })
   @RoleProtected(EnumRoleType.admin)
   @ActivityLog(EnumActivityLogAction.adminRoleCreate)
@@ -133,13 +149,25 @@ export class PermissionAdminController {
   @Post('/create')
   async create(
     @Body()
-    body: RoleCreateRequestDto
-  ): Promise<IResponseReturn<RoleDto>> {
-    return this.permissionService.createByAdmin(body);
+    body: PermissionCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<PermissionDto>> {
+    return this.permissionService.createByAdmin(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
   }
 
-  @RoleAdminUpdateDoc()
-  @Response('role.update')
+  @PermissionAdminUpdateDoc()
+  @Response('permission.update')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.role,
     action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -154,13 +182,26 @@ export class PermissionAdminController {
     @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     roleId: string,
     @Body()
-    body: RoleUpdateRequestDto
-  ): Promise<IResponseReturn<RoleDto>> {
-    return this.permissionService.updateByAdmin(roleId, body);
+    body: PermissionUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<PermissionDto>> {
+    return this.permissionService.updateByAdmin(
+      roleId,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
   }
 
-  @RoleAdminDeleteDoc()
-  @Response('role.delete')
+  @PermissionAdminDeleteDoc()
+  @Response('permission.delete')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.role,
     action: [EnumPolicyAction.read, EnumPolicyAction.delete],
@@ -173,8 +214,20 @@ export class PermissionAdminController {
   @Delete('/delete/:roleId')
   async delete(
     @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    roleId: string
+    roleId: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.permissionService.deleteByAdmin(roleId);
+    return this.permissionService.deleteByAdmin(
+      roleId,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
   }
 }

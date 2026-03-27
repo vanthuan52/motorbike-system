@@ -1,6 +1,6 @@
 import { StoreModel } from '../models/store.model';
 import { EnumStoreStatus } from '../enums/store.enum';
-import { Store as PrismaStore, Prisma } from '@/generated/prisma-client';
+import { Prisma, Store as PrismaStore } from '@/generated/prisma-client';
 
 export class StoreMapper {
   static toDomain(prismaStore: PrismaStore): StoreModel {

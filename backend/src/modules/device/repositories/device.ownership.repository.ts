@@ -14,16 +14,19 @@ import {
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
+import { DeviceOwnershipModel } from '@/modules/device/models/device.model';
+import { DeviceMapper } from '@/modules/device/mappers/device.mapper';
+import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
 import {
-  Device,
-  DeviceOwnership,
-  EnumActivityLogAction,
   EnumDeviceNotificationProvider,
   EnumDevicePlatform,
+} from '../enums/device.enum';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import {
+  Device as PrismaDevice,
+  DeviceOwnership as PrismaDeviceOwnership,
   Prisma,
 } from '@/generated/prisma-client';
-import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
-import { IDeviceOwnership } from '@/modules/device/interfaces/device.interface';
 
 @Injectable()
 export class DeviceOwnershipRepository {
@@ -44,36 +47,45 @@ export class DeviceOwnershipRepository {
       Prisma.DeviceOwnershipWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationOffsetReturn<IDeviceOwnership>> {
+  ): Promise<IPaginationOffsetReturn<DeviceOwnershipModel>> {
     const today = this.helperService.dateCreate();
 
-    return this.paginationService.offset<IDeviceOwnership>(
-      this.databaseService.deviceOwnership,
-      {
-        ...others,
-        where: {
-          ...where,
-          ...isRevoked,
-          userId,
-        },
-        include: {
-          device: true,
-          user: true,
-          _count: {
-            select: {
-              sessions: {
-                where: {
-                  isRevoked: false,
-                  expiredAt: {
-                    gt: today,
+    const paginatedResult =
+      await this.paginationService.offset<PrismaDeviceOwnership>(
+        this.databaseService.deviceOwnership,
+        {
+          ...others,
+          where: {
+            ...where,
+            ...isRevoked,
+            userId,
+          },
+          include: {
+            device: true,
+            user: true,
+            _count: {
+              select: {
+                sessions: {
+                  where: {
+                    isRevoked: false,
+                    expiredAt: {
+                      gt: today,
+                    },
                   },
                 },
               },
             },
           },
-        },
-      }
-    );
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(
+        item =>
+          DeviceMapper.toDeviceOwnershipDomain(item) as DeviceOwnershipModel
+      ),
+    };
   }
 
   async findActiveWithPaginationCursor(
@@ -86,49 +98,56 @@ export class DeviceOwnershipRepository {
       Prisma.DeviceOwnershipSelect,
       Prisma.DeviceOwnershipWhereInput
     >
-  ): Promise<IPaginationCursorReturn<IDeviceOwnership>> {
+  ): Promise<IPaginationCursorReturn<DeviceOwnershipModel>> {
     const today = this.helperService.dateCreate();
 
-    return this.paginationService.cursor<IDeviceOwnership>(
-      this.databaseService.deviceOwnership,
-      {
-        ...others,
-        where: {
-          ...where,
-          userId,
-          isRevoked: false,
-        },
-        include: {
-          device: true,
-          user: true,
-          _count: {
-            select: {
-              sessions: {
-                where: {
-                  isRevoked: false,
-                  expiredAt: {
-                    gt: today,
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaDeviceOwnership>(
+        this.databaseService.deviceOwnership,
+        {
+          ...others,
+          where: {
+            ...where,
+            userId,
+            isRevoked: false,
+          },
+          include: {
+            device: true,
+            user: true,
+            _count: {
+              select: {
+                sessions: {
+                  where: {
+                    isRevoked: false,
+                    expiredAt: {
+                      gt: today,
+                    },
                   },
                 },
               },
             },
-          },
-          sessions: {
-            where: {
-              id: sessionId,
+            sessions: {
+              where: {
+                id: sessionId,
+              },
+              take: 1,
             },
-            take: 1,
           },
-        },
-        includeCount: true,
-      }
-    );
+          includeCount: true,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(
+        item =>
+          DeviceMapper.toDeviceOwnershipDomain(item) as DeviceOwnershipModel
+      ),
+    };
   }
 
-  async findTokensByUserId(
-    userId: string
-  ): Promise<(DeviceOwnership & { device: Device })[]> {
-    return this.databaseService.deviceOwnership.findMany({
+  async findTokensByUserId(userId: string): Promise<DeviceOwnershipModel[]> {
+    const results = await this.databaseService.deviceOwnership.findMany({
       where: {
         userId,
         device: {
@@ -139,6 +158,8 @@ export class DeviceOwnershipRepository {
         device: true,
       },
     });
+
+    return results.map(item => DeviceMapper.toDeviceOwnershipDomain(item));
   }
 
   async existActive(
@@ -160,7 +181,7 @@ export class DeviceOwnershipRepository {
     deviceOwnershipId: string,
     { name, notificationToken, platform }: DeviceRefreshRequestDto,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<DeviceOwnership> {
+  ): Promise<DeviceOwnershipModel> {
     const today = this.helperService.dateCreate();
 
     let notificationProvider: EnumDeviceNotificationProvider | null = null;
@@ -236,7 +257,7 @@ export class DeviceOwnershipRepository {
       },
     });
 
-    return user.deviceOwnerships[0];
+    return DeviceMapper.toDeviceOwnershipDomain(user.deviceOwnerships[0]);
   }
 
   async remove(
@@ -244,7 +265,7 @@ export class DeviceOwnershipRepository {
     deviceOwnershipId: string,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     removedBy: string
-  ): Promise<IDeviceOwnership> {
+  ): Promise<DeviceOwnershipModel> {
     return this.databaseService.$transaction(
       async (tx: Prisma.TransactionClient) => {
         const today = this.helperService.dateCreate();
@@ -319,7 +340,9 @@ export class DeviceOwnershipRepository {
           },
         });
 
-        return deviceOwnership;
+        return DeviceMapper.toDeviceOwnershipDomain(
+          deviceOwnership
+        ) as DeviceOwnershipModel;
       }
     );
   }
