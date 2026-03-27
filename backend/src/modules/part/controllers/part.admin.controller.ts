@@ -61,6 +61,16 @@ import {
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 
 @ApiTags('modules.admin.part')
 @Controller({
@@ -137,9 +147,21 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: PartCreateRequestDto
+    @Body() body: PartCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.partService.create(body);
+    const created = await this.partService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
     return { data: { id: created.id } };
   }
 
@@ -155,9 +177,22 @@ export class PartAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: PartUpdateRequestDto
+    @Body() body: PartUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.partService.update(id, body);
+    await this.partService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -173,9 +208,22 @@ export class PartAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @Body() body: PartUpdateStatusRequestDto
+    @Body() body: PartUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.partService.updateStatus(id, body);
+    await this.partService.updateStatus(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -190,9 +238,21 @@ export class PartAdminController {
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.partService.delete(id);
+    await this.partService.delete(
+      id,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
     return {};
   }
 }

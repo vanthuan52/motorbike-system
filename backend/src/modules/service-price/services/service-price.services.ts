@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ServicePriceRepository } from '../respository/service-price.repository';
+import { ServicePriceRepository } from '../repository/service-price.repository';
 import { IServicePriceService } from '../interfaces/service-price.service.interface';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
@@ -12,14 +12,19 @@ import {
 import { ENUM_SERVICE_PRICE_STATUS_CODE_ERROR } from '../enums/service-price.status-code.enum';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
 import { VehicleServiceRepository } from '@/modules/vehicle-service/repository/vehicle-service.repository';
-import { ServicePrice, Prisma } from '@/generated/prisma-client';
+import { ServicePriceModel } from '../models/service-price.model';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
+import { ServicePriceUtil } from '../utils/service-price.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ServicePriceService implements IServicePriceService {
   constructor(
     private readonly servicePriceRepository: ServicePriceRepository,
     private readonly vehicleModelRepository: VehicleModelRepository,
-    private readonly vehicleServiceRepository: VehicleServiceRepository
+    private readonly vehicleServiceRepository: VehicleServiceRepository,
+    private readonly servicePriceUtil: ServicePriceUtil
   ) {}
 
   async getListOffset(
@@ -33,7 +38,7 @@ export class ServicePriceService implements IServicePriceService {
       Prisma.ServicePriceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<ServicePrice>> {
+  ): Promise<IPaginationOffsetReturn<ServicePriceModel>> {
     return this.servicePriceRepository.findWithPaginationOffset(
       {
         limit,
@@ -58,7 +63,7 @@ export class ServicePriceService implements IServicePriceService {
       Prisma.ServicePriceWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<ServicePrice>> {
+  ): Promise<IPaginationCursorReturn<ServicePriceModel>> {
     return this.servicePriceRepository.findWithPaginationCursor(
       {
         limit,
@@ -72,7 +77,7 @@ export class ServicePriceService implements IServicePriceService {
     );
   }
 
-  async findOneById(id: string): Promise<ServicePrice> {
+  async findOneById(id: string): Promise<ServicePriceModel> {
     const servicePrice = await this.servicePriceRepository.findOneById(id);
     if (!servicePrice) {
       throw new NotFoundException({
@@ -83,17 +88,21 @@ export class ServicePriceService implements IServicePriceService {
     return servicePrice;
   }
 
-  async findOne(find: Record<string, any>): Promise<ServicePrice | null> {
+  async findOne(find: Record<string, any>): Promise<ServicePriceModel | null> {
     return this.servicePriceRepository.findOne(find);
   }
 
-  async create({
-    price,
-    vehicleService,
-    vehicleModel,
-    dateStart,
-    dateEnd,
-  }: ServicePriceCreateRequestDto): Promise<{ id: string }> {
+  async create(
+    {
+      price,
+      vehicleService,
+      vehicleModel,
+      dateStart,
+      dateEnd,
+    }: ServicePriceCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<IResponseReturn<{ id: string }>> {
     // Validate relationships
     const checkVehicleService =
       await this.vehicleServiceRepository.findOneById(vehicleService);
@@ -120,10 +129,15 @@ export class ServicePriceService implements IServicePriceService {
       vehicleModel: { connect: { id: vehicleModel } },
       dateStart: dateStart ? new Date(dateStart) : new Date(),
       dateEnd: dateEnd ? new Date(dateEnd) : null,
+      createdBy,
     };
 
     const created = await this.servicePriceRepository.create(data);
-    return { id: created.id };
+    return {
+      data: { id: created.id },
+      metadataActivityLog:
+        this.servicePriceUtil.mapActivityLogMetadata(created),
+    };
   }
 
   async update(
@@ -134,8 +148,10 @@ export class ServicePriceService implements IServicePriceService {
       vehicleModel,
       dateStart,
       dateEnd,
-    }: ServicePriceUpdateRequestDto
-  ): Promise<void> {
+    }: ServicePriceUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<void>> {
     const servicePrice = await this.servicePriceRepository.findOneById(id);
     if (!servicePrice) {
       throw new NotFoundException({
@@ -177,12 +193,27 @@ export class ServicePriceService implements IServicePriceService {
         : undefined,
       dateStart: dateStart ? new Date(dateStart) : undefined,
       dateEnd: dateEnd ? new Date(dateEnd) : undefined,
+      updatedBy,
     };
 
-    await this.servicePriceRepository.update(id, data);
+    const updated = await this.servicePriceRepository.update(id, data);
+    return {
+      metadataActivityLog:
+        this.servicePriceUtil.mapActivityLogMetadata(updated),
+    };
   }
 
-  async delete(id: string): Promise<void> {
+  async findAll(
+    where: Prisma.ServicePriceWhereInput
+  ): Promise<ServicePriceModel[]> {
+    return this.servicePriceRepository.findAll({ limit: 100, skip: 0 }, where);
+  }
+
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>> {
     const servicePrice = await this.servicePriceRepository.findOneById(id);
     if (!servicePrice) {
       throw new NotFoundException({
@@ -191,6 +222,42 @@ export class ServicePriceService implements IServicePriceService {
       });
     }
 
-    await this.servicePriceRepository.delete(id);
+    const deleted = await this.servicePriceRepository.update(id, {
+      deletedAt: new Date(),
+      deletedBy,
+    } as any);
+
+    return {
+      metadataActivityLog:
+        this.servicePriceUtil.mapActivityLogMetadata(deleted),
+    };
+  }
+
+  async getLatestServicePrices(): Promise<ServicePriceModel[]> {
+    return this.servicePriceRepository.findLatestPrices();
+  }
+
+  async getLatestPricesForService(
+    where: Prisma.ServicePriceWhereInput,
+    {
+      paging,
+      order,
+    }: {
+      paging: { limit: number; offset: number };
+      order: Prisma.ServicePriceOrderByWithRelationInput[];
+    }
+  ): Promise<ServicePriceModel[]> {
+    return this.servicePriceRepository.findLatestPrices({
+      where,
+      limit: paging.limit,
+      skip: paging.offset,
+      orderBy: order,
+    });
+  }
+
+  async getTotalLatestPricesForService(
+    filters: Prisma.ServicePriceWhereInput
+  ): Promise<number> {
+    return this.servicePriceRepository.countLatestPrices(filters);
   }
 }

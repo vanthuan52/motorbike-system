@@ -9,11 +9,11 @@ import { VehicleModelDto } from '../dtos/vehicle-model.dto';
 export class VehicleModelUtil {
   mapList(vehicleModels: VehicleModelModel[]): VehicleModelListResponseDto[] {
     return vehicleModels.map(
-      c => this.mapGet(c) as any as VehicleModelListResponseDto
+      c => this.mapOne(c) as any as VehicleModelListResponseDto
     );
   }
 
-  mapGet(vehicleModel: VehicleModelModel): VehicleModelDto {
+  mapOne(vehicleModel: VehicleModelModel): VehicleModelDto {
     const obj = plainToInstance(VehicleModelDto, vehicleModel);
     if (vehicleModel.vehicleBrandId) {
       obj.vehicleBrand = vehicleModel.vehicleBrandId;

@@ -10,7 +10,7 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { StoreModel } from '../models/store.model';
 import { StoreMapper } from '../mappers/store.mapper';
-import { Store, Prisma } from '@/generated/prisma-client';
+import { Store as PrismaStore, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class StoreRepository {
@@ -27,7 +27,7 @@ export class StoreRepository {
     status?: Record<string, IPaginationIn>
   ): Promise<IPaginationOffsetReturn<StoreModel>> {
     const paginatedResult = await this.paginationService.offset<
-      Store,
+      PrismaStore,
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >(this.databaseService.store, {
@@ -53,7 +53,7 @@ export class StoreRepository {
     status?: Record<string, IPaginationIn>
   ): Promise<IPaginationCursorReturn<StoreModel>> {
     const paginatedResult = await this.paginationService.cursor<
-      Store,
+      PrismaStore,
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >(this.databaseService.store, {
@@ -71,40 +71,46 @@ export class StoreRepository {
     };
   }
 
-  async findOneById(id: string): Promise<Store | null> {
-    return this.databaseService.store.findUnique({
+  async findOneById(id: string): Promise<StoreModel | null> {
+    const result = await this.databaseService.store.findUnique({
       where: { id },
     });
+    return result ? StoreMapper.toDomain(result) : null;
   }
 
-  async findOne(find: Record<string, any>): Promise<Store | null> {
-    return this.databaseService.store.findFirst({
+  async findOne(find: Record<string, any>): Promise<StoreModel | null> {
+    const result = await this.databaseService.store.findFirst({
       where: find,
     });
+    return result ? StoreMapper.toDomain(result) : null;
   }
 
-  async findOneBySlug(slug: string): Promise<Store | null> {
-    return this.databaseService.store.findFirst({
+  async findOneBySlug(slug: string): Promise<StoreModel | null> {
+    const result = await this.databaseService.store.findFirst({
       where: { slug },
     });
+    return result ? StoreMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.StoreCreateInput): Promise<Store> {
-    return this.databaseService.store.create({
+  async create(data: Prisma.StoreCreateInput): Promise<StoreModel> {
+    const result = await this.databaseService.store.create({
       data,
     });
+    return StoreMapper.toDomain(result);
   }
 
-  async update(id: string, data: Prisma.StoreUpdateInput): Promise<Store> {
-    return this.databaseService.store.update({
+  async update(id: string, data: Prisma.StoreUpdateInput): Promise<StoreModel> {
+    const result = await this.databaseService.store.update({
       where: { id },
       data,
     });
+    return StoreMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<Store> {
-    return this.databaseService.store.delete({
+  async delete(id: string): Promise<StoreModel> {
+    const result = await this.databaseService.store.delete({
       where: { id },
     });
+    return StoreMapper.toDomain(result);
   }
 }

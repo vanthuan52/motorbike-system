@@ -9,9 +9,4 @@ export enum EnumActivityLogAction {
   userForgotPassword = 'userForgotPassword',
   userResetPassword = 'userResetPassword',
   userVerifyEmail = 'userVerifyEmail',
-  userVerifiedEmail = 'userVerifiedEmail',
-  userSendVerificationEmail = 'userSendVerificationEmail',
-  userRevokeSession = 'userRevokeSession',
-  userRevokeSessionByAdmin = 'userRevokeSessionByAdmin',
-  adminSessionRevoke = 'adminSessionRevoke',
 }

@@ -7,7 +7,12 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { CareRecordChecklist, Prisma } from '@generated/prisma-client';
+import { CareRecordChecklistModel } from '../models/care-record-checklist.model';
+import { CareRecordChecklistMapper } from '../mappers/care-record-checklist.mapper';
+import {
+  CareRecordChecklist as PrismaCareRecordChecklist,
+  Prisma,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordChecklistRepository {
@@ -28,13 +33,13 @@ export class CareRecordChecklistRepository {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<CareRecordChecklist[]> {
+  ): Promise<CareRecordChecklistModel[]> {
     const mergedWhere: Prisma.CareRecordChecklistWhereInput = {
       ...baseWhere,
       ...filters,
     };
 
-    return this.databaseService.careRecordChecklist.findMany({
+    const results = await this.databaseService.careRecordChecklist.findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -45,6 +50,10 @@ export class CareRecordChecklistRepository {
       },
       ...rest,
     });
+
+    return results.map((item: PrismaCareRecordChecklist) =>
+      CareRecordChecklistMapper.toDomain(item)
+    );
   }
 
   async getTotal(
@@ -72,20 +81,28 @@ export class CareRecordChecklistRepository {
   }: IPaginationQueryOffsetParams<
     Prisma.CareRecordChecklistSelect,
     Prisma.CareRecordChecklistWhereInput
-  >): Promise<IPaginationOffsetReturn<CareRecordChecklist>> {
-    return this.paginationService.offset<CareRecordChecklist>(
-      this.databaseService.careRecordChecklist,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          careRecordService: true,
-          serviceChecklist: true,
-        },
-      }
-    );
+  >): Promise<IPaginationOffsetReturn<CareRecordChecklistModel>> {
+    const paginatedResult =
+      await this.paginationService.offset<PrismaCareRecordChecklist>(
+        this.databaseService.careRecordChecklist,
+        {
+          ...params,
+          where: {
+            ...where,
+          },
+          include: {
+            careRecordService: true,
+            serviceChecklist: true,
+          },
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordChecklistMapper.toDomain(item)
+      ),
+    };
   }
 
   async findWithPaginationCursor({
@@ -94,62 +111,76 @@ export class CareRecordChecklistRepository {
   }: IPaginationQueryCursorParams<
     Prisma.CareRecordChecklistSelect,
     Prisma.CareRecordChecklistWhereInput
-  >): Promise<IPaginationCursorReturn<CareRecordChecklist>> {
-    return this.paginationService.cursor<CareRecordChecklist>(
-      this.databaseService.careRecordChecklist,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          careRecordService: true,
-          serviceChecklist: true,
-        },
-        includeCount: true,
-      }
-    );
+  >): Promise<IPaginationCursorReturn<CareRecordChecklistModel>> {
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaCareRecordChecklist>(
+        this.databaseService.careRecordChecklist,
+        {
+          ...params,
+          where: {
+            ...where,
+          },
+          include: {
+            careRecordService: true,
+            serviceChecklist: true,
+          },
+          includeCount: true,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordChecklistMapper.toDomain(item)
+      ),
+    };
   }
 
-  async findOneById(id: string): Promise<CareRecordChecklist | null> {
-    return this.databaseService.careRecordChecklist.findUnique({
+  async findOneById(id: string): Promise<CareRecordChecklistModel | null> {
+    const result = await this.databaseService.careRecordChecklist.findUnique({
       where: { id },
       include: {
         careRecordService: true,
         serviceChecklist: true,
       },
     });
+
+    return result ? CareRecordChecklistMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.CareRecordChecklistWhereInput
-  ): Promise<CareRecordChecklist | null> {
-    return this.databaseService.careRecordChecklist.findFirst({
+  ): Promise<CareRecordChecklistModel | null> {
+    const result = await this.databaseService.careRecordChecklist.findFirst({
       where,
       include: {
         careRecordService: true,
         serviceChecklist: true,
       },
     });
+
+    return result ? CareRecordChecklistMapper.toDomain(result) : null;
   }
 
   async create(
     data: Prisma.CareRecordChecklistCreateInput
-  ): Promise<CareRecordChecklist> {
-    return this.databaseService.careRecordChecklist.create({
+  ): Promise<CareRecordChecklistModel> {
+    const result = await this.databaseService.careRecordChecklist.create({
       data,
       include: {
         careRecordService: true,
         serviceChecklist: true,
       },
     });
+
+    return CareRecordChecklistMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.CareRecordChecklistUpdateInput
-  ): Promise<CareRecordChecklist> {
-    return this.databaseService.careRecordChecklist.update({
+  ): Promise<CareRecordChecklistModel> {
+    const result = await this.databaseService.careRecordChecklist.update({
       where: { id },
       data,
       include: {
@@ -157,16 +188,20 @@ export class CareRecordChecklistRepository {
         serviceChecklist: true,
       },
     });
+
+    return CareRecordChecklistMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecordChecklist> {
-    return this.databaseService.careRecordChecklist.delete({
+  async delete(id: string): Promise<CareRecordChecklistModel> {
+    const result = await this.databaseService.careRecordChecklist.delete({
       where: { id },
       include: {
         careRecordService: true,
         serviceChecklist: true,
       },
     });
+
+    return CareRecordChecklistMapper.toDomain(result);
   }
 
   async deleteMany(where: Prisma.CareRecordChecklistWhereInput): Promise<void> {

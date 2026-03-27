@@ -12,7 +12,10 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import {
+  IRequestApp,
+  IRequestLog,
+} from '@/common/request/interfaces/request.interface';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
@@ -26,6 +29,7 @@ import { IRoleService } from '@/modules/role/interfaces/role.service.interface';
 import { RoleRepository } from '@/modules/role/repositories/role.repository';
 import { RoleUtil } from '@/modules/role/utils/role.util';
 import { EnumRoleType } from '../enums/role.enum';
+import { RoleModel } from '../models/role.model';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
@@ -41,17 +45,15 @@ export class RoleService implements IRoleService {
       Prisma.RoleWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<RoleListResponseDto[]>> {
+  ): Promise<IPaginationOffsetReturn<RoleModel>> {
     const { data, ...others } =
       await this.roleRepository.findWithPaginationOffsetByAdmin(
         pagination,
         type
       );
 
-    const roles: RoleListResponseDto[] = this.roleUtil.mapList(data);
-
     return {
-      data: roles,
+      data,
       ...others,
     };
   }
@@ -62,14 +64,12 @@ export class RoleService implements IRoleService {
       Prisma.RoleWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<Prisma.RoleGetPayload<Prisma.RoleArgs>>> {
+  ): Promise<IPaginationCursorReturn<RoleModel>> {
     const { data, ...others } =
       await this.roleRepository.findWithPaginationCursor(pagination, type);
 
-    const roles: RoleListResponseDto[] = this.roleUtil.mapList(data);
-
     return {
-      data: roles,
+      data,
       ...others,
     };
   }
@@ -100,10 +100,11 @@ export class RoleService implements IRoleService {
     return { data: this.roleUtil.mapAbilities(role) };
   }
 
-  async createByAdmin({
-    name,
-    ...others
-  }: RoleCreateRequestDto): Promise<IResponseReturn<RoleDto>> {
+  async createByAdmin(
+    { name, ...others }: RoleCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<IResponseReturn<RoleModel>> {
     const exist = await this.roleRepository.existByName(name);
     if (exist) {
       throw new ConflictException({
@@ -112,7 +113,11 @@ export class RoleService implements IRoleService {
       });
     }
 
-    const created = await this.roleRepository.create({ name, ...others });
+    const created = await this.roleRepository.create({
+      name,
+      ...others,
+      createdBy,
+    });
     return {
       data: this.roleUtil.mapOne(created),
       metadataActivityLog: this.roleUtil.mapActivityLogMetadata(created),
@@ -121,8 +126,10 @@ export class RoleService implements IRoleService {
 
   async updateByAdmin(
     id: string,
-    data: RoleUpdateRequestDto
-  ): Promise<IResponseReturn<RoleDto>> {
+    data: RoleUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<IResponseReturn<RoleModel>> {
     const role = await this.roleRepository.existById(id);
     if (!role) {
       throw new NotFoundException({
@@ -131,14 +138,21 @@ export class RoleService implements IRoleService {
       });
     }
 
-    const updated = await this.roleRepository.update(id, data);
+    const updated = await this.roleRepository.update(id, {
+      ...data,
+      updatedBy,
+    });
     return {
-      data: this.roleUtil.mapOne(updated),
+      data: updated,
       metadataActivityLog: this.roleUtil.mapActivityLogMetadata(updated),
     };
   }
 
-  async deleteByAdmin(id: string): Promise<IResponseReturn<void>> {
+  async deleteByAdmin(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>> {
     const [role, roleUsed] = await Promise.all([
       this.roleRepository.existById(id),
       this.roleRepository.used(id),
@@ -156,7 +170,10 @@ export class RoleService implements IRoleService {
       });
     }
 
-    const deleted = await this.roleRepository.delete(id);
+    const deleted = await this.roleRepository.update(id, {
+      deletedAt: new Date(),
+      deletedBy,
+    });
 
     return {
       metadataActivityLog: this.roleUtil.mapActivityLogMetadata(deleted),

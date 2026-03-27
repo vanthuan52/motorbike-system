@@ -13,11 +13,9 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { ISession } from '@/modules/session/interfaces/session.interface';
-import {
-  EnumActivityLogAction,
-  Prisma,
-  Session,
-} from '@/generated/prisma-client';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { SessionModel } from '@/modules/session/models/session.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class SessionRepository {
@@ -125,7 +123,10 @@ export class SessionRepository {
     });
   }
 
-  async findOneActive(userId: string, sessionId: string): Promise<Session> {
+  async findOneActive(
+    userId: string,
+    sessionId: string
+  ): Promise<SessionModel> {
     const today = this.helperService.dateCreate();
 
     return this.databaseService.session.findFirst({
@@ -144,7 +145,7 @@ export class SessionRepository {
     userId: string,
     sessionId: string,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<Session> {
+  ): Promise<SessionModel> {
     return this.databaseService.session.update({
       where: {
         id: sessionId,

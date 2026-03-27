@@ -1,61 +1,42 @@
 import {
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-  IDatabaseExistsOptions,
-  IDatabaseFindAllOptions,
-  IDatabaseFindOneOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseOptions,
-  IDatabaseSaveOptions,
-} from '@/common/database/interfaces/database.interface';
-import { CandidateDoc } from '../entities/candidate.entity';
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { CandidateUserCreateRequestDto } from '../dtos/request/candidate.create.request.dto';
 import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.update-status.request.dto';
-
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { CandidateModel } from '../models/candidate.model';
+import { Prisma } from '@/generated/prisma-client';
 export interface ICandidateService {
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CandidateDoc[]>;
+  getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CandidateSelect,
+      Prisma.CandidateWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<CandidateModel>>;
 
-  findOneById(
-    _id: string,
-    options?: IDatabaseOptions,
-  ): Promise<CandidateDoc | null>;
+  getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CandidateSelect,
+      Prisma.CandidateWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<CandidateModel>>;
 
-  findOne(
-    find: Record<string, any>,
-    options?: IDatabaseFindOneOptions,
-  ): Promise<CandidateDoc | null>;
+  findOneById(id: string): Promise<CandidateModel | null>;
 
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number>;
+  findOne(where: Prisma.CandidateWhereInput): Promise<CandidateModel | null>;
 
-  create(
-    payload: CandidateUserCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<CandidateDoc>;
-
-  softDelete(
-    repository: CandidateDoc,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CandidateDoc>;
-
-  deleteMany(
-    find: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean>;
-
-  existByTitle(
-    title: string,
-    options?: IDatabaseExistsOptions,
-  ): Promise<boolean>;
+  create(payload: CandidateUserCreateRequestDto): Promise<DatabaseIdDto>;
 
   updateStatus(
-    repository: CandidateDoc,
-    payload: CandidateUpdateStatusRequestDto,
-    options?: IDatabaseSaveOptions,
-  ): Promise<CandidateDoc>;
+    id: string,
+    payload: CandidateUpdateStatusRequestDto
+  ): Promise<void>;
+
+  delete(id: string): Promise<void>;
 }

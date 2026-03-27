@@ -11,7 +11,7 @@ export class VehicleBrandUtil {
     return plainToInstance(VehicleBrandListResponseDto, vehicleBrands);
   }
 
-  mapGet(vehicleBrand: VehicleBrandModel): VehicleBrandDto {
+  mapOne(vehicleBrand: VehicleBrandModel): VehicleBrandDto {
     return plainToInstance(VehicleBrandDto, vehicleBrand);
   }
 

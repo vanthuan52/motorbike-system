@@ -4,165 +4,152 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { UserVehicle, Prisma } from '@/generated/prisma-client';
+import { UserVehicleModel } from '../models/user-vehicle.model';
+import { UserVehicleMapper } from '../mappers/user-vehicle.mapper';
+import {
+  UserVehicle as PrismaUserVehicle,
+  Prisma,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class UserVehicleRepository {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly paginationService: PaginationService,
+    private readonly paginationService: PaginationService
   ) {}
-
-  async findAll(
-    {
-      limit,
-      skip,
-      where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<
-      Prisma.UserVehicleSelect,
-      Prisma.UserVehicleWhereInput
-    >,
-    filters?: Record<string, any>,
-  ): Promise<UserVehicle[]> {
-    const mergedWhere: Prisma.UserVehicleWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    return this.databaseService.userVehicle.findMany({
-      where: mergedWhere,
-      take: limit,
-      skip,
-      orderBy,
-      include: {
-        vehicleModel: true,
-      },
-    });
-  }
-
-  async getTotal(
-    {
-      where,
-    }: IPaginationQueryOffsetParams<
-      Prisma.UserVehicleSelect,
-      Prisma.UserVehicleWhereInput
-    > | { where?: Prisma.UserVehicleWhereInput } = {},
-    filters?: Record<string, any>,
-  ): Promise<number> {
-    const mergedWhere: Prisma.UserVehicleWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    return this.databaseService.userVehicle.count({
-      where: mergedWhere,
-    });
-  }
 
   async findWithPaginationOffset(
     {
-      limit,
-      skip,
       where,
-      orderBy,
+      ...params
     }: IPaginationQueryOffsetParams<
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: UserVehicle[]; count: number }> {
-    const mergedWhere: Prisma.UserVehicleWhereInput = {
-      ...where,
-      ...filters,
-    };
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<UserVehicleModel>> {
+    const paginatedResult = await this.paginationService.offset<
+      PrismaUserVehicle,
+      Prisma.UserVehicleSelect,
+      Prisma.UserVehicleWhereInput
+    >(this.databaseService.userVehicle, {
+      ...params,
+      where: {
+        ...where,
+        ...filters,
+        deletedAt: null,
+      },
+      include: { vehicleModel: true },
+    } as any);
 
-    return this.paginationService.offsetRaw<UserVehicle>(
-      this.databaseService.userVehicle,
-      {
-        limit,
-        skip,
-        where: mergedWhere,
-        orderBy,
-        include: { vehicleModel: true },
-      } as any,
-    );
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => UserVehicleMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor(
     {
-      limit,
       where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
+      ...params
     }: IPaginationQueryCursorParams<
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, any>,
-  ): Promise<{ data: UserVehicle[]; count?: number }> {
-    const mergedWhere: Prisma.UserVehicleWhereInput = {
-      ...where,
-      ...filters,
-    };
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<UserVehicleModel>> {
+    const paginatedResult = await this.paginationService.cursor<
+      PrismaUserVehicle,
+      Prisma.UserVehicleSelect,
+      Prisma.UserVehicleWhereInput
+    >(this.databaseService.userVehicle, {
+      ...params,
+      where: {
+        ...where,
+        ...filters,
+        deletedAt: null,
+      },
+      include: { vehicleModel: true },
+      includeCount: true,
+    } as any);
 
-    return this.paginationService.cursorRaw<UserVehicle>(
-      this.databaseService.userVehicle,
-      {
-        limit,
-        where: mergedWhere,
-        orderBy,
-        cursor,
-        cursorField,
-        includeCount,
-        include: { vehicleModel: true },
-      } as any,
-    );
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => UserVehicleMapper.toDomain(item)),
+    };
   }
 
-  async findOneById(id: string): Promise<UserVehicle | null> {
-    return this.databaseService.userVehicle.findUnique({
+  async findOneById(id: string): Promise<UserVehicleModel | null> {
+    const result = await this.databaseService.userVehicle.findUnique({
       where: { id },
       include: {
         vehicleModel: true,
       },
     });
+    return result ? UserVehicleMapper.toDomain(result) : null;
   }
 
-  async findOne(find: Prisma.UserVehicleWhereInput): Promise<UserVehicle | null> {
-    return this.databaseService.userVehicle.findFirst({
+  async findOne(
+    find: Prisma.UserVehicleWhereInput
+  ): Promise<UserVehicleModel | null> {
+    const result = await this.databaseService.userVehicle.findFirst({
       where: find,
       include: {
         vehicleModel: true,
       },
     });
+    return result ? UserVehicleMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.UserVehicleCreateInput): Promise<UserVehicle> {
-    return this.databaseService.userVehicle.create({
+  async create(data: Prisma.UserVehicleCreateInput): Promise<UserVehicleModel> {
+    const result = await this.databaseService.userVehicle.create({
       data,
+      include: {
+        vehicleModel: true,
+      },
     });
+    return UserVehicleMapper.toDomain(result);
   }
 
-  async update(id: string, data: Prisma.UserVehicleUpdateInput): Promise<UserVehicle> {
-    return this.databaseService.userVehicle.update({
+  async update(
+    id: string,
+    data: Prisma.UserVehicleUpdateInput
+  ): Promise<UserVehicleModel> {
+    const result = await this.databaseService.userVehicle.update({
       where: { id },
       data,
+      include: {
+        vehicleModel: true,
+      },
     });
+    return UserVehicleMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<UserVehicle> {
-    return this.databaseService.userVehicle.delete({
+  async delete(id: string): Promise<UserVehicleModel> {
+    const result = await this.databaseService.userVehicle.delete({
       where: { id },
     });
+    return UserVehicleMapper.toDomain(result);
   }
 
-  async deleteMany(where: Prisma.UserVehicleWhereInput): Promise<{ count: number }> {
+  async deleteMany(
+    where: Prisma.UserVehicleWhereInput
+  ): Promise<{ count: number }> {
     return this.databaseService.userVehicle.deleteMany({
       where,
+    });
+  }
+
+  async getTotal(where: Prisma.UserVehicleWhereInput): Promise<number> {
+    return this.databaseService.userVehicle.count({
+      where: {
+        ...where,
+        deletedAt: null,
+      },
     });
   }
 }

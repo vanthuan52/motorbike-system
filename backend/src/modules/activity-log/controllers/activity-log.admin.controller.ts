@@ -18,9 +18,9 @@ import {
 } from '@/modules/policy/enums/policy.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { ActivityLogUtil } from '../utils/activity-log.util';
-import { EnumRoleType, Prisma } from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user.activityLog')
 @Controller({
@@ -30,7 +30,6 @@ import { EnumRoleType, Prisma } from '@/generated/prisma-client';
 export class ActivityLogAdminController {
   constructor(
     private readonly activityLogService: ActivityLogService,
-    private readonly paginationUtil: PaginationUtil,
     private readonly activityLogUtil: ActivityLogUtil
   ) {}
 
@@ -60,10 +59,9 @@ export class ActivityLogAdminController {
     @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     userId: string
   ): Promise<IResponsePagingReturn<ActivityLogResponseDto>> {
-    const result = await this.activityLogService.getListOffset(
+    const result = await this.activityLogService.getListOffset(pagination, {
       userId,
-      pagination
-    );
+    });
     const mapped = this.activityLogUtil.mapList(result.data);
     return {
       ...result,

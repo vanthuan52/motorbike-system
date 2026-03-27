@@ -13,7 +13,9 @@ import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api
 import { DatabaseService } from '@/common/database/services/database.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
-import { ApiKey, Prisma } from '@/generated/prisma-client';
+import { ApiKeyModel } from '@/modules/api-key/models/api-key.model';
+import { ApiKeyMapper } from '@/modules/api-key/mappers/api-key.mapper';
+import { ApiKey as PrismaApiKey, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ApiKeyRepository {
@@ -35,14 +37,14 @@ export class ApiKeyRepository {
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<ApiKey[]> {
+  ): Promise<ApiKeyModel[]> {
     const mergedWhere: Prisma.ApiKeyWhereInput = {
       ...baseWhere,
       ...isActive,
       ...type,
     };
 
-    return this.databaseService.apiKey.findMany({
+    const results = await this.databaseService.apiKey.findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -51,6 +53,8 @@ export class ApiKeyRepository {
       ],
       ...rest,
     });
+
+    return results.map(item => ApiKeyMapper.toDomain(item));
   }
 
   async getTotal(
@@ -84,8 +88,8 @@ export class ApiKeyRepository {
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<ApiKey>> {
-    return this.paginationService.offset<ApiKey>(
+  ): Promise<IPaginationOffsetReturn<ApiKeyModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaApiKey>(
       this.databaseService.apiKey,
       {
         ...params,
@@ -99,6 +103,11 @@ export class ApiKeyRepository {
         },
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => ApiKeyMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor(
@@ -111,8 +120,8 @@ export class ApiKeyRepository {
     >,
     isActive?: Record<string, IPaginationEqual>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<ApiKey>> {
-    return this.paginationService.cursor<ApiKey>(
+  ): Promise<IPaginationCursorReturn<ApiKeyModel>> {
+    const paginatedResult = await this.paginationService.cursor<PrismaApiKey>(
       this.databaseService.apiKey,
       {
         ...params,
@@ -127,14 +136,19 @@ export class ApiKeyRepository {
         includeCount: true,
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => ApiKeyMapper.toDomain(item)),
+    };
   }
 
   async create(
     { name, type, startAt, endAt }: ApiKeyCreateRequestDto,
     key: string,
     hash: string
-  ): Promise<ApiKey> {
-    return this.databaseService.apiKey.create({
+  ): Promise<ApiKeyModel> {
+    const result = await this.databaseService.apiKey.create({
       data: {
         name,
         key,
@@ -145,21 +159,25 @@ export class ApiKeyRepository {
         endAt,
       },
     });
+
+    return ApiKeyMapper.toDomain(result);
   }
 
-  async findOneById(id: string): Promise<ApiKey | null> {
-    return this.databaseService.apiKey.findUnique({
+  async findOneById(id: string): Promise<ApiKeyModel | null> {
+    const result = await this.databaseService.apiKey.findUnique({
       where: {
         id,
       },
     });
+
+    return result ? ApiKeyMapper.toDomain(result) : null;
   }
 
   async updateStatus(
     id: string,
     { isActive }: ApiKeyUpdateStatusRequestDto
-  ): Promise<ApiKey> {
-    return this.databaseService.apiKey.update({
+  ): Promise<ApiKeyModel> {
+    const result = await this.databaseService.apiKey.update({
       where: {
         id,
       },
@@ -167,10 +185,12 @@ export class ApiKeyRepository {
         isActive,
       },
     });
+
+    return ApiKeyMapper.toDomain(result);
   }
 
-  async updateName(id: string, name: string): Promise<ApiKey> {
-    return this.databaseService.apiKey.update({
+  async updateName(id: string, name: string): Promise<ApiKeyModel> {
+    const result = await this.databaseService.apiKey.update({
       where: {
         id,
       },
@@ -178,13 +198,15 @@ export class ApiKeyRepository {
         name,
       },
     });
+
+    return ApiKeyMapper.toDomain(result);
   }
 
   async updateDates(
     id: string,
     { startAt, endAt }: ApiKeyUpdateDateRequestDto
-  ): Promise<ApiKey> {
-    return this.databaseService.apiKey.update({
+  ): Promise<ApiKeyModel> {
+    const result = await this.databaseService.apiKey.update({
       where: {
         id,
       },
@@ -193,10 +215,12 @@ export class ApiKeyRepository {
         endAt,
       },
     });
+
+    return ApiKeyMapper.toDomain(result);
   }
 
-  async updateHash(id: string, hash: string): Promise<ApiKey> {
-    return this.databaseService.apiKey.update({
+  async updateHash(id: string, hash: string): Promise<ApiKeyModel> {
+    const result = await this.databaseService.apiKey.update({
       where: {
         id,
       },
@@ -204,21 +228,27 @@ export class ApiKeyRepository {
         hash,
       },
     });
+
+    return ApiKeyMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<ApiKey> {
-    return this.databaseService.apiKey.delete({
+  async delete(id: string): Promise<ApiKeyModel> {
+    const result = await this.databaseService.apiKey.delete({
       where: {
         id,
       },
     });
+
+    return ApiKeyMapper.toDomain(result);
   }
 
-  async findOneByKey(key: string): Promise<ApiKey | null> {
-    return this.databaseService.apiKey.findUnique({
+  async findOneByKey(key: string): Promise<ApiKeyModel | null> {
+    const result = await this.databaseService.apiKey.findUnique({
       where: {
         key,
       },
     });
+
+    return result ? ApiKeyMapper.toDomain(result) : null;
   }
 }

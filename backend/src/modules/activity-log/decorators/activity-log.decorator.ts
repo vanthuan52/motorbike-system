@@ -5,7 +5,7 @@ import {
 } from '@/modules/activity-log/constants/activity-log.constant';
 import { ActivityLogInterceptor } from '@/modules/activity-log/interceptors/activity-log.interceptor';
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
-import { EnumActivityLogAction } from '@/generated/prisma-client';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 /**
  * Decorator that enables activity logging for controller methods.

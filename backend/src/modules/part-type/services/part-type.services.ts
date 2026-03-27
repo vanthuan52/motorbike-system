@@ -18,7 +18,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPartTypeStatusCodeError } from '../enums/part-type.status-code.enum';
-import { PartType, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { PartTypeModel } from '../models/part-type.model';
 
 @Injectable()
 export class PartTypeService implements IPartTypeService {
@@ -35,7 +37,7 @@ export class PartTypeService implements IPartTypeService {
       Prisma.PartTypeWhereInput
     >,
     status?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<PartType>> {
+  ): Promise<IPaginationOffsetReturn<PartTypeModel>> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
       ...status,
@@ -68,7 +70,7 @@ export class PartTypeService implements IPartTypeService {
       Prisma.PartTypeWhereInput
     >,
     status?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<PartType>> {
+  ): Promise<IPaginationCursorReturn<PartTypeModel>> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
       ...status,
@@ -87,7 +89,7 @@ export class PartTypeService implements IPartTypeService {
     return { data, ...others };
   }
 
-  async findOneById(partTypeId: string): Promise<PartType> {
+  async findOneById(partTypeId: string): Promise<PartTypeModel> {
     const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
       throw new NotFoundException({
@@ -98,7 +100,7 @@ export class PartTypeService implements IPartTypeService {
     return partType;
   }
 
-  async findOneBySlug(slug: string): Promise<PartType> {
+  async findOneBySlug(slug: string): Promise<PartTypeModel> {
     const partType = await this.partTypeRepository.findOneBySlug(slug);
     if (!partType) {
       throw new NotFoundException({
@@ -109,7 +111,11 @@ export class PartTypeService implements IPartTypeService {
     return partType;
   }
 
-  async create(payload: PartTypeCreateRequestDto): Promise<{ id: string }> {
+  async create(
+    payload: PartTypeCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<{ id: string }> {
     // Validate slug uniqueness
     if (payload.slug) {
       const existingBySlug = await this.partTypeRepository.findOneBySlug(
@@ -133,6 +139,7 @@ export class PartTypeService implements IPartTypeService {
       description: payload.description,
       status: EnumPartTypeStatus.active,
       photo: payload.photo ?? null,
+      createdBy: createdBy,
     };
 
     const created = await this.partTypeRepository.create(data);
@@ -142,7 +149,9 @@ export class PartTypeService implements IPartTypeService {
 
   async update(
     partTypeId: string,
-    payload: PartTypeUpdateRequestDto
+    payload: PartTypeUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void> {
     const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
@@ -172,6 +181,7 @@ export class PartTypeService implements IPartTypeService {
       slug: slug,
       description: payload.description ?? undefined,
       photo: payload.photo ?? undefined,
+      updatedBy: updatedBy,
     };
 
     await this.partTypeRepository.update(partTypeId, data);
@@ -179,7 +189,29 @@ export class PartTypeService implements IPartTypeService {
 
   async updateStatus(
     partTypeId: string,
-    { status }: PartTypeUpdateStatusRequestDto
+    payload: PartTypeUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void> {
+    const { status } = payload;
+    const partType = await this.partTypeRepository.findOneById(partTypeId);
+    if (!partType) {
+      throw new NotFoundException({
+        statusCode: EnumPartTypeStatusCodeError.notFound,
+        message: 'partType.error.notFound',
+      });
+    }
+
+    await this.partTypeRepository.update(partTypeId, {
+      status,
+      updatedBy: updatedBy,
+    });
+  }
+
+  async delete(
+    partTypeId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
   ): Promise<void> {
     const partType = await this.partTypeRepository.findOneById(partTypeId);
     if (!partType) {
@@ -189,18 +221,9 @@ export class PartTypeService implements IPartTypeService {
       });
     }
 
-    await this.partTypeRepository.update(partTypeId, { status });
-  }
-
-  async delete(partTypeId: string): Promise<void> {
-    const partType = await this.partTypeRepository.findOneById(partTypeId);
-    if (!partType) {
-      throw new NotFoundException({
-        statusCode: EnumPartTypeStatusCodeError.notFound,
-        message: 'partType.error.notFound',
-      });
-    }
-
-    await this.partTypeRepository.delete(partTypeId);
+    await this.partTypeRepository.update(partTypeId, {
+      deletedAt: new Date(),
+      deletedBy: deletedBy,
+    });
   }
 }

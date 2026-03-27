@@ -1,5 +1,4 @@
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CandidateService } from '../services/candidate.service';
 import { CandidateReviewService } from '../services/candidate-review.service';
 import {
@@ -10,7 +9,6 @@ import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decor
 import {
   EnumPolicySubject,
   EnumPolicyAction,
-  EnumRoleType,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
@@ -35,14 +33,14 @@ import {
 } from '@/common/response/decorators/response.decorator';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CandidateReviewUtil } from '../utils/candidate-review.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { CandidateReviewResponseDto } from '../dtos/candidate-review-response.dto';
+import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  PaginationOffsetQuery,
-  PaginationQueryFilterInEnum,
-} from '@/common/pagination/decorators/pagination.decorator';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
-import { CandidateReviewDoc } from '../entities/candidate-review.entity';
+  IPaginationQueryOffsetParams,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { Prisma } from '@/generated/prisma-client';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -54,9 +52,7 @@ export class CandidateReviewAdminController {
     private readonly candidateReviewService: CandidateReviewService,
     private readonly candidateService: CandidateService,
     private readonly userService: UserService,
-    private readonly paginationService: PaginationService,
-    private readonly candidateReviewUtil: CandidateReviewUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly candidateReviewUtil: CandidateReviewUtil
   ) {}
 
   @CandidateReviewAdminListDoc()
@@ -71,53 +67,39 @@ export class CandidateReviewAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: [], // Add searchable fields if any, e.g. feedback? Entity has 'user', 'candidate', 'feedback'
+      availableSearch: [],
     })
-    { limit, skip, where, orderBy }: IPaginationQueryOffsetParams,
-    @PaginationQueryFilterInEnum('candidate', []) // Not enum, but standard filter?
-    // Wait, original controller filtered by 'candidate' query param.
-    // I should support filtering by candidate ID.
-    // PaginationOffsetQuery supports 'where' but complex logic might be needed if I want exact match on candidate ID.
-    // Usually standard pattern suggests using query params for filters.
-    // I will use @Query('candidate') like before, but integrate it into 'find'.
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CandidateReviewSelect,
+      Prisma.CandidateReviewWhereInput
+    >,
     @Query('candidate')
     candidateId: string
   ): Promise<IResponsePagingReturn<CandidateReviewResponseDto>> {
-    // Original logic: required candidate.
-    // If I want to maintain that:
+    const filters: Record<string, any> = {};
+
     if (candidateId) {
       const isCandidateExist =
         await this.candidateService.findOneById(candidateId);
       if (!isCandidateExist) {
         throw new NotFoundException('candidate-review.error.notFoundCandidate');
       }
+      filters.candidateId = candidateId;
     } else {
-      // Should I throw if candidate is missing? Original threw 404 if !candidate.
       throw new NotFoundException('candidate-review.error.notFoundCandidate');
     }
 
-    const find: Record<string, any> = {
-      ...where,
-      candidate: candidateId,
+    const result = await this.candidateReviewService.getListOffset(
+      pagination,
+      filters
+    );
+
+    const mapped = this.candidateReviewUtil.mapList(result.data);
+
+    return {
+      ...result,
+      data: mapped,
     };
-
-    const [candidateReviews, total] = await Promise.all([
-      this.candidateReviewService.findAll(find, {
-        paging: {
-          limit,
-          offset: skip,
-        },
-        order: orderBy,
-      }),
-      this.candidateReviewService.getTotal(find),
-    ]);
-
-    const mapped = this.candidateReviewUtil.mapList(candidateReviews);
-
-    return this.paginationUtil.formatOffset(mapped, total, {
-      limit,
-      skip,
-    });
   }
 
   @CandidateReviewAdminCreateDoc()
@@ -142,8 +124,8 @@ export class CandidateReviewAdminController {
     const isUserExist = await this.userService.findOneById(payload.user);
     if (!isUserExist) throw new NotFoundException('user.error.notFound');
 
-    const candidateReview = await this.candidateReviewService.create(payload);
+    const created = await this.candidateReviewService.create(payload);
 
-    return { data: { _id: candidateReview._id } };
+    return { data: created };
   }
 }

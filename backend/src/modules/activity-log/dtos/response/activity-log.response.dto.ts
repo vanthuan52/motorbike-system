@@ -5,7 +5,7 @@ import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { RequestGeoLocationResponseDto } from '@/common/request/dtos/response/request.geo-location.response.dto';
 import { RequestUserAgentResponseDto } from '@/common/request/dtos/response/request.user-agent.response.dto';
 import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
-import { EnumActivityLogAction } from '@/generated/prisma-client';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 export class ActivityLogResponseDto extends DatabaseDto {
   @ApiProperty({

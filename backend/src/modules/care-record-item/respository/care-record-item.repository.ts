@@ -8,7 +8,11 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareRecordItemModel } from '../models/care-record-item.model';
-import { Prisma } from '@/generated/prisma-client';
+import { CareRecordItemMapper } from '../mappers/care-record-item.mapper';
+import {
+  CareRecordItem as PrismaCareRecordItem,
+  Prisma,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordItemRepository {
@@ -36,7 +40,7 @@ export class CareRecordItemRepository {
       deletedAt: null,
     };
 
-    return this.databaseService.careRecordItem.findMany({
+    const results = await this.databaseService.careRecordItem.findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -49,6 +53,10 @@ export class CareRecordItemRepository {
       },
       ...rest,
     });
+
+    return results.map((item: PrismaCareRecordItem) =>
+      CareRecordItemMapper.toDomain(item)
+    );
   }
 
   async getTotal(
@@ -78,22 +86,30 @@ export class CareRecordItemRepository {
     Prisma.CareRecordItemSelect,
     Prisma.CareRecordItemWhereInput
   >): Promise<IPaginationOffsetReturn<CareRecordItemModel>> {
-    return this.paginationService.offset<CareRecordItemModel>(
-      this.databaseService.careRecordItem,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: {
-          careRecord: true,
-          vehicleService: true,
-          part: true,
-          technician: true,
-        },
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.offset<PrismaCareRecordItem>(
+        this.databaseService.careRecordItem,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: {
+            careRecord: true,
+            vehicleService: true,
+            part: true,
+            technician: true,
+          },
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordItemMapper.toDomain(item)
+      ),
+    };
   }
 
   async findWithPaginationCursor({
@@ -103,27 +119,35 @@ export class CareRecordItemRepository {
     Prisma.CareRecordItemSelect,
     Prisma.CareRecordItemWhereInput
   >): Promise<IPaginationCursorReturn<CareRecordItemModel>> {
-    return this.paginationService.cursor<CareRecordItemModel>(
-      this.databaseService.careRecordItem,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: {
-          careRecord: true,
-          vehicleService: true,
-          part: true,
-          technician: true,
-        },
-        includeCount: true,
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaCareRecordItem>(
+        this.databaseService.careRecordItem,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: {
+            careRecord: true,
+            vehicleService: true,
+            part: true,
+            technician: true,
+          },
+          includeCount: true,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordItemMapper.toDomain(item)
+      ),
+    };
   }
 
   async findOneById(id: string): Promise<CareRecordItemModel | null> {
-    return this.databaseService.CareRecordItemModel.findFirst({
+    const result = await this.databaseService.careRecordItem.findFirst({
       where: {
         id,
         deletedAt: null,
@@ -135,12 +159,14 @@ export class CareRecordItemRepository {
         technician: true,
       },
     });
+
+    return result ? CareRecordItemMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.CareRecordItemWhereInput
   ): Promise<CareRecordItemModel | null> {
-    return this.databaseService.CareRecordItemModel.findFirst({
+    const result = await this.databaseService.careRecordItem.findFirst({
       where: {
         ...where,
         deletedAt: null,
@@ -152,12 +178,14 @@ export class CareRecordItemRepository {
         technician: true,
       },
     });
+
+    return result ? CareRecordItemMapper.toDomain(result) : null;
   }
 
   async create(
     data: Prisma.CareRecordItemCreateInput
   ): Promise<CareRecordItemModel> {
-    return this.databaseService.CareRecordItemModel.create({
+    const result = await this.databaseService.careRecordItem.create({
       data,
       include: {
         careRecord: true,
@@ -166,13 +194,15 @@ export class CareRecordItemRepository {
         technician: true,
       },
     });
+
+    return CareRecordItemMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.CareRecordItemUpdateInput
   ): Promise<CareRecordItemModel> {
-    return this.databaseService.CareRecordItemModel.update({
+    const result = await this.databaseService.careRecordItem.update({
       where: { id },
       data,
       include: {
@@ -182,10 +212,12 @@ export class CareRecordItemRepository {
         technician: true,
       },
     });
+
+    return CareRecordItemMapper.toDomain(result);
   }
 
   async delete(id: string): Promise<CareRecordItemModel> {
-    return this.databaseService.CareRecordItemModel.delete({
+    const result = await this.databaseService.careRecordItem.delete({
       where: { id },
       include: {
         careRecord: true,
@@ -194,19 +226,24 @@ export class CareRecordItemRepository {
         technician: true,
       },
     });
+
+    return CareRecordItemMapper.toDomain(result);
   }
 
-  async save<T = CareRecordItemModel>(data: T): Promise<T> {
-    const record = data as any;
-    return this.databaseService.careRecordItem.update({
-      where: { id: record.id },
-      data: record,
-    }) as Promise<T>;
-  }
-
-  async softDelete<T = CareRecordItemModel>(data: any): Promise<T> {
-    return this.databaseService.careRecordItem.delete({
+  async save(data: CareRecordItemModel): Promise<CareRecordItemModel> {
+    const result = await this.databaseService.careRecordItem.update({
       where: { id: data.id },
-    }) as Promise<T>;
+      data: data as any,
+    });
+
+    return CareRecordItemMapper.toDomain(result);
+  }
+
+  async softDelete(data: any): Promise<CareRecordItemModel> {
+    const result = await this.databaseService.careRecordItem.delete({
+      where: { id: data.id },
+    });
+
+    return CareRecordItemMapper.toDomain(result);
   }
 }

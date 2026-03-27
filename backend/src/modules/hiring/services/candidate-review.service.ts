@@ -1,54 +1,92 @@
-import { Injectable } from '@nestjs/common';
-import {
-  IDatabaseFindAllOptions,
-  IDatabaseGetTotalOptions,
-  IDatabaseCreateOptions,
-  IDatabaseDeleteManyOptions,
-} from '@/common/database/interfaces/database.interface';
-import { plainToInstance } from 'class-transformer';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CandidateReviewRepository } from '../repository/candidate-review.repository';
-import {
-  CandidateReviewDoc,
-  CandidateReviewEntity,
-} from '../entities/candidate-review.entity';
-import { CandidateReviewCreateRequestDto } from '../dtos/request/candidate-review.create.request.dto';
-import { CandidateReviewListResponseDto } from '../dtos/response/candidate-review.list.response.dto';
-import { CandidateReviewGetResponseDto } from '../dtos/response/candidate-review.get.response.dto';
 import { ICandidateReviewService } from '../interfaces/candidate-review.service.interface';
+import { CandidateReviewCreateRequestDto } from '../dtos/request/candidate-review.create.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import {
+  IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
+  IPaginationIn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { EnumHiringStatusCodeError } from '../enums/hiring.status-code.enum';
+import { CandidateReviewModel } from '../models/candidate-review.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CandidateReviewService implements ICandidateReviewService {
   constructor(
-    private readonly candidateReviewRepository: CandidateReviewRepository,
+    private readonly candidateReviewRepository: CandidateReviewRepository
   ) {}
-  findAll(
-    find?: Record<string, any>,
-    options?: IDatabaseFindAllOptions,
-  ): Promise<CandidateReviewDoc[]> {
-    return this.candidateReviewRepository.findAll(find, options);
+
+  async getListOffset(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CandidateReviewSelect,
+      Prisma.CandidateReviewWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<CandidateReviewModel>> {
+    return this.candidateReviewRepository.findWithPaginationOffset(
+      pagination,
+      filters
+    );
   }
-  getTotal(
-    find?: Record<string, any>,
-    options?: IDatabaseGetTotalOptions,
-  ): Promise<number> {
-    return this.candidateReviewRepository.getTotal(find, options);
+
+  async getListCursor(
+    pagination: IPaginationQueryCursorParams<
+      Prisma.CandidateReviewSelect,
+      Prisma.CandidateReviewWhereInput
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<CandidateReviewModel>> {
+    return this.candidateReviewRepository.findWithPaginationCursor(
+      pagination,
+      filters
+    );
   }
-  create(
-    payload: CandidateReviewCreateRequestDto,
-    options?: IDatabaseCreateOptions,
-  ): Promise<CandidateReviewDoc> {
-    const create: CandidateReviewEntity = new CandidateReviewEntity();
-    create.user = payload.user?.toString();
-    create.candidate = payload.candidate?.toString();
-    create.feedback = payload.feedback;
-    create.createdAt = new Date();
-    return this.candidateReviewRepository.create(create, options);
+
+  async findOneById(id: string): Promise<CandidateReviewModel | null> {
+    return this.candidateReviewRepository.findOneById(id);
   }
-  async deleteMany(
-    find?: Record<string, any>,
-    options?: IDatabaseDeleteManyOptions,
-  ): Promise<boolean> {
-    this.candidateReviewRepository.deleteMany(find, options);
-    return true;
+
+  async findOne(
+    where: Prisma.CandidateReviewWhereInput
+  ): Promise<CandidateReviewModel | null> {
+    return this.candidateReviewRepository.findOne(where);
+  }
+
+  async create(
+    payload: CandidateReviewCreateRequestDto
+  ): Promise<DatabaseIdDto> {
+    const created = await this.candidateReviewRepository.create({
+      feedback: payload.feedback,
+      user: {
+        connect: { id: payload.user },
+      },
+      candidate: {
+        connect: { id: payload.candidate },
+      },
+    });
+
+    return { id: created.id };
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.candidateReviewRepository.delete(id);
+  }
+
+  private async findOneByIdOrFail(id: string): Promise<CandidateReviewModel> {
+    const review = await this.candidateReviewRepository.findOneById(id);
+
+    if (!review) {
+      throw new NotFoundException({
+        statusCode: EnumHiringStatusCodeError.notFound,
+        message: 'candidate.error.notFound',
+      });
+    }
+
+    return review;
   }
 }

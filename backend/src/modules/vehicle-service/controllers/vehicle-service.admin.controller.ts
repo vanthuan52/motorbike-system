@@ -40,8 +40,7 @@ import {
   VehicleAdminServiceUpdateStatusDoc,
 } from '../docs/vehicle-service.admin.doc';
 import { VehicleServiceUtil } from '../utils/vehicle-service.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
@@ -50,7 +49,6 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
@@ -62,7 +60,18 @@ import { VehicleServiceService } from '../services/vehicle-service.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
+
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.admin.vehicle-service')
 @Controller({
@@ -72,12 +81,15 @@ import { Prisma } from '@/generated/prisma-client';
 export class VehicleServiceAdminController {
   constructor(
     private readonly vehicleServiceService: VehicleServiceService,
-    private readonly vehicleServiceUtil: VehicleServiceUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly vehicleServiceUtil: VehicleServiceUtil
   ) {}
 
   @VehicleAdminServiceListDoc()
   @ResponsePaging('vehicle-service.list')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.user,
+    action: [EnumPolicyAction.read],
+  })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -94,22 +106,25 @@ export class VehicleServiceAdminController {
     @PaginationQueryFilterInEnum('status', VEHICLE_SERVICE_DEFAULT_STATUS)
     status?: Record<string, IPaginationIn>,
     @Query('serviceCategory')
-    serviceCategoryId?: string,
+    serviceCategoryId?: string
   ): Promise<IResponsePagingReturn<VehicleServiceListResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
     };
 
     if (serviceCategoryId) {
-      filters['serviceCategoryId'] = serviceCategoryId; // Prisma field
+      filters['serviceCategoryId'] = serviceCategoryId;
     }
 
-    const { data, total } = await this.vehicleServiceService.getListOffset(
+    const result = await this.vehicleServiceService.getListOffset(
       pagination,
-      filters,
+      filters
     );
-    const mapped = this.vehicleServiceUtil.mapList(data);
-    return this.paginationUtil.formatOffset(mapped, total, pagination);
+    const mapped = this.vehicleServiceUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @VehicleAdminServiceGetDoc()
@@ -123,10 +138,10 @@ export class VehicleServiceAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<VehicleServiceDto>> {
     const vehicleService = await this.vehicleServiceService.findOneById(id);
-    const mapped = this.vehicleServiceUtil.mapGet(vehicleService);
+    const mapped = this.vehicleServiceUtil.mapOne(vehicleService);
     return { data: mapped };
   }
 
@@ -134,28 +149,36 @@ export class VehicleServiceAdminController {
   @Response('vehicle-service.create')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.create],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @AuthJwtPayload('user') createdBy: string,
-    @Body('checklistItems')
-    checklistItems: string[],
     @Body() body: VehicleServiceCreateRequestDto,
+    @AuthJwtPayload('userId') createdBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    body.checklistItems = checklistItems || [];
-    const created = await this.vehicleServiceService.create(body);
-    return { data: { _id: created.id } };
+    const created = await this.vehicleServiceService.create(
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      createdBy
+    );
+    return { data: created };
   }
 
   @VehicleAdminServiceUpdateDoc()
   @Response('vehicle-service.update')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.update],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -163,15 +186,22 @@ export class VehicleServiceAdminController {
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
-    @Body('checklistItems')
-    checklistItems: string[],
     @Body() body: VehicleServiceUpdateRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    if (checklistItems !== undefined) {
-        body.checklistItems = checklistItems;
-    }
-    await this.vehicleServiceService.update(id, body);
+    await this.vehicleServiceService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -179,7 +209,7 @@ export class VehicleServiceAdminController {
   @Response('vehicle-service.updateStatus')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.update],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -187,10 +217,22 @@ export class VehicleServiceAdminController {
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
     @Body() body: VehicleServiceUpdateStatusRequestDto,
+    @AuthJwtPayload('userId') updatedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleServiceService.updateStatus(id, body);
+    await this.vehicleServiceService.updateStatus(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      updatedBy
+    );
     return {};
   }
 
@@ -198,7 +240,7 @@ export class VehicleServiceAdminController {
   @Response('vehicle-service.delete')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    action: [EnumPolicyAction.delete],
   })
   @RoleProtected(EnumRoleType.admin)
   @UserProtected()
@@ -206,9 +248,20 @@ export class VehicleServiceAdminController {
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
-    @AuthJwtPayload('user') updatedBy: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleServiceService.delete(id);
+    await this.vehicleServiceService.delete(
+      id,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
+    );
     return {};
   }
 }

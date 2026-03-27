@@ -1,4 +1,4 @@
-import { VehicleModel, Prisma } from '@/generated/prisma-client';
+import { VehicleModelModel } from '../models/vehicle-model.model';
 import { VehicleModelCreateRequestDto } from '../dtos/request/vehicle-model.create.request.dto';
 import { VehicleModelUpdateRequestDto } from '../dtos/request/vehicle-model.update.request.dto';
 import { VehicleModelUpdateStatusRequestDto } from '../dtos/request/vehicle-model.update-status.request.dto';
@@ -8,54 +8,64 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { Prisma } from '@/generated/prisma-client';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 export interface IVehicleModelService {
-  findAll(find?: Prisma.VehicleModelWhereInput): Promise<VehicleModel[]>;
-
   getListOffset(
     pagination: IPaginationQueryOffsetParams<
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: VehicleModel[]; total: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<VehicleModelModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: VehicleModel[]; total?: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<VehicleModelModel>>;
 
-  findOneById(id: string): Promise<VehicleModel>;
+  findOneById(id: string): Promise<VehicleModelModel>;
 
-  findOneWithVehicleBrandById(id: string): Promise<VehicleModel | null>;
+  findOne(
+    find: Prisma.VehicleModelWhereInput
+  ): Promise<VehicleModelModel | null>;
 
-  findOne(find: Prisma.VehicleModelWhereInput): Promise<VehicleModel>;
+  create(
+    payload: VehicleModelCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<DatabaseIdDto>;
+ 
+  update(
+    id: string,
+    payload: VehicleModelUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void>;
+ 
+  updateStatus(
+    id: string,
+    payload: VehicleModelUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void>;
+ 
+  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<void>;
 
-  getTotal(find?: Prisma.VehicleModelWhereInput): Promise<number>;
-
-  create(payload: VehicleModelCreateRequestDto): Promise<VehicleModel>;
-
-  update(id: string, payload: VehicleModelUpdateRequestDto): Promise<void>;
-
-  updateStatus(id: string, payload: VehicleModelUpdateStatusRequestDto): Promise<void>;
-
-  delete(id: string): Promise<void>;
-
-  deleteMany(find?: Prisma.VehicleModelWhereInput): Promise<boolean>;
-
-  findBySlug(slug: string): Promise<VehicleModel>;
+  findBySlug(slug: string): Promise<VehicleModelModel>;
 
   createRandomFilenamePhoto(
     vehicleModel: string,
-    payload: VehicleModelUploadPhotoRequestDto,
+    payload: VehicleModelUploadPhotoRequestDto
   ): string;
 
-  updatePhoto(
-    repository: VehicleModel,
-    photo: AwsS3Dto,
-  ): Promise<VehicleModel>;
+  updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleModelModel>;
 }

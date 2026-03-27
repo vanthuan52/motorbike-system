@@ -17,7 +17,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumServiceCategoryStatusCodeError } from '../enums/service-category.status-code.enum';
-import { ServiceCategory, Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { ServiceCategoryModel } from '../models/service-category.model';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ServiceCategoryService implements IServiceCategoryService {
@@ -36,7 +38,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<ServiceCategory>> {
+  ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,
       ...filters,
@@ -63,7 +65,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<ServiceCategory>> {
+  ): Promise<IPaginationCursorReturn<ServiceCategoryModel>> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,
       ...filters,
@@ -79,7 +81,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
     });
   }
 
-  async findOneById(id: string): Promise<ServiceCategory> {
+  async findOneById(id: string): Promise<ServiceCategoryModel> {
     const serviceCategory =
       await this.serviceCategoryRepository.findOneById(id);
     if (!serviceCategory) {
@@ -91,12 +93,14 @@ export class ServiceCategoryService implements IServiceCategoryService {
     return serviceCategory;
   }
 
-  async findOne(find: Record<string, any>): Promise<ServiceCategory | null> {
+  async findOne(
+    find: Record<string, any>
+  ): Promise<ServiceCategoryModel | null> {
     const serviceCategory = await this.serviceCategoryRepository.findOne(find);
     return serviceCategory;
   }
 
-  async findBySlug(slug: string): Promise<ServiceCategory> {
+  async findBySlug(slug: string): Promise<ServiceCategoryModel> {
     const serviceCategory =
       await this.serviceCategoryRepository.findOneBySlug(slug);
     if (!serviceCategory) {
@@ -108,12 +112,12 @@ export class ServiceCategoryService implements IServiceCategoryService {
     return serviceCategory;
   }
 
-  async create({
-    name,
-    slug,
-    description,
-    orderBy,
-  }: ServiceCategoryCreateRequestDto): Promise<{ id: string }> {
+  async create(
+    payload: ServiceCategoryCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<{ id: string }> {
+    const { name, slug, description, orderBy } = payload;
     // Check slug conflict
     const existingSlug =
       await this.serviceCategoryRepository.findOneBySlug(slug);
@@ -130,6 +134,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       description: description ?? null,
       orderBy: orderBy ?? '0',
       status: EnumServiceCategoryStatus.active,
+      createdBy: createdBy,
     };
 
     const created = await this.serviceCategoryRepository.create(data);
@@ -139,8 +144,11 @@ export class ServiceCategoryService implements IServiceCategoryService {
 
   async update(
     id: string,
-    { name, slug, description, orderBy }: ServiceCategoryUpdateRequestDto
+    payload: ServiceCategoryUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void> {
+    const { name, slug, description, orderBy } = payload;
     const serviceCategory =
       await this.serviceCategoryRepository.findOneById(id);
     if (!serviceCategory) {
@@ -167,6 +175,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       slug: slug ? slug.toLowerCase() : undefined,
       description: description ?? undefined,
       orderBy: orderBy ?? undefined,
+      updatedBy: updatedBy,
     };
 
     await this.serviceCategoryRepository.update(id, data);
@@ -174,7 +183,30 @@ export class ServiceCategoryService implements IServiceCategoryService {
 
   async updateStatus(
     id: string,
-    { status }: ServiceCategoryUpdateStatusRequestDto
+    payload: ServiceCategoryUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void> {
+    const { status } = payload;
+    const serviceCategory =
+      await this.serviceCategoryRepository.findOneById(id);
+    if (!serviceCategory) {
+      throw new NotFoundException({
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
+        message: 'service-category.error.notFound',
+      });
+    }
+
+    await this.serviceCategoryRepository.update(id, {
+      status,
+      updatedBy: updatedBy,
+    });
+  }
+
+  async delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
   ): Promise<void> {
     const serviceCategory =
       await this.serviceCategoryRepository.findOneById(id);
@@ -185,20 +217,10 @@ export class ServiceCategoryService implements IServiceCategoryService {
       });
     }
 
-    await this.serviceCategoryRepository.update(id, { status });
-  }
-
-  async delete(id: string): Promise<void> {
-    const serviceCategory =
-      await this.serviceCategoryRepository.findOneById(id);
-    if (!serviceCategory) {
-      throw new NotFoundException({
-        statusCode: EnumServiceCategoryStatusCodeError.notFound,
-        message: 'service-category.error.notFound',
-      });
-    }
-
-    await this.serviceCategoryRepository.delete(id);
+    await this.serviceCategoryRepository.update(id, {
+      deletedAt: new Date(),
+      deletedBy: deletedBy,
+    });
   }
 
   async existByName(name: string): Promise<boolean> {
@@ -209,9 +231,8 @@ export class ServiceCategoryService implements IServiceCategoryService {
   }
 
   async existBySlug(slug: string): Promise<boolean> {
-    const serviceCategory = await this.serviceCategoryRepository.findOneBySlug(
-      slug
-    );
+    const serviceCategory =
+      await this.serviceCategoryRepository.findOneBySlug(slug);
     return !!serviceCategory;
   }
 }

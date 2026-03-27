@@ -8,12 +8,12 @@ import {
   IPaginationCursorReturn,
   IPaginationEqual,
   IPaginationIn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
 import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
 import { IRole } from '@/modules/role/interfaces/role.interface';
@@ -23,36 +23,33 @@ import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.re
 import { UserUpdateProfileRequestDto } from '@/modules/user/dtos/request/user.profile.request.dto';
 import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
 import {
-  IUser,
   IUserForgotPasswordCreate,
   IUserLogin,
   IUserLoginResult,
   IUserProfile,
-  IUserVerificationCreate,
 } from '@/modules/user/interfaces/user.interface';
-
+import { AuthCreateSocialRequestDto } from '@/modules/auth/dtos/request/auth.create-social.request.dto';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import {
-  EnumActivityLogAction,
   EnumDeviceNotificationProvider,
   EnumDevicePlatform,
+} from '@/modules/device/enums/device.enum';
+import {
   EnumNotificationChannel,
   EnumNotificationType,
-  EnumPasswordHistoryType,
-  EnumRoleType,
-  EnumTermPolicyStatus,
-  EnumTermPolicyType,
+} from '@/modules/notification/enums/notification.enum';
+import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import {
   EnumUserLoginWith,
   EnumUserSignUpFrom,
   EnumUserSignUpWith,
   EnumUserStatus,
-  EnumVerificationType,
-  ForgotPassword,
-  Prisma,
-  TermPolicyUserAcceptance,
-  User,
-  Verification,
-} from '@/generated/prisma-client';
+} from '@/modules/user/enums/user.enum';
+import { UserModel } from '@/modules/user/models/user.model';
 import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { Prisma, User as PrismaUser } from '@/generated/prisma-client';
+import { IUserVerificationCreate } from '@/modules/verification/interfaces/verification.interface';
 
 @Injectable()
 export class UserRepository {
@@ -71,9 +68,9 @@ export class UserRepository {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<IUser>> {
-    return this.paginationService.offset<
-      IUser,
+  ): Promise<IPaginationOffsetReturn<UserModel>> {
+    const paginatedResult = await this.paginationService.offset<
+      PrismaUser,
       Prisma.UserSelect,
       Prisma.UserWhereInput
     >(this.databaseService.user, {
@@ -90,6 +87,11 @@ export class UserRepository {
         twoFactor: true,
       },
     });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => UserMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor(
@@ -100,9 +102,9 @@ export class UserRepository {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationCursorReturn<IUser>> {
-    return this.paginationService.cursor<
-      IUser,
+  ): Promise<IPaginationCursorReturn<UserModel>> {
+    const paginatedResult = await this.paginationService.cursor<
+      PrismaUser,
       Prisma.UserSelect,
       Prisma.UserWhereInput
     >(this.databaseService.user, {
@@ -119,10 +121,15 @@ export class UserRepository {
         twoFactor: true,
       },
     });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => UserMapper.toDomain(item)),
+    };
   }
 
-  async findByEmails(emails: string[]): Promise<IUser[]> {
-    return this.databaseService.user.findMany({
+  async findByEmails(emails: string[]): Promise<UserModel[]> {
+    const results = await this.databaseService.user.findMany({
       where: {
         email: { in: emails },
       },
@@ -131,14 +138,16 @@ export class UserRepository {
         twoFactor: true,
       },
     });
+
+    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
   }
 
   async findExport(
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IUser[]> {
-    return this.databaseService.user.findMany({
+  ): Promise<UserModel[]> {
+    const results = await this.databaseService.user.findMany({
       where: {
         ...status,
         ...country,
@@ -150,6 +159,8 @@ export class UserRepository {
         twoFactor: true,
       },
     });
+
+    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
   }
 
   async findActive(): Promise<
@@ -172,36 +183,44 @@ export class UserRepository {
     });
   }
 
-  async findOneById(id: string): Promise<User | null> {
-    return this.databaseService.user.findUnique({
+  async findOneById(id: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null },
     });
+
+    return result ? UserMapper.toDomain(result) : null;
   }
 
-  async findOneActiveById(id: string): Promise<User | null> {
-    return this.databaseService.user.findUnique({
+  async findOneActiveById(id: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null, status: EnumUserStatus.active },
     });
+
+    return result ? UserMapper.toDomain(result) : null;
   }
 
-  async findOneActiveByEmail(email: string): Promise<User | null> {
-    return this.databaseService.user.findUnique({
+  async findOneActiveByEmail(email: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { email, deletedAt: null, status: EnumUserStatus.active },
     });
+
+    return result ? UserMapper.toDomain(result) : null;
   }
 
-  async findOneWithRoleByEmail(email: string): Promise<IUser | null> {
-    return this.databaseService.user.findUnique({
+  async findOneWithRoleByEmail(email: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { email, deletedAt: null },
       include: {
         role: true,
         twoFactor: true,
       },
     });
+
+    return result ? UserMapper.toDomain(result) : null;
   }
 
-  async findOneProfileById(id: string): Promise<IUserProfile | null> {
-    return this.databaseService.user.findUnique({
+  async findOneProfileById(id: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null },
       include: {
         role: true,
@@ -214,10 +233,12 @@ export class UserRepository {
         },
       },
     });
+
+    return result ? (UserMapper.toDomain(result) as IUserProfile) : null;
   }
 
-  async findOneActiveProfileById(id: string): Promise<IUserProfile | null> {
-    return this.databaseService.user.findUnique({
+  async findOneActiveProfileById(id: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null, status: EnumUserStatus.active },
       include: {
         role: true,
@@ -230,21 +251,25 @@ export class UserRepository {
         },
       },
     });
+
+    return result ? UserMapper.toDomain(result) : null;
   }
 
-  async findOneWithRoleById(id: string): Promise<IUser | null> {
-    return this.databaseService.user.findUnique({
+  async findOneWithRoleById(id: string): Promise<UserModel | null> {
+    const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null },
       include: {
         role: true,
         twoFactor: true,
       },
     });
+
+    return result ? UserMapper.toDomain(result) : null;
   }
 
   async findOneActiveByForgotPasswordToken(
     token: string
-  ): Promise<(ForgotPassword & { user: IUser }) | null> {
+  ): Promise<(Prisma.ForgotPassword & { user: UserModel }) | null> {
     const today = this.helperService.dateCreate();
 
     return this.databaseService.forgotPassword.findFirst({
@@ -272,7 +297,7 @@ export class UserRepository {
 
   async findOneLatestByForgotPassword(
     userId: string
-  ): Promise<ForgotPassword | null> {
+  ): Promise<Prisma.ForgotPassword | null> {
     return this.databaseService.forgotPassword.findFirst({
       where: {
         userId,
@@ -286,8 +311,6 @@ export class UserRepository {
       },
     });
   }
-
-
 
   async existByEmail(email: string): Promise<{ id: string } | null> {
     return this.databaseService.user.findFirst({
@@ -316,7 +339,7 @@ export class UserRepository {
     { id: roleId, type: roleType }: IRole,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     createdBy: string
-  ): Promise<User> {
+  ): Promise<UserModel> {
     const [user] = await this.databaseService.$transaction([
       this.databaseService.user.create({
         data: {
@@ -334,17 +357,17 @@ export class UserRepository {
           isVerified: roleType === EnumRoleType.user ? false : true,
           status: EnumUserStatus.active,
           termPolicy: {
-            [EnumTermPolicyType.cookies]: false,
-            [EnumTermPolicyType.marketing]: false,
-            [EnumTermPolicyType.privacy]: true,
-            [EnumTermPolicyType.termsOfService]: true,
+            [Prisma.EnumTermPolicyType.cookies]: false,
+            [Prisma.EnumTermPolicyType.marketing]: false,
+            [Prisma.EnumTermPolicyType.privacy]: true,
+            [Prisma.EnumTermPolicyType.termsOfService]: true,
           },
           createdBy,
           deletedAt: null,
           passwordHistories: {
             create: {
               password: passwordHash,
-              type: EnumPasswordHistoryType.admin,
+              type: Prisma.EnumPasswordHistoryType.admin,
               expiredAt: passwordPeriodExpired,
               createdAt: passwordCreated,
               createdBy,
@@ -402,8 +425,8 @@ export class UserRepository {
     { status }: UserUpdateStatusRequestDto,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     updatedBy: string
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id, deletedAt: null },
       data: {
         status,
@@ -422,18 +445,19 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async updateProfile(
     userId: string,
-    { countryId, ...data }: UserUpdateProfileRequestDto,
+    { ...data }: UserUpdateProfileRequestDto,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         ...data,
-        countryId,
         updatedBy: userId,
         activityLogs: {
           create: {
@@ -446,14 +470,16 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async updatePhotoProfile(
     userId: string,
     photo: AwsS3Dto,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         photo: this.databaseUtil.toPlainObject(photo),
@@ -469,14 +495,16 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async deleteSelf(
     userId: string,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
+  ): Promise<UserModel> {
     const deletedAt = this.helperService.dateCreate();
-    return this.databaseService.user.update({
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         deletedAt,
@@ -508,14 +536,16 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async claimUsername(
     userId: string,
     { username }: UserClaimUsernameRequestDto,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         username,
@@ -531,6 +561,8 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async updatePasswordByAdmin(
@@ -543,8 +575,8 @@ export class UserRepository {
     }: IAuthPassword,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     updatedBy: string
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         password: passwordHash,
@@ -555,7 +587,7 @@ export class UserRepository {
         passwordHistories: {
           create: {
             password: passwordHash,
-            type: EnumPasswordHistoryType.admin,
+            type: Prisma.EnumPasswordHistoryType.admin,
             expiredAt: passwordPeriodExpired,
             createdAt: passwordCreated,
             createdBy: updatedBy,
@@ -585,10 +617,12 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
-  async increasePasswordAttempt(userId: string): Promise<User> {
-    return this.databaseService.user.update({
+  async increasePasswordAttempt(userId: string): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         passwordAttempt: {
@@ -596,15 +630,19 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
-  async resetPasswordAttempt(userId: string): Promise<User> {
-    return this.databaseService.user.update({
+  async resetPasswordAttempt(userId: string): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         passwordAttempt: 0,
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async changePassword(
@@ -616,8 +654,8 @@ export class UserRepository {
       passwordPeriodExpired,
     }: IAuthPassword,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         password: passwordHash,
@@ -628,7 +666,7 @@ export class UserRepository {
         passwordHistories: {
           create: {
             password: passwordHash,
-            type: EnumPasswordHistoryType.profile,
+            type: Prisma.EnumPasswordHistoryType.profile,
             expiredAt: passwordPeriodExpired,
             createdAt: passwordCreated,
             createdBy: userId,
@@ -660,6 +698,8 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async login(
@@ -826,38 +866,20 @@ export class UserRepository {
     username: string,
     roleId: string,
     loginWith: EnumUserLoginWith,
-    { countryId, name, from, cookies, marketing }: UserCreateSocialRequestDto,
+    { name, from, cookies }: AuthCreateSocialRequestDto,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<IUser> {
+  ): Promise<UserModel> {
     const userId = this.databaseUtil.createId();
     const signUpWith =
       loginWith === EnumUserLoginWith.socialApple
         ? EnumUserSignUpWith.socialApple
         : EnumUserSignUpWith.socialGoogle;
 
-    const termPolicies = await this.databaseService.termPolicy.findMany({
-      where: {
-        type: {
-          in: [
-            EnumTermPolicyType.termsOfService,
-            EnumTermPolicyType.privacy,
-            cookies ? EnumTermPolicyType.cookies : null,
-            marketing ? EnumTermPolicyType.marketing : null,
-          ].filter(Boolean) as EnumTermPolicyType[],
-        },
-        status: EnumTermPolicyStatus.published,
-      },
-      select: {
-        id: true,
-      },
-    });
-
     const [user] = await this.databaseService.$transaction([
       this.databaseService.user.create({
         data: {
           id: userId,
           email,
-          countryId,
           name,
           roleId,
           signUpFrom: from,
@@ -866,10 +888,10 @@ export class UserRepository {
           isVerified: true,
           status: EnumUserStatus.active,
           termPolicy: {
-            [EnumTermPolicyType.cookies]: cookies,
-            [EnumTermPolicyType.marketing]: marketing,
-            [EnumTermPolicyType.privacy]: true,
-            [EnumTermPolicyType.termsOfService]: true,
+            [Prisma.EnumTermPolicyType.cookies]: cookies,
+            [Prisma.EnumTermPolicyType.marketing]: marketing,
+            [Prisma.EnumTermPolicyType.privacy]: true,
+            [Prisma.EnumTermPolicyType.termsOfService]: true,
           },
           createdBy: userId,
           deletedAt: null,
@@ -895,28 +917,12 @@ export class UserRepository {
                 .flat(),
             },
           },
-          twoFactor: {
-            create: {
-              enabled: false,
-              requiredSetup: false,
-              createdBy: userId,
-            },
-          },
         },
         include: {
           role: true,
           twoFactor: true,
         },
       }),
-      ...termPolicies.map(termPolicy =>
-        this.databaseService.termPolicyUserAcceptance.create({
-          data: {
-            userId,
-            termPolicyId: termPolicy.id,
-            createdBy: userId,
-          },
-        })
-      ),
     ]);
 
     return user;
@@ -925,8 +931,8 @@ export class UserRepository {
   async verify(
     userId: string,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         isVerified: true,
@@ -942,6 +948,8 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async createWithNestedRelations(
@@ -952,7 +960,7 @@ export class UserRepository {
     { passwordHash }: IAuthPassword,
     { expiredAt, reference, hashedToken, type }: IUserVerificationCreate,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
+  ): Promise<UserModel> {
     const [user] = await this.databaseService.$transaction([
       this.databaseService.user.create({
         data: {
@@ -1076,8 +1084,8 @@ export class UserRepository {
       passwordPeriodExpired,
     }: IAuthPassword,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         password: passwordHash,
@@ -1088,7 +1096,7 @@ export class UserRepository {
         passwordHistories: {
           create: {
             password: passwordHash,
-            type: EnumPasswordHistoryType.forgot,
+            type: Prisma.EnumPasswordHistoryType.forgot,
             expiredAt: passwordPeriodExpired,
             createdAt: passwordCreated,
             createdBy: userId,
@@ -1129,18 +1137,18 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
-
-
 
   async updateLoginMetadata(
     userId: string,
     { loginFrom, loginWith, sessionId, jti }: IUserLogin,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
+  ): Promise<UserModel> {
     const today = this.helperService.dateCreate();
 
-    return this.databaseService.user.update({
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         lastLoginAt: today,
@@ -1169,13 +1177,15 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async reachMaxPasswordAttempt(
     userId: string,
     { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<User> {
-    return this.databaseService.user.update({
+  ): Promise<UserModel> {
+    const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         status: EnumUserStatus.inactive,
@@ -1190,6 +1200,8 @@ export class UserRepository {
         },
       },
     });
+
+    return UserMapper.toDomain(result);
   }
 
   async importByAdmin(
@@ -1199,23 +1211,11 @@ export class UserRepository {
     { id: roleId, type: roleType }: IRole,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     createdBy: string
-  ): Promise<User[]> {
-    const termPolicies = await this.databaseService.termPolicy.findMany({
-      where: {
-        type: {
-          in: [EnumTermPolicyType.termsOfService, EnumTermPolicyType.privacy],
-        },
-        status: EnumTermPolicyStatus.published,
-      },
-      select: {
-        id: true,
-      },
-    });
-
+  ): Promise<UserModel[]> {
     const users = await this.databaseService.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        const usersToCreate: Prisma.PrismaPromise<User>[] = [];
-        const termPolicyUserAcceptancesToCreate: Prisma.PrismaPromise<TermPolicyUserAcceptance>[] =
+        const usersToCreate: Prisma.PrismaPromise<UserModel>[] = [];
+        const termPolicyUserAcceptancesToCreate: Prisma.PrismaPromise<Prisma.TermPolicyUserAcceptance>[] =
           [];
 
         for (const [index, { email, name }] of data.entries()) {
@@ -1233,7 +1233,6 @@ export class UserRepository {
               data: {
                 id: userId,
                 email,
-                countryId,
                 roleId,
                 name,
                 signUpFrom: EnumUserSignUpFrom.admin,
@@ -1246,17 +1245,17 @@ export class UserRepository {
                 isVerified: roleType === EnumRoleType.user ? false : true,
                 status: EnumUserStatus.active,
                 termPolicy: {
-                  [EnumTermPolicyType.cookies]: false,
-                  [EnumTermPolicyType.marketing]: false,
-                  [EnumTermPolicyType.privacy]: true,
-                  [EnumTermPolicyType.termsOfService]: true,
+                  [Prisma.EnumTermPolicyType.cookies]: false,
+                  [Prisma.EnumTermPolicyType.marketing]: false,
+                  [Prisma.EnumTermPolicyType.privacy]: true,
+                  [Prisma.EnumTermPolicyType.termsOfService]: true,
                 },
                 createdBy,
                 deletedAt: null,
                 passwordHistories: {
                   create: {
                     password: passwordHash,
-                    type: EnumPasswordHistoryType.admin,
+                    type: Prisma.EnumPasswordHistoryType.admin,
                     expiredAt: passwordPeriodExpired,
                     createdAt: passwordCreated,
                     createdBy,
@@ -1307,17 +1306,6 @@ export class UserRepository {
               },
             })
           );
-          termPolicyUserAcceptancesToCreate.push(
-            ...termPolicies.map(termPolicy =>
-              tx.termPolicyUserAcceptance.create({
-                data: {
-                  userId,
-                  termPolicyId: termPolicy.id,
-                  createdBy,
-                },
-              })
-            )
-          );
         }
 
         const users = await Promise.all(usersToCreate);
@@ -1327,6 +1315,6 @@ export class UserRepository {
       }
     );
 
-    return users;
+    return users.map(user => UserMapper.toDomain(user));
   }
 }

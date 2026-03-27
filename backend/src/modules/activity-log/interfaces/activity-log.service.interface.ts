@@ -3,22 +3,25 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ActivityLog, Prisma } from '@/generated/prisma-client';
+import { ActivityLogModel } from '../models/activity-log.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IActivityLogService {
   getListOffset(
-    userId: string,
     pagination: IPaginationQueryOffsetParams<
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
-    >
-  ): Promise<IPaginationOffsetReturn<ActivityLog>>;
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<ActivityLogModel>>;
+
   getListCursor(
-    userId: string,
     pagination: IPaginationQueryCursorParams<
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
-    >
-  ): Promise<IPaginationCursorReturn<ActivityLog>>;
+    >,
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<ActivityLogModel>>;
 }

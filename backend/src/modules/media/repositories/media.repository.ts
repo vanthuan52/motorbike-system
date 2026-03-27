@@ -7,7 +7,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { Media, Prisma } from '@/generated/prisma-client';
+import { MediaModel } from '../models/media.model';
+import { MediaMapper } from '../mappers/media.mapper';
+import { Media as PrismaMedia, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class MediaRepository {
@@ -24,8 +26,8 @@ export class MediaRepository {
       Prisma.MediaSelect,
       Prisma.MediaWhereInput
     >
-  ): Promise<IPaginationOffsetReturn<Media>> {
-    return this.paginationService.offset<Media>(
+  ): Promise<IPaginationOffsetReturn<MediaModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaMedia>(
       this.databaseService.media,
       {
         ...params,
@@ -34,6 +36,11 @@ export class MediaRepository {
         },
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => MediaMapper.toDomain(item)),
+    };
   }
 
   async findWithPaginationCursor(
@@ -44,8 +51,8 @@ export class MediaRepository {
       Prisma.MediaSelect,
       Prisma.MediaWhereInput
     >
-  ): Promise<IPaginationCursorReturn<Media>> {
-    return this.paginationService.cursor<Media>(
+  ): Promise<IPaginationCursorReturn<MediaModel>> {
+    const paginatedResult = await this.paginationService.cursor<PrismaMedia>(
       this.databaseService.media,
       {
         ...params,
@@ -55,49 +62,64 @@ export class MediaRepository {
         includeCount: true,
       }
     );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => MediaMapper.toDomain(item)),
+    };
   }
 
-  async findOneById(id: string): Promise<Media | null> {
-    return this.databaseService.media.findUnique({
+  async findOneById(id: string): Promise<MediaModel | null> {
+    const result = await this.databaseService.media.findUnique({
       where: { id },
     });
+
+    return result ? MediaMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.MediaWhereInput
-  ): Promise<Media | null> {
-    return this.databaseService.media.findFirst({
+  ): Promise<MediaModel | null> {
+    const result = await this.databaseService.media.findFirst({
       where,
     });
+
+    return result ? MediaMapper.toDomain(result) : null;
   }
 
-  async findByKey(key: string): Promise<Media | null> {
-    return this.databaseService.media.findFirst({
+  async findByKey(key: string): Promise<MediaModel | null> {
+    const result = await this.databaseService.media.findFirst({
       where: { key },
     });
+
+    return result ? MediaMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.MediaCreateInput): Promise<Media> {
-    return this.databaseService.media.create({
+  async create(data: Prisma.MediaCreateInput): Promise<MediaModel> {
+    const result = await this.databaseService.media.create({
       data,
     });
+
+    return MediaMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.MediaUpdateInput
-  ): Promise<Media> {
-    return this.databaseService.media.update({
+  ): Promise<MediaModel> {
+    const result = await this.databaseService.media.update({
       where: { id },
       data,
     });
+
+    return MediaMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<Media> {
-    return this.databaseService.media.delete({
+  async delete(id: string): Promise<MediaModel> {
+    const result = await this.databaseService.media.delete({
       where: { id },
     });
-  }
-}
+
+    return MediaMapper.toDomain(result);
   }
 }

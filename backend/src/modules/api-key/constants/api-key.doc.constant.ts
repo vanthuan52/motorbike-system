@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
-import { EnumApiKeyType } from '@/generated/prisma-client';
+import { EnumApiKeyType } from '../enums/api-key.enum';
 
 export const ApiKeyDocParamsId: ApiParamOptions[] = [
   {

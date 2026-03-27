@@ -11,11 +11,11 @@ export class VehicleServiceUtil {
     vehicleServices: VehicleServiceModel[]
   ): VehicleServiceListResponseDto[] {
     return vehicleServices.map(
-      c => this.mapGet(c) as any as VehicleServiceListResponseDto
+      c => this.mapOne(c) as any as VehicleServiceListResponseDto
     );
   }
 
-  mapGet(vehicleService: VehicleServiceModel): VehicleServiceDto {
+  mapOne(vehicleService: VehicleServiceModel): VehicleServiceDto {
     const obj = plainToInstance(VehicleServiceDto, vehicleService);
     if ((vehicleService as any).serviceCategoryId) {
       obj.serviceCategory = (vehicleService as any).serviceCategoryId;

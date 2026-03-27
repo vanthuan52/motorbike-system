@@ -18,7 +18,7 @@ import {
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 export function CareAreaAdminListDoc(): MethodDecorator {
   return applyDecorators(
@@ -34,7 +34,7 @@ export function CareAreaAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<CareAreaListResponseDto>('care-area.list', {
       dto: CareAreaListResponseDto,
-    }),
+    })
   );
 }
 
@@ -54,7 +54,7 @@ export function CareAreaAdminCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('care-area.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -72,7 +72,7 @@ export function CareAreaAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-area.update'),
+    DocResponse('care-area.update')
   );
 }
 
@@ -88,7 +88,7 @@ export function CareAreaAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-area.delete'),
+    DocResponse('care-area.delete')
   );
 }
 
@@ -106,7 +106,7 @@ export function CareAreaAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareAreaDto>('care-area.getById', {
       dto: CareAreaDto,
-    }),
+    })
   );
 }
 
@@ -141,6 +141,6 @@ export function CareAreaWithServiceChecklistDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-area.listWithServiceChecklists'),
+    DocResponse('care-area.listWithServiceChecklists')
   );
 }

@@ -10,7 +10,14 @@ export class ServicePriceUtil {
     return plainToInstance(ServicePriceListResponseDto, servicePrices);
   }
 
-  mapGet(servicePrice: ServicePriceModel): ServicePriceDto {
+  mapOne(servicePrice: ServicePriceModel): ServicePriceDto {
     return plainToInstance(ServicePriceDto, servicePrice);
+  }
+
+  mapActivityLogMetadata(servicePrice: ServicePriceModel): Record<string, any> {
+    return {
+      id: servicePrice.id,
+      price: servicePrice.price,
+    };
   }
 }

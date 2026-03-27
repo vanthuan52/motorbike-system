@@ -1,7 +1,7 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { ApiKeyDto } from '@/modules/api-key/dtos/api-key.dto';
-import { EnumApiKeyType } from '@/generated/prisma-client';
+import { EnumApiKeyType } from '../../enums/api-key.enum';
 
 export class ApiKeyCreateResponseDto extends ApiKeyDto {
   @ApiProperty({

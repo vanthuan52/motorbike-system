@@ -1,4 +1,4 @@
-import { VehicleBrand, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.create.request.dto';
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
@@ -6,47 +6,59 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { VehicleBrandModel } from '../models/vehicle-brand.model';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 export interface IVehicleBrandService {
-  findAll(find?: Prisma.VehicleBrandWhereInput): Promise<VehicleBrand[]>;
-
   getListOffset(
     pagination: IPaginationQueryOffsetParams<
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: VehicleBrand[]; total: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<VehicleBrandModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: VehicleBrand[]; total?: number }>;
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<VehicleBrandModel>>;
 
-  findOneById(id: string): Promise<VehicleBrand>;
+  findOneById(id: string): Promise<VehicleBrandModel>;
 
-  findOne(find: Prisma.VehicleBrandWhereInput): Promise<VehicleBrand>;
+  findOne(
+    find: Prisma.VehicleBrandWhereInput
+  ): Promise<VehicleBrandModel | null>;
 
-  getTotal(find?: Prisma.VehicleBrandWhereInput): Promise<number>;
-
-  create(payload: VehicleBrandCreateRequestDto): Promise<VehicleBrand>;
-
-  update(id: string, payload: VehicleBrandUpdateRequestDto): Promise<void>;
-
+  create(
+    payload: VehicleBrandCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
+  ): Promise<DatabaseIdDto>;
+ 
+  update(
+    id: string,
+    payload: VehicleBrandUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
+  ): Promise<void>;
+ 
   updateStatus(
     id: string,
     payload: VehicleBrandUpdateStatusRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<void>;
+ 
+  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<void>;
 
-  delete(id: string): Promise<void>;
-
-  deleteMany(find?: Prisma.VehicleBrandWhereInput): Promise<boolean>;
-
-  findBySlug(slug: string): Promise<VehicleBrand>;
+  findBySlug(slug: string): Promise<VehicleBrandModel>;
 
   existByName(name: string): Promise<boolean>;
 

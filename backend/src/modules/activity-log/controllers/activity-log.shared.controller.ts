@@ -14,8 +14,7 @@ import {
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { ActivityLogUtil } from '../utils/activity-log.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
-import { Prisma } from '@generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.shared.user.activityLog')
 @Controller({
@@ -25,7 +24,6 @@ import { Prisma } from '@generated/prisma-client';
 export class ActivityLogSharedController {
   constructor(
     private readonly activityLogService: ActivityLogService,
-    private readonly paginationUtil: PaginationUtil,
     private readonly activityLogUtil: ActivityLogUtil
   ) {}
 
@@ -43,11 +41,12 @@ export class ActivityLogSharedController {
     >,
     @AuthJwtPayload('userId') userId: string
   ): Promise<IResponsePagingReturn<ActivityLogResponseDto>> {
-    const { data, total } = await this.activityLogService.getListCursor(
+    const result = await this.activityLogService.getListCursor(pagination, {
       userId,
-      pagination
-    );
-    const mapped = this.activityLogUtil.mapList(data);
-    return this.paginationUtil.formatCursor(mapped, total, pagination);
+    });
+    return {
+      ...result,
+      data: this.activityLogUtil.mapList(result.data),
+    };
   }
 }

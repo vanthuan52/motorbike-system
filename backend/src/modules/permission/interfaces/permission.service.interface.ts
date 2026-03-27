@@ -1,16 +1,17 @@
 import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { IRequestApp } from '@/common/request/interfaces/request.interface';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
-import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import { PermissionDto } from '@/modules/permission/dtos/permission.dto';
-import { EnumPermissionType, Prisma } from '@/generated/prisma-client';
+import { PermissionModel } from '../models/permission.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IPermissionService {
   getListOffsetByAdmin(
@@ -22,21 +23,29 @@ export interface IPermissionService {
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<Permission>>;
+  ): Promise<IPaginationOffsetReturn<PermissionModel>>;
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<Permission>>;
+  ): Promise<IPaginationCursorReturn<PermissionModel>>;
   getOne(id: string): Promise<IResponseReturn<PermissionDto>>;
   createByAdmin(
-    data: PermissionCreateRequestDto
+    data: PermissionCreateRequestDto,
+    requestLog: IRequestLog,
+    createdBy: string
   ): Promise<IResponseReturn<PermissionDto>>;
   updateByAdmin(
     id: string,
-    data: PermissionUpdateRequestDto
+    data: PermissionUpdateRequestDto,
+    requestLog: IRequestLog,
+    updatedBy: string
   ): Promise<IResponseReturn<PermissionDto>>;
-  deleteByAdmin(id: string): Promise<IResponseReturn<void>>;
+  deleteByAdmin(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>>;
 }

@@ -12,7 +12,7 @@ import { Reflector } from '@nestjs/core';
 import geoIp from 'geoip-lite';
 import { UAParser } from 'ua-parser-js';
 import { getClientIp } from '@supercharge/request-ip';
-import { ActivityLogRepository } from '@/modules/activity-log/repositories/activity-log.repository';
+import { ActivityLogRepository } from '@/modules/activity-log/repository/activity-log.repository';
 import {
   ActivityLogActionMetaKey,
   ActivityLogMetadataMetaKey,
@@ -20,8 +20,8 @@ import {
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { IResponseActivityLogReturn } from '@/common/response/interfaces/response.interface';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { EnumActivityLogAction, UserAgent } from '@/generated/prisma-client';
-
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { UserAgent } from '@/modules/user/interfaces/user.interface';
 /**
  * Interceptor that automatically logs user activities to the database.
  * Captures user actions, IP addresses, user agents, geolocation, and metadata for audit trail purposes.

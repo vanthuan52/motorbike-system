@@ -9,7 +9,8 @@ import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { ApiKeyXTypeMetaKey } from '@/modules/api-key/constants/api-key.constant';
 import { ApiKeyXApiKeyGuard } from '@/modules/api-key/guards/x-api-key/api-key.x-api-key.guard';
 import { ApiKeyXApiKeyTypeGuard } from '@/modules/api-key/guards/x-api-key/api-key.x-api-key.type.guard';
-import { ApiKey, EnumApiKeyType } from '@/generated/prisma-client';
+import { ApiKeyModel } from '../models/api-key.model';
+import { EnumApiKeyType } from '../enums/api-key.enum';
 
 /**
  * Parameter decorator that extracts API key data from the request context
@@ -18,7 +19,7 @@ import { ApiKey, EnumApiKeyType } from '@/generated/prisma-client';
  * @returns {T} The API key object or specific property if data is provided
  */
 export const ApiKeyPayload: () => ParameterDecorator = createParamDecorator(
-  <T = ApiKey>(data: string, ctx: ExecutionContext): T => {
+  <T = ApiKeyModel>(data: string, ctx: ExecutionContext): T => {
     const { __apiKey } = ctx.switchToHttp().getRequest<IRequestApp>();
     return data ? __apiKey[data] : (__apiKey as T);
   }

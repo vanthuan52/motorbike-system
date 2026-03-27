@@ -15,11 +15,15 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumUserVehicleStatusCodeError } from '../enums/user-vehicle.status-code.enum';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
-import { UserRepository } from '@/modules/user/repository/user.repository';
-import { UserVehicle, Prisma } from '@/generated/prisma-client';
+import { UserVehicleModel } from '../models/user-vehicle.model';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { UserService } from '@/modules/user/services/user.service';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class UserVehicleService implements IUserVehicleService {
@@ -28,16 +32,12 @@ export class UserVehicleService implements IUserVehicleService {
   constructor(
     private readonly userVehicleRepository: UserVehicleRepository,
     private readonly vehicleModelRepository: VehicleModelRepository,
-    private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
+    private readonly helperService: HelperService
   ) {
     this.uploadPath =
       this.configService.get<string>('userVehicle.uploadPath') || '';
-  }
-
-  async findAll(find?: Prisma.UserVehicleWhereInput): Promise<UserVehicle[]> {
-    return this.userVehicleRepository.findAll({ where: find } as any);
   }
 
   async getListOffset(
@@ -45,15 +45,12 @@ export class UserVehicleService implements IUserVehicleService {
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: UserVehicle[]; total: number }> {
-    const { data, count } =
-      await this.userVehicleRepository.findWithPaginationOffset(
-        pagination,
-        filters,
-      );
-
-    return { data, total: count };
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<UserVehicleModel>> {
+    return this.userVehicleRepository.findWithPaginationOffset(
+      pagination,
+      filters
+    );
   }
 
   async getListCursor(
@@ -61,53 +58,35 @@ export class UserVehicleService implements IUserVehicleService {
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, IPaginationIn>,
-  ): Promise<{ data: UserVehicle[]; total?: number }> {
-    const { data, count } =
-      await this.userVehicleRepository.findWithPaginationCursor(
-        pagination,
-        filters,
-      );
-    return { data, total: count };
+    filters?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<UserVehicleModel>> {
+    return this.userVehicleRepository.findWithPaginationCursor(
+      pagination,
+      filters
+    );
   }
 
-  async findAllWithVehicleModel(
-    find?: Prisma.UserVehicleWhereInput,
-  ): Promise<UserVehicle[]> {
-    return this.userVehicleRepository.findAll({ where: find } as any);
-  }
-
-  async getTotalWithVehicleModel(
-    find?: Prisma.UserVehicleWhereInput,
-  ): Promise<number> {
-    return this.userVehicleRepository.getTotal({ where: find } as any);
-  }
-
-  async findOneById(id: string): Promise<UserVehicle> {
-    const userVehicle = await this.findOneByIdOrFail(id);
-    return userVehicle;
-  }
-
-  async findOneWithVehicleModelById(id: string): Promise<UserVehicle | null> {
-    return this.userVehicleRepository.findOneById(id);
-  }
-
-  async findOne(find: Prisma.UserVehicleWhereInput): Promise<UserVehicle> {
-    const userVehicle = await this.userVehicleRepository.findOne(find);
+  async findOneById(id: string): Promise<UserVehicleModel> {
+    const userVehicle = await this.userVehicleRepository.findOneById(id);
     if (!userVehicle) {
-      return null as any;
+      throw new NotFoundException({
+        statusCode: EnumUserVehicleStatusCodeError.notFound,
+        message: 'user-vehicle.error.notFound',
+      });
     }
     return userVehicle;
   }
 
-  async getTotal(find?: Prisma.UserVehicleWhereInput): Promise<number> {
-    return this.userVehicleRepository.getTotal({ where: find } as any);
+  async findOne(
+    find: Prisma.UserVehicleWhereInput
+  ): Promise<UserVehicleModel | null> {
+    return this.userVehicleRepository.findOne(find);
   }
 
-  async create(payload: UserVehicleCreateRequestDto): Promise<UserVehicle> {
+  async create(payload: UserVehicleCreateRequestDto): Promise<DatabaseIdDto> {
     const [checkVehicleModel, checkUser] = await Promise.all([
       this.vehicleModelRepository.findOneById(payload.vehicleModel),
-      this.userRepository.findOneById(payload.user),
+      this.userService.getOne(payload.user),
     ]);
 
     if (!checkVehicleModel) {
@@ -124,8 +103,8 @@ export class UserVehicleService implements IUserVehicleService {
     }
 
     const created = await this.userVehicleRepository.create({
-      userId: payload.user,
-      vehicleModelId: payload.vehicleModel,
+      user: { connect: { id: payload.user } },
+      vehicleModel: { connect: { id: payload.vehicleModel } },
       modelYear: payload.modelYear,
       licensePlateNumber: payload.licensePlateNumber,
       engineNumber: payload.engineNumber,
@@ -133,18 +112,18 @@ export class UserVehicleService implements IUserVehicleService {
       color: payload.color,
     });
 
-    return created;
+    return { id: created.id };
   }
 
   async update(
     id: string,
-    payload: UserVehicleUpdateRequestDto,
+    payload: UserVehicleUpdateRequestDto
   ): Promise<void> {
-    await this.findOneByIdOrFail(id);
+    await this.findOneById(id);
 
     if (payload.vehicleModel) {
       const checkVehicleModel = await this.vehicleModelRepository.findOneById(
-        payload.vehicleModel,
+        payload.vehicleModel
       );
       if (!checkVehicleModel) {
         throw new NotFoundException({
@@ -154,42 +133,31 @@ export class UserVehicleService implements IUserVehicleService {
       }
     }
 
-    const updateData: Prisma.UserVehicleUpdateInput = {};
-    if (payload.user) updateData.userId = payload.user;
-    if (payload.vehicleModel) updateData.vehicleModelId = payload.vehicleModel;
-    if (payload.modelYear !== undefined)
-      updateData.modelYear = payload.modelYear;
-    if (payload.licensePlateNumber !== undefined)
-      updateData.licensePlateNumber = payload.licensePlateNumber;
-    if (payload.engineNumber !== undefined)
-      updateData.engineNumber = payload.engineNumber;
-    if (payload.chassisNumber !== undefined)
-      updateData.chassisNumber = payload.chassisNumber;
-    if (payload.color !== undefined) updateData.color = payload.color;
+    const updateData: Prisma.UserVehicleUpdateInput = {
+      user: payload.user ? { connect: { id: payload.user } } : undefined,
+      vehicleModel: payload.vehicleModel
+        ? { connect: { id: payload.vehicleModel } }
+        : undefined,
+      modelYear: payload.modelYear ?? undefined,
+      licensePlateNumber: payload.licensePlateNumber ?? undefined,
+      engineNumber: payload.engineNumber ?? undefined,
+      chassisNumber: payload.chassisNumber ?? undefined,
+      color: payload.color ?? undefined,
+    };
 
     await this.userVehicleRepository.update(id, updateData);
   }
 
-  async delete(id: string): Promise<boolean> {
-    await this.findOneByIdOrFail(id);
-    await this.userVehicleRepository.delete(id);
-    return true;
-  }
-
-  async softDelete(repository: UserVehicle): Promise<UserVehicle> {
-    return this.userVehicleRepository.update(repository.id, {
+  async delete(id: string): Promise<void> {
+    await this.findOneById(id);
+    await this.userVehicleRepository.update(id, {
       deletedAt: new Date(),
-    } as any);
-  }
-
-  async deleteMany(find?: Prisma.UserVehicleWhereInput): Promise<boolean> {
-    await this.userVehicleRepository.deleteMany(find || {});
-    return true;
+    });
   }
 
   createRandomFilenamePhoto(
     userId: string,
-    { mime }: UserVehicleUploadPhotoRequestDto,
+    { mime }: UserVehicleUploadPhotoRequestDto
   ): string {
     let path: string = this.uploadPath.replace('{UserVehicle}', userId);
     const randomPath = this.helperService.randomString(10);
@@ -202,26 +170,9 @@ export class UserVehicleService implements IUserVehicleService {
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
   }
 
-  async updatePhoto(
-    repository: UserVehicle,
-    photo: AwsS3Dto,
-  ): Promise<UserVehicle> {
-    return this.userVehicleRepository.update(repository.id, {
-      photo: {
-        ...photo,
-        size: photo.size,
-      } as any,
+  async updatePhoto(id: string, photo: AwsS3Dto): Promise<UserVehicleModel> {
+    return this.userVehicleRepository.update(id, {
+      photo: photo.completedUrl,
     });
-  }
-
-  private async findOneByIdOrFail(id: string): Promise<UserVehicle> {
-    const userVehicle = await this.userVehicleRepository.findOneById(id);
-    if (!userVehicle) {
-      throw new NotFoundException({
-        statusCode: EnumUserVehicleStatusCodeError.notFound,
-        message: 'user-vehicle.error.notFound',
-      });
-    }
-    return userVehicle;
   }
 }
