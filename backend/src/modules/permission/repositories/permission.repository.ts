@@ -1,23 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
-import { DatabaseUtil } from '@/common/database/utils/database.util';
 import {
   IPaginationIn,
   IPaginationQueryOffsetParams,
+  IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
-import { IPermission } from '@/modules/permission/interfaces/permission.interface';
+import { PermissionModel } from '@/modules/permission/models/permission.model';
+import { PermissionMapper } from '@/modules/permission/mappers/permission.mapper';
+import {
+  Prisma,
+  Permission as PrismaPermission,
+} from '@/generated/prisma-client';
 
 @Injectable()
 export class PermissionRepository {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly paginationService: PaginationService,
-    private readonly databaseUtil: DatabaseUtil
+    private readonly paginationService: PaginationService
   ) {}
 
   async findWithPaginationOffsetByAdmin(
@@ -28,19 +32,24 @@ export class PermissionRepository {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<Permission>> {
-    return this.paginationService.offset<
-      Permission,
+    group?: Record<string, IPaginationIn>
+  ): Promise<IPaginationOffsetReturn<PermissionModel>> {
+    const result = await this.paginationService.offset<
+      PrismaPermission,
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >(this.databaseService.permission, {
       ...params,
       where: {
         ...where,
-        ...type,
+        ...group,
       },
     });
+
+    return {
+      ...result,
+      data: result.data.map(PermissionMapper.toDomain),
+    };
   }
 
   async findWithPaginationCursor(
@@ -51,86 +60,134 @@ export class PermissionRepository {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<Permission>> {
-    return this.paginationService.cursor<
-      Permission,
+    group?: Record<string, IPaginationIn>
+  ): Promise<IPaginationCursorReturn<PermissionModel>> {
+    const result = await this.paginationService.cursor<
+      PrismaPermission,
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >(this.databaseService.permission, {
       ...params,
       where: {
         ...where,
-        ...type,
+        ...group,
       },
     });
+
+    return {
+      ...result,
+      data: result.data.map(PermissionMapper.toDomain),
+    };
   }
 
-  async findOneById(id: string): Promise<Permission> {
-    return this.databaseService.permission.findUnique({
+  async findOneById(id: string): Promise<PermissionModel | null> {
+    const result = await this.databaseService.permission.findUnique({
       where: { id },
     });
+
+    return result ? PermissionMapper.toDomain(result) : null;
   }
 
-  async existByName(name: string): Promise<IPermission | null> {
-    return this.databaseService.permission.findFirst({
+  async findByIds(ids: string[]): Promise<PermissionModel[]> {
+    const results = await this.databaseService.permission.findMany({
       where: {
-        name: name,
+        id: { in: ids },
+        isActive: true,
       },
-      select: { id: true, type: true, name: true },
     });
+
+    return results.map(PermissionMapper.toDomain);
   }
 
-  async existById(id: string): Promise<IPermission | null> {
-    return this.databaseService.permission.findUnique({
+  async findByRoleId(roleId: string): Promise<PermissionModel[]> {
+    const rolePermissions = await this.databaseService.rolePermission.findMany({
+      where: { roleId },
+      include: { permission: true },
+    });
+
+    return rolePermissions.map((rp: any) =>
+      PermissionMapper.toDomain(rp.permission)
+    );
+  }
+
+  async findByRoleIds(roleIds: string[]): Promise<PermissionModel[]> {
+    const rolePermissions = await this.databaseService.rolePermission.findMany({
       where: {
-        id,
+        roleId: { in: roleIds },
       },
-      select: { id: true, type: true, name: true },
+      include: { permission: true },
     });
+
+    // Deduplicate permissions (user may have overlapping role permissions)
+    const permMap = new Map<string, PermissionModel>();
+    for (const rp of rolePermissions) {
+      if (!permMap.has(rp.permission.id)) {
+        permMap.set(rp.permission.id, PermissionMapper.toDomain(rp.permission));
+      }
+    }
+
+    return Array.from(permMap.values());
   }
 
-  async used(id: string): Promise<{ id: string } | null> {
-    return this.databaseService.permission.findFirst({
-      where: {
-        users: {
-          some: {
-            roleId: id,
-          },
-        },
-      },
-      select: { id: true },
+  async existByCode(code: string): Promise<PermissionModel | null> {
+    const result = await this.databaseService.permission.findUnique({
+      where: { code },
     });
+
+    return result ? PermissionMapper.toDomain(result) : null;
   }
 
-  async create({
-    name,
-    abilities,
-    ...others
-  }: PermissionCreateRequestDto): Promise<Permission> {
-    return this.databaseService.permission.create({
+  async existByName(name: string): Promise<PermissionModel | null> {
+    const result = await this.databaseService.permission.findFirst({
+      where: { name },
+    });
+
+    return result ? PermissionMapper.toDomain(result) : null;
+  }
+
+  async existById(id: string): Promise<PermissionModel | null> {
+    const result = await this.databaseService.permission.findUnique({
+      where: { id },
+      select: { id: true, name: true, code: true },
+    });
+
+    return result ? (result as unknown as PermissionModel) : null;
+  }
+
+  async create(data: PermissionCreateRequestDto): Promise<PermissionModel> {
+    const result = await this.databaseService.permission.create({
       data: {
-        name: name,
-        abilities: this.databaseUtil.toPlainArray(abilities),
-        ...others,
+        name: data.name,
+        code: data.code,
+        description: data.description,
+        group: data.group,
+        action: data.action.toUpperCase() as any,
+        subject: data.subject.toUpperCase() as any,
       },
     });
+
+    return PermissionMapper.toDomain(result);
   }
 
   async update(
     id: string,
-    { abilities, ...others }: PermissionUpdateRequestDto
-  ): Promise<Permission> {
-    return this.databaseService.permission.update({
+    data: PermissionUpdateRequestDto
+  ): Promise<PermissionModel> {
+    const result = await this.databaseService.permission.update({
       where: { id },
       data: {
-        abilities: this.databaseUtil.toPlainArray(abilities),
-        ...others,
+        ...data,
       },
     });
+
+    return PermissionMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<Permission> {
-    return this.databaseService.permission.delete({ where: { id } });
+  async delete(id: string): Promise<PermissionModel> {
+    const result = await this.databaseService.permission.delete({
+      where: { id },
+    });
+
+    return PermissionMapper.toDomain(result);
   }
 }

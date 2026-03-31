@@ -2,16 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
   IsArray,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
-import { EnumRoleType } from '../../enums/role.enum';
 
 export class RoleUpdateRequestDto {
   @ApiProperty({
@@ -27,23 +22,21 @@ export class RoleUpdateRequestDto {
 
   @ApiProperty({
     description: 'Representative for role type',
-    example: EnumRoleType.admin,
+    example: 'admin',
     required: true,
-    enum: EnumRoleType,
   })
-  @IsEnum(EnumRoleType)
+  @IsString()
   @IsNotEmpty()
-  type: EnumRoleType;
+  type: string;
 
   @ApiProperty({
-    required: true,
-    description: 'Ability list of role',
+    description: 'Permission IDs to assign to this role',
+    required: false,
     isArray: true,
-    type: [RoleAbilityRequestDto],
+    type: [String],
   })
-  @Type(() => RoleAbilityRequestDto)
-  @IsNotEmpty()
-  @ValidateNested()
   @IsArray()
-  abilities: RoleAbilityRequestDto[];
+  @IsString({ each: true })
+  @IsOptional()
+  permissionIds?: string[];
 }

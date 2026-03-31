@@ -1,5 +1,9 @@
 import { EnumStoreStatus } from '../enums/store.enum';
 
+/**
+ * Domain model representing a physical store location.
+ * Maps from Prisma Store to application domain layer.
+ */
 export class StoreModel {
   id: string;
   name: string;
@@ -23,5 +27,9 @@ export class StoreModel {
 
   isActive(): boolean {
     return this.status === EnumStoreStatus.active && !this.deletedAt;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
   }
 }

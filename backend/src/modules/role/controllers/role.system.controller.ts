@@ -27,11 +27,10 @@ import {
   RoleSystemGetAbilitiesDoc,
   RoleSystemListDoc,
 } from '@/modules/role/docs/role.system.doc';
-import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
+import { RolePermissionsResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 import { RoleService } from '@/modules/role/services/role.service';
 import { RoleUtil } from '@/modules/role/utils/role.util';
-import { EnumRoleType } from '../enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.system.role')
@@ -57,7 +56,7 @@ export class RoleSystemController {
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >,
-    @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
+    @PaginationQueryFilterInEnum('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
     const result = await this.roleService.getListCursor(pagination, type);
@@ -69,13 +68,14 @@ export class RoleSystemController {
   }
 
   @RoleSystemGetAbilitiesDoc()
-  @Response('role.getAbilities')
+  @Response('role.getPermissions')
   @ApiKeySystemProtected()
-  @Get('/get/:roleId/abilities')
-  async getAbilities(
+  @Get('/get/:roleId/permissions')
+  async getPermissions(
     @Param('roleId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     roleId: string
-  ): Promise<IResponseReturn<RoleAbilitiesResponseDto>> {
-    return this.roleService.getAbilities(roleId);
+  ): Promise<IResponseReturn<RolePermissionsResponseDto>> {
+    const permissions = await this.roleService.getPermissions(roleId);
+    return { data: { permissions: permissions as any } };
   }
 }

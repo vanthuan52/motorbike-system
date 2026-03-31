@@ -58,11 +58,13 @@ export class AuthSharedController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.authService.changePassword(user, body, {
+    await this.authService.changePassword(user, body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return;
   }
 
   @AuthSharedRefreshDoc()
@@ -79,10 +81,12 @@ export class AuthSharedController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<AuthTokenResponseDto>> {
-    return this.authService.refresh(user, refreshToken, {
+    const tokens = await this.authService.refreshToken(user, refreshToken, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return { data: tokens };
   }
 }

@@ -37,7 +37,6 @@ import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
@@ -69,10 +68,10 @@ export class CareRecordConditionAdminController {
 
   @ResponsePaging('care-record-condition.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -105,10 +104,10 @@ export class CareRecordConditionAdminController {
   @CareRecordConditionAdminParamsIdDoc()
   @Response('care-record-condition.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -124,7 +123,11 @@ export class CareRecordConditionAdminController {
 
   @CareRecordConditionAdminCreateDoc()
   @Response('care-record-condition.create')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.create],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -145,7 +148,11 @@ export class CareRecordConditionAdminController {
 
   @CareRecordConditionAdminUpdateDoc()
   @Response('care-record-condition.update')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -169,10 +176,10 @@ export class CareRecordConditionAdminController {
   @CareRecordConditionAdminDeleteDoc()
   @Response('care-record-condition.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

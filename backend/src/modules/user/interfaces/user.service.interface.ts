@@ -6,6 +6,8 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   IRequestApp,
@@ -13,8 +15,6 @@ import {
 } from '@/common/request/interfaces/request.interface';
 import {
   IResponseFileReturn,
-  IResponsePagingReturn,
-  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import {
   UserCheckEmailRequestDto,
@@ -32,8 +32,6 @@ import {
   UserCheckEmailResponseDto,
   UserCheckUsernameResponseDto,
 } from '@/modules/user/dtos/response/user.check.response.dto';
-import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
-import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
 import { IUser } from '@/modules/user/interfaces/user.interface';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
 import { Prisma } from '@/generated/prisma-client';
@@ -49,9 +47,8 @@ export interface IUserService {
       Prisma.UserWhereInput
     >,
     status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-    country?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<UserListResponseDto>>;
+    role?: Record<string, IPaginationEqual>
+  ): Promise<IPaginationOffsetReturn<IUser>>;
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.UserSelect,
@@ -60,68 +57,61 @@ export interface IUserService {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<UserListResponseDto>>;
-  getOne(id: string): Promise<IResponseReturn<UserProfileResponseDto>>;
+  ): Promise<IPaginationCursorReturn<IUser>>;
+  getOne(id: string): Promise<IUser>;
   createByAdmin(
-    { countryId, email, name, roleId }: UserCreateRequestDto,
+    { email, name, roleId }: UserCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IResponseReturn<DatabaseIdDto>>;
+  ): Promise<IUser>;
   updateStatusByAdmin(
     userId: string,
     { status }: UserUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<IUser>;
   checkUsername({
     username,
-  }: UserCheckUsernameRequestDto): Promise<
-    IResponseReturn<UserCheckUsernameResponseDto>
-  >;
+  }: UserCheckUsernameRequestDto): Promise<UserCheckUsernameResponseDto>;
   checkEmail({
     email,
-  }: UserCheckEmailRequestDto): Promise<
-    IResponseReturn<UserCheckEmailResponseDto>
-  >;
-  getProfile(userId: string): Promise<IResponseReturn<UserProfileResponseDto>>;
+  }: UserCheckEmailRequestDto): Promise<UserCheckEmailResponseDto>;
+  getProfile(userId: string): Promise<IUser>;
   updateProfile(
     userId: string,
-    { countryId, ...data }: UserUpdateProfileRequestDto,
+    data: UserUpdateProfileRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
   generatePhotoProfilePresign(
     userId: string,
     { extension, size }: UserGeneratePhotoProfileRequestDto
-  ): Promise<IResponseReturn<AwsS3PresignDto>>;
+  ): Promise<AwsS3PresignDto>;
   updatePhotoProfile(
     userId: string,
     { photoKey, size }: UserUpdateProfilePhotoRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
-  deleteSelf(
-    userId: string,
-    requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
+  deleteSelf(userId: string, requestLog: IRequestLog): Promise<void>;
   claimUsername(
     userId: string,
     { username }: UserClaimUsernameRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
   uploadPhotoProfile(
     userId: string,
     file: IFile,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
   updatePasswordByAdmin(
     userId: string,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<IUser>;
   importByAdmin(
     data: UserImportRequestDto[],
     createdBy: string,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
   exportByAdmin(
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,

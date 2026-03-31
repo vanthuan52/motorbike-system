@@ -1,5 +1,9 @@
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import { EnumStatus } from '@/common/enums/common.enum';
 
+/**
+ * Domain model representing a vehicle part.
+ * Maps from Prisma Part to application domain layer.
+ */
 export class PartModel {
   id: string;
   name: string;
@@ -7,6 +11,7 @@ export class PartModel {
   description?: string;
   status: EnumStatus;
   orderBy: string;
+
   partTypeId: string;
   vehicleBrandId: string;
 
@@ -17,4 +22,16 @@ export class PartModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<PartModel>) {
+    Object.assign(this, data);
+  }
+
+  isActive(): boolean {
+    return this.status === EnumStatus.active && !this.deletedAt;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

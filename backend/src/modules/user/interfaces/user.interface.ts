@@ -5,6 +5,7 @@ import {
   DeviceModel,
   DeviceOwnershipModel,
 } from '@/modules/device/models/device.model';
+
 export interface IUser extends UserModel {
   roles: RoleModel[];
 }

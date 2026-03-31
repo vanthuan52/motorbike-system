@@ -1,8 +1,6 @@
 import {
   ConflictException,
-  ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import {
@@ -12,30 +10,19 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import {
-  IRequestApp,
-  IRequestLog,
-} from '@/common/request/interfaces/request.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
-import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
-import { PermissionDto } from '@/modules/permission/dtos/permission.dto';
 import { EnumPermissionStatusCodeError } from '@/modules/permission/enums/permission.status-code.enum';
 import { IPermissionService } from '@/modules/permission/interfaces/permission.service.interface';
 import { PermissionRepository } from '@/modules/permission/repositories/permission.repository';
-import { PermissionUtil } from '@/modules/permission/utils/permission.util';
 import { PermissionModel } from '../models/permission.model';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class PermissionService implements IPermissionService {
   constructor(
-    private readonly PermissionRepository: PermissionRepository,
-    private readonly PermissionUtil: PermissionUtil
+    private readonly permissionRepository: PermissionRepository
   ) {}
 
   async getListOffsetByAdmin(
@@ -43,18 +30,12 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    type?: Record<string, IPaginationIn>
+    group?: Record<string, IPaginationIn>
   ): Promise<IPaginationOffsetReturn<PermissionModel>> {
-    const { data, ...others } =
-      await this.PermissionRepository.findWithPaginationOffsetByAdmin(
-        pagination,
-        type
-      );
-
-    return {
-      data,
-      ...others,
-    };
+    return this.permissionRepository.findWithPaginationOffsetByAdmin(
+      pagination,
+      group
+    );
   }
 
   async getListCursor(
@@ -62,54 +43,48 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    type?: Record<string, IPaginationIn>
+    group?: Record<string, IPaginationIn>
   ): Promise<IPaginationCursorReturn<PermissionModel>> {
-    const { data, ...others } =
-      await this.PermissionRepository.findWithPaginationCursor(
-        pagination,
-        type
-      );
-
-    return {
-      data,
-      ...others,
-    };
+    return this.permissionRepository.findWithPaginationCursor(
+      pagination,
+      group
+    );
   }
 
-  async getOne(id: string): Promise<IResponseReturn<PermissionDto>> {
-    const Permission = await this.PermissionRepository.findOneById(id);
-    if (!Permission) {
+  async getOne(id: string): Promise<PermissionModel> {
+    const permission = await this.permissionRepository.findOneById(id);
+    if (!permission) {
       throw new NotFoundException({
         statusCode: EnumPermissionStatusCodeError.notFound,
-        message: 'Permission.error.notFound',
+        message: 'permission.error.notFound',
       });
     }
 
-    return { data: this.PermissionUtil.mapOne(Permission) };
+    return permission;
   }
 
   async createByAdmin(
-    { name, ...others }: PermissionCreateRequestDto,
+    data: PermissionCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IResponseReturn<PermissionDto>> {
-    const exist = await this.PermissionRepository.existByName(name);
-    if (exist) {
+  ): Promise<PermissionModel> {
+    const existByCode = await this.permissionRepository.existByCode(data.code);
+    if (existByCode) {
       throw new ConflictException({
         statusCode: EnumPermissionStatusCodeError.exist,
-        message: 'Permission.error.exist',
+        message: 'permission.error.codeExist',
       });
     }
 
-    const created = await this.PermissionRepository.create({
-      name,
-      ...others,
-      createdBy,
-    });
-    return {
-      data: this.PermissionUtil.mapOne(created),
-      metadataActivityLog: this.PermissionUtil.mapActivityLogMetadata(created),
-    };
+    const existByName = await this.permissionRepository.existByName(data.name);
+    if (existByName) {
+      throw new ConflictException({
+        statusCode: EnumPermissionStatusCodeError.exist,
+        message: 'permission.error.nameExist',
+      });
+    }
+
+    return this.permissionRepository.create(data);
   }
 
   async updateByAdmin(
@@ -117,54 +92,39 @@ export class PermissionService implements IPermissionService {
     data: PermissionUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<PermissionDto>> {
-    const Permission = await this.PermissionRepository.existById(id);
-    if (!Permission) {
+  ): Promise<PermissionModel> {
+    const permission = await this.permissionRepository.existById(id);
+    if (!permission) {
       throw new NotFoundException({
         statusCode: EnumPermissionStatusCodeError.notFound,
-        message: 'Permission.error.notFound',
+        message: 'permission.error.notFound',
       });
     }
 
-    const updated = await this.PermissionRepository.update(id, {
-      ...data,
-      updatedBy,
-    });
-    return {
-      data: this.PermissionUtil.mapOne(updated),
-      metadataActivityLog: this.PermissionUtil.mapActivityLogMetadata(updated),
-    };
+    return this.permissionRepository.update(id, data);
   }
 
   async deleteByAdmin(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<IResponseReturn<void>> {
-    const [Permission, PermissionUsed] = await Promise.all([
-      this.PermissionRepository.existById(id),
-      this.PermissionRepository.used(id),
-    ]);
-
-    if (!Permission) {
+  ): Promise<PermissionModel> {
+    const permission = await this.permissionRepository.existById(id);
+    if (!permission) {
       throw new NotFoundException({
         statusCode: EnumPermissionStatusCodeError.notFound,
-        message: 'Permission.error.notFound',
-      });
-    } else if (PermissionUsed) {
-      throw new ConflictException({
-        statusCode: EnumPermissionStatusCodeError.used,
-        message: 'Permission.error.used',
+        message: 'permission.error.notFound',
       });
     }
 
-    const deleted = await this.PermissionRepository.update(id, {
-      deletedAt: new Date(),
-      deletedBy,
-    });
+    return this.permissionRepository.delete(id);
+  }
 
-    return {
-      metadataActivityLog: this.PermissionUtil.mapActivityLogMetadata(deleted),
-    };
+  async findByIds(ids: string[]): Promise<PermissionModel[]> {
+    return this.permissionRepository.findByIds(ids);
+  }
+
+  async findByRoleIds(roleIds: string[]): Promise<PermissionModel[]> {
+    return this.permissionRepository.findByRoleIds(roleIds);
   }
 }

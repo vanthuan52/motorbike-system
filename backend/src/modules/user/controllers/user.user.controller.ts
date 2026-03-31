@@ -16,7 +16,6 @@ import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { UserUserDeleteSelfDoc } from '@/modules/user/docs/user.user.doc';
 import { UserService } from '@/modules/user/services/user.service';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   GeoLocation,
   UserAgent,
@@ -32,7 +31,7 @@ export class UserUserController {
 
   @UserUserDeleteSelfDoc()
   @Response('user.deleteSelf')
-  @RoleProtected(EnumRoleType.user)
+  @RoleProtected('user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -43,10 +42,11 @@ export class UserUserController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.deleteSelf(userId, {
+    await this.userService.deleteSelf(userId, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 }

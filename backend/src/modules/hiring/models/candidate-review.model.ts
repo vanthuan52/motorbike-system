@@ -1,7 +1,12 @@
+/**
+ * Domain model representing a candidate review/feedback.
+ * Maps from Prisma CandidateReview to application domain layer.
+ */
 export class CandidateReviewModel {
   id: string;
   feedback: string;
   rating?: number;
+
   userId: string;
   candidateId: string;
 
@@ -12,4 +17,12 @@ export class CandidateReviewModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<CandidateReviewModel>) {
+    Object.assign(this, data);
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 export const RoleDocParamsId: ApiParamOptions[] = [
   {
@@ -18,7 +17,7 @@ export const RoleDocQueryList: ApiQueryOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(EnumRoleType).join(','),
-    description: `enum value with ',' delimiter. Available values: ${Object.values(EnumRoleType).join(',')}`,
+    example: 'admin,user',
+    description: "enum value with ',' delimiter. Available values: admin, user",
   },
 ];

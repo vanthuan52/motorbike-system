@@ -20,14 +20,10 @@ import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-passwo
 import { AuthForgotPasswordRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password.request.dto';
 import { AuthForgotPasswordResetRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password-reset.request.dto';
 import { IUser } from '@/modules/user/interfaces/user.interface';
+import { AuthLoginResponseDto } from '../dtos/response/auth.login.response.dto';
 
 export interface IAuthService {
   // Pure service
-  createTokens(
-    user: IUser,
-    loginFrom: EnumUserLoginFrom,
-    loginWith: EnumUserLoginWith
-  ): IAuthAccessTokenGenerate;
   validateJwtAccessStrategy(
     payload: IAuthJwtAccessTokenPayload
   ): Promise<IAuthJwtAccessTokenPayload>;
@@ -54,13 +50,13 @@ export interface IAuthService {
   loginCredential(
     data: AuthLoginRequestDto,
     requestLog: IRequestLog
-  ): Promise<AuthTokenResponseDto>;
+  ): Promise<AuthLoginResponseDto>;
   loginWithSocial(
     email: string,
     loginWith: EnumUserLoginWith,
     socialData: AuthCreateSocialRequestDto,
     requestLog: IRequestLog
-  ): Promise<AuthTokenResponseDto>;
+  ): Promise<AuthLoginResponseDto>;
   refreshToken(
     user: IUser,
     refreshToken: string,
@@ -72,7 +68,6 @@ export interface IAuthService {
     data: AuthChangePasswordRequestDto,
     requestLog: IRequestLog
   ): Promise<void>;
-
   forgotPassword(
     data: AuthForgotPasswordRequestDto,
     requestLog: IRequestLog

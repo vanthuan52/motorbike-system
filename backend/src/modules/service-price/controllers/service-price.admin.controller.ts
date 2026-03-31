@@ -65,7 +65,6 @@ import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicl
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 import { EnumServicePriceStatus } from '../enums/service-price.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { ServicePriceUtil } from '../utils/service-price.util';
 import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
@@ -90,10 +89,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminListDoc()
   @ResponsePaging('service-price.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -135,10 +134,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminParamsIdDoc()
   @Response('service-price.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -155,10 +154,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminCreateDoc()
   @Response('service-price.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ActivityLog(EnumActivityLogAction.adminServicePriceCreate)
@@ -184,10 +183,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminUpdateDoc()
   @Response('service-price.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ActivityLog(EnumActivityLogAction.adminServicePriceUpdate)
@@ -216,10 +215,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminDeleteDoc()
   @Response('service-price.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ActivityLog(EnumActivityLogAction.adminServicePriceDelete)
@@ -246,10 +245,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminListCombinedDoc()
   @ResponsePaging('service-price.listByService')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list/combined')
@@ -345,10 +344,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminListCombinedByServiceDoc()
   @ResponsePaging('service-price.listByService')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list/for-service/:vehicleServiceId')
@@ -395,10 +394,10 @@ export class ServicePriceAdminController {
   @ServicePriceAdminListHistoryDoc()
   @ResponsePaging('service-price.listHistory')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.servicePrice,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list/history/:vehicleServiceId/:vehicleModelId')

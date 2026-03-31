@@ -47,6 +47,7 @@ import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.resp
 import { UserService } from '@/modules/user/services/user.service';
 import { EnumUserStatus } from '../enums/user.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { UserUtil } from '../utils/user.util';
 
 @ApiTags('modules.system.user')
 @Controller({
@@ -54,7 +55,10 @@ import { Prisma } from '@/generated/prisma-client';
   path: '/user',
 })
 export class UserSystemController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userUtil: UserUtil
+  ) {}
 
   @UserSystemListDoc()
   @ResponsePaging('user.list')
@@ -75,7 +79,12 @@ export class UserSystemController {
     @PaginationQueryFilterEqualString('country')
     country?: Record<string, IPaginationEqual>
   ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-    return this.userService.getListCursor(pagination, status, role, country);
+    const result = await this.userService.getListCursor(pagination, status, role, country);
+    const mapped = this.userUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @UserSystemCheckUsernameDoc()
@@ -86,7 +95,8 @@ export class UserSystemController {
   async checkUsername(
     @Body() body: UserCheckUsernameRequestDto
   ): Promise<IResponseReturn<UserCheckUsernameResponseDto>> {
-    return this.userService.checkUsername(body);
+    const data = await this.userService.checkUsername(body);
+    return { data };
   }
 
   @UserSystemCheckEmailDoc()
@@ -97,6 +107,7 @@ export class UserSystemController {
   async checkEmail(
     @Body() body: UserCheckEmailRequestDto
   ): Promise<IResponseReturn<UserCheckEmailResponseDto>> {
-    return this.userService.checkEmail(body);
+    const data = await this.userService.checkEmail(body);
+    return { data };
   }
 }

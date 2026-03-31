@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 /**
  * Response DTO for authentication token containing token information and user role
@@ -12,12 +11,11 @@ export class AuthTokenResponseDto {
   tokenType: string;
 
   @ApiProperty({
-    example: EnumRoleType.user,
-    enum: EnumRoleType,
+    example: 'user',
     type: String,
     required: true,
   })
-  roleType: EnumRoleType;
+  roleType: string;
 
   @ApiProperty({
     example: 3600,

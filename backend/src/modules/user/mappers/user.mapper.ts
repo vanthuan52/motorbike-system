@@ -1,4 +1,5 @@
 import { UserModel } from '../models/user.model';
+import { RoleMapper } from '@/modules/role/mappers/role.mapper';
 import {
   EnumUserStatus,
   EnumUserGender,
@@ -8,9 +9,14 @@ import {
   EnumUserLoginWith,
 } from '../enums/user.enum';
 import { User as PrismaUser } from '@/generated/prisma-client';
+import { IUser } from '../interfaces/user.interface';
 
 export class UserMapper {
-  static toDomain(prismaUser: PrismaUser): UserModel {
+  /**
+   * Maps a Prisma User to domain UserModel.
+   * If the Prisma result includes userRoles with role, maps them to IUser.roles.
+   */
+  static toDomain(prismaUser: any): UserModel {
     const user = new UserModel();
     user.id = prismaUser.id;
     user.username = prismaUser.username;
@@ -47,6 +53,24 @@ export class UserMapper {
     user.createdBy = prismaUser.createdBy;
     user.updatedBy = prismaUser.updatedBy;
     user.deletedBy = prismaUser.deletedBy;
+
+    return user;
+  }
+
+  /**
+   * Maps a Prisma User with included userRoles→role to IUser with roles array.
+   */
+  static toDomainWithRoles(prismaUser: any): IUser {
+    const user = UserMapper.toDomain(prismaUser) as IUser;
+
+    // Map userRoles relation to roles array
+    if (prismaUser.userRoles && Array.isArray(prismaUser.userRoles)) {
+      user.roles = prismaUser.userRoles
+        .filter((ur: any) => ur.role && !ur.revokedAt)
+        .map((ur: any) => RoleMapper.toDomain(ur.role));
+    } else {
+      user.roles = [];
+    }
 
     return user;
   }

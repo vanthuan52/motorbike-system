@@ -53,7 +53,6 @@ import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_DEFAULT_AVAILABLE_SEARCH,
@@ -92,10 +91,10 @@ export class CareRecordAdminController {
   @CareRecordAdminListDoc()
   @ResponsePaging('care-record.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -150,10 +149,10 @@ export class CareRecordAdminController {
   @CareRecordAdminParamsIdDoc()
   @Response('care-record.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -170,10 +169,10 @@ export class CareRecordAdminController {
   @CareRecordAdminCreateDoc()
   @Response('care-record.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -199,10 +198,10 @@ export class CareRecordAdminController {
   @CareRecordAdminUpdateDoc()
   @Response('care-record.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -226,10 +225,10 @@ export class CareRecordAdminController {
   @CareRecordAdminUpdateStatusDoc()
   @Response('care-record.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -253,10 +252,10 @@ export class CareRecordAdminController {
   @CareRecordAdminUpdatePaymentStatusDoc()
   @Response('care-record.updatePaymentStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/paymentStatus')
@@ -280,10 +279,10 @@ export class CareRecordAdminController {
   @CareRecordAdminUpdateTechnicianDoc()
   @Response('care-record.updateTechnician')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/technician')
@@ -307,10 +306,10 @@ export class CareRecordAdminController {
   @CareRecordAdminDeleteDoc()
   @Response('care-record.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
@@ -332,10 +331,10 @@ export class CareRecordAdminController {
   @CareRecordAdminCreateChecklistDoc()
   @Response('care-record.createChecklist')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create/:id/checklist')

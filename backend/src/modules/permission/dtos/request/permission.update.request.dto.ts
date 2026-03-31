@@ -1,20 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
-  IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { EnumRoleType } from '@/generated/prisma-client';
+import {
+  EnumPolicyAction,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
 
 export class PermissionUpdateRequestDto {
   @ApiProperty({
-    description: 'Description of role',
+    description: 'Name of permission',
+    example: 'Read Users',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  name?: string;
+
+  @ApiProperty({
+    description: 'Description of permission',
     example: faker.lorem.sentence(),
     required: false,
     maxLength: 500,
@@ -25,12 +36,11 @@ export class PermissionUpdateRequestDto {
   description?: string;
 
   @ApiProperty({
-    description: 'Representative for role type',
-    example: EnumRoleType.admin,
-    required: true,
-    enum: EnumRoleType,
+    description: 'Whether the permission is active',
+    example: true,
+    required: false,
   })
-  @IsEnum(EnumRoleType)
-  @IsNotEmpty()
-  type: EnumRoleType;
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

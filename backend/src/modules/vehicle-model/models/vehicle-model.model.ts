@@ -1,6 +1,13 @@
-import { EnumVehicleModelType, EnumVehicleModelFuelType } from '../enums/vehicle-model.enum';
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import {
+  EnumVehicleModelType,
+  EnumVehicleModelFuelType,
+} from '../enums/vehicle-model.enum';
+import { EnumStatus } from '@/common/enums/common.enum';
 
+/**
+ * Domain model representing a vehicle model (e.g., Honda Wave RSX).
+ * Maps from Prisma VehicleModel to application domain layer.
+ */
 export class VehicleModelModel {
   id: string;
   name: string;
@@ -16,6 +23,7 @@ export class VehicleModelModel {
   yearStart?: number;
   yearEnd?: number;
   photo?: string;
+
   vehicleBrandId: string;
 
   createdAt: Date;
@@ -25,4 +33,16 @@ export class VehicleModelModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<VehicleModelModel>) {
+    Object.assign(this, data);
+  }
+
+  isActive(): boolean {
+    return this.status === EnumStatus.active && !this.deletedAt;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

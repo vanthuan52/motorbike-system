@@ -1,3 +1,4 @@
+import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import {
   EnumUserStatus,
   EnumUserGender,
@@ -7,6 +8,10 @@ import {
   EnumUserLoginWith,
 } from '../enums/user.enum';
 
+/**
+ * Domain model representing a system user.
+ * Maps from Prisma User to application domain layer.
+ */
 export class UserModel {
   id: string;
   username: string;
@@ -18,7 +23,7 @@ export class UserModel {
   verifiedAt?: Date;
   status: EnumUserStatus;
   gender?: EnumUserGender;
-  photo?: any;
+  photo?: AwsS3Dto;
 
   signUpDate?: Date;
   signUpFrom?: EnumUserSignUpFrom;
@@ -28,8 +33,6 @@ export class UserModel {
   lastLoginFrom?: EnumUserLoginFrom;
   lastLoginWith?: EnumUserLoginWith;
 
-  verification?: any;
-
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -37,4 +40,16 @@ export class UserModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<UserModel>) {
+    Object.assign(this, data);
+  }
+
+  isActive(): boolean {
+    return this.status === EnumUserStatus.active && !this.deletedAt;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

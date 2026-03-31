@@ -3,10 +3,11 @@ import { Reflector } from '@nestjs/core';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
 import { RoleService } from '@/modules/role/services/role.service';
 import { RoleRequiredMetaKey } from '@/modules/role/constants/role.constant';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { PermissionModel } from '@/modules/permission/models/permission.model';
 
 /**
- * Guard that validates user access based on role types
+ * Guard that validates user access based on role names.
+ * After validation, attaches user's permissions (collected from all roles) to the request.
  */
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -15,25 +16,22 @@ export class RoleGuard implements CanActivate {
     private readonly roleService: RoleService
   ) {}
 
-  /**
-   * Validates if the current user has the required role to access the resource
-   * @param {ExecutionContext} context - NestJS execution context containing request information
-   * @returns {Promise<boolean>} Promise that resolves to true if user has required role access
-   */
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles =
-      this.reflector.get<EnumRoleType[]>(
+      this.reflector.get<string[]>(
         RoleRequiredMetaKey,
         context.getHandler()
       ) ?? [];
 
     const request = context.switchToHttp().getRequest<IRequestApp>();
-    const abilities = await this.roleService.validateRoleGuard(
-      request,
-      requiredRoles
-    );
+    const permissions: PermissionModel[] =
+      await this.roleService.validateRoleGuard(request, requiredRoles);
 
-    request.__abilities = abilities;
+    // Convert permissions to abilities format for PolicyAbilityGuard
+    request.__abilities = permissions.map((p) => ({
+      subject: p.subject,
+      action: [p.action],
+    }));
 
     return true;
   }

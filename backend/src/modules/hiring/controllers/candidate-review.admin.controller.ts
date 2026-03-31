@@ -37,10 +37,8 @@ import { CandidateReviewResponseDto } from '../dtos/candidate-review-response.dt
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import {
   IPaginationQueryOffsetParams,
-  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { Prisma } from '@/generated/prisma-client';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -58,10 +56,10 @@ export class CandidateReviewAdminController {
   @CandidateReviewAdminListDoc()
   @ResponsePaging('candidate-review.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.candidate,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -105,10 +103,10 @@ export class CandidateReviewAdminController {
   @CandidateReviewAdminCreateDoc()
   @Response('candidate-review.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.candidate,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')

@@ -62,7 +62,6 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { VehicleModelUtil } from '../utils/vehicle-model.util';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   RequestGeoLocation,
   RequestIPAddress,
@@ -88,10 +87,10 @@ export class VehicleModelAdminController {
   @VehicleModelAdminListDoc()
   @ResponsePaging('vehicle-model.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -147,10 +146,10 @@ export class VehicleModelAdminController {
   @VehicleModelAdminGetDoc()
   @Response('vehicle-model.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -165,10 +164,10 @@ export class VehicleModelAdminController {
   @VehicleModelAdminCreateDoc()
   @Response('vehicle-model.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -194,10 +193,10 @@ export class VehicleModelAdminController {
   @VehicleModelAdminUpdateDoc()
   @Response('vehicle-model.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -225,10 +224,10 @@ export class VehicleModelAdminController {
   @VehicleModelAdminUpdateStatusDoc()
   @Response('vehicle-model.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -256,10 +255,10 @@ export class VehicleModelAdminController {
   @VehicleModelAdminDeleteDoc()
   @Response('vehicle-model.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

@@ -8,30 +8,36 @@ import { EnumPolicyAction } from '@/modules/policy/enums/policy.enum';
 import {
   IPolicyAbilityRule,
   IPolicyAbilitySubject,
+  IPolicyAbilityInput,
 } from '@/modules/policy/interfaces/policy.interface';
-import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
+import { IPolicyAbility } from '@/modules/policy/interfaces/policy.interface';
 
 /**
- * Factory class for creating and handling policy abilities using CASL library
+ * Factory class for creating and handling policy abilities using CASL library.
+ * Builds CASL ability rules from permission-based abilities.
  */
 @Injectable()
 export class PolicyAbilityFactory {
   /**
-   * Creates policy ability rules for a specific user based on their permissions
-   * @param {IPolicyAbility[]} abilities - Array of policy abilities assigned to the user
-   * @returns {IPolicyAbilityRule} CASL ability rule object for the user
+   * Creates CASL ability rules from user's permission-based abilities.
+   * @param abilities - Array of { subject, action[] } derived from Permission entities
+   * @returns CASL ability rule object for the user
    */
-  createForUser(abilities: RoleAbilityRequestDto[]): IPolicyAbilityRule {
+  createForUser(abilities: IPolicyAbility[]): IPolicyAbilityRule {
     const { can, build } = new AbilityBuilder<IPolicyAbilityRule>(
       createMongoAbility
     );
 
     for (const ability of abilities) {
-      can(ability.action, ability.subject);
+      for (const action of ability.action) {
+        can(
+          action as EnumPolicyAction,
+          ability.subject as IPolicyAbilitySubject
+        );
+      }
     }
 
     return build({
-      // Read https://casl.js.org/v6/en/guide/subject-type-detection#use-classes-as-subject-types for details
       detectSubjectType: (item: {
         constructor: ExtractSubjectType<IPolicyAbilitySubject>;
       }) => item.constructor,
@@ -39,18 +45,21 @@ export class PolicyAbilityFactory {
   }
 
   /**
-   * Validates if user abilities match the required abilities for access control
-   * @param {IPolicyAbilityRule} userAbilities - User's current ability rules
-   * @param {RoleAbilityRequestDto[]} abilities - Required abilities to check against
-   * @returns {boolean} True if user has all required abilities, false otherwise
+   * Validates if user abilities satisfy the required abilities for access control.
+   * @param userAbilities - User's current CASL ability rules
+   * @param requiredAbilities - Required abilities to check against
+   * @returns True if user has all required abilities, false otherwise
    */
   handlerAbilities(
     userAbilities: IPolicyAbilityRule,
-    abilities: RoleAbilityRequestDto[]
+    requiredAbilities: IPolicyAbility[]
   ): boolean {
-    return abilities.every((ability: RoleAbilityRequestDto) =>
-      ability.action.every((action: EnumPolicyAction) =>
-        userAbilities.can(action, ability.subject)
+    return requiredAbilities.every((ability: IPolicyAbility) =>
+      ability.action.every((action: string) =>
+        userAbilities.can(
+          action as EnumPolicyAction,
+          ability.subject as IPolicyAbilitySubject
+        )
       )
     );
   }

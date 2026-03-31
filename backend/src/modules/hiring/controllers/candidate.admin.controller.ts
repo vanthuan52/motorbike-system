@@ -43,7 +43,6 @@ import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.updat
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CandidateUtil } from '../utils/candidate.util';
 import { Prisma } from '@/generated/prisma-client';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 
 @ApiTags('modules.admin.hiring')
 @Controller({
@@ -59,10 +58,10 @@ export class CandidateAdminController {
   @CandidateAdminListDoc()
   @ResponsePaging('candidate.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.candidate,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -120,10 +119,10 @@ export class CandidateAdminController {
   @CandidateAdminParamsIdDoc()
   @Response('candidate.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.candidate,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -143,10 +142,10 @@ export class CandidateAdminController {
   @CandidateAdminUpdateStatusDoc()
   @Response('candidate.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    subject: EnumPolicySubject.candidate,
+    action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')

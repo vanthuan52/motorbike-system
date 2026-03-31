@@ -20,7 +20,7 @@ import {
 } from '@/modules/notification/interfaces/notification.interface';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { IQueueResponse } from '@/queues/interfaces/queue.interface';
-import { UserUtil } from '@/modules/user/utils/user.util';
+import { VerificationUtil } from '@/modules/verification/utils/verification.util';
 import { AuthUtil } from '@/modules/auth/utils/auth.util';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
     private readonly helperService: HelperService,
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
-    private readonly userUtil: UserUtil,
+    private readonly verificationUtil: VerificationUtil,
     private readonly authUtil: AuthUtil
   ) {
     this.noreplyEmail = this.configService.get<string>('email.noreply');
@@ -279,7 +279,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         expiredInMinutes,
       } = job.data.data;
 
-      const link = this.userUtil.decryptedLink(userId, encryptedLink);
+      const link = this.verificationUtil.decryptedLink(userId, encryptedLink);
       const expiredAtFormatted = this.helperService.dateFormatToRFC2822(
         this.helperService.dateCreateFromIso(expiredAt)
       );
@@ -355,7 +355,7 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
         expiredInMinutes,
       } = job.data.data;
 
-      const link = this.userUtil.decryptedLink(userId, encryptedLink);
+      const link = this.verificationUtil.decryptedLink(userId, encryptedLink);
 
       const result = await this.awsSESService.send({
         templateName: EnumNotificationProcess.forgotPassword,

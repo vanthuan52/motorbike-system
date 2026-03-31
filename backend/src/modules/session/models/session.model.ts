@@ -1,20 +1,23 @@
-import { EnumSessionStatus } from '../enums/session.enum';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
+/**
+ * Domain model representing a user session.
+ * Maps from Prisma Session to application domain layer.
+ */
 export class SessionModel {
   id: string;
   jti?: string;
-  ip: string;
-  userAgent?: any;
+  ipAddress: string;
+  userAgent?: UserAgent;
+  geoLocation?: GeoLocation;
   expiredAt: Date;
-  revokeAt?: Date;
-  status: EnumSessionStatus;
-  hostname?: string;
-  protocol?: string;
-  originalUrl?: string;
-  method?: string;
-  xForwardedFor?: string;
-  xForwardedHost?: string;
-  xForwardedPorto?: string;
+  isRevoked: boolean;
+  revokedAt?: Date;
+  revokedById?: string;
+
   userId: string;
 
   createdAt: Date;
@@ -24,4 +27,20 @@ export class SessionModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<SessionModel>) {
+    Object.assign(this, data);
+  }
+
+  isExpired(): boolean {
+    return this.expiredAt < new Date();
+  }
+
+  isActive(): boolean {
+    return !this.isRevoked && !this.isExpired();
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

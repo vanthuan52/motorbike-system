@@ -66,7 +66,6 @@ import {
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
 import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-category')
@@ -83,10 +82,10 @@ export class ServiceCategoryAdminController {
   @ServiceCategoryAdminListDoc()
   @ResponsePaging('service-category.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.serviceCategory,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -116,10 +115,10 @@ export class ServiceCategoryAdminController {
   @ServiceCategoryAdminParamsIdDoc()
   @Response('service-category.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.serviceCategory,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -134,10 +133,10 @@ export class ServiceCategoryAdminController {
   @ServiceCategoryAdminCreateDoc()
   @Response('service-category.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.serviceCategory,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -163,10 +162,10 @@ export class ServiceCategoryAdminController {
   @ServiceCategoryAdminUpdateDoc()
   @Response('service-category.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.serviceCategory,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -194,10 +193,10 @@ export class ServiceCategoryAdminController {
   @ServiceCategoryAdminUpdateStatusDoc()
   @Response('service-category.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.serviceCategory,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -225,10 +224,10 @@ export class ServiceCategoryAdminController {
   @ServiceCategoryAdminDeleteDoc()
   @Response('service-category.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.serviceCategory,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

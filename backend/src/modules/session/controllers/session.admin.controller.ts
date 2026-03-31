@@ -44,7 +44,6 @@ import { SessionResponseDto } from '@/modules/session/dtos/response/session.resp
 import { SessionService } from '@/modules/session/services/session.service';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   GeoLocation,
   UserAgent,
@@ -75,7 +74,7 @@ export class SessionAdminController {
       action: [EnumPolicyAction.read],
     }
   )
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -117,7 +116,7 @@ export class SessionAdminController {
       action: [EnumPolicyAction.read, EnumPolicyAction.delete],
     }
   )
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminSessionRevoke)
   @UserProtected()
   @AuthJwtAccessProtected()

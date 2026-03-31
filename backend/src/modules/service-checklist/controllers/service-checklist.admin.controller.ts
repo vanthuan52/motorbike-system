@@ -44,7 +44,6 @@ import {
 } from '@/modules/user/interfaces/user.interface';
 import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   SERVICE_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
@@ -56,6 +55,8 @@ import { ServiceChecklistUtil } from '../utils/service-checklist.util';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
+import { EnumPolicyAction, EnumPolicySubject } from '@/modules/policy/enums/policy.enum';
 
 @ApiTags('modules.admin.service-checklist')
 @Controller({
@@ -70,7 +71,11 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminListDoc()
   @ResponsePaging('service-checklist.list')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -110,7 +115,11 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminParamsIdDoc()
   @Response('service-checklist.get')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -125,7 +134,11 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminCreateDoc()
   @Response('service-checklist.create')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.create],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ActivityLog(EnumActivityLogAction.adminServiceChecklistCreate)
@@ -150,7 +163,11 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminUpdateDoc()
   @Response('service-checklist.update')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ActivityLog(EnumActivityLogAction.adminServiceChecklistUpdate)
@@ -177,7 +194,11 @@ export class ServiceChecklistAdminController {
 
   @ServiceChecklistAdminDeleteDoc()
   @Response('service-checklist.delete')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ActivityLog(EnumActivityLogAction.adminServiceChecklistDelete)

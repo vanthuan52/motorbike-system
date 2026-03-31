@@ -40,14 +40,12 @@ import {
   PartTypeAdminUpdateStatusDoc,
 } from '../docs/part-type.admin.doc';
 import { PartTypeUtil } from '../utils/part-type.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
-  EnumRoleType,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
@@ -77,17 +75,16 @@ import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 export class PartTypeAdminController {
   constructor(
     private readonly partTypeService: PartTypeService,
-    private readonly partTypeUtil: PartTypeUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly partTypeUtil: PartTypeUtil
   ) {}
 
   @PartTypeAdminListDoc()
   @ResponsePaging('part-type.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.partType,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -100,10 +97,7 @@ export class PartTypeAdminController {
     @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
-    const result = await this.partTypeService.getListOffset(
-      pagination,
-      status
-    );
+    const result = await this.partTypeService.getListOffset(pagination, status);
     const mapped = this.partTypeUtil.mapList(result.data);
     return {
       ...result,
@@ -114,10 +108,10 @@ export class PartTypeAdminController {
   @PartTypeAdminGetDoc()
   @Response('part-type.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.partType,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -132,10 +126,10 @@ export class PartTypeAdminController {
   @PartTypeAdminCreateDoc()
   @Response('part-type.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.partType,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -161,10 +155,10 @@ export class PartTypeAdminController {
   @PartTypeAdminUpdateDoc()
   @Response('part-type.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.partType,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -192,10 +186,10 @@ export class PartTypeAdminController {
   @PartTypeAdminUpdateStatusDoc()
   @Response('part-type.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.partType,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -223,10 +217,10 @@ export class PartTypeAdminController {
   @PartTypeAdminDeleteDoc()
   @Response('part-type.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.partType,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

@@ -41,7 +41,10 @@ import { AuthVerifyEmailRequestDto } from '@/modules/auth/dtos/request/auth.veri
 import { AuthLoginResponseDto } from '@/modules/auth/dtos/response/auth.login.response.dto';
 import { AuthService } from '../services/auth.service';
 import { EnumUserLoginWith } from '@/modules/user/enums/user.enum';
-import { GeoLocation, UserAgent } from '@/generated/prisma-client';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 @ApiTags('modules.public.auth')
 @Controller({
@@ -62,11 +65,15 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<AuthLoginResponseDto>> {
-    return this.authService.loginCredential(body, {
+    const authResponse = await this.authService.loginCredential(body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return {
+      data: authResponse,
+    };
   }
 
   @AuthPublicLoginSocialGoogleDoc()
@@ -83,7 +90,7 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<AuthLoginResponseDto>> {
-    return this.authService.loginWithSocial(
+    const tokens = await this.authService.loginWithSocial(
       email,
       EnumUserLoginWith.socialGoogle,
       body,
@@ -93,6 +100,10 @@ export class AuthPublicController {
         geoLocation,
       }
     );
+
+    return {
+      data: tokens,
+    };
   }
 
   @AuthPublicLoginSocialAppleDoc()
@@ -109,7 +120,7 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<AuthLoginResponseDto>> {
-    return this.authService.loginWithSocial(
+    const tokens = await this.authService.loginWithSocial(
       email,
       EnumUserLoginWith.socialApple,
       body,
@@ -119,6 +130,10 @@ export class AuthPublicController {
         geoLocation,
       }
     );
+
+    return {
+      data: tokens,
+    };
   }
 
   @AuthPublicSignUpDoc()
@@ -132,11 +147,13 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.authService.signUp(body, {
+    await this.authService.signUp(body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return;
   }
 
   @AuthPublicVerifyEmailDoc()
@@ -149,11 +166,13 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.authService.verifyEmail(body, {
+    await this.authService.verifyEmail(body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return;
   }
 
   @AuthPublicSendEmailVerificationDoc()
@@ -167,11 +186,13 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.authService.sendVerificationEmail(body, {
+    await this.authService.sendVerificationEmail(body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return;
   }
 
   @AuthPublicForgotPasswordDoc()
@@ -185,11 +206,13 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.authService.forgotPassword(body, {
+    await this.authService.forgotPassword(body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return;
   }
 
   @AuthPublicResetPasswordDoc()
@@ -203,10 +226,12 @@ export class AuthPublicController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.authService.resetPassword(body, {
+    await this.authService.resetPassword(body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+
+    return;
   }
 }

@@ -8,8 +8,7 @@ import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.e
 import { EnumPolicyStatusCodeError } from '@/modules/policy/enums/policy.status-code.enum';
 import { PolicyAbilityFactory } from '@/modules/policy/factories/policy.factory';
 import { IPolicyService } from '@/modules/policy/interfaces/policy.service.interface';
-import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
+import { IPolicyAbility } from '@/modules/policy/interfaces/policy.interface';
 
 @Injectable()
 export class PolicyService implements IPolicyService {
@@ -17,7 +16,7 @@ export class PolicyService implements IPolicyService {
 
   async validatePolicyGuard(
     request: IRequestApp,
-    requiredAbilities: RoleAbilityRequestDto[]
+    requiredAbilities: IPolicyAbility[]
   ): Promise<boolean> {
     const { __user, user, __abilities } = request;
 
@@ -28,18 +27,16 @@ export class PolicyService implements IPolicyService {
       });
     }
 
-    const { role } = __user;
-
-    if (role.type === EnumRoleType.superAdmin) {
-      return true;
-    } else if (requiredAbilities.length === 0) {
+    if (requiredAbilities.length === 0) {
       throw new InternalServerErrorException({
         statusCode: EnumPolicyStatusCodeError.predefinedNotFound,
         message: 'policy.error.predefinedNotFound',
       });
     }
 
-    const userAbilities = this.policyAbilityFactory.createForUser(__abilities);
+    const userAbilities = this.policyAbilityFactory.createForUser(
+      __abilities ?? []
+    );
     const policyHandler = this.policyAbilityFactory.handlerAbilities(
       userAbilities,
       requiredAbilities

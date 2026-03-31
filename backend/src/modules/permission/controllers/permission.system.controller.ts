@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   PaginationCursorQuery,
@@ -8,15 +8,11 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
-import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import {
-  Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
   IResponsePagingReturn,
-  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { ApiKeySystemProtected } from '@/modules/api-key/decorators/api-key.decorator';
 import {
@@ -24,14 +20,12 @@ import {
   RoleDefaultType,
 } from '@/modules/role/constants/role.list.constant';
 import {
-  RoleSystemGetAbilitiesDoc,
   RoleSystemListDoc,
 } from '@/modules/role/docs/role.system.doc';
-import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import { PermissionService } from '../services/permission.service';
 import { PermissionUtil } from '../utils/permission.util';
-import { EnumRoleType, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.system.permission')
 @Controller({
@@ -56,7 +50,7 @@ export class PermissionSystemController {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    @PaginationQueryFilterInEnum<EnumRoleType>('type', RoleDefaultType)
+    @PaginationQueryFilterInEnum('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
     const result = await this.permissionService.getListCursor(pagination, type);

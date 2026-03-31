@@ -47,7 +47,6 @@ import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { Prisma } from '@/generated/prisma-client';
 
@@ -65,10 +64,10 @@ export class UserVehicleAdminController {
   @UserVehicleAdminListDoc()
   @ResponsePaging('user-vehicle.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -104,10 +103,10 @@ export class UserVehicleAdminController {
   @UserVehicleAdminListByUserDoc()
   @ResponsePaging('user-vehicle.listByUser')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/user/:userId')
@@ -140,10 +139,10 @@ export class UserVehicleAdminController {
   @UserVehicleAdminGetDoc()
   @Response('user-vehicle.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -159,10 +158,10 @@ export class UserVehicleAdminController {
   @UserVehicleAdminCreateDoc()
   @Response('user-vehicle.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -176,10 +175,10 @@ export class UserVehicleAdminController {
   @UserVehicleAdminUpdateDoc()
   @Response('user-vehicle.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -195,10 +194,10 @@ export class UserVehicleAdminController {
   @UserVehicleAdminDeleteDoc()
   @Response('user-vehicle.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

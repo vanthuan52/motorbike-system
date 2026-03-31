@@ -45,7 +45,6 @@ import {
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
@@ -69,6 +68,11 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
+import {
+  EnumPolicyAction,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
 
 @ApiTags('modules.care-record-checklist')
 @Controller({
@@ -83,7 +87,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistListDoc()
   @ResponsePaging('care-record-checklist.list')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -120,7 +128,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistParamsIdDoc()
   @Response('care-record-checklist.get')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -135,7 +147,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistCreateDoc()
   @Response('care-record-checklist.create')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.create],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -156,7 +172,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistUpdateDoc()
   @Response('care-record-checklist.update')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -179,7 +199,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistUpdateStatusDoc()
   @Response('care-record-checklist.updateStatus')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -202,7 +226,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistUpdateResultDoc()
   @Response('care-record-checklist.updateResult')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/result')
@@ -225,7 +253,11 @@ export class CareRecordChecklistController {
 
   @CareRecordChecklistDeleteDoc()
   @Response('care-record-checklist.delete')
-  @RoleProtected(EnumRoleType.admin)
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

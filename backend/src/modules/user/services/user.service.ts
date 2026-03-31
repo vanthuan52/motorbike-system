@@ -14,7 +14,6 @@ import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import { AwsS3PresignDto } from '@/common/aws/dtos/aws.s3-presign.dto';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { AwsS3Service } from '@/common/aws/services/aws.s3.service';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   EnumFileExtensionDocument,
   EnumFileExtensionImage,
@@ -27,16 +26,14 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
+  IPaginationOffsetReturn,
+  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   IRequestApp,
   IRequestLog,
 } from '@/common/request/interfaces/request.interface';
-import {
-  IResponseFileReturn,
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
+import { IResponseFileReturn } from '@/common/response/interfaces/response.interface';
 import { EnumAuthStatusCodeError } from '@/modules/auth/enums/auth.status-code.enum';
 import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
 import { AuthUtil } from '@/modules/auth/utils/auth.util';
@@ -60,30 +57,30 @@ import {
   UserCheckEmailResponseDto,
   UserCheckUsernameResponseDto,
 } from '@/modules/user/dtos/response/user.check.response.dto';
-import { UserListResponseDto } from '@/modules/user/dtos/response/user.list.response.dto';
-import { UserProfileResponseDto } from '@/modules/user/dtos/response/user.profile.response.dto';
 import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
 import {
   IUser,
+  IUserForgotPasswordCreate,
   IUserLogin,
-  IUserVerificationCreate,
+  IUserLoginResult,
 } from '@/modules/user/interfaces/user.interface';
 import { IUserService } from '@/modules/user/interfaces/user.service.interface';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { UserUtil } from '@/modules/user/utils/user.util';
+import { UserModel } from '@/modules/user/models/user.model';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
-import { UserExportResponseDto } from '@/modules/user/dtos/response/user.export.response.dto';
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
 import { EnumAwsStatusCodeError } from '@/common/aws/enums/aws.status-code.enum';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { EnumUserLoginWith, EnumUserStatus } from '../enums/user.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { IUserVerificationCreate } from '@/modules/verification/interfaces/verification.interface';
+
 @Injectable()
 export class UserService implements IUserService {
   private readonly logger = new Logger(UserService.name);
 
   private readonly userRoleName: string;
-  private readonly userCountryName: string;
 
   constructor(
     private readonly userUtil: UserUtil,
@@ -146,22 +143,13 @@ export class UserService implements IUserService {
       Prisma.UserWhereInput
     >,
     status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-    country?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-    const { data, ...others } =
-      await this.userRepository.findWithPaginationOffset(
-        pagination,
-        status,
-        role,
-        country
-      );
-
-    const users: UserListResponseDto[] = this.userUtil.mapList(data);
-    return {
-      data: users,
-      ...others,
-    };
+    role?: Record<string, IPaginationEqual>
+  ): Promise<IPaginationOffsetReturn<IUser>> {
+    return this.userRepository.findWithPaginationOffset(
+      pagination,
+      status,
+      role
+    );
   }
 
   async getListCursor(
@@ -172,23 +160,16 @@ export class UserService implements IUserService {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-    const { data, ...others } =
-      await this.userRepository.findWithPaginationCursor(
-        pagination,
-        status,
-        role,
-        country
-      );
-
-    const users: UserListResponseDto[] = this.userUtil.mapList(data);
-    return {
-      data: users,
-      ...others,
-    };
+  ): Promise<IPaginationCursorReturn<IUser>> {
+    return this.userRepository.findWithPaginationCursor(
+      pagination,
+      status,
+      role,
+      country
+    );
   }
 
-  async getOne(id: string): Promise<IResponseReturn<UserProfileResponseDto>> {
+  async getOne(id: string): Promise<IUser> {
     const user = await this.userRepository.findOneProfileById(id);
     if (!user) {
       throw new NotFoundException({
@@ -197,14 +178,14 @@ export class UserService implements IUserService {
       });
     }
 
-    return { data: this.userUtil.mapProfile(user) };
+    return user;
   }
 
   async createByAdmin(
     { email, name, roleId }: UserCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
+  ): Promise<IUser> {
     const [checkRole, emailExist] = await Promise.all([
       this.roleRepository.existById(roleId),
       this.userRepository.existByEmail(email),
@@ -262,10 +243,7 @@ export class UserService implements IUserService {
         createdBy
       );
 
-      return {
-        data: { id: created.id },
-        metadataActivityLog: this.userUtil.mapActivityLogMetadata(created),
-      };
+      return created;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -280,7 +258,7 @@ export class UserService implements IUserService {
     { status }: UserUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<IUser> {
     if (userId === updatedBy) {
       throw new BadRequestException({
         statusCode: EnumUserStatusCodeError.notSelf,
@@ -302,16 +280,12 @@ export class UserService implements IUserService {
     }
 
     try {
-      const updated = await this.userRepository.updateStatusByAdmin(
+      return await this.userRepository.updateStatusByAdmin(
         userId,
         { status },
         requestLog,
         updatedBy
       );
-
-      return {
-        metadataActivityLog: this.userUtil.mapActivityLogMetadata(updated),
-      };
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -319,15 +293,11 @@ export class UserService implements IUserService {
         _error: err,
       });
     }
-
-    return;
   }
 
   async checkUsername({
     username,
-  }: UserCheckUsernameRequestDto): Promise<
-    IResponseReturn<UserCheckUsernameResponseDto>
-  > {
+  }: UserCheckUsernameRequestDto): Promise<UserCheckUsernameResponseDto> {
     const [checkUsername, checkBadWord, isExist] = await Promise.all([
       this.userUtil.checkUsernamePattern(username),
       this.userUtil.checkBadWord(username),
@@ -335,48 +305,43 @@ export class UserService implements IUserService {
     ]);
 
     return {
-      data: {
-        badWord: checkBadWord,
-        exist: !!isExist,
-        pattern: checkUsername,
-      },
+      badWord: checkBadWord,
+      exist: !!isExist,
+      pattern: checkUsername,
     };
   }
 
   async checkEmail({
     email,
-  }: UserCheckEmailRequestDto): Promise<
-    IResponseReturn<UserCheckEmailResponseDto>
-  > {
+  }: UserCheckEmailRequestDto): Promise<UserCheckEmailResponseDto> {
     const [checkBadWord, isExist] = await Promise.all([
       this.userUtil.checkBadWord(email),
       this.userRepository.existByEmail(email),
     ]);
 
     return {
-      data: {
-        badWord: checkBadWord,
-        exist: !!isExist,
-      },
+      badWord: checkBadWord,
+      exist: !!isExist,
     };
   }
 
-  async getProfile(
-    userId: string
-  ): Promise<IResponseReturn<UserProfileResponseDto>> {
+  async getProfile(userId: string): Promise<IUser> {
     const user = await this.userRepository.findOneActiveProfileById(userId);
-    const mapped = this.userUtil.mapProfile(user);
+    if (!user) {
+      throw new NotFoundException({
+        statusCode: EnumUserStatusCodeError.notFound,
+        message: 'user.error.notFound',
+      });
+    }
 
-    return {
-      data: mapped,
-    };
+    return user;
   }
 
   async updateProfile(
     userId: string,
     { ...data }: UserUpdateProfileRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     try {
       await this.userRepository.updateProfile(
         userId,
@@ -385,8 +350,6 @@ export class UserService implements IUserService {
         },
         requestLog
       );
-
-      return;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -399,7 +362,7 @@ export class UserService implements IUserService {
   async generatePhotoProfilePresign(
     userId: string,
     { extension, size }: UserGeneratePhotoProfileRequestDto
-  ): Promise<IResponseReturn<AwsS3PresignDto>> {
+  ): Promise<AwsS3PresignDto> {
     const key: string = this.userUtil.createRandomFilenamePhotoProfileWithPath(
       userId,
       {
@@ -424,14 +387,14 @@ export class UserService implements IUserService {
       });
     }
 
-    return { data: aws };
+    return aws;
   }
 
   async updatePhotoProfile(
     userId: string,
     { photoKey, size }: UserUpdateProfilePhotoRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     try {
       const aws: AwsS3Dto = this.awsS3Service.mapPresign({
         key: photoKey,
@@ -439,8 +402,6 @@ export class UserService implements IUserService {
       });
 
       await this.userRepository.updatePhotoProfile(userId, aws, requestLog);
-
-      return;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -450,18 +411,13 @@ export class UserService implements IUserService {
     }
   }
 
-  async deleteSelf(
-    userId: string,
-    requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  async deleteSelf(userId: string, requestLog: IRequestLog): Promise<void> {
     try {
       const sessions = await this.sessionRepository.findActive(userId);
       await Promise.all([
         this.userRepository.deleteSelf(userId, requestLog),
         this.sessionUtil.deleteAllLogins(userId, sessions),
       ]);
-
-      return;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -475,7 +431,7 @@ export class UserService implements IUserService {
     userId: string,
     { username }: UserClaimUsernameRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     const [checkUsername, checkBadWord, exist] = await Promise.all([
       this.userUtil.checkUsernamePattern(username),
       this.userUtil.checkBadWord(username),
@@ -500,8 +456,6 @@ export class UserService implements IUserService {
 
     try {
       await this.userRepository.claimUsername(userId, { username }, requestLog);
-
-      return;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -515,7 +469,7 @@ export class UserService implements IUserService {
     userId: string,
     file: IFile,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     try {
       const extension: EnumFileExtensionImage =
         this.fileService.extractExtensionFromFilename(
@@ -546,8 +500,6 @@ export class UserService implements IUserService {
 
         await this.userRepository.updatePhotoProfile(userId, aws, requestLog);
       }
-
-      return;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -561,7 +513,7 @@ export class UserService implements IUserService {
     userId: string,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<IUser> {
     if (userId === updatedBy) {
       throw new BadRequestException({
         statusCode: EnumUserStatusCodeError.notSelf,
@@ -614,9 +566,7 @@ export class UserService implements IUserService {
         updatedBy
       );
 
-      return {
-        metadataActivityLog: this.userUtil.mapActivityLogMetadata(updated),
-      };
+      return updated;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -630,13 +580,7 @@ export class UserService implements IUserService {
     data: UserImportRequestDto[],
     createdBy: string,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
-    // TODO: Optimize by doing
-    // - in background job with bullmq, also before create check username uniqueness
-    // - when upload file, upload using presign
-    // - load data from s3, and not process all in one time
-    // - think about how to show progress status to user with bullmq
-
+  ): Promise<void> {
     const emails = data.map(item => item.email);
     const [checkRole, existingUsers] = await Promise.all([
       this.roleRepository.existByName(this.userRoleName),
@@ -703,8 +647,6 @@ export class UserService implements IUserService {
       }
 
       await Promise.all(sendEmailPromises);
-
-      return;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -719,15 +661,10 @@ export class UserService implements IUserService {
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
   ): Promise<IResponseFileReturn> {
-    // TODO: Optimize by doing
-    // - in background job with bullmq
-    // - return aws s3 link
-    // - think about how to show progress status to user with bullmq
-
     const data = await this.userRepository.findExport(status, role, country);
 
-    const users: UserExportResponseDto[] = this.userUtil.mapExport(data);
-    const csvString = this.fileService.writeCsv<UserExportResponseDto>(users);
+    const users = this.userUtil.mapExport(data);
+    const csvString = this.fileService.writeCsv(users);
 
     return {
       data: csvString,
@@ -736,6 +673,10 @@ export class UserService implements IUserService {
   }
 
   // =========================== Service to Service calll ==============================
+  createRandomUsername(): string {
+    return this.userUtil.createRandomUsername();
+  }
+
   async findOneWithRoleByEmail(email: string): Promise<IUser | null> {
     return this.userRepository.findOneWithRoleByEmail(email);
   }
@@ -762,13 +703,12 @@ export class UserService implements IUserService {
     );
   }
 
-
   async updateLoginMetadata(
     userId: string,
     data: IUserLogin,
     { ipAddress, userAgent, geoLocation }: IRequestLog
   ): Promise<void> {
-    return this.userRepository.updateLoginMetadata(userId, data, {
+    await this.userRepository.updateLoginMetadata(userId, data, {
       ipAddress,
       userAgent,
       geoLocation,
@@ -796,11 +736,9 @@ export class UserService implements IUserService {
     );
   }
 
-
   async findOneActiveByEmail(email: string): Promise<IUser | null> {
     return this.userRepository.findOneActiveByEmail(email);
   }
-
 
   async findOneLatestByForgotPassword(userId: string): Promise<IUser | null> {
     return this.userRepository.findOneLatestByForgotPassword(userId);
@@ -809,10 +747,10 @@ export class UserService implements IUserService {
   async forgotPassword(
     userId: string,
     email: string,
-    passwordReset: IUserPasswordResetCreate,
+    passwordReset: IUserForgotPasswordCreate,
     requestLog: IRequestLog
   ): Promise<void> {
-    return this.userRepository.forgotPassword(
+    await this.userRepository.forgotPassword(
       userId,
       email,
       passwordReset,
@@ -822,10 +760,68 @@ export class UserService implements IUserService {
 
   async resetPassword(
     userId: string,
-    password: IAuthPassword,
-    passwordReset: IUserPasswordResetCreate,
+    { password, passwordExpired }: IAuthPassword,
     requestLog: IRequestLog
   ): Promise<void> {
-    return this.userRepository.resetPassword(userId, password, requestLog);
+    await this.userRepository.resetPassword(
+      userId,
+      { password, passwordExpired },
+      requestLog
+    );
+  }
+
+  // =========================== Methods exposed for cross-module service calls ==============================
+
+  /**
+   * Mark a user as verified. Called by VerificationService after email-verification flow.
+   */
+  async markVerified(
+    userId: string,
+    requestLog: IRequestLog
+  ): Promise<UserModel> {
+    return this.userRepository.verify(userId, requestLog);
+  }
+
+  async increasePasswordAttempt(userId: string): Promise<void> {
+    await this.userRepository.increasePasswordAttempt(userId);
+  }
+
+  async resetPasswordAttempt(userId: string): Promise<void> {
+    await this.userRepository.resetPasswordAttempt(userId);
+  }
+
+  async changeUserPassword(
+    userId: string,
+    password: IAuthPassword,
+    requestLog: IRequestLog
+  ): Promise<void> {
+    await this.userRepository.changePassword(userId, password, requestLog);
+  }
+
+  async loginUser(
+    userId: string,
+    device: any,
+    loginData: IUserLogin,
+    requestLog: IRequestLog
+  ): Promise<IUserLoginResult> {
+    return this.userRepository.login(userId, device, loginData, requestLog);
+  }
+
+  async findOneActiveByForgotPasswordToken(token: string): Promise<any | null> {
+    return this.userRepository.findOneActiveByForgotPasswordToken(token);
+  }
+
+  async resetPasswordWithToken(
+    userId: string,
+    forgotPasswordId: string,
+    password: IAuthPassword,
+    requestLog: IRequestLog
+  ): Promise<void> {
+    await this.userRepository.resetPassword(
+      userId,
+      forgotPasswordId,
+      password,
+      requestLog
+    );
   }
 }

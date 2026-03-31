@@ -312,13 +312,8 @@ enum ApiKeyType {
   @@map("api_key_type")
 }
 
-enum RoleType {
-  SUPERADMIN
-  ADMIN
-  USER
+// RoleType enum removed in favor of dynamic RBAC
 
-  @@map("role_type")
-}
 
 enum PolicyAction {
   MANAGE
@@ -341,6 +336,31 @@ enum PolicySubject {
   PASSWORD_HISTORY
   TERM_POLICY
   FEATURE_FLAG
+  NOTIFICATION
+  SETTING
+  VERIFICATION
+  VEHICLE_BRAND
+  VEHICLE_MODEL
+  VEHICLE_SERVICE
+  SERVICE_CATEGORY
+  SERVICE_PRICE
+  SERVICE_CHECKLIST
+  PART
+  PART_TYPE
+  APPOINTMENT
+  STORE
+  CARE_AREA
+  CARE_RECORD
+  CARE_RECORD_CHECKLIST
+  CARE_RECORD_CONDITION
+  CARE_RECORD_ITEM
+  CARE_RECORD_MEDIA
+  CARE_RECORD_SERVICE
+  HIRING
+  CANDIDATE
+  MESSAGE
+  CONVERSATION
+  USER_VEHICLE
 
   @@map("policy_subject")
 }
@@ -423,7 +443,8 @@ model VehicleService {
   serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
 
   servicePrices      ServicePrice[]
-  appointments       Appointment[]
+  appointmentIds     String[]        @db.ObjectId
+  appointments       Appointment[]   @relation(fields: [appointmentIds], references: [id])
   careRecordItems    CareRecordItem[]
   careRecordServices CareRecordService[]
   checklistItems     ServiceChecklist[]
@@ -554,8 +575,7 @@ model Role {
   name        String   @unique
   description String?
   isActive    Boolean  @default(true)
-  type        RoleType
-  abilities   Json[]
+  type        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
@@ -564,8 +584,8 @@ model Role {
   updatedBy   String?  @db.ObjectId
   deletedBy   String?  @db.ObjectId
 
-  users User[]
-  policies Policy[]
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
 
   @@index([isActive])
   @@index([type])
@@ -606,8 +626,7 @@ model User {
   updatedBy String? @db.ObjectId
   deletedBy String? @db.ObjectId
 
-  roleId String @db.ObjectId
-  role   Role   @relation(fields: [roleId], references: [id])
+  userRoles        UserRole[]
 
   messages         Message[]
   receivedMessages Message[] @relation("ReceivedMessages")
@@ -619,9 +638,43 @@ model User {
   candidateReviews CandidateReview[]
   userVehicles     UserVehicle[]
 
-  @@index([roleId])
   @@index([status])
   @@map("users")
+}
+
+// ================================
+// DOMAIN: RBAC JUNCTION TABLES
+// ================================
+
+model UserRole {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id])
+  roleId     String    @db.ObjectId
+  role       Role      @relation(fields: [roleId], references: [id])
+  assignedBy String?   @db.ObjectId
+  assignedAt DateTime  @default(now())
+  revokedAt  DateTime?
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  roleId       String     @db.ObjectId
+  role         Role       @relation(fields: [roleId], references: [id])
+  permissionId String     @db.ObjectId
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  assignedBy   String?    @db.ObjectId
+  assignedAt   DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
 }
 
 model Session {
@@ -803,9 +856,9 @@ model Appointment {
   vehicleModelId String       @db.ObjectId
   vehicleModel  VehicleModel @relation(fields: [vehicleModelId], references: [id])
 
-  careRecords     CareRecord[]
-  vehicleServices VehicleService[]
-
+  careRecords       CareRecord[]
+  vehicleServiceIds String[]        @db.ObjectId
+  vehicleServices   VehicleService[] @relation(fields: [vehicleServiceIds], references: [id])
   @@index([userId])
   @@index([userVehicleId])
   @@index([vehicleModelId])
@@ -957,10 +1010,8 @@ model CareRecordCondition {
   careRecordId String     @unique @db.ObjectId
   careRecord   CareRecord @relation(fields: [careRecordId], references: [id])
 
-  @@index([careRecordId])
   @@map("care_record_conditions")
 }
-
 model CareRecordMedia {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   url         String?
@@ -1034,9 +1085,7 @@ model Media {
   status        StatusEnum @default(ACTIVE)
   accessibility MediaAccessibility @default(PRIVATE)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
 
-  @@index([key])
   @@map("media")
 }
 
@@ -1054,30 +1103,32 @@ model ApiKey {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([key])
   @@index([type])
   @@index([isActive])
   @@map("api_keys")
 }
 
 // ================================
-// DOMAIN: POLICIES & RBAC
+// DOMAIN: PERMISSIONS (replaces old Policy)
 // ================================
 
-model Policy {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  action  PolicyAction
-  subject PolicySubject
-  fields  String[]
-  conditions Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Permission {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String        @unique
+  code        String        @unique
+  description String?
+  group       String
+  action      PolicyAction
+  subject     PolicySubject
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  roleId String @db.ObjectId
-  role   Role   @relation(fields: [roleId], references: [id])
+  rolePermissions RolePermission[]
 
-  @@index([roleId])
+  @@index([group])
   @@index([action])
   @@index([subject])
-  @@map("policies")
+  @@index([isActive])
+  @@map("permissions")
 }

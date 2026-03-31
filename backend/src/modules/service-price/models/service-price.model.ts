@@ -1,10 +1,15 @@
+/**
+ * Domain model representing a service price entry.
+ * Maps from Prisma ServicePrice to application domain layer.
+ */
 export class ServicePriceModel {
   id: string;
   price: number;
-  vehicleServiceId: string;
-  vehicleModelId: string;
   dateStart: Date;
   dateEnd?: Date;
+
+  vehicleServiceId: string;
+  vehicleModelId: string;
 
   createdAt: Date;
   updatedAt: Date;
@@ -13,4 +18,12 @@ export class ServicePriceModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<ServicePriceModel>) {
+    Object.assign(this, data);
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }
