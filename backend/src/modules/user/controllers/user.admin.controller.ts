@@ -59,7 +59,6 @@ import {
   UserAdminGetDoc,
   UserAdminImportDoc,
   UserAdminListDoc,
-  UserAdminResetTwoFactorDoc,
   UserAdminUpdatePasswordDoc,
   UserAdminUpdateStatusDoc,
 } from '@/modules/user/docs/user.admin.doc';
@@ -79,10 +78,11 @@ import { EnumFileExtensionDocument } from '@/common/file/enums/file.enum';
 import { FileCsvParsePipe } from '@/common/file/pipes/file.csv-parse.pipe';
 import { FilCsvValidationPipe } from '@/common/file/pipes/file.csv-validation.pipe';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { EnumUserStatus } from '@/modules/user/enums/user.enum';
 import { GeoLocation, UserAgent } from '../interfaces/user.interface';
-import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { UserUtil } from '../utils/user.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user')
 @Controller({
@@ -90,7 +90,10 @@ import { EnumActivityLogAction, Prisma } from '@/generated/prisma-client';
   path: '/user',
 })
 export class UserAdminController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userUtil: UserUtil
+  ) {}
 
   @UserAdminListDoc()
   @ResponsePaging('user.list')
@@ -98,7 +101,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -114,16 +117,18 @@ export class UserAdminController {
     @PaginationQueryFilterInEnum<EnumUserStatus>('status', UserDefaultStatus)
     status?: Record<string, IPaginationIn>,
     @PaginationQueryFilterEqualString('role')
-    role?: Record<string, IPaginationEqual>,
-    @PaginationQueryFilterEqualString('country')
-    country?: Record<string, IPaginationEqual>
+    role?: Record<string, IPaginationEqual>
   ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-    return this.userService.getListOffsetByAdmin(
+    const result = await this.userService.getListOffsetByAdmin(
       pagination,
       status,
-      role,
-      country
+      role
     );
+    const mapped = this.userUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @UserAdminGetDoc()
@@ -132,7 +137,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -141,7 +146,9 @@ export class UserAdminController {
     @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     userId: string
   ): Promise<IResponseReturn<UserProfileResponseDto>> {
-    return this.userService.getOne(userId);
+    const user = await this.userService.getOne(userId);
+    const mapped = this.userUtil.mapProfile(user);
+    return { data: mapped };
   }
 
   @UserAdminCreateDoc()
@@ -150,7 +157,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read, EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminUserCreate)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -164,7 +171,7 @@ export class UserAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    return this.userService.createByAdmin(
+    const created = await this.userService.createByAdmin(
       body,
       {
         ipAddress,
@@ -173,6 +180,10 @@ export class UserAdminController {
       },
       createdBy
     );
+    return {
+      data: { id: created.id },
+      metadataActivityLog: this.userUtil.mapActivityLogMetadata(created),
+    };
   }
 
   @UserAdminUpdateStatusDoc()
@@ -181,7 +192,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminUserUpdateStatus)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -196,7 +207,7 @@ export class UserAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.updateStatusByAdmin(
+    const updated = await this.userService.updateStatusByAdmin(
       userId,
       body,
       {
@@ -206,6 +217,9 @@ export class UserAdminController {
       },
       updatedBy
     );
+    return {
+      metadataActivityLog: this.userUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @UserAdminUpdatePasswordDoc()
@@ -214,7 +228,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminUserUpdatePassword)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -228,7 +242,7 @@ export class UserAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.updatePasswordByAdmin(
+    const updated = await this.userService.updatePasswordByAdmin(
       userId,
       {
         ipAddress,
@@ -237,6 +251,9 @@ export class UserAdminController {
       },
       updatedBy
     );
+    return {
+      metadataActivityLog: this.userUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @UserAdminImportDoc()
@@ -245,7 +262,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read, EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminUserImport)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -268,11 +285,12 @@ export class UserAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.importByAdmin(data, createdBy, {
+    await this.userService.importByAdmin(data, createdBy, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 
   @UserAdminExportDoc()
@@ -281,7 +299,7 @@ export class UserAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()

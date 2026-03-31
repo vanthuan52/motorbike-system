@@ -55,7 +55,6 @@ import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { StoreUtil } from '../utils/store.util';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   StoreDefaultAvailableSearch,
   StoreDefaultStatus,
@@ -89,7 +88,7 @@ export class StoreAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -118,7 +117,7 @@ export class StoreAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:storeId')
@@ -137,7 +136,7 @@ export class StoreAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -166,7 +165,7 @@ export class StoreAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:storeId')
@@ -198,7 +197,7 @@ export class StoreAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:storeId')
@@ -228,7 +227,7 @@ export class StoreAdminController {
     subject: EnumPolicySubject.user,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:storeId/status')

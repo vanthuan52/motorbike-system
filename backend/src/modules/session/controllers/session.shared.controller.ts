@@ -32,7 +32,6 @@ import { SessionResponseDto } from '@/modules/session/dtos/response/session.resp
 import { SessionService } from '@/modules/session/services/session.service';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   GeoLocation,
   UserAgent,
@@ -47,8 +46,7 @@ import { Prisma } from '@/generated/prisma-client';
 export class SessionSharedController {
   constructor(
     private readonly sessionService: SessionService,
-    private readonly sessionUtil: SessionUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly sessionUtil: SessionUtil
   ) {}
 
   @SessionSharedListDoc()
@@ -67,10 +65,7 @@ export class SessionSharedController {
     >,
     @AuthJwtPayload('userId') userId: string
   ): Promise<IResponsePagingReturn<SessionResponseDto>> {
-    const result = await this.sessionService.getListCursor(
-      userId,
-      pagination
-    );
+    const result = await this.sessionService.getListCursor(userId, pagination);
     const mapped = this.sessionUtil.mapList(result.data);
     return {
       ...result,

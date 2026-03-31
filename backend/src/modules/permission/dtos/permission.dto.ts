@@ -9,10 +9,17 @@ import {
 export class PermissionDto extends DatabaseDto {
   @ApiProperty({
     description: 'Name of permission',
-    example: faker.person.jobTitle(),
+    example: 'Read Users',
     required: true,
   })
   name: string;
+
+  @ApiProperty({
+    description: 'Unique code of permission',
+    example: 'user:read',
+    required: true,
+  })
+  code: string;
 
   @ApiProperty({
     description: 'Description of permission',
@@ -23,18 +30,30 @@ export class PermissionDto extends DatabaseDto {
   description?: string;
 
   @ApiProperty({
+    description: 'Permission group for categorization',
+    example: 'user',
     required: true,
-    description: 'Ability subject',
+  })
+  group: string;
+
+  @ApiProperty({
+    required: true,
+    description: 'Permission action',
     enum: EnumPolicySubject,
   })
   subject: EnumPolicySubject;
 
   @ApiProperty({
     required: true,
-    description: 'Ability action base on subject',
-    isArray: true,
-    default: [EnumPolicyAction.manage],
+    description: 'Permission action',
     enum: EnumPolicyAction,
   })
-  action: EnumPolicyAction[];
+  action: EnumPolicyAction;
+
+  @ApiProperty({
+    required: true,
+    description: 'Whether the permission is active',
+    default: true,
+  })
+  isActive: boolean;
 }

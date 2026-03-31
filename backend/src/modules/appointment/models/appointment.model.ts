@@ -1,5 +1,9 @@
 import { EnumAppointmentStatus } from '../enums/appointment.enum';
 
+/**
+ * Domain model representing a service appointment.
+ * Maps from Prisma Appointment to application domain layer.
+ */
 export class AppointmentModel {
   id: string;
   name: string;
@@ -10,6 +14,7 @@ export class AppointmentModel {
   note?: string;
   appointmentDate: Date;
   status: EnumAppointmentStatus;
+
   userId?: string;
   userVehicleId?: string;
   vehicleModelId: string;
@@ -21,4 +26,12 @@ export class AppointmentModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<AppointmentModel>) {
+    Object.assign(this, data);
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

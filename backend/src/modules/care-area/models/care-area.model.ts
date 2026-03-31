@@ -1,3 +1,7 @@
+/**
+ * Domain model representing a care area (khu vực chăm sóc).
+ * Maps from Prisma CareArea to application domain layer.
+ */
 export class CareAreaModel {
   id: string;
   name: string;
@@ -11,4 +15,12 @@ export class CareAreaModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<CareAreaModel>) {
+    Object.assign(this, data);
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

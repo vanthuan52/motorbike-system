@@ -23,6 +23,7 @@ import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.re
 import { UserUpdateProfileRequestDto } from '@/modules/user/dtos/request/user.profile.request.dto';
 import { UserUpdateStatusRequestDto } from '@/modules/user/dtos/request/user.update-status.request.dto';
 import {
+  IUser,
   IUserForgotPasswordCreate,
   IUserLogin,
   IUserLoginResult,
@@ -38,7 +39,6 @@ import {
   EnumNotificationChannel,
   EnumNotificationType,
 } from '@/modules/notification/enums/notification.enum';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   EnumUserLoginWith,
   EnumUserSignUpFrom,
@@ -68,7 +68,7 @@ export class UserRepository {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationOffsetReturn<UserModel>> {
+  ): Promise<IPaginationOffsetReturn<IUser>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaUser,
       Prisma.UserSelect,
@@ -83,14 +83,20 @@ export class UserRepository {
         deletedAt: null,
       },
       include: {
-        role: true,
+        userRoles: {
+          include: {
+            role: true,
+          },
+        },
         twoFactor: true,
       },
     });
 
     return {
       ...paginatedResult,
-      data: paginatedResult.data.map(item => UserMapper.toDomain(item)),
+      data: paginatedResult.data.map(item =>
+        UserMapper.toDomainWithRoles(item)
+      ),
     };
   }
 
@@ -102,7 +108,7 @@ export class UserRepository {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationCursorReturn<UserModel>> {
+  ): Promise<IPaginationCursorReturn<IUser>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaUser,
       Prisma.UserSelect,
@@ -117,36 +123,46 @@ export class UserRepository {
         deletedAt: null,
       },
       include: {
-        role: true,
+        userRoles: {
+          include: {
+            role: true,
+          },
+        },
         twoFactor: true,
       },
     });
 
     return {
       ...paginatedResult,
-      data: paginatedResult.data.map(item => UserMapper.toDomain(item)),
+      data: paginatedResult.data.map(item =>
+        UserMapper.toDomainWithRoles(item)
+      ),
     };
   }
 
-  async findByEmails(emails: string[]): Promise<UserModel[]> {
+  async findByEmails(emails: string[]): Promise<IUser[]> {
     const results = await this.databaseService.user.findMany({
       where: {
         email: { in: emails },
       },
       include: {
-        role: true,
+        userRoles: {
+          include: {
+            role: true,
+          },
+        },
         twoFactor: true,
       },
     });
 
-    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
+    return results.map((item: any) => UserMapper.toDomainWithRoles(item));
   }
 
   async findExport(
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<UserModel[]> {
+  ): Promise<IUser[]> {
     const results = await this.databaseService.user.findMany({
       where: {
         ...status,
@@ -155,12 +171,16 @@ export class UserRepository {
         deletedAt: null,
       },
       include: {
-        role: true,
+        userRoles: {
+          include: {
+            role: true,
+          },
+        },
         twoFactor: true,
       },
     });
 
-    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
+    return results.map((item: any) => UserMapper.toDomainWithRoles(item));
   }
 
   async findActive(): Promise<
@@ -183,12 +203,19 @@ export class UserRepository {
     });
   }
 
-  async findOneById(id: string): Promise<UserModel | null> {
-    const result = await this.databaseService.user.findUnique({
+  async findOneById(id: string): Promise<IUser | null> {
+    const result = await this.databaseService.user.findFirst({
       where: { id, deletedAt: null },
+      include: {
+        userRoles: {
+          include: {
+            role: true,
+          },
+        },
+      },
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomainWithRoles(result) : null;
   }
 
   async findOneActiveById(id: string): Promise<UserModel | null> {
@@ -354,7 +381,7 @@ export class UserRepository {
           password: passwordHash,
           passwordAttempt: 0,
           username,
-          isVerified: roleType === EnumRoleType.user ? false : true,
+          isVerified: roleType === 'user' ? false : true,
           status: EnumUserStatus.active,
           termPolicy: {
             [Prisma.EnumTermPolicyType.cookies]: false,
@@ -1242,7 +1269,7 @@ export class UserRepository {
                 password: passwordHash,
                 passwordAttempt: 0,
                 username,
-                isVerified: roleType === EnumRoleType.user ? false : true,
+                isVerified: roleType === 'user' ? false : true,
                 status: EnumUserStatus.active,
                 termPolicy: {
                   [Prisma.EnumTermPolicyType.cookies]: false,

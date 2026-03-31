@@ -19,7 +19,6 @@ import {
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { ActivityLogUtil } from '../utils/activity-log.util';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user.activityLog')
@@ -45,7 +44,7 @@ export class ActivityLogAdminController {
       action: [EnumPolicyAction.read],
     }
   )
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()

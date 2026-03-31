@@ -9,24 +9,21 @@ import {
   IRequestApp,
   IRequestLog,
 } from '@/common/request/interfaces/request.interface';
-import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
-import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
-import { RoleAbilityDto } from '@/modules/role/dtos/role.ability.dto';
-import { RoleDto } from '@/modules/role/dtos/role.dto';
-import { EnumRoleType } from '../enums/role.enum';
 import { RoleModel } from '../models/role.model';
+import { PermissionModel } from '@/modules/permission/models/permission.model';
 import { Prisma } from '@/generated/prisma-client';
 
 export interface IRoleService {
   getListOffsetByAdmin(
-    {
-      where,
-      ...params
-    }: IPaginationQueryOffsetParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.RoleSelect,
+      Prisma.RoleWhereInput
+    >,
     type?: Record<string, IPaginationIn>
   ): Promise<IPaginationOffsetReturn<RoleModel>>;
+
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.RoleSelect,
@@ -34,26 +31,34 @@ export interface IRoleService {
     >,
     type?: Record<string, IPaginationIn>
   ): Promise<IPaginationCursorReturn<RoleModel>>;
-  getOne(id: string): Promise<IResponseReturn<RoleDto>>;
-  getAbilities(id: string): Promise<IResponseReturn<RoleAbilitiesResponseDto>>;
+
+  getOne(id: string): Promise<RoleModel>;
+
+  getPermissions(id: string): Promise<PermissionModel[]>;
+
   createByAdmin(
     data: RoleCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IResponseReturn<RoleModel>>;
+  ): Promise<RoleModel>;
+
   updateByAdmin(
     id: string,
     data: RoleUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<RoleModel>>;
+  ): Promise<RoleModel>;
+
   deleteByAdmin(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<RoleModel>;
+
   validateRoleGuard(
     request: IRequestApp,
-    requiredRoles: EnumRoleType[]
-  ): Promise<RoleAbilityDto[]>;
+    requiredRoles: string[]
+  ): Promise<PermissionModel[]>;
+
+  findRoleByName(name: string): Promise<RoleModel | null>;
 }

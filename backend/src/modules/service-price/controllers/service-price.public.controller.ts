@@ -8,9 +8,8 @@ import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
 import { SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY } from '../constants/service-price.list.constant';
-import { RequestOptionalParseUUIDPipe } from '@/common/request/pipes/request.optional-parse-uuid.pipe';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { ServicePriceUtil } from '../utils/service-price.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.service-price')
 @Controller({
@@ -20,8 +19,7 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class ServicePricePublicController {
   constructor(
     private readonly servicePriceService: ServicePriceService,
-    private readonly servicePriceUtil: ServicePriceUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly servicePriceUtil: ServicePriceUtil
   ) {}
 
   @ServicePricePublicListDoc()
@@ -33,9 +31,9 @@ export class ServicePricePublicController {
       availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('vehicleService', RequestOptionalParseUUIDPipe)
+    @Query('vehicleService', RequestOptionalParseObjectIdPipe)
     vehicleServiceId: string,
-    @Query('vehicleModel', RequestOptionalParseUUIDPipe)
+    @Query('vehicleModel', RequestOptionalParseObjectIdPipe)
     vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
     const filters: Record<string, any> = {};

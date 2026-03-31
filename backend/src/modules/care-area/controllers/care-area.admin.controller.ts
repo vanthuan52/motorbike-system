@@ -43,7 +43,6 @@ import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import {
   CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
   CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
@@ -79,10 +78,10 @@ export class CareAreaAdminController {
   @CareAreaAdminListDoc()
   @ResponsePaging('care-area.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careArea,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -104,10 +103,10 @@ export class CareAreaAdminController {
   @CareAreaAdminParamsIdDoc()
   @Response('care-area.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careArea,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -122,10 +121,10 @@ export class CareAreaAdminController {
   @CareAreaAdminCreateDoc()
   @Response('care-area.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careArea,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -147,10 +146,10 @@ export class CareAreaAdminController {
   @CareAreaWithServiceChecklistDoc()
   @ResponsePaging('care-area.listWithServiceChecklists')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careArea,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list/checklists')
@@ -186,10 +185,10 @@ export class CareAreaAdminController {
   @CareAreaAdminUpdateDoc()
   @Response('care-area.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careArea,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -213,10 +212,10 @@ export class CareAreaAdminController {
   @CareAreaAdminDeleteDoc()
   @Response('care-area.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careArea,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

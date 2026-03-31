@@ -1,11 +1,15 @@
-import { 
-  EnumOilLevel, 
-  EnumMirrorCondition, 
-  EnumSeatCondition, 
-  EnumBodyCondition, 
-  EnumExhaustCoverCondition 
+import {
+  EnumOilLevel,
+  EnumMirrorCondition,
+  EnumSeatCondition,
+  EnumBodyCondition,
+  EnumExhaustCoverCondition,
 } from '../enums/care-record-condition.enum';
 
+/**
+ * Domain model representing the initial condition assessment of a vehicle.
+ * Maps from Prisma CareRecordCondition to application domain layer.
+ */
 export class CareRecordConditionModel {
   id: string;
   odoKm?: number;
@@ -19,6 +23,7 @@ export class CareRecordConditionModel {
   exhaustCoverCondition: EnumExhaustCoverCondition;
   hasLuggageRack: boolean;
   hasFootMat: boolean;
+
   careRecordId: string;
 
   createdAt: Date;
@@ -28,4 +33,12 @@ export class CareRecordConditionModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<CareRecordConditionModel>) {
+    Object.assign(this, data);
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

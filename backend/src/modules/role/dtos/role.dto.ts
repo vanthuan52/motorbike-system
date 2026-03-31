@@ -1,9 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
-import { RoleAbilityDto } from '@/modules/role/dtos/role.ability.dto';
-import { EnumRoleType } from '../enums/role.enum';
 
 export class RoleDto extends DatabaseDto {
   @ApiProperty({
@@ -23,18 +20,15 @@ export class RoleDto extends DatabaseDto {
 
   @ApiProperty({
     description: 'Representative for role type',
-    example: EnumRoleType.admin,
+    example: 'admin',
     required: true,
-    enum: EnumRoleType,
   })
-  type: EnumRoleType;
+  type: string;
 
   @ApiProperty({
-    type: [RoleAbilityDto],
+    description: 'Whether the role is active',
     required: true,
-    isArray: true,
-    default: [],
+    default: true,
   })
-  @Type(() => RoleAbilityDto)
-  abilities: RoleAbilityDto[];
+  isActive: boolean;
 }

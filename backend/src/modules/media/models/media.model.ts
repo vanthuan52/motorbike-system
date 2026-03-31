@@ -1,6 +1,14 @@
-import { EnumMediaType, EnumMediaPurpose, EnumMediaAccessibility } from '../enums/media.enum';
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import {
+  EnumMediaType,
+  EnumMediaPurpose,
+  EnumMediaAccessibility,
+} from '../enums/media.enum';
+import { EnumStatus } from '@/common/enums/common.enum';
 
+/**
+ * Domain model representing a media file (image, video, document).
+ * Maps from Prisma Media to application domain layer.
+ */
 export class MediaModel {
   id: string;
   key: string;
@@ -23,4 +31,16 @@ export class MediaModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<MediaModel>) {
+    Object.assign(this, data);
+  }
+
+  isActive(): boolean {
+    return this.status === EnumStatus.active && !this.deletedAt;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

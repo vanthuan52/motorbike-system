@@ -1,9 +1,9 @@
-import { ApiHideProperty, ApiProperty, OmitType } from '@nestjs/swagger';
-import { Exclude, Transform } from 'class-transformer';
+import { ApiHideProperty, OmitType } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import { PermissionDto } from '@/modules/permission/dtos/permission.dto';
 
 export class PermissionListResponseDto extends OmitType(PermissionDto, [
-  'action',
+  'description',
 ] as const) {
   @ApiHideProperty()
   @Exclude()

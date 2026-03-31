@@ -15,7 +15,6 @@ import {
   IPaginationEqual,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   RequestGeoLocation,
   RequestIPAddress,
@@ -52,13 +51,12 @@ import {
 } from '@/modules/policy/enums/policy.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import {
-  EnumActivityLogAction,
-  EnumRoleType,
   GeoLocation,
-  Prisma,
   UserAgent,
-} from '@/generated/prisma-client';
+} from '@/modules/user/interfaces/user.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user.device')
 @Controller({
@@ -68,8 +66,7 @@ import {
 export class DeviceAdminController {
   constructor(
     private readonly deviceService: DeviceService,
-    private readonly deviceUtil: DeviceUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly deviceUtil: DeviceUtil
   ) {}
 
   @DeviceAdminListDoc()
@@ -84,7 +81,7 @@ export class DeviceAdminController {
       action: [EnumPolicyAction.read],
     }
   )
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -119,7 +116,7 @@ export class DeviceAdminController {
       action: [EnumPolicyAction.read, EnumPolicyAction.delete],
     }
   )
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminDeviceRemove)
   @UserProtected()
   @AuthJwtAccessProtected()

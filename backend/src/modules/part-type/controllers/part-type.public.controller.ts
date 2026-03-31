@@ -2,7 +2,6 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PartTypeService } from '../services/part-type.services';
 import { PartTypeUtil } from '../utils/part-type.util';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   PartTypePublicListDoc,
   PartTypePublicGetOneDoc,
@@ -40,8 +39,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 export class PartTypePublicController {
   constructor(
     private readonly partTypeService: PartTypeService,
-    private readonly partTypeUtil: PartTypeUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly partTypeUtil: PartTypeUtil
   ) {}
 
   @PartTypePublicGetOneDoc()

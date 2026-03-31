@@ -30,7 +30,6 @@ import {
 } from '../constants/part.list.constant';
 import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 
 @ApiTags('modules.public.part')
 @Controller({
@@ -40,15 +39,14 @@ import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 export class PartPublicController {
   constructor(
     private readonly partService: PartService,
-    private readonly partUtil: PartUtil,
-    private readonly paginationUtil: PaginationUtil,
+    private readonly partUtil: PartUtil
   ) {}
 
   @PartPublicGetOneDoc()
   @Response('part.get')
   @Get('/get/:slug')
   async get(
-    @Param('slug', RequestRequiredPipe) slug: string,
+    @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<PartGetFullResponseDto>> {
     const part = await this.partService.findOneBySlug(slug);
     const mapped = this.partUtil.mapGetPopulate(part);
@@ -69,13 +67,13 @@ export class PartPublicController {
     @PaginationQueryFilterInEnum('status', PART_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
     @Query('partType') partTypeId: string,
-    @Query('vehicleBrand') vehicleBrandId: string,
+    @Query('vehicleBrand') vehicleBrandId: string
   ): Promise<IResponsePagingReturn<PartListResponseDto>> {
     const result = await this.partService.getListCursor(
       pagination,
       status,
       partTypeId,
-      vehicleBrandId,
+      vehicleBrandId
     );
     const mapped = this.partUtil.mapList(result.data);
     return {

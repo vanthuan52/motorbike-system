@@ -51,7 +51,6 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
   GeoLocation,
@@ -77,10 +76,10 @@ export class CareRecordMediaAdminController {
   @CareRecordMediaAdminListDoc()
   @ResponsePaging('care-record-media.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -113,10 +112,10 @@ export class CareRecordMediaAdminController {
   @CareRecordMediaAdminParamsIdDoc()
   @Response('care-record-media.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -132,10 +131,10 @@ export class CareRecordMediaAdminController {
   @CareRecordMediaAdminCreateDoc()
   @Response('care-record-media.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -157,10 +156,10 @@ export class CareRecordMediaAdminController {
   @CareRecordMediaAdminUpdateDoc()
   @Response('care-record-media.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -184,10 +183,10 @@ export class CareRecordMediaAdminController {
   @CareRecordMediaAdminDeleteDoc()
   @Response('care-record-media.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.careRecord,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

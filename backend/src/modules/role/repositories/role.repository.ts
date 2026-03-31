@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
-import { DatabaseUtil } from '@/common/database/utils/database.util';
 import {
   IPaginationIn,
   IPaginationQueryCursorParams,
@@ -9,18 +8,17 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
-import { IRole } from '@/modules/role/interfaces/role.interface';
+import { RoleModel } from '@/modules/role/models/role.model';
+import { RoleMapper } from '@/modules/role/mappers/role.mapper';
 import { Prisma, Role } from '@/generated/prisma-client';
 
 @Injectable()
 export class RoleRepository {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly paginationService: PaginationService,
-    private readonly databaseUtil: DatabaseUtil
+    private readonly paginationService: PaginationService
   ) {}
 
   async findWithPaginationOffsetByAdmin(
@@ -29,8 +27,8 @@ export class RoleRepository {
       ...params
     }: IPaginationQueryOffsetParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationOffsetReturn<Role>> {
-    return this.paginationService.offset<
+  ): Promise<IPaginationOffsetReturn<RoleModel>> {
+    const result = await this.paginationService.offset<
       Role,
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
@@ -41,6 +39,11 @@ export class RoleRepository {
         ...type,
       },
     });
+
+    return {
+      ...result,
+      data: result.data.map(RoleMapper.toDomain),
+    };
   }
 
   async findWithPaginationCursor(
@@ -49,8 +52,8 @@ export class RoleRepository {
       ...params
     }: IPaginationQueryCursorParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
     type?: Record<string, IPaginationIn>
-  ): Promise<IPaginationCursorReturn<Role>> {
-    return this.paginationService.cursor<
+  ): Promise<IPaginationCursorReturn<RoleModel>> {
+    const result = await this.paginationService.cursor<
       Role,
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
@@ -61,73 +64,154 @@ export class RoleRepository {
         ...type,
       },
     });
+
+    return {
+      ...result,
+      data: result.data.map(RoleMapper.toDomain),
+    };
   }
 
-  async findOneById(id: string): Promise<Role> {
-    return this.databaseService.role.findUnique({
+  async findOneById(id: string): Promise<RoleModel | null> {
+    const result = await this.databaseService.role.findUnique({
       where: { id },
     });
+
+    return result ? RoleMapper.toDomain(result) : null;
   }
 
-  async existByName(name: string): Promise<IRole | null> {
-    return this.databaseService.role.findFirst({
-      where: {
-        name: name,
-      },
+  async existByName(name: string): Promise<RoleModel | null> {
+    const result = await this.databaseService.role.findFirst({
+      where: { name },
       select: { id: true, type: true, name: true },
     });
+
+    return result ? (result as unknown as RoleModel) : null;
   }
 
-  async existById(id: string): Promise<IRole | null> {
-    return this.databaseService.role.findUnique({
-      where: {
-        id,
-      },
+  async existById(id: string): Promise<RoleModel | null> {
+    const result = await this.databaseService.role.findUnique({
+      where: { id },
       select: { id: true, type: true, name: true },
     });
+
+    return result ? (result as unknown as RoleModel) : null;
   }
 
   async used(id: string): Promise<{ id: string } | null> {
-    return this.databaseService.role.findFirst({
-      where: {
-        users: {
-          some: {
-            roleId: id,
-          },
-        },
-      },
+    const userRole = await this.databaseService.userRole.findFirst({
+      where: { roleId: id },
       select: { id: true },
     });
+
+    return userRole;
   }
 
   async create({
     name,
-    abilities,
+    permissionIds,
     ...others
-  }: RoleCreateRequestDto): Promise<Role> {
-    return this.databaseService.role.create({
+  }: RoleCreateRequestDto & { createdBy: string }): Promise<RoleModel> {
+    const result = await this.databaseService.role.create({
       data: {
-        name: name,
-        abilities: this.databaseUtil.toPlainArray(abilities),
+        name,
         ...others,
+        ...(permissionIds?.length && {
+          rolePermissions: {
+            createMany: {
+              data: permissionIds.map((permissionId) => ({
+                permissionId,
+              })),
+            },
+          },
+        }),
       },
     });
+
+    return RoleMapper.toDomain(result);
   }
 
   async update(
     id: string,
-    { abilities, ...others }: RoleUpdateRequestDto
-  ): Promise<Role> {
-    return this.databaseService.role.update({
+    { permissionIds, ...others }: Partial<RoleUpdateRequestDto> & { updatedBy?: string; deletedBy?: string; deletedAt?: Date }
+  ): Promise<RoleModel> {
+    const result = await this.databaseService.role.update({
       where: { id },
       data: {
-        abilities: this.databaseUtil.toPlainArray(abilities),
         ...others,
+      },
+    });
+
+    return RoleMapper.toDomain(result);
+  }
+
+  async delete(id: string): Promise<RoleModel> {
+    // Delete role permissions first
+    await this.databaseService.rolePermission.deleteMany({
+      where: { roleId: id },
+    });
+
+    const result = await this.databaseService.role.delete({
+      where: { id },
+    });
+
+    return RoleMapper.toDomain(result);
+  }
+
+  async assignPermissions(
+    roleId: string,
+    permissionIds: string[],
+    assignedBy?: string
+  ): Promise<void> {
+    await this.databaseService.rolePermission.createMany({
+      data: permissionIds.map((permissionId) => ({
+        roleId,
+        permissionId,
+        assignedBy,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
+  async revokePermissions(
+    roleId: string,
+    permissionIds: string[]
+  ): Promise<void> {
+    await this.databaseService.rolePermission.deleteMany({
+      where: {
+        roleId,
+        permissionId: { in: permissionIds },
       },
     });
   }
 
-  async delete(id: string): Promise<Role> {
-    return this.databaseService.role.delete({ where: { id } });
+  async syncPermissions(
+    roleId: string,
+    permissionIds: string[],
+    assignedBy?: string
+  ): Promise<void> {
+    await this.databaseService.$transaction([
+      this.databaseService.rolePermission.deleteMany({
+        where: { roleId },
+      }),
+      this.databaseService.rolePermission.createMany({
+        data: permissionIds.map((permissionId) => ({
+          roleId,
+          permissionId,
+          assignedBy,
+        })),
+      }),
+    ]);
+  }
+
+  async findRoleIdsByUserId(userId: string): Promise<string[]> {
+    const userRoles = await this.databaseService.userRole.findMany({
+      where: {
+        userId,
+        revokedAt: null,
+      },
+      select: { roleId: true },
+    });
+
+    return userRoles.map((ur) => ur.roleId);
   }
 }

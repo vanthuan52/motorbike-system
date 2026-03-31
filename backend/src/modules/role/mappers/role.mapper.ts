@@ -1,5 +1,4 @@
 import { RoleModel } from '../models/role.model';
-import { EnumRoleType } from '../enums/role.enum';
 
 export class RoleMapper {
   static toDomain(prismaRole: any): RoleModel {
@@ -8,8 +7,7 @@ export class RoleMapper {
     model.name = prismaRole.name;
     model.description = prismaRole.description;
     model.isActive = prismaRole.isActive;
-    model.type = prismaRole.type?.toLowerCase() as EnumRoleType;
-    model.abilities = prismaRole.abilities;
+    model.type = prismaRole.type?.toLowerCase();
 
     model.createdAt = prismaRole.createdAt;
     model.updatedAt = prismaRole.updatedAt;

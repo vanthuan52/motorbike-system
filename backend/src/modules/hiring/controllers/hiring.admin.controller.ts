@@ -50,7 +50,6 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { HiringUtil } from '../utils/hiring.util';
 import { HiringResponseDto } from '../dtos/hiring-response.dto';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.hiring')
@@ -67,10 +66,10 @@ export class HiringAdminController {
   @HiringAdminListDoc()
   @ResponsePaging('hiring.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.hiring,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -104,10 +103,10 @@ export class HiringAdminController {
   @HiringAdminParamsIdDoc()
   @Response('hiring.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.hiring,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -125,10 +124,10 @@ export class HiringAdminController {
   @HiringAdminCreateDoc()
   @Response('hiring.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.hiring,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -142,10 +141,10 @@ export class HiringAdminController {
   @HiringAdminUpdateDoc()
   @Response('hiring.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.hiring,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -160,10 +159,10 @@ export class HiringAdminController {
   @HiringAdminDeleteDoc()
   @Response('hiring.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.hiring,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
@@ -175,10 +174,10 @@ export class HiringAdminController {
   @HiringAdminUpdateStatusDoc()
   @Response('hiring.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.hiring,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')

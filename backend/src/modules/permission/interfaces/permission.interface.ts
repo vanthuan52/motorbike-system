@@ -1,7 +1,3 @@
-import { EnumRoleType } from '@generated/prisma-client';
+import { PermissionModel } from '../models/permission.model';
 
-export interface IPermission {
-  id: string;
-  type: EnumRoleType;
-  name: string;
-}
+export interface IPermission extends PermissionModel {}

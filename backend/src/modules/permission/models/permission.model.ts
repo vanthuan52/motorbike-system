@@ -1,12 +1,21 @@
-import { EnumRoleType } from '../enums/permission.enum';
+import {
+  EnumPolicyAction,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
 
+/**
+ * Domain model representing a granular permission.
+ * Maps from Prisma Permission to application domain layer.
+ */
 export class PermissionModel {
   id: string;
   name: string;
+  code: string;
   description?: string;
+  group: string;
+  action: EnumPolicyAction;
+  subject: EnumPolicySubject;
   isActive: boolean;
-  type: EnumRoleType;
-  abilities: any[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -15,4 +24,16 @@ export class PermissionModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<PermissionModel>) {
+    Object.assign(this, data);
+  }
+
+  isActiveAndNotDeleted(): boolean {
+    return this.isActive && !this.deletedAt;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

@@ -30,18 +30,13 @@ import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
   EnumUserStatus,
-  EnumUserSignUpFrom,
-  EnumUserSignUpWith,
-  EnumVerificationType,
 } from '@/modules/user/enums/user.enum';
 import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
 import { UserService } from '@/modules/user/services/user.service';
-import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { EnumSessionStatusCodeError } from '@/modules/session/enums/session.status-code.enum';
 import { SessionRepository } from '@/modules/session/repositories/session.repository';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { VerificationService } from '@/modules/verification/services/verification.service';
-import { VerificationRepository } from '@/modules/verification/repositories/verification.repository';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import { AuthLoginRequestDto } from '@/modules/auth/dtos/request/auth.login.request.dto';
@@ -56,11 +51,12 @@ import { AuthForgotPasswordRequestDto } from '@/modules/auth/dtos/request/auth.f
 import { AuthForgotPasswordResetRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password-reset.request.dto';
 import { IUser } from '@/modules/user/interfaces/user.interface';
 import { AuthLoginResponseDto } from '../dtos/response/auth.login.response.dto';
-import { UserUtil } from '@/modules/user/utils/user.util';
+import { VerificationUtil } from '@/modules/verification/utils/verification.util';
 import { AuthVerifyEmailRequestDto } from '../dtos/request/auth.verify-email.request.dto';
 import { AuthSendEmailVerificationRequestDto } from '../dtos/request/auth.send-email-verification.request.dto';
 import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
+import { EnumVerificationType } from '@/modules/verification/enums/verification.enum';
 
 /**
  * Authentication service handling JWT token operations, session validation,
@@ -71,15 +67,13 @@ import { NotificationUtil } from '@/modules/notification/utils/notification.util
 export class AuthService implements IAuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly userRepository: UserRepository,
     private readonly sessionRepository: SessionRepository,
     private readonly verificationService: VerificationService,
-    private readonly verificationRepository: VerificationRepository,
     private readonly roleService: RoleService,
     private readonly sessionService: SessionService,
     private readonly helperService: HelperService,
     private readonly authUtil: AuthUtil,
-    private readonly userUtil: UserUtil,
+    private readonly verificationUtil: VerificationUtil,
     private readonly sessionUtil: SessionUtil,
     private readonly databaseUtil: DatabaseUtil,
     private readonly notificationUtil: NotificationUtil
@@ -356,7 +350,7 @@ export class AuthService implements IAuthService {
     loginWith: EnumUserLoginWith,
     { from, device, ...others }: AuthCreateSocialRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<AuthLoginResponseDto>> {
+  ): Promise<AuthLoginResponseDto> {
     let user = await this.userService.findOneWithRoleByEmail(email);
 
     if (!user) {
@@ -368,7 +362,7 @@ export class AuthService implements IAuthService {
         });
       }
 
-      const randomUsername = this.userUtil.createRandomUsername();
+      const randomUsername = this.userService.createRandomUsername();
       user = await this.userService.createBySocial(
         email,
         randomUsername,
@@ -407,11 +401,11 @@ export class AuthService implements IAuthService {
     );
   }
 
-  async refresh(
+  async refreshToken(
     user: IUser,
     refreshToken: string,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<AuthTokenResponseDto>> {
+  ): Promise<AuthTokenResponseDto> {
     const {
       sessionId,
       userId,
@@ -456,9 +450,7 @@ export class AuthService implements IAuthService {
         ),
       ]);
 
-      return {
-        data: tokens,
-      };
+      return tokens;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,
@@ -471,7 +463,7 @@ export class AuthService implements IAuthService {
   async signUp(
     { email, password: passwordString, ...others }: AuthSignUpRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     const [role, emailExist] = await Promise.all([
       this.roleService.findRoleByName(this.userRoleName),
       this.userService.findOneByEmail(email),
@@ -491,8 +483,8 @@ export class AuthService implements IAuthService {
     try {
       const userId = this.databaseUtil.createId();
       const password = this.authUtil.createPassword(userId, passwordString);
-      const randomUsername = this.userUtil.createRandomUsername();
-      const emailVerification = this.userUtil.verificationCreateVerification(
+      const randomUsername = this.userService.createRandomUsername();
+      const emailVerification = this.verificationUtil.createVerification(
         userId,
         EnumVerificationType.email
       );
@@ -530,11 +522,54 @@ export class AuthService implements IAuthService {
     }
   }
 
+  async changePassword(
+    user: IUser,
+    { newPassword, oldPassword }: AuthChangePasswordRequestDto,
+    requestLog: IRequestLog
+  ): Promise<void> {
+    if (this.authUtil.checkPasswordAttempt(user)) {
+      throw new ForbiddenException({
+        statusCode: EnumUserStatusCodeError.passwordAttemptMax,
+        message: 'auth.error.passwordAttemptMax',
+      });
+    } else if (!this.authUtil.validatePassword(oldPassword, user.password)) {
+      await this.userService.increasePasswordAttempt(user.id);
+
+      throw new BadRequestException({
+        statusCode: EnumUserStatusCodeError.passwordNotMatch,
+        message: 'auth.error.passwordNotMatch',
+      });
+    }
+
+    await this.userService.resetPasswordAttempt(user.id);
+
+    try {
+      const sessions = await this.sessionRepository.findActive(user.id);
+      const password = this.authUtil.createPassword(user.id, newPassword);
+
+      await Promise.all([
+        this.userService.changeUserPassword(user.id, password, requestLog),
+        this.sessionUtil.deleteAllLogins(user.id, sessions),
+      ]);
+
+      // @note: send email after all creation
+      await this.notificationUtil.sendChangePassword(user.id);
+
+      return;
+    } catch (err: unknown) {
+      throw new InternalServerErrorException({
+        statusCode: EnumAppStatusCodeError.unknown,
+        message: 'http.serverError.internalServerError',
+        _error: err,
+      });
+    }
+  }
+
   async verifyEmail(
     { token }: AuthVerifyEmailRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
-    const hashedToken = this.userUtil.hashedToken(token);
+  ): Promise<void> {
+    const hashedToken = this.verificationUtil.hashedToken(token);
     const verification =
       await this.verificationService.findValidEmailToken(hashedToken);
     if (!verification) {
@@ -569,7 +604,7 @@ export class AuthService implements IAuthService {
   async sendVerificationEmail(
     { email }: AuthSendEmailVerificationRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     const user = await this.userService.findOneActiveByEmail(email);
     if (!user) {
       throw new NotFoundException({
@@ -584,15 +619,13 @@ export class AuthService implements IAuthService {
     }
 
     const lastVerification =
-      await this.verificationRepository.findOneLatestByVerificationEmail(
-        user.id
-      );
+      await this.verificationService.findLatestVerificationEmail(user.id);
     if (lastVerification) {
       const today = this.helperService.dateCreate();
       const canResendAt = this.helperService.dateForward(
         lastVerification.createdAt,
         Duration.fromObject({
-          minutes: this.userUtil.verificationExpiredInMinutes,
+          minutes: this.verificationUtil.verificationExpiredInMinutes,
         })
       );
 
@@ -609,12 +642,12 @@ export class AuthService implements IAuthService {
     }
 
     try {
-      const emailVerification = this.userUtil.verificationCreateVerification(
+      const emailVerification = this.verificationUtil.createVerification(
         user.id,
         EnumVerificationType.email
       );
 
-      await this.verificationRepository.requestVerificationEmail(
+      await this.verificationService.requestEmailVerification(
         user.id,
         user.email,
         emailVerification,
@@ -659,7 +692,7 @@ export class AuthService implements IAuthService {
       const canResendAt = this.helperService.dateForward(
         lastForgotPassword.createdAt,
         Duration.fromObject({
-          minutes: this.userUtil.forgotResendInMinutes,
+          minutes: this.verificationUtil.forgotResendInMinutes,
         })
       );
 
@@ -676,7 +709,7 @@ export class AuthService implements IAuthService {
     }
 
     try {
-      const resetPassword = this.userUtil.forgotPasswordCreate(user.id);
+      const resetPassword = this.verificationUtil.forgotPasswordCreate(user.id);
 
       await this.userService.forgotPassword(
         user.id,
@@ -707,9 +740,9 @@ export class AuthService implements IAuthService {
     { newPassword, token }: AuthForgotPasswordResetRequestDto,
     requestLog: IRequestLog
   ): Promise<void> {
-    const hashedToken = this.userUtil.hashedToken(token);
+    const hashedToken = this.verificationUtil.hashedToken(token);
     const resetPassword =
-      await this.userRepository.findOneActiveByForgotPasswordToken(hashedToken);
+      await this.userService.findOneActiveByForgotPasswordToken(hashedToken);
     if (!resetPassword) {
       throw new NotFoundException({
         statusCode: EnumUserStatusCodeError.notFound,
@@ -742,7 +775,7 @@ export class AuthService implements IAuthService {
       );
 
       await Promise.all([
-        this.userRepository.resetPassword(
+        this.userService.resetPasswordWithToken(
           resetPassword.userId,
           resetPassword.id,
           password,
@@ -785,7 +818,7 @@ export class AuthService implements IAuthService {
     );
 
     const { isNewDevice, sessionShouldBeInactive } =
-      await this.userRepository.login(
+      await this.userService.loginUser(
         user.id,
         device,
         {
@@ -831,14 +864,14 @@ export class AuthService implements IAuthService {
     loginWith: EnumUserLoginWith,
     loginAt: Date,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<AuthLoginResponseDto>> {
+  ): Promise<AuthLoginResponseDto> {
     if (!user.isVerified) {
-      const emailVerification = this.userUtil.verificationCreateVerification(
+      const emailVerification = this.verificationUtil.createVerification(
         user.id,
         EnumVerificationType.email
       );
 
-      await this.verificationRepository.requestVerificationEmail(
+      await this.verificationService.requestEmailVerification(
         user.id,
         user.email,
         emailVerification,
@@ -861,66 +894,6 @@ export class AuthService implements IAuthService {
       });
     }
 
-    if (!user.twoFactor.enabled) {
-      const tokens = await this.createTokenAndSession(
-        user,
-        device,
-        loginFrom,
-        loginWith,
-        loginAt,
-        requestLog
-      );
-
-      return {
-        data: {
-          isTwoFactorEnable: false,
-          tokens,
-        },
-      };
-    }
-
-    const { challengeToken, expiresInMs } =
-      await this.authTwoFactorUtil.createChallenge({
-        userId: user.id,
-        device,
-        loginFrom,
-        loginWith,
-      });
-    if (user.twoFactor.requiredSetup) {
-      const { encryptedSecret, otpauthUrl, secret, iv } =
-        await this.authTwoFactorUtil.setupTwoFactor(user.email);
-      await this.userRepository.setupTwoFactor(
-        user.id,
-        encryptedSecret,
-        iv,
-        requestLog
-      );
-
-      return {
-        data: {
-          isTwoFactorEnable: true,
-          twoFactor: {
-            isRequiredSetup: true,
-            challengeToken,
-            challengeExpiresInMs: expiresInMs,
-            backupCodesRemaining: user.twoFactor.backupCodes.length ?? 0,
-            otpauthUrl,
-            secret,
-          },
-        },
-      };
-    }
-
-    return {
-      data: {
-        isTwoFactorEnable: true,
-        twoFactor: {
-          isRequiredSetup: false,
-          challengeToken,
-          challengeExpiresInMs: expiresInMs,
-          backupCodesRemaining: user.twoFactor.backupCodes.length ?? 0,
-        },
-      },
-    };
+    return {};
   }
 }

@@ -1,5 +1,12 @@
-import { EnumCareRecordStatus, EnumPaymentStatus } from '../enums/care-record.enum';
+import {
+  EnumCareRecordStatus,
+  EnumPaymentStatus,
+} from '../enums/care-record.enum';
 
+/**
+ * Domain model representing a vehicle care record.
+ * Maps from Prisma CareRecord to application domain layer.
+ */
 export class CareRecordModel {
   id: string;
   vehicleModelName?: string;
@@ -13,6 +20,7 @@ export class CareRecordModel {
   deliveryDate?: Date;
   deliveryKm?: number;
   notes?: string;
+
   appointmentId?: string;
   userVehicleId: string;
   technicianId?: string;
@@ -25,4 +33,12 @@ export class CareRecordModel {
   createdBy?: string;
   updatedBy?: string;
   deletedBy?: string;
+
+  constructor(data?: Partial<CareRecordModel>) {
+    Object.assign(this, data);
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

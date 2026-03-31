@@ -1,9 +1,9 @@
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { RoleAbilityRequestDto } from '@/modules/role/dtos/request/role.ability.request.dto';
+import { IPolicyAbility } from '@/modules/policy/interfaces/policy.interface';
 
 export interface IPolicyService {
   validatePolicyGuard(
     request: IRequestApp,
-    requiredAbilities: RoleAbilityRequestDto[]
+    requiredAbilities: IPolicyAbility[]
   ): Promise<boolean>;
 }

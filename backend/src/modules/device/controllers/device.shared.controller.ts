@@ -11,7 +11,6 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationCursorQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryCursorParams } from '@/common/pagination/interfaces/pagination.interface';
-import { PaginationUtil } from '@/common/pagination/utils/pagination.util';
 import {
   RequestGeoLocation,
   RequestIPAddress,
@@ -27,7 +26,6 @@ import {
   IResponsePagingReturn,
   IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
-import { GeoLocation, Prisma, UserAgent } from '@/generated/prisma-client';
 import { ApiKeyProtected } from '@/modules/api-key/decorators/api-key.decorator';
 import {
   AuthJwtAccessProtected,
@@ -43,6 +41,11 @@ import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/devic
 import { DeviceService } from '@/modules/device/services/device.service';
 import { DeviceUtil } from '@/modules/device/utils/device.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import {
+  UserAgent,
+  GeoLocation,
+} from '@/modules/user/interfaces/user.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.shared.user.device')
 @Controller({
@@ -52,8 +55,7 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 export class DeviceSharedController {
   constructor(
     private readonly deviceService: DeviceService,
-    private readonly deviceUtil: DeviceUtil,
-    private readonly paginationUtil: PaginationUtil
+    private readonly deviceUtil: DeviceUtil
   ) {}
 
   @DeviceSharedListDoc()
@@ -71,11 +73,7 @@ export class DeviceSharedController {
     @AuthJwtPayload('userId') userId: string,
     @AuthJwtPayload('sessionId') sessionId: string
   ): Promise<IResponsePagingReturn<DeviceOwnershipResponseDto>> {
-    return this.deviceService.getListCursor(
-      userId,
-      sessionId,
-      pagination
-    );
+    return this.deviceService.getListCursor(userId, sessionId, pagination);
   }
 
   @DeviceSharedRefreshDoc()

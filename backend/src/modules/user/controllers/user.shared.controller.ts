@@ -49,6 +49,7 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { UserUtil } from '../utils/user.util';
 
 @ApiTags('modules.shared.user')
 @Controller({
@@ -56,7 +57,10 @@ import {
   path: '/user',
 })
 export class UserSharedController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userUtil: UserUtil
+  ) {}
 
   @UserSharedProfileDoc()
   @Response('user.profile')
@@ -68,7 +72,11 @@ export class UserSharedController {
     @AuthJwtPayload('userId')
     userId: string
   ): Promise<IResponseReturn<UserProfileResponseDto>> {
-    return this.userService.getProfile(userId);
+    const user = await this.userService.getProfile(userId);
+    const mapped = this.userUtil.mapProfile(user);
+    return {
+      data: mapped,
+    };
   }
 
   @UserSharedUpdateProfileDoc()
@@ -86,11 +94,12 @@ export class UserSharedController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.updateProfile(userId, body, {
+    await this.userService.updateProfile(userId, body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 
   @UserSharedGeneratePhotoProfilePresignDoc()
@@ -105,7 +114,8 @@ export class UserSharedController {
     userId: string,
     @Body() body: UserGeneratePhotoProfileRequestDto
   ): Promise<IResponseReturn<AwsS3PresignDto>> {
-    return this.userService.generatePhotoProfilePresign(userId, body);
+    const data = await this.userService.generatePhotoProfilePresign(userId, body);
+    return { data };
   }
 
   @UserSharedUpdatePhotoProfileDoc()
@@ -122,11 +132,12 @@ export class UserSharedController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.updatePhotoProfile(userId, body, {
+    await this.userService.updatePhotoProfile(userId, body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 
   @UserSharedUploadPhotoProfileDoc()
@@ -154,11 +165,12 @@ export class UserSharedController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.uploadPhotoProfile(userId, file, {
+    await this.userService.uploadPhotoProfile(userId, file, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 
   @UserSharedClaimUsernameDoc()
@@ -176,14 +188,11 @@ export class UserSharedController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.userService.claimUsername(userId, body, {
+    await this.userService.claimUsername(userId, body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
-
-  // TODO: LAST - Implement logout api
-
-  // TODO: Verify number implementation, but which provider?
 }

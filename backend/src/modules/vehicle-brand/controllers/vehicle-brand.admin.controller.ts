@@ -59,7 +59,6 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 import {
@@ -86,10 +85,10 @@ export class VehicleBrandAdminController {
   @VehicleAdminBrandListDoc()
   @ResponsePaging('vehicle-brand.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
@@ -119,10 +118,10 @@ export class VehicleBrandAdminController {
   @VehicleAdminBrandParamsIdDoc()
   @Response('vehicle-brand.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
@@ -137,10 +136,10 @@ export class VehicleBrandAdminController {
   @VehicleAdminBrandCreateDoc()
   @Response('vehicle-brand.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
@@ -166,10 +165,10 @@ export class VehicleBrandAdminController {
   @VehicleAdminBrandUpdateDoc()
   @Response('vehicle-brand.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
@@ -197,10 +196,10 @@ export class VehicleBrandAdminController {
   @VehicleAdminBrandUpdateStatusDoc()
   @Response('vehicle-brand.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
@@ -228,10 +227,10 @@ export class VehicleBrandAdminController {
   @VehicleAdminBrandDeleteDoc()
   @Response('vehicle-brand.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')

@@ -9,57 +9,49 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AppointmentService } from '../services/appointment.service';
 import {
-  AppointmentAdminCreateDoc,
-  AppointmentAdminDeleteDoc,
-  AppointmentAdminListDoc,
-  AppointmentAdminParamsIdDoc,
-  AppointmentAdminUpdateDoc,
-  AppointmentAdminUpdateStatusDoc,
-} from '../docs/appointment.admin.doc';
+  PaginationOffsetQuery,
+  PaginationQueryFilterEqualBoolean,
+  PaginationQueryFilterInEnum,
+} from '@/common/pagination/decorators/pagination.decorator';
 import {
   Response,
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
+import {
+  IResponsePagingReturn,
+  IResponseReturn,
+} from '@/common/response/interfaces/response.interface';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
-  AuthJwtAccessProtected,
-  AuthJwtPayload,
-} from '@/modules/auth/decorators/auth.jwt.decorator';
-import {
-  PaginationOffsetQuery,
-  PaginationQueryFilterInEnum,
-} from '@/common/pagination/decorators/pagination.decorator';
-import {
-  APPOINTMENTS_DEFAULT_AVAILABLE_ORDER_BY,
-  APPOINTMENTS_DEFAULT_AVAILABLE_SEARCH,
-  APPOINTMENTS_DEFAULT_STATUS,
-} from '../constants/appointment.list.constant';
-import {
-  IPaginationQueryOffsetParams,
-  IPaginationIn,
-} from '@/common/pagination/interfaces/pagination.interface';
-import {
-  IResponseReturn,
-  IResponsePagingReturn,
-} from '@/common/response/interfaces/response.interface';
-import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
+  AppointmentAdminCreateDoc,
+  AppointmentAdminDeleteDoc,
+  AppointmentAdminGetDoc,
+  AppointmentAdminListDoc,
+  AppointmentAdminUpdateDoc,
+  AppointmentAdminUpdateStatusDoc,
+} from '../docs/appointment.admin.doc';
+import { AppointmentService } from '../services/appointment.service';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
-import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
-import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
+import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
+import { AppointmentResponseDto } from '../dtos/response/appointment.response.dto';
 import { AppointmentUtil } from '../utils/appointment.util';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import {
+  IPaginationEqual,
+  IPaginationIn,
+  IPaginationQueryOffsetParams,
+} from '@/common/pagination/interfaces/pagination.interface';
 import {
   RequestGeoLocation,
   RequestIPAddress,
@@ -69,6 +61,7 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.appointment')
 @Controller({
@@ -84,26 +77,35 @@ export class AppointmentAdminController {
   @AppointmentAdminListDoc()
   @ResponsePaging('appointment.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.appointment,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: APPOINTMENTS_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: APPOINTMENTS_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ['code', 'customerName', 'customerPhone'],
     })
-    pagination: IPaginationQueryOffsetParams,
-    @PaginationQueryFilterInEnum('status', APPOINTMENTS_DEFAULT_STATUS)
-    status: Record<string, IPaginationIn>
-  ): Promise<IResponsePagingReturn<AppointmentListResponseDto>> {
-    const result = await this.appointmentService.getListOffset(
-      pagination,
-      status
-    );
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
+    @PaginationQueryFilterInEnum('status', [
+      'PENDING',
+      'CONFIRMED',
+      'CANCELLED',
+      'COMPLETED',
+    ])
+    status?: Record<string, IPaginationIn>,
+    @PaginationQueryFilterEqualBoolean('isActive')
+    isActive?: Record<string, IPaginationEqual>
+  ): Promise<IResponsePagingReturn<AppointmentResponseDto>> {
+    const result = await this.appointmentService.getListOffset(pagination, {
+      ...status,
+      ...isActive,
+    });
     const mapped = this.appointmentUtil.mapList(result.data);
     return {
       ...result,
@@ -111,43 +113,42 @@ export class AppointmentAdminController {
     };
   }
 
-  @AppointmentAdminParamsIdDoc()
-  @Response('appointment.getById')
+  @AppointmentAdminGetDoc()
+  @Response('appointment.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.appointment,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
-  ): Promise<IResponseReturn<AppointmentGetFullResponseDto>> {
-    const appointment =
-      await this.appointmentService.findOneWithRelationsById(id);
-    const mapped = this.appointmentUtil.mapGetPopulate(appointment);
+    @Param('id') id: string
+  ): Promise<IResponseReturn<AppointmentResponseDto>> {
+    const appointment = await this.appointmentService.findOneById(id);
+    const mapped = this.appointmentUtil.mapOne(appointment);
     return { data: mapped };
   }
 
   @AppointmentAdminCreateDoc()
   @Response('appointment.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
+    @Body() body: AppointmentCreateRequestDto,
     @AuthJwtPayload('userId') userId: string,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
-    @RequestGeoLocation() geoLocation: GeoLocation | null,
-    @Body() body: AppointmentCreateRequestDto
-  ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.appointmentService.create(
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<{ id: string }>> {
+    const created = await this.appointmentService.createByAdmin(
       body,
       { ipAddress, userAgent, geoLocation },
       userId
@@ -158,22 +159,22 @@ export class AppointmentAdminController {
   @AppointmentAdminUpdateDoc()
   @Response('appointment.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin, EnumRoleType.user)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Put('/update/:id')
   async update(
-    @Param('id', RequestRequiredPipe) id: string,
+    @Param('id') id: string,
+    @Body() body: AppointmentUpdateRequestDto,
     @AuthJwtPayload('userId') userId: string,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
-    @RequestGeoLocation() geoLocation: GeoLocation | null,
-    @Body() body: AppointmentUpdateRequestDto
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.update(
+    await this.appointmentService.updateByAdmin(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
@@ -185,22 +186,22 @@ export class AppointmentAdminController {
   @AppointmentAdminUpdateStatusDoc()
   @Response('appointment.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Patch('/update/:id/status')
   async updateStatus(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Param('id') id: string,
+    @Body() body: AppointmentUpdateStatusRequestDto,
     @AuthJwtPayload('userId') userId: string,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
-    @RequestGeoLocation() geoLocation: GeoLocation | null,
-    @Body() body: AppointmentUpdateStatusRequestDto
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.updateStatus(
+    await this.appointmentService.updateStatusByAdmin(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
@@ -212,21 +213,21 @@ export class AppointmentAdminController {
   @AppointmentAdminDeleteDoc()
   @Response('appointment.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
-    action: [EnumPolicyAction.read],
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @Delete('/delete/:id')
   async delete(
-    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @Param('id') id: string,
     @AuthJwtPayload('userId') userId: string,
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.delete(
+    await this.appointmentService.deleteByAdmin(
       id,
       { ipAddress, userAgent, geoLocation },
       userId

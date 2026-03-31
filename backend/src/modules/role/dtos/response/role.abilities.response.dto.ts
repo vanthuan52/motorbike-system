@@ -1,6 +1,13 @@
 import { PickType } from '@nestjs/swagger';
-import { RoleDto } from '@/modules/role/dtos/role.dto';
+import { PermissionDto } from '@/modules/permission/dtos/permission.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class RoleAbilitiesResponseDto extends PickType(RoleDto, [
-  'abilities',
-]) {}
+export class RolePermissionsResponseDto {
+  @ApiProperty({
+    type: [PermissionDto],
+    required: true,
+    isArray: true,
+    default: [],
+  })
+  permissions: PermissionDto[];
+}

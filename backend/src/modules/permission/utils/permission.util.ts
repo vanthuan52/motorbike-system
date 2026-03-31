@@ -3,24 +3,24 @@ import { plainToInstance } from 'class-transformer';
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import { PermissionDto } from '@/modules/permission/dtos/permission.dto';
-import { Permission } from '@/generated/prisma-client';
+import { PermissionModel } from '@/modules/permission/models/permission.model';
 
 @Injectable()
 export class PermissionUtil {
-  mapList(Permissions: Permission[]): PermissionListResponseDto[] {
-    return plainToInstance(PermissionListResponseDto, Permissions);
+  mapList(permissions: PermissionModel[]): PermissionListResponseDto[] {
+    return plainToInstance(PermissionListResponseDto, permissions);
   }
 
-  mapOne(Permission: Permission): PermissionDto {
-    return plainToInstance(PermissionDto, Permission);
+  mapOne(permission: PermissionModel): PermissionDto {
+    return plainToInstance(PermissionDto, permission);
   }
 
-  mapActivityLogMetadata(Permission: Permission): IActivityLogMetadata {
+  mapActivityLogMetadata(permission: PermissionModel): IActivityLogMetadata {
     return {
-      PermissionId: Permission.id,
-      PermissionName: Permission.name,
-      PermissionType: Permission.type,
-      timestamp: Permission.updatedAt ?? Permission.createdAt,
+      permissionId: permission.id,
+      permissionName: permission.name,
+      permissionCode: permission.code,
+      timestamp: permission.updatedAt ?? permission.createdAt,
     };
   }
 }

@@ -74,7 +74,6 @@ import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api
 import { ApiKeyUtil } from '@/modules/api-key/utils/api-key.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { EnumHelperDateDayOf } from '@/common/helper/enums/helper.enum';
-import { EnumRoleType } from '@/modules/role/enums/role.enum';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { EnumApiKeyType } from '@/modules/api-key/enums/api-key.enum';
 import { Prisma } from '@/generated/prisma-client';
@@ -97,7 +96,7 @@ export class ApiKeyAdminController {
     subject: EnumPolicySubject.apiKey,
     action: [EnumPolicyAction.read],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -131,9 +130,9 @@ export class ApiKeyAdminController {
   @Response('apiKey.create')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.apiKey,
-    action: [EnumPolicyAction.read, EnumPolicyAction.create],
+    action: [EnumPolicyAction.create],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminApiKeyCreate)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -178,9 +177,9 @@ export class ApiKeyAdminController {
   @Response('apiKey.reset')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.apiKey,
-    action: [EnumPolicyAction.read, EnumPolicyAction.update],
+    action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminApiKeyReset)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -210,9 +209,9 @@ export class ApiKeyAdminController {
   @Response('apiKey.update')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.apiKey,
-    action: [EnumPolicyAction.read, EnumPolicyAction.update],
+    action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminApiKeyUpdate)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -244,9 +243,9 @@ export class ApiKeyAdminController {
   @Response('apiKey.updateDate')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.apiKey,
-    action: [EnumPolicyAction.read, EnumPolicyAction.update],
+    action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminApiKeyUpdateDate)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -278,9 +277,9 @@ export class ApiKeyAdminController {
   @Response('apiKey.updateStatus')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.apiKey,
-    action: [EnumPolicyAction.read, EnumPolicyAction.update],
+    action: [EnumPolicyAction.update],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminApiKeyUpdateStatus)
   @UserProtected()
   @AuthJwtAccessProtected()
@@ -312,9 +311,9 @@ export class ApiKeyAdminController {
   @Response('apiKey.delete')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.apiKey,
-    action: [EnumPolicyAction.read, EnumPolicyAction.delete],
+    action: [EnumPolicyAction.delete],
   })
-  @RoleProtected(EnumRoleType.admin)
+  @RoleProtected('admin')
   @ActivityLog(EnumActivityLogAction.adminApiKeyDelete)
   @UserProtected()
   @AuthJwtAccessProtected()
