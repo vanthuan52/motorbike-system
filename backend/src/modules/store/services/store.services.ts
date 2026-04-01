@@ -191,6 +191,10 @@ export class StoreService implements IStoreService {
     return !!store;
   }
 
+  /**
+   * Soft delete a store by setting deletedAt timestamp.
+   * The record remains in DB but is hidden from normal queries.
+   */
   async delete(
     storeId: string,
     requestLog: IRequestLog,
@@ -204,6 +208,85 @@ export class StoreService implements IStoreService {
       });
     }
 
-    await this.storeRepository.delete(storeId);
+    await this.storeRepository.softDelete(storeId, deletedBy);
+  }
+
+  // === Trash/Restore ===
+
+  /**
+   * Get paginated list of soft-deleted (trashed) stores.
+   */
+  async getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >
+  ): Promise<IPaginationOffsetReturn<StoreModel>> {
+    const { data, ...others } =
+      await this.storeRepository.findWithPaginationOffsetTrashed(pagination);
+
+    return {
+      data,
+      ...others,
+    };
+  }
+
+  /**
+   * Restore a soft-deleted store from trash.
+   * Clears deletedAt and deletedBy, making it visible again.
+   */
+  async restore(
+    storeId: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<void> {
+    const store =
+      await this.storeRepository.findOneByIdIncludeDeleted(storeId);
+
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: EnumStoreStatusCodeError.notFound,
+        message: 'store.error.notFound',
+      });
+    }
+
+    if (!store.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumStoreStatusCodeError.notInTrash,
+        message: 'store.error.notInTrash',
+      });
+    }
+
+    await this.storeRepository.restore(storeId, restoredBy);
+  }
+
+  /**
+   * Permanently remove a store from the database.
+   * The record must already be in trash (soft-deleted).
+   * WARNING: This action is irreversible.
+   */
+  async forceDelete(
+    storeId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void> {
+    const store =
+      await this.storeRepository.findOneByIdIncludeDeleted(storeId);
+
+    if (!store) {
+      throw new NotFoundException({
+        statusCode: EnumStoreStatusCodeError.notFound,
+        message: 'store.error.notFound',
+      });
+    }
+
+    if (!store.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumStoreStatusCodeError.notInTrash,
+        message: 'store.error.notInTrash',
+      });
+    }
+
+    await this.storeRepository.forceDelete(storeId);
   }
 }

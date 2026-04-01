@@ -91,11 +91,12 @@ export class DeviceSharedController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: DeviceRefreshRequestDto
   ): Promise<IResponseReturn<void>> {
-    return this.deviceService.refresh(userId, deviceOwnershipId, body, {
+    await this.deviceService.refresh(userId, deviceOwnershipId, body, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 
   @DeviceSharedRemoveDoc()
@@ -113,10 +114,11 @@ export class DeviceSharedController {
     @Param('deviceOwnershipId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     deviceOwnershipId: string
   ): Promise<IResponseReturn<void>> {
-    return this.deviceService.remove(userId, deviceOwnershipId, {
+    await this.deviceService.remove(userId, deviceOwnershipId, {
       ipAddress,
       userAgent,
       geoLocation,
     });
+    return {};
   }
 }

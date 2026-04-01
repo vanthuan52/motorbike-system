@@ -59,8 +59,6 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { Prisma } from '@/generated/prisma-client';
-
 import {
   RequestGeoLocation,
   RequestIPAddress,
@@ -70,6 +68,9 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.vehicle-brand')
 @Controller({
@@ -135,6 +136,7 @@ export class VehicleBrandAdminController {
 
   @VehicleAdminBrandCreateDoc()
   @Response('vehicle-brand.create')
+  @ActivityLog(EnumActivityLogAction.adminVehicleBrandCreate)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.create],
@@ -159,11 +161,16 @@ export class VehicleBrandAdminController {
       },
       createdBy
     );
-    return { data: created };
+    return {
+      data: { id: created.id },
+      metadataActivityLog:
+        this.vehicleBrandUtil.mapActivityLogMetadata(created),
+    };
   }
 
   @VehicleAdminBrandUpdateDoc()
   @Response('vehicle-brand.update')
+  @ActivityLog(EnumActivityLogAction.adminVehicleBrandUpdate)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.update],
@@ -180,7 +187,7 @@ export class VehicleBrandAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleBrandService.update(
+    const updated = await this.vehicleBrandService.update(
       id,
       body,
       {
@@ -190,11 +197,15 @@ export class VehicleBrandAdminController {
       },
       updatedBy
     );
-    return {};
+    return {
+      metadataActivityLog:
+        this.vehicleBrandUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @VehicleAdminBrandUpdateStatusDoc()
   @Response('vehicle-brand.updateStatus')
+  @ActivityLog(EnumActivityLogAction.adminVehicleBrandUpdateStatus)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.update],
@@ -211,7 +222,7 @@ export class VehicleBrandAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleBrandService.updateStatus(
+    const updated = await this.vehicleBrandService.updateStatus(
       id,
       body,
       {
@@ -221,11 +232,15 @@ export class VehicleBrandAdminController {
       },
       updatedBy
     );
-    return {};
+    return {
+      metadataActivityLog:
+        this.vehicleBrandUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @VehicleAdminBrandDeleteDoc()
   @Response('vehicle-brand.delete')
+  @ActivityLog(EnumActivityLogAction.adminVehicleBrandDelete)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleBrand,
     action: [EnumPolicyAction.delete],
@@ -241,7 +256,7 @@ export class VehicleBrandAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleBrandService.delete(
+    const deleted = await this.vehicleBrandService.delete(
       id,
       {
         ipAddress,
@@ -250,6 +265,9 @@ export class VehicleBrandAdminController {
       },
       deletedBy
     );
-    return {};
+    return {
+      metadataActivityLog:
+        this.vehicleBrandUtil.mapActivityLogMetadata(deleted),
+    };
   }
 }

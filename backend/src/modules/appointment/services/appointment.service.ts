@@ -1,26 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { AppointmentRepository } from '../repository/appointment.repository';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
 import { IAppointmentService } from '../interfaces/appointment.service.interface';
+import { AppointmentRepository } from '../repository/appointment.repository';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
-import { EnumAppointmentStatus } from '../enums/appointment.enum';
 import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
-import { AppointmentBookRequestDto } from '../dtos/request/appointment.book.request.dto';
+import { AppointmentModel } from '../models/appointment.model';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
-  IPaginationCursorReturn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { EnumAppointmentStatus } from '../enums/appointment.enum';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
 import { UserVehicleService } from '@/modules/user-vehicle/services/user-vehicle.service';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
-import { EnumAppointmentStatusCodeError } from '../enums/appointment.status-code.enum';
 import { EnumVehicleModelStatusCodeError } from '@/modules/vehicle-model/enums/vehicle-model.status-code.enum';
 import { EnumUserVehicleStatusCodeError } from '@/modules/user-vehicle/enums/user-vehicle.status-code.enum';
 import { EnumVehicleServiceStatusCodeError } from '@/modules/vehicle-service/enums/vehicle-service.status-code.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { AppointmentModel } from '../models/appointment.model';
+import { AppointmentUtil } from '../utils/appointment.util';
+import { EnumAppointmentStatusCodeError } from '../enums/appointment.status-code.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
@@ -29,7 +32,8 @@ export class AppointmentService implements IAppointmentService {
     private readonly appointmentRepository: AppointmentRepository,
     private readonly vehicleModelService: VehicleModelService,
     private readonly userVehicleService: UserVehicleService,
-    private readonly vehicleServiceService: VehicleServiceService
+    private readonly vehicleServiceService: VehicleServiceService,
+    private readonly appointmentUtil: AppointmentUtil
   ) {}
 
   async getListOffset(
@@ -37,93 +41,32 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: Prisma.AppointmentWhereInput
   ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const { data, ...others } =
-      await this.appointmentRepository.findWithPaginationOffset(pagination);
-
-    return { data, ...others };
-  }
-
-  async getListCursor(
-    pagination: IPaginationQueryCursorParams<
-      Prisma.AppointmentSelect,
-      Prisma.AppointmentWhereInput
-    >,
-    filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<AppointmentModel>> {
-    const { data, ...others } =
-      await this.appointmentRepository.findWithPaginationCursor(pagination);
-
-    return { data, ...others };
+      await this.appointmentRepository.findWithPaginationOffset(
+        pagination,
+        filters
+      );
+    return {
+      data: data as AppointmentModel[],
+      ...others,
+    };
   }
 
   async findOneById(id: string): Promise<AppointmentModel> {
-    return this.findOneByIdOrFail(id);
-  }
-
-  async findOneWithRelationsById(id: string): Promise<AppointmentModel> {
-    const appointment = await this.findOneByIdOrFail(id);
-    return appointment;
-  }
-
-  async findOne(find: Record<string, any>): Promise<AppointmentModel | null> {
-    return this.appointmentRepository.findOne(find);
-  }
-
-  async findOneWithRelations(
-    find: Record<string, any>
-  ): Promise<AppointmentModel | null> {
-    return this.appointmentRepository.findOne(find);
-  }
-
-  // User book an appointment
-  async createAppointment({
-    name,
-    phone,
-    vehicleModel,
-    vehicleServices,
-    licensePlateNumber,
-    appointmentDate,
-    address,
-    note,
-  }: AppointmentBookRequestDto): Promise<AppointmentModel> {
-    // Validate vehicleModel
-    const foundVehicleModel =
-      await this.vehicleModelService.findOneById(vehicleModel);
-    if (!foundVehicleModel) {
+    const appointment = await this.appointmentRepository.findOneById(id);
+    if (!appointment) {
       throw new NotFoundException({
-        statusCode: EnumVehicleModelStatusCodeError.notFound,
-        message: 'vehicle-model.error.notFound',
+        statusCode: EnumAppointmentStatusCodeError.notFound,
+        message: 'appointment.error.notFound',
       });
     }
+    return appointment as AppointmentModel;
+  }
 
-    // Validate vehicleServices
-    await Promise.all(
-      vehicleServices.map(async id => {
-        const service = await this.vehicleServiceService.findOneById(id);
-        if (!service) {
-          throw new NotFoundException({
-            statusCode: EnumVehicleServiceStatusCodeError.notFound,
-            message: 'vehicle-service.error.notFound',
-          });
-        }
-      })
-    );
-
-    const data: Prisma.AppointmentCreateInput = {
-      name,
-      phone,
-      vehicleModel: { connect: { id: vehicleModel } },
-      vehicleServices: { connect: vehicleServices.map(id => ({ id })) },
-      licensePlateNumber,
-      appointmentDate: new Date(appointmentDate),
-      address,
-      note: note ?? '',
-      status: EnumAppointmentStatus.pending,
-    };
-
-    return this.appointmentRepository.create(data);
+  async findOneByIdOrFail(id: string): Promise<AppointmentModel> {
+    return this.findOneById(id);
   }
 
   // Admin create an appointment
@@ -136,15 +79,15 @@ export class AppointmentService implements IAppointmentService {
       vehicleModel,
       vehicleServices,
       licensePlateNumber,
-      appointmentDate,
       customerRequests,
+      appointmentDate,
       address,
       note,
       status,
     }: AppointmentCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<{ _id: string }> {
+  ): Promise<AppointmentModel> {
     // Validate vehicleModel
     const foundVehicleModel =
       await this.vehicleModelService.findOneById(vehicleModel);
@@ -193,10 +136,11 @@ export class AppointmentService implements IAppointmentService {
       address,
       note: note ?? '',
       status: status ?? EnumAppointmentStatus.pending,
+      createdBy: actionBy,
     };
 
     const created = await this.appointmentRepository.create(data);
-    return { _id: created.id };
+    return created as AppointmentModel;
   }
 
   async update(
@@ -213,13 +157,24 @@ export class AppointmentService implements IAppointmentService {
       appointmentDate,
       address,
       note,
-      status,
     }: AppointmentUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<AppointmentModel> {
     // Find appointment
-    const appointment = await this.findOneByIdOrFail(id);
+    await this.findOneByIdOrFail(id);
+
+    // Validate vehicleModel
+    if (vehicleModel) {
+      const foundVehicleModel =
+        await this.vehicleModelService.findOneById(vehicleModel);
+      if (!foundVehicleModel) {
+        throw new NotFoundException({
+          statusCode: EnumVehicleModelStatusCodeError.notFound,
+          message: 'vehicle-model.error.notFound',
+        });
+      }
+    }
 
     // Validate userVehicle if provided
     if (userVehicle) {
@@ -233,24 +188,11 @@ export class AppointmentService implements IAppointmentService {
       }
     }
 
-    // Validate vehicleModel if provided
-    if (vehicleModel) {
-      const foundVehicleModel =
-        await this.vehicleModelService.findOneById(vehicleModel);
-      if (!foundVehicleModel) {
-        throw new NotFoundException({
-          statusCode: EnumVehicleModelStatusCodeError.notFound,
-          message: 'vehicle-model.error.notFound',
-        });
-      }
-    }
-
-    // Validate vehicleServices if provided
-    if (vehicleServices?.length) {
+    // Validate vehicleServices
+    if (vehicleServices) {
       await Promise.all(
-        vehicleServices.map(async serviceId => {
-          const service =
-            await this.vehicleServiceService.findOneById(serviceId);
+        vehicleServices.map(async svId => {
+          const service = await this.vehicleServiceService.findOneById(svId);
           if (!service) {
             throw new NotFoundException({
               statusCode: EnumVehicleServiceStatusCodeError.notFound,
@@ -264,23 +206,24 @@ export class AppointmentService implements IAppointmentService {
     const data: Prisma.AppointmentUpdateInput = {
       user: user ? { connect: { id: user } } : undefined,
       userVehicle: userVehicle ? { connect: { id: userVehicle } } : undefined,
-      name: name ?? undefined,
-      phone: phone ?? undefined,
+      name,
+      phone,
       vehicleModel: vehicleModel
         ? { connect: { id: vehicleModel } }
         : undefined,
       vehicleServices: vehicleServices
-        ? { connect: vehicleServices.map(id => ({ id })) }
+        ? { set: vehicleServices.map(svId => ({ id: svId })) }
         : undefined,
-      licensePlateNumber: licensePlateNumber ?? undefined,
-      customerRequests: customerRequests ?? undefined,
+      licensePlateNumber,
+      customerRequests,
       appointmentDate: appointmentDate ? new Date(appointmentDate) : undefined,
-      address: address ?? undefined,
-      note: note ?? undefined,
-      status: status ?? undefined,
+      address,
+      note,
+      updatedBy: actionBy,
     };
 
-    await this.appointmentRepository.update(id, data);
+    const updated = await this.appointmentRepository.update(id, data);
+    return updated as AppointmentModel;
   }
 
   async updateStatus(
@@ -288,35 +231,96 @@ export class AppointmentService implements IAppointmentService {
     { status }: AppointmentUpdateStatusRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
-    await this.appointmentRepository.update(id, { status });
+  ): Promise<AppointmentModel> {
+    await this.findOneByIdOrFail(id);
+    const updated = await this.appointmentRepository.update(id, {
+      status,
+      updatedBy: actionBy,
+    });
+    return updated as AppointmentModel;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
-    await this.appointmentRepository.delete(id);
+  ): Promise<IResponseReturn<void>> {
+    await this.findOneByIdOrFail(id);
+    const deleted = await this.appointmentRepository.softDelete(id, actionBy);
+    return deleted as AppointmentModel;
   }
 
-  async softDelete(
+  // === Trash/Restore ===
+
+  async getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
+    filters?: Prisma.AppointmentWhereInput
+  ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
+    const { data, ...others } =
+      await this.appointmentRepository.findWithPaginationOffsetTrashed(
+        pagination,
+        filters
+      );
+    return {
+      data: data as AppointmentModel[],
+      ...others,
+    };
+  }
+
+  async restore(
     id: string,
     requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<void> {
-    // Soft delete not implemented in Prisma version
-    await this.appointmentRepository.delete(id);
-  }
-
-  private async findOneByIdOrFail(id: string): Promise<AppointmentModel> {
-    const appointment = await this.appointmentRepository.findOneById(id);
+    restoredBy: string
+  ): Promise<AppointmentModel> {
+    const appointment =
+      await this.appointmentRepository.findOneByIdIncludeDeleted(id);
     if (!appointment) {
       throw new NotFoundException({
         statusCode: EnumAppointmentStatusCodeError.notFound,
         message: 'appointment.error.notFound',
       });
     }
-    return appointment;
+
+    if (!appointment.deletedAt) {
+      throw new BadRequestException({
+        statusCode: EnumAppointmentStatusCodeError.notInTrash,
+        message: 'appointment.error.notInTrash',
+      });
+    }
+
+    const updated = await this.appointmentRepository.restore(id, restoredBy);
+    return updated as AppointmentModel;
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<AppointmentModel> {
+    const appointment =
+      await this.appointmentRepository.findOneByIdIncludeDeleted(id);
+    if (!appointment) {
+      throw new NotFoundException({
+        statusCode: EnumAppointmentStatusCodeError.notFound,
+        message: 'appointment.error.notFound',
+      });
+    }
+
+    if (!appointment.deletedAt) {
+      throw new BadRequestException({
+        statusCode: EnumAppointmentStatusCodeError.notInTrash,
+        message: 'appointment.error.notInTrash',
+      });
+    }
+
+    const deleted = await this.appointmentRepository.forceDelete(id);
+    return {
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(
+        deleted as any
+      ),
+    };
   }
 }

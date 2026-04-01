@@ -33,6 +33,7 @@ export class ServicePriceRepository {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.servicePrice.count({
@@ -55,6 +56,7 @@ export class ServicePriceRepository {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
       ...filters,
+      deletedAt: null,
     };
 
     const paginatedResult = await this.paginationService.offset<
@@ -95,6 +97,7 @@ export class ServicePriceRepository {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
       ...filters,
+      deletedAt: null,
     };
 
     const paginatedResult = await this.paginationService.cursor<
@@ -121,8 +124,8 @@ export class ServicePriceRepository {
   }
 
   async findOneById(id: string): Promise<ServicePriceModel | null> {
-    const result = await this.databaseService.servicePrice.findUnique({
-      where: { id },
+    const result = await this.databaseService.servicePrice.findFirst({
+      where: { id, deletedAt: null },
       include: {
         vehicleService: true,
         vehicleModel: true,
@@ -135,7 +138,10 @@ export class ServicePriceRepository {
     find: Prisma.ServicePriceWhereInput
   ): Promise<ServicePriceModel | null> {
     const result = await this.databaseService.servicePrice.findFirst({
-      where: find,
+      where: {
+        ...find,
+        deletedAt: null,
+      },
       include: {
         vehicleService: true,
         vehicleModel: true,
@@ -162,7 +168,7 @@ export class ServicePriceRepository {
     data: Prisma.ServicePriceUpdateInput
   ): Promise<ServicePriceModel> {
     const updated = await this.databaseService.servicePrice.update({
-      where: { id },
+      where: { id, deletedAt: null } as any,
       data,
       include: {
         vehicleService: true,
@@ -172,7 +178,7 @@ export class ServicePriceRepository {
     return ServicePriceMapper.toDomain(updated);
   }
 
-  async delete(id: string): Promise<ServicePriceModel> {
+  async forceDelete(id: string): Promise<ServicePriceModel> {
     const deleted = await this.databaseService.servicePrice.delete({
       where: { id },
       include: {
@@ -181,6 +187,77 @@ export class ServicePriceRepository {
       },
     });
     return ServicePriceMapper.toDomain(deleted);
+  }
+
+  async softDelete(id: string, deletedBy: string): Promise<ServicePriceModel> {
+    const result = await this.databaseService.servicePrice.update({
+      where: { id, deletedAt: null } as any,
+      data: {
+        deletedAt: new Date(),
+        deletedBy,
+      },
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+    return ServicePriceMapper.toDomain(result);
+  }
+
+  async restore(id: string, restoredBy: string): Promise<ServicePriceModel> {
+    const result = await this.databaseService.servicePrice.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy: restoredBy,
+      },
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+    return ServicePriceMapper.toDomain(result);
+  }
+
+  async findOneByIdIncludeDeleted(id: string): Promise<ServicePriceModel | null> {
+    const result = await this.databaseService.servicePrice.findUnique({
+      where: { id },
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    });
+    return result ? ServicePriceMapper.toDomain(result) : null;
+  }
+
+  async findWithPaginationOffsetTrashed({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.ServicePriceSelect,
+    Prisma.ServicePriceWhereInput
+  >): Promise<IPaginationOffsetReturn<ServicePriceModel>> {
+    const paginatedResult = await this.paginationService.offset<
+      PrismaServicePrice,
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >(this.databaseService.servicePrice, {
+      ...params,
+      where: {
+        ...where,
+        deletedAt: { not: null },
+      },
+      include: {
+        vehicleService: true,
+        vehicleModel: true,
+      },
+    } as any);
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => ServicePriceMapper.toDomain(item)),
+    };
   }
 
   async findAll(
@@ -192,7 +269,7 @@ export class ServicePriceRepository {
     filters?: Prisma.ServicePriceWhereInput
   ): Promise<ServicePriceModel[]> {
     const results = await this.databaseService.servicePrice.findMany({
-      where: filters,
+      where: { ...filters, deletedAt: null },
       take: pagination.limit || 100,
       skip: pagination.skip || 0,
       orderBy: pagination.orderBy || [{ dateStart: 'desc' }],
@@ -211,7 +288,7 @@ export class ServicePriceRepository {
     orderBy?: Prisma.ServicePriceOrderByWithRelationInput[];
   }): Promise<ServicePriceModel[]> {
     const results = await this.databaseService.servicePrice.findMany({
-      where: params?.where,
+      where: { ...params?.where, deletedAt: null },
       take: params?.limit,
       skip: params?.skip,
       orderBy: params?.orderBy || [{ dateStart: 'desc' }],
@@ -228,7 +305,7 @@ export class ServicePriceRepository {
     where?: Prisma.ServicePriceWhereInput
   ): Promise<number> {
     const results = await this.databaseService.servicePrice.findMany({
-      where,
+      where: { ...where, deletedAt: null },
       distinct: ['vehicleServiceId', 'vehicleModelId'],
       select: { id: true },
     });

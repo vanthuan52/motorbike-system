@@ -8,6 +8,8 @@ import { SessionAdminController } from '@/modules/session/controllers/session.ad
 import { ActivityLogAdminController } from '@/modules/activity-log/controllers/activity-log.admin.controller';
 import { DeviceAdminController } from '@/modules/device/controllers/device.admin.controller';
 import { DeviceModule } from '@/modules/device/device.module';
+import { StoreAdminController } from '@/modules/store/controllers/store.admin.controller';
+import { StoreModule } from '@/modules/store/store.module';
 
 /**
  * Admin routes module that provides administrative endpoints.
@@ -19,6 +21,7 @@ import { DeviceModule } from '@/modules/device/device.module';
     SessionAdminController,
     ActivityLogAdminController,
     DeviceAdminController,
+    StoreAdminController,
   ],
   providers: [],
   exports: [],
@@ -28,6 +31,7 @@ import { DeviceModule } from '@/modules/device/device.module';
     SessionModule,
     ApiKeyModule,
     DeviceModule,
+    StoreModule,
   ],
 })
 export class RoutesAdminModule {}

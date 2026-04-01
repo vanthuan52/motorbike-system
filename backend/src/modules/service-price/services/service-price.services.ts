@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { ServicePriceRepository } from '../repository/service-price.repository';
 import { IServicePriceService } from '../interfaces/service-price.service.interface';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
@@ -9,7 +9,7 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { ENUM_SERVICE_PRICE_STATUS_CODE_ERROR } from '../enums/service-price.status-code.enum';
+import { EnumServicePriceStatusCodeError } from '../enums/service-price.status-code.enum';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
 import { VehicleServiceRepository } from '@/modules/vehicle-service/repository/vehicle-service.repository';
 import { ServicePriceModel } from '../models/service-price.model';
@@ -81,7 +81,7 @@ export class ServicePriceService implements IServicePriceService {
     const servicePrice = await this.servicePriceRepository.findOneById(id);
     if (!servicePrice) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServicePriceStatusCodeError.notFound,
         message: 'service-price.error.notFound',
       });
     }
@@ -111,14 +111,14 @@ export class ServicePriceService implements IServicePriceService {
 
     if (!checkVehicleService) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServicePriceStatusCodeError.notFound,
         message: 'vehicle-service.error.notFound',
       });
     }
 
     if (!checkVehicleModel) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServicePriceStatusCodeError.notFound,
         message: 'vehicle-model-type.error.notFound',
       });
     }
@@ -155,7 +155,7 @@ export class ServicePriceService implements IServicePriceService {
     const servicePrice = await this.servicePriceRepository.findOneById(id);
     if (!servicePrice) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServicePriceStatusCodeError.notFound,
         message: 'service-price.error.notFound',
       });
     }
@@ -166,7 +166,7 @@ export class ServicePriceService implements IServicePriceService {
         await this.vehicleServiceRepository.findOneById(vehicleService);
       if (!checkVehicleService) {
         throw new NotFoundException({
-          statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+          statusCode: EnumServicePriceStatusCodeError.notFound,
           message: 'vehicle-service.error.notFound',
         });
       }
@@ -177,7 +177,7 @@ export class ServicePriceService implements IServicePriceService {
         await this.vehicleModelRepository.findOneById(vehicleModel);
       if (!checkVehicleModel) {
         throw new NotFoundException({
-          statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+          statusCode: EnumServicePriceStatusCodeError.notFound,
           message: 'vehicle-model-type.error.notFound',
         });
       }
@@ -217,15 +217,89 @@ export class ServicePriceService implements IServicePriceService {
     const servicePrice = await this.servicePriceRepository.findOneById(id);
     if (!servicePrice) {
       throw new NotFoundException({
-        statusCode: ENUM_SERVICE_PRICE_STATUS_CODE_ERROR.NOT_FOUND,
+        statusCode: EnumServicePriceStatusCodeError.notFound,
         message: 'service-price.error.notFound',
       });
     }
 
-    const deleted = await this.servicePriceRepository.update(id, {
-      deletedAt: new Date(),
-      deletedBy,
-    } as any);
+    const deleted = await this.servicePriceRepository.softDelete(id, deletedBy);
+
+    return {
+      metadataActivityLog:
+        this.servicePriceUtil.mapActivityLogMetadata(deleted),
+    };
+  }
+
+  // === Trash/Restore ===
+
+  async getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >
+  ): Promise<IPaginationOffsetReturn<ServicePriceModel>> {
+    const { data, ...others } =
+      await this.servicePriceRepository.findWithPaginationOffsetTrashed(pagination);
+
+    return {
+      data,
+      ...others,
+    };
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<IResponseReturn<void>> {
+    const servicePrice =
+      await this.servicePriceRepository.findOneByIdIncludeDeleted(id);
+
+    if (!servicePrice) {
+      throw new NotFoundException({
+        statusCode: EnumServicePriceStatusCodeError.notFound,
+        message: 'service-price.error.notFound',
+      });
+    }
+
+    if (!servicePrice.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumServicePriceStatusCodeError.notInTrash,
+        message: 'service-price.error.notInTrash',
+      });
+    }
+
+    const restored = await this.servicePriceRepository.restore(id, restoredBy);
+
+    return {
+      metadataActivityLog:
+        this.servicePriceUtil.mapActivityLogMetadata(restored),
+    };
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>> {
+    const servicePrice =
+      await this.servicePriceRepository.findOneByIdIncludeDeleted(id);
+
+    if (!servicePrice) {
+      throw new NotFoundException({
+        statusCode: EnumServicePriceStatusCodeError.notFound,
+        message: 'service-price.error.notFound',
+      });
+    }
+
+    if (!servicePrice.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumServicePriceStatusCodeError.notInTrash,
+        message: 'service-price.error.notInTrash',
+      });
+    }
+
+    const deleted = await this.servicePriceRepository.forceDelete(id);
 
     return {
       metadataActivityLog:

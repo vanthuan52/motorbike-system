@@ -6,4 +6,6 @@ export enum EnumAppointmentStatusCodeError {
   inactiveForbidden = 5604,
   slugExisted = 5605,
   nameExisted = 5606,
+  alreadyDeleted = 5607,
+  notInTrash = 5608,
 }

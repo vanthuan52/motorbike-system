@@ -22,6 +22,6 @@ export class AppointmentPublicController {
     @Body() body: AppointmentBookRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.appointmentService.createAppointment(body);
-    return { data: { id: created._id } };
+    return { data: { id: created.id } };
   }
 }

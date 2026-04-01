@@ -18,4 +18,12 @@ export class CareRecordUtil {
   mapGetFull(careRecord: CareRecordModel): CareRecordGetFullResponseDto {
     return plainToInstance(CareRecordGetFullResponseDto, careRecord);
   }
+
+  mapActivityLogMetadata(careRecord: CareRecordModel): Record<string, any> {
+    return {
+      careRecordId: careRecord.id,
+      status: careRecord.status,
+      paymentStatus: careRecord.paymentStatus,
+    };
+  }
 }

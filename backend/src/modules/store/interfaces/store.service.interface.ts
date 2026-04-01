@@ -63,4 +63,25 @@ export interface IStoreService {
     requestLog: IRequestLog,
     deletedBy: string
   ): Promise<void>;
+
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >
+  ): Promise<IPaginationOffsetReturn<StoreModel>>;
+
+  restore(
+    storeId: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<void>;
+
+  forceDelete(
+    storeId: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<void>;
 }

@@ -126,3 +126,51 @@ export function StoreAdminParamsIdDoc(): MethodDecorator {
     })
   );
 }
+
+export function StoreAdminTrashListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all soft-deleted stores (trash)',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<StoreListResponseDto>('store.trashList', {
+      dto: StoreListResponseDto,
+    })
+  );
+}
+
+export function StoreAdminRestoreDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'restore a soft-deleted store from trash',
+    }),
+    DocRequest({
+      params: StoreDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('store.restore')
+  );
+}
+
+export function StoreAdminForceDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'permanently delete a store (irreversible)',
+    }),
+    DocRequest({
+      params: StoreDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('store.forceDelete')
+  );
+}
+

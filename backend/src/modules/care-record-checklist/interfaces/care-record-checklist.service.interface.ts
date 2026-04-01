@@ -6,10 +6,6 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
 import { CareRecordChecklistCreateRequestDto } from '../dtos/request/care-record-checklist.create.request.dto';
 import { CareRecordChecklistUpdateRequestDto } from '../dtos/request/care-record-checklist.update.request.dto';
 import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record-checklist.list.response.dto';
@@ -18,7 +14,8 @@ import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/reque
 import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-record-checklist.update-note.request.dto';
 import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
-import { CareRecordChecklist, Prisma } from '@/generated/prisma-client';
+import { CareRecordChecklistModel } from '../models/care-record-checklist.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordChecklistService {
   getListOffset(
@@ -27,7 +24,7 @@ export interface ICareRecordChecklistService {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecordChecklist>>;
+  ): Promise<IPaginationOffsetReturn<CareRecordChecklistModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -35,9 +32,9 @@ export interface ICareRecordChecklistService {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecordChecklist>>;
+  ): Promise<IPaginationCursorReturn<CareRecordChecklistModel>>;
 
-  findOneById(id: string): Promise<CareRecordChecklist>;
+  findOneById(id: string): Promise<CareRecordChecklistModel>;
 
   create(
     payload: CareRecordChecklistCreateRequestDto,

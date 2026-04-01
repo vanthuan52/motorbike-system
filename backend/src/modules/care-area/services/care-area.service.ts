@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CareAreaRepository } from '../repository/care-area.repository';
 import { ICareAreaService } from '../interfaces/care-area.service.interface';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
@@ -15,8 +19,8 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareAreaUtil } from '../utils/care-area.util';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { CareAreaModel } from '../models/care-area.model';
+import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
@@ -125,17 +129,15 @@ export class CareAreaService implements ICareAreaService {
     { name, description, orderBy }: CareAreaCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<{ id: string }>> {
+  ): Promise<CareAreaModel> {
     const created = await this.careAreaRepository.create({
       name,
       description,
       orderBy,
+      createdBy: actionBy,
     });
 
-    return {
-      data: { id: created.id },
-      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(created),
-    };
+    return created;
   }
 
   async update(
@@ -143,47 +145,118 @@ export class CareAreaService implements ICareAreaService {
     { name, description, orderBy }: CareAreaUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<CareAreaModel> {
     const careArea = await this.findOneByIdOrFail(id);
 
     const updated = await this.careAreaRepository.update(id, {
       name: name ?? careArea.name,
       description: description ?? careArea.description,
       orderBy: orderBy ?? (careArea.orderBy as string),
+      updatedBy: actionBy,
     });
 
-    return {
-      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(updated),
-    };
+    return updated;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<CareAreaModel> {
     await this.findOneByIdOrFail(id);
-    const deleted = await this.careAreaRepository.delete(id);
-    return {
-      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(deleted),
-    };
+    const deleted = await this.careAreaRepository.softDelete(id, actionBy);
+    return deleted;
   }
 
   async createMany(
     data: CareAreaCreateRequestDto[],
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<boolean>> {
+  ): Promise<boolean> {
     await Promise.all(
       data.map(item =>
         this.careAreaRepository.create({
           name: item.name,
           description: item.description,
           orderBy: item.orderBy,
+          createdBy: actionBy,
         })
       )
     );
-    return { data: true };
+    return true;
+  }
+
+  // === Trash/Restore ===
+
+  async getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<CareAreaModel>> {
+    const { data, ...others } =
+      await this.careAreaRepository.findWithPaginationOffsetTrashed({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    return { data, ...others };
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<CareAreaModel> {
+    const careArea =
+      await this.careAreaRepository.findOneByIdIncludeDeleted(id);
+
+    if (!careArea) {
+      throw new NotFoundException({
+        statusCode: EnumCareAreaStatusCodeError.notFound,
+        message: 'care-area.error.notFound',
+      });
+    }
+
+    if (!careArea.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumCareAreaStatusCodeError.notInTrash,
+        message: 'care-area.error.notInTrash',
+      });
+    }
+
+    const updated = await this.careAreaRepository.restore(id, restoredBy);
+    return updated as CareAreaModel;
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<CareAreaModel> {
+    const careArea =
+      await this.careAreaRepository.findOneByIdIncludeDeleted(id);
+
+    if (!careArea) {
+      throw new NotFoundException({
+        statusCode: EnumCareAreaStatusCodeError.notFound,
+        message: 'care-area.error.notFound',
+      });
+    }
+
+    if (!careArea.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumCareAreaStatusCodeError.notInTrash,
+        message: 'care-area.error.notInTrash',
+      });
+    }
+
+    const deleted = await this.careAreaRepository.forceDelete(id);
+    return deleted as CareAreaModel;
   }
 
   private async findOneByIdOrFail(id: string): Promise<CareAreaModel> {

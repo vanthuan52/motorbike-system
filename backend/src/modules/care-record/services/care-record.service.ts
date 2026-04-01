@@ -1,5 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CareRecordRepository } from '../respository/care-record.repository';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CareRecordRepository } from '../repository/care-record.repository';
 import { ICareRecordService } from '../interfaces/care-record.service.interface';
 import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.request.dto';
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
@@ -118,9 +122,10 @@ export class CareRecordService implements ICareRecordService {
       confirmedByOwner: confirmedByOwner ? confirmedByOwner : false,
       status: EnumCareRecordStatus.pending,
       paymentStatus: EnumPaymentStatus.unpaid,
+      createdBy: actionBy,
     });
 
-    return created;
+    return created as CareRecordModel;
   }
 
   /**
@@ -172,12 +177,15 @@ export class CareRecordService implements ICareRecordService {
     { confirmedByOwner }: CareRecordUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<CareRecordModel> {
     const careRecord = await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.update(id, {
+    const updated = await this.careRecordRepository.update(id, {
       confirmedByOwner: confirmedByOwner ?? careRecord.confirmedByOwner,
+      updatedBy: actionBy,
     });
+
+    return updated as CareRecordModel;
   }
 
   async updateStatus(
@@ -185,12 +193,15 @@ export class CareRecordService implements ICareRecordService {
     { status }: CareRecordUpdateStatusRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<CareRecordModel> {
     await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.update(id, {
+    const updated = await this.careRecordRepository.update(id, {
       status,
+      updatedBy: actionBy,
     });
+
+    return updated as CareRecordModel;
   }
 
   async updatePaymentStatus(
@@ -198,12 +209,15 @@ export class CareRecordService implements ICareRecordService {
     { paymentStatus }: CareRecordUpdatePaymentStatusRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<CareRecordModel> {
     await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.update(id, {
+    const updated = await this.careRecordRepository.update(id, {
       paymentStatus,
+      updatedBy: actionBy,
     });
+
+    return updated as CareRecordModel;
   }
 
   async updateTechnician(
@@ -211,21 +225,25 @@ export class CareRecordService implements ICareRecordService {
     { technician }: CareRecordUpdateTechnicianRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<CareRecordModel> {
     await this.findOneByIdOrFail(id);
 
-    await this.careRecordRepository.update(id, {
+    const updated = await this.careRecordRepository.update(id, {
       technicianId: technician,
+      updatedBy: actionBy,
     });
+
+    return updated as CareRecordModel;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void> {
+  ): Promise<CareRecordModel> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordRepository.delete(id);
+    const deleted = await this.careRecordRepository.softDelete(id, actionBy);
+    return deleted as CareRecordModel;
   }
 
   async createCareRecordServices(
@@ -271,7 +289,11 @@ export class CareRecordService implements ICareRecordService {
     }
 
     if (allServiceDtos.length > 0) {
-      await this.careRecordServiceService.createMany(allServiceDtos);
+      await this.careRecordServiceService.createMany(
+        allServiceDtos,
+        requestLog,
+        actionBy
+      );
 
       await this.createCareRecordChecklists(
         appointment,
@@ -350,6 +372,79 @@ export class CareRecordService implements ICareRecordService {
         actionBy
       );
     }
+  }
+
+  // === Trash/Restore ===
+
+  async getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordSelect,
+      Prisma.CareRecordWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<CareRecordModel>> {
+    const { data, ...others } =
+      await this.careRecordRepository.findWithPaginationOffsetTrashed({
+        ...pagination,
+        where: {
+          ...pagination.where,
+          ...filters,
+        },
+      });
+
+    return { data, ...others };
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<CareRecordModel> {
+    const careRecord =
+      await this.careRecordRepository.findOneByIdIncludeDeleted(id);
+
+    if (!careRecord) {
+      throw new NotFoundException({
+        statusCode: EnumCareRecordStatusCodeError.notFound,
+        message: 'care-record.error.notFound',
+      });
+    }
+
+    if (!careRecord.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumCareRecordStatusCodeError.notInTrash,
+        message: 'care-record.error.notInTrash',
+      });
+    }
+
+    const updated = await this.careRecordRepository.restore(id, restoredBy);
+    return updated as CareRecordModel;
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<CareRecordModel> {
+    const careRecord =
+      await this.careRecordRepository.findOneByIdIncludeDeleted(id);
+
+    if (!careRecord) {
+      throw new NotFoundException({
+        statusCode: EnumCareRecordStatusCodeError.notFound,
+        message: 'care-record.error.notFound',
+      });
+    }
+
+    if (!careRecord.deletedAt) {
+      throw new ConflictException({
+        statusCode: EnumCareRecordStatusCodeError.notInTrash,
+        message: 'care-record.error.notInTrash',
+      });
+    }
+
+    const deleted = await this.careRecordRepository.forceDelete(id);
+    return deleted as CareRecordModel;
   }
 
   private async findOneByIdOrFail(id: string): Promise<CareRecordModel> {

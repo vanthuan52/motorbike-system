@@ -7,4 +7,6 @@ export enum EnumCareRecordStatusCodeError {
   slugExisted = 5805,
   nameExisted = 5806,
   codeExisted = 5807,
+  alreadyDeleted = 5808,
+  notInTrash = 5809,
 }

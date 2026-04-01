@@ -1,4 +1,4 @@
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   Doc,
   DocAuth,
@@ -10,6 +10,7 @@ import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
 import { AppointmentBookRequestDto } from '../dtos/request/appointment.book.request.dto';
+
 export function AppointmentsPublicCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
@@ -26,6 +27,6 @@ export function AppointmentsPublicCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('appointment.create', {
       dto: AppointmentListResponseDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }

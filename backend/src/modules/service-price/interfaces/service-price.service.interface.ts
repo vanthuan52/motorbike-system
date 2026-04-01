@@ -50,4 +50,23 @@ export interface IServicePriceService {
     requestLog: IRequestLog,
     deletedBy: string
   ): Promise<IResponseReturn<void>>;
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServicePriceSelect,
+      Prisma.ServicePriceWhereInput
+    >
+  ): Promise<IPaginationOffsetReturn<ServicePriceModel>>;
+
+  restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<IResponseReturn<void>>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<IResponseReturn<void>>;
 }

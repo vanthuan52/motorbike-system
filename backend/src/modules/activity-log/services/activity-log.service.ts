@@ -8,16 +8,12 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IActivityLogService } from '@/modules/activity-log/interfaces/activity-log.service.interface';
 import { ActivityLogRepository } from '@/modules/activity-log/repository/activity-log.repository';
-import { ActivityLogUtil } from '@/modules/activity-log/utils/activity-log.util';
 import { ActivityLogModel } from '../models/activity-log.model';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class ActivityLogService implements IActivityLogService {
-  constructor(
-    private readonly activityRepository: ActivityLogRepository,
-    private readonly activityUtil: ActivityLogUtil
-  ) {}
+  constructor(private readonly activityRepository: ActivityLogRepository) {}
 
   async getListOffset(
     pagination: IPaginationQueryOffsetParams<

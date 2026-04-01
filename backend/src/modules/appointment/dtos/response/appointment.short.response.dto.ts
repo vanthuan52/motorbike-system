@@ -1,6 +1,6 @@
 import { ApiHideProperty, OmitType } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { ENUM_APPOINTMENT_STATUS } from '../../enums/appointment.enum';
+import { EnumAppointmentStatus } from '../../enums/appointment.enum';
 import { AppointmentDto } from '../appointment.dto';
 
 export class AppointmentShortResponseDto extends OmitType(AppointmentDto, [
@@ -15,7 +15,7 @@ export class AppointmentShortResponseDto extends OmitType(AppointmentDto, [
 
   @ApiHideProperty()
   @Exclude()
-  status: ENUM_APPOINTMENT_STATUS;
+  status: EnumAppointmentStatus;
 
   @ApiHideProperty()
   @Exclude()

@@ -34,4 +34,27 @@ export enum EnumActivityLogAction {
   adminApiKeyUpdateDate = 'adminApiKeyUpdateDate',
   adminApiKeyUpdateStatus = 'adminApiKeyUpdateStatus',
   adminApiKeyDelete = 'adminApiKeyDelete',
+
+  // Vehicle Brand
+  adminVehicleBrandCreate = 'adminVehicleBrandCreate',
+  adminVehicleBrandUpdate = 'adminVehicleBrandUpdate',
+  adminVehicleBrandUpdateStatus = 'adminVehicleBrandUpdateStatus',
+  adminVehicleBrandDelete = 'adminVehicleBrandDelete',
+
+  // Vehicle Model
+  adminVehicleModelCreate = 'adminVehicleModelCreate',
+  adminVehicleModelUpdate = 'adminVehicleModelUpdate',
+  adminVehicleModelUpdateStatus = 'adminVehicleModelUpdateStatus',
+  adminVehicleModelDelete = 'adminVehicleModelDelete',
+
+  // Vehicle Service
+  adminVehicleServiceCreate = 'adminVehicleServiceCreate',
+  adminVehicleServiceUpdate = 'adminVehicleServiceUpdate',
+  adminVehicleServiceUpdateStatus = 'adminVehicleServiceUpdateStatus',
+  adminVehicleServiceDelete = 'adminVehicleServiceDelete',
+
+  // User Vehicle
+  adminUserVehicleCreate = 'adminUserVehicleCreate',
+  adminUserVehicleUpdate = 'adminUserVehicleUpdate',
+  adminUserVehicleDelete = 'adminUserVehicleDelete',
 }

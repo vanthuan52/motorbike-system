@@ -21,9 +21,9 @@ import {
 import { EnumUserVehicleStatusCodeError } from '../enums/user-vehicle.status-code.enum';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
 import { UserVehicleModel } from '../models/user-vehicle.model';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { UserService } from '@/modules/user/services/user.service';
 import { Prisma } from '@/generated/prisma-client';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
 @Injectable()
 export class UserVehicleService implements IUserVehicleService {
@@ -83,7 +83,10 @@ export class UserVehicleService implements IUserVehicleService {
     return this.userVehicleRepository.findOne(find);
   }
 
-  async create(payload: UserVehicleCreateRequestDto): Promise<DatabaseIdDto> {
+  async create(
+    payload: UserVehicleCreateRequestDto,
+    requestLog: IRequestLog
+  ): Promise<UserVehicleModel> {
     const [checkVehicleModel, checkUser] = await Promise.all([
       this.vehicleModelRepository.findOneById(payload.vehicleModel),
       this.userService.getOne(payload.user),
@@ -112,13 +115,14 @@ export class UserVehicleService implements IUserVehicleService {
       color: payload.color,
     });
 
-    return { id: created.id };
+    return created;
   }
 
   async update(
     id: string,
-    payload: UserVehicleUpdateRequestDto
-  ): Promise<void> {
+    payload: UserVehicleUpdateRequestDto,
+    requestLog: IRequestLog
+  ): Promise<UserVehicleModel> {
     await this.findOneById(id);
 
     if (payload.vehicleModel) {
@@ -145,14 +149,16 @@ export class UserVehicleService implements IUserVehicleService {
       color: payload.color ?? undefined,
     };
 
-    await this.userVehicleRepository.update(id, updateData);
+    const updated = await this.userVehicleRepository.update(id, updateData);
+    return updated;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, requestLog: IRequestLog): Promise<UserVehicleModel> {
     await this.findOneById(id);
-    await this.userVehicleRepository.update(id, {
+    const deleted = await this.userVehicleRepository.update(id, {
       deletedAt: new Date(),
     });
+    return deleted;
   }
 
   createRandomFilenamePhoto(

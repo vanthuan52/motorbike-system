@@ -18,4 +18,13 @@ export class AppointmentUtil {
   mapGetPopulate(appointment: AppointmentModel): AppointmentGetFullResponseDto {
     return plainToInstance(AppointmentGetFullResponseDto, appointment);
   }
+
+  mapActivityLogMetadata(appointment: AppointmentModel): Record<string, any> {
+    return {
+      appointmentId: appointment.id,
+      name: appointment.name,
+      phone: appointment.phone,
+      status: appointment.status,
+    };
+  }
 }

@@ -94,7 +94,7 @@ export class VehicleModelService implements IVehicleModelService {
     payload: VehicleModelCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<DatabaseIdDto> {
+  ): Promise<VehicleModelModel> {
     // Check slug conflict
     const existingSlug = await this.vehicleModelRepository.findOneBySlug(
       payload.slug
@@ -138,7 +138,7 @@ export class VehicleModelService implements IVehicleModelService {
       createdBy: createdBy,
     });
 
-    return { id: created.id };
+    return created;
   }
 
   async update(
@@ -146,7 +146,7 @@ export class VehicleModelService implements IVehicleModelService {
     payload: VehicleModelUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleModelModel> {
     const vehicleModel = await this.findOneById(id);
 
     // Check slug conflict if slug is being updated
@@ -192,7 +192,8 @@ export class VehicleModelService implements IVehicleModelService {
       updatedBy: updatedBy,
     };
 
-    await this.vehicleModelRepository.update(id, updateData);
+    const updated = await this.vehicleModelRepository.update(id, updateData);
+    return updated;
   }
 
   async updateStatus(
@@ -200,24 +201,26 @@ export class VehicleModelService implements IVehicleModelService {
     payload: VehicleModelUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleModelModel> {
     await this.findOneById(id);
-    await this.vehicleModelRepository.update(id, {
+    const updated = await this.vehicleModelRepository.update(id, {
       status: payload.status,
       updatedBy: updatedBy,
     });
+    return updated;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleModelModel> {
     await this.findOneById(id);
-    await this.vehicleModelRepository.update(id, {
+    const deleted = await this.vehicleModelRepository.update(id, {
       deletedAt: new Date(),
       deletedBy: deletedBy,
     });
+    return deleted;
   }
 
   async findBySlug(slug: string): Promise<VehicleModelModel> {

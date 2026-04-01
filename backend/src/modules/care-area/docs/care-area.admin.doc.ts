@@ -144,3 +144,50 @@ export function CareAreaWithServiceChecklistDoc(): MethodDecorator {
     DocResponse('care-area.listWithServiceChecklists')
   );
 }
+
+export function CareAreaAdminTrashListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all trashed care areas',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<CareAreaListResponseDto>('care-area.trashList', {
+      dto: CareAreaListResponseDto,
+    })
+  );
+}
+
+export function CareAreaAdminRestoreDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'restore a soft-deleted care area from trash',
+    }),
+    DocRequest({
+      params: CareAreaDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('care-area.restore')
+  );
+}
+
+export function CareAreaAdminForceDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'permanently delete a care area (irreversible)',
+    }),
+    DocRequest({
+      params: CareAreaDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('care-area.forceDelete')
+  );
+}

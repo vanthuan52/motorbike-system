@@ -5,4 +5,6 @@ export enum EnumStoreStatusCodeError {
   used = 5403,
   inactiveForbidden = 5404,
   slugExisted = 5405,
+  alreadyDeleted = 5406,
+  notInTrash = 5407,
 }

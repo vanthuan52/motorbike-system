@@ -6,13 +6,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
 import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
 import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/device.ownership.response';
-import { Prisma } from '@generated/prisma-client';
+import { Prisma, DeviceOwnership } from '@generated/prisma-client';
 
 export interface IDeviceService {
   getListOffsetByAdmin(
@@ -36,16 +32,16 @@ export interface IDeviceService {
     deviceOwnershipId: string,
     { name, notificationToken, platform }: DeviceRefreshRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
   remove(
     userId: string,
     deviceOwnershipId: string,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<void>;
   removeByAdmin(
     userId: string,
     deviceOwnershipId: string,
     requestLog: IRequestLog,
     removedBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<DeviceOwnership>;
 }
