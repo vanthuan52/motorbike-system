@@ -12,7 +12,6 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumServiceChecklistStatusCodeError } from '../enums/service-checklist.status-code.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { ServiceChecklistUtil } from '../utils/service-checklist.util';
 import { ServiceChecklistModel } from '../models/service-checklist.model';
 import { Prisma } from '@/generated/prisma-client';
@@ -115,7 +114,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
     }: ServiceChecklistCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IResponseReturn<{ id: string }>> {
+  ): Promise<ServiceChecklistModel> {
     const data: Prisma.ServiceChecklistCreateInput = {
       name,
       code,
@@ -128,11 +127,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
 
     const created = await this.serviceChecklistRepository.create(data);
 
-    return {
-      data: { id: created.id },
-      metadataActivityLog:
-        this.serviceChecklistUtil.mapActivityLogMetadata(created),
-    };
+    return created;
   }
 
   async update(
@@ -146,7 +141,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
     }: ServiceChecklistUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<ServiceChecklistModel> {
     const serviceChecklist =
       await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
@@ -166,17 +161,14 @@ export class ServiceChecklistService implements IServiceChecklistService {
     };
 
     const updated = await this.serviceChecklistRepository.update(id, data);
-    return {
-      metadataActivityLog:
-        this.serviceChecklistUtil.mapActivityLogMetadata(updated),
-    };
+    return updated;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<ServiceChecklistModel> {
     const serviceChecklist =
       await this.serviceChecklistRepository.findOneById(id);
     if (!serviceChecklist) {
@@ -191,10 +183,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       deletedBy,
     } as any);
 
-    return {
-      metadataActivityLog:
-        this.serviceChecklistUtil.mapActivityLogMetadata(deleted),
-    };
+    return deleted;
   }
 
   async createMany(data: ServiceChecklistCreateRequestDto[]): Promise<number> {

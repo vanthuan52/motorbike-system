@@ -3,16 +3,17 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
+  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { AppointmentModel } from '../models/appointment.model';
+import { AppointmentMapper } from '../mappers/appointment.mapper';
 import {
   Appointment as PrismaAppointment,
   Prisma,
 } from '@/generated/prisma-client';
-import { AppointmentModel } from '../models/appointment.model';
-import { AppointmentMapper } from '../mappers/appointment.mapper';
 
 @Injectable()
 export class AppointmentRepository {
@@ -37,6 +38,7 @@ export class AppointmentRepository {
     const mergedWhere: Prisma.AppointmentWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     const results = await this.databaseService.appointment.findMany({
@@ -68,6 +70,7 @@ export class AppointmentRepository {
     const mergedWhere: Prisma.AppointmentWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.appointment.count({
@@ -82,18 +85,20 @@ export class AppointmentRepository {
     Prisma.AppointmentSelect,
     Prisma.AppointmentWhereInput
   >): Promise<IPaginationOffsetReturn<AppointmentModel>> {
-    const paginatedResult = await this.paginationService.offset<PrismaAppointment>(
-      this.databaseService.appointment,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          user: false,
-        },
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.offset<PrismaAppointment>(
+        this.databaseService.appointment,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: {
+            user: false,
+          },
+        }
+      );
 
     return {
       ...paginatedResult,
@@ -108,19 +113,21 @@ export class AppointmentRepository {
     Prisma.AppointmentSelect,
     Prisma.AppointmentWhereInput
   >): Promise<IPaginationCursorReturn<AppointmentModel>> {
-    const paginatedResult = await this.paginationService.cursor<PrismaAppointment>(
-      this.databaseService.appointment,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          user: false,
-        },
-        includeCount: true,
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaAppointment>(
+        this.databaseService.appointment,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: {
+            user: false,
+          },
+          includeCount: true,
+        }
+      );
 
     return {
       ...paginatedResult,
@@ -129,8 +136,11 @@ export class AppointmentRepository {
   }
 
   async findOneById(id: string): Promise<AppointmentModel | null> {
-    const result = await this.databaseService.appointment.findUnique({
-      where: { id },
+    const result = await this.databaseService.appointment.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
       include: {
         user: true,
         userVehicle: true,
@@ -146,7 +156,10 @@ export class AppointmentRepository {
     where: Prisma.AppointmentWhereInput
   ): Promise<AppointmentModel | null> {
     const result = await this.databaseService.appointment.findFirst({
-      where,
+      where: {
+        ...where,
+        deletedAt: null,
+      },
       include: {
         user: true,
         userVehicle: true,
@@ -177,7 +190,10 @@ export class AppointmentRepository {
     data: Prisma.AppointmentUpdateInput
   ): Promise<AppointmentModel> {
     const result = await this.databaseService.appointment.update({
-      where: { id },
+      where: {
+        id,
+        deletedAt: null,
+      },
       data,
       include: {
         user: true,
@@ -190,9 +206,19 @@ export class AppointmentRepository {
     return AppointmentMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<AppointmentModel> {
-    const result = await this.databaseService.appointment.delete({
-      where: { id },
+  /**
+   * Soft delete: sets deletedAt and deletedBy instead of removing the record.
+   */
+  async softDelete(id: string, deletedBy: string): Promise<AppointmentModel> {
+    const result = await this.databaseService.appointment.update({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedBy,
+      },
       include: {
         user: true,
         userVehicle: true,
@@ -202,5 +228,91 @@ export class AppointmentRepository {
     });
 
     return AppointmentMapper.toDomain(result);
+  }
+
+  /**
+   * Restore a soft-deleted record by clearing deletedAt and deletedBy.
+   */
+  async restore(id: string, restoredBy: string): Promise<AppointmentModel> {
+    const result = await this.databaseService.appointment.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy: restoredBy,
+      },
+      include: {
+        user: true,
+        userVehicle: true,
+        vehicleModel: true,
+        vehicleServices: true,
+      },
+    });
+
+    return AppointmentMapper.toDomain(result);
+  }
+
+  /**
+   * Permanently remove a record from the database.
+   * WARNING: This action is irreversible.
+   */
+  async forceDelete(id: string): Promise<AppointmentModel> {
+    const result = await this.databaseService.appointment.delete({
+      where: { id },
+    });
+
+    return AppointmentMapper.toDomain(result);
+  }
+
+  /**
+   * Find an appointment by ID regardless of soft-delete status.
+   * Used for restore and trash detail operations.
+   */
+  async findOneByIdIncludeDeleted(
+    id: string
+  ): Promise<AppointmentModel | null> {
+    const result = await this.databaseService.appointment.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        userVehicle: true,
+        vehicleModel: true,
+        vehicleServices: true,
+      },
+    });
+
+    return result ? AppointmentMapper.toDomain(result) : null;
+  }
+
+  /**
+   * Find trashed (soft-deleted) appointments with pagination.
+   * Only returns records WHERE deletedAt IS NOT NULL.
+   */
+  async findWithPaginationOffsetTrashed({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.AppointmentSelect,
+    Prisma.AppointmentWhereInput
+  >): Promise<IPaginationOffsetReturn<AppointmentModel>> {
+    const paginatedResult =
+      await this.paginationService.offset<PrismaAppointment>(
+        this.databaseService.appointment,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: { not: null },
+          },
+          include: {
+            user: false,
+          },
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => AppointmentMapper.toDomain(item)),
+    };
   }
 }

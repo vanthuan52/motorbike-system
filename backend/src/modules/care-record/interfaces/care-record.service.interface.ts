@@ -6,13 +6,9 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.request.dto';
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
-import {
-  CareRecordUpdatePaymentStatusRequestDto,
-  CareRecordUpdateStatusRequestDto,
-} from '../dtos/request/care-record.update-status.request.dto';
-import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { CareRecord, Prisma } from '@/generated/prisma-client';
+import { CareRecordModel } from '../models/care-record.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordService {
   getListOffset(
@@ -21,73 +17,48 @@ export interface ICareRecordService {
       Prisma.CareRecordWhereInput
     >,
     filters?: Record<string, any>
-  ): Promise<IPaginationOffsetReturn<CareRecord>>;
+  ): Promise<IPaginationOffsetReturn<CareRecordModel>>;
 
-  getListCursor(
-    pagination: IPaginationQueryCursorParams<
-      Prisma.CareRecordSelect,
-      Prisma.CareRecordWhereInput
-    >,
-    filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<CareRecord>>;
-
-  findOneById(id: string): Promise<CareRecord>;
-
-  findOne(where: Prisma.CareRecordWhereInput): Promise<CareRecord | null>;
+  findOne(where: Prisma.CareRecordWhereInput): Promise<CareRecordModel | null>;
 
   create(
     payload: CareRecordCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<CareRecord>;
-
-  createWithAppointment(
-    payload: CareRecordCreateRequestDto,
-    requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<CareRecord>;
+  ): Promise<CareRecordModel>;
 
   update(
     id: string,
     payload: CareRecordUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void>;
+  ): Promise<CareRecordModel>;
 
-  updateStatus(
+  delete(
     id: string,
-    payload: CareRecordUpdateStatusRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void>;
+  ): Promise<CareRecordModel>;
 
-  updatePaymentStatus(
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareRecordSelect,
+      Prisma.CareRecordWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<CareRecordModel>>;
+
+  restore(
     id: string,
-    payload: CareRecordUpdatePaymentStatusRequestDto,
     requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<void>;
+    restoredBy: string
+  ): Promise<CareRecordModel>;
 
-  updateTechnician(
+  forceDelete(
     id: string,
-    payload: CareRecordUpdateTechnicianRequestDto,
     requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<void>;
-
-  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
-
-  createCareRecordServices(
-    appointment: any,
-    careRecordId: string,
-    requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<void>;
-
-  createCareRecordChecklists(
-    appointment: any,
-    careRecordId: string,
-    requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<void>;
+    deletedBy: string
+  ): Promise<CareRecordModel>;
 }

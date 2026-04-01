@@ -17,7 +17,7 @@ import { AppointmentListResponseDto } from '../dtos/response/appointment.list.re
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 
 export function AppointmentAdminListDoc(): MethodDecorator {
@@ -127,5 +127,52 @@ export function AppointmentAdminUpdateStatusDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('appointment.updateStatus'),
+  );
+}
+
+export function AppointmentAdminTrashListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all trashed appointments',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<AppointmentListResponseDto>('appointment.trashList', {
+      dto: AppointmentListResponseDto,
+    }),
+  );
+}
+
+export function AppointmentAdminRestoreDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'restore a soft-deleted appointment from trash',
+    }),
+    DocRequest({
+      params: AppointmentDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('appointment.restore'),
+  );
+}
+
+export function AppointmentAdminForceDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'permanently delete an appointment (irreversible)',
+    }),
+    DocRequest({
+      params: AppointmentDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('appointment.forceDelete'),
   );
 }

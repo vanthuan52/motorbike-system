@@ -88,7 +88,7 @@ export class VehicleServiceService implements IVehicleServiceService {
     payload: VehicleServiceCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<DatabaseIdDto> {
+  ): Promise<VehicleServiceModel> {
     // Check slug conflict
     const existingSlug = await this.vehicleServiceRepository.findOneBySlug(
       payload.slug
@@ -117,7 +117,7 @@ export class VehicleServiceService implements IVehicleServiceService {
         },
         createdBy: createdBy,
       });
-      return { id: created.id };
+      return created;
     } catch (error: any) {
       if (error.code === 'P2025') {
         throw new NotFoundException({
@@ -134,7 +134,7 @@ export class VehicleServiceService implements IVehicleServiceService {
     payload: VehicleServiceUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleServiceModel> {
     const vehicleService = await this.findOneById(id);
 
     // Check slug conflict if slug is being updated
@@ -165,7 +165,8 @@ export class VehicleServiceService implements IVehicleServiceService {
     };
 
     try {
-      await this.vehicleServiceRepository.update(id, updateData);
+      const updated = await this.vehicleServiceRepository.update(id, updateData);
+      return updated;
     } catch (error: any) {
       if (error.code === 'P2025') {
         throw new NotFoundException({
@@ -182,24 +183,26 @@ export class VehicleServiceService implements IVehicleServiceService {
     payload: VehicleServiceUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleServiceModel> {
     await this.findOneById(id);
-    await this.vehicleServiceRepository.update(id, {
+    const updated = await this.vehicleServiceRepository.update(id, {
       status: payload.status,
       updatedBy: updatedBy,
     });
+    return updated;
   }
  
   async delete(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleServiceModel> {
     await this.findOneById(id);
-    await this.vehicleServiceRepository.update(id, {
+    const deleted = await this.vehicleServiceRepository.update(id, {
       deletedAt: new Date(),
       deletedBy: deletedBy,
     });
+    return deleted;
   }
 
   async findBySlug(slug: string): Promise<VehicleServiceModel> {

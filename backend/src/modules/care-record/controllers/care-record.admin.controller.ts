@@ -41,6 +41,9 @@ import {
   CareRecordAdminUpdatePaymentStatusDoc,
   CareRecordAdminUpdateStatusDoc,
   CareRecordAdminUpdateTechnicianDoc,
+  CareRecordAdminTrashListDoc,
+  CareRecordAdminRestoreDoc,
+  CareRecordAdminForceDeleteDoc,
 } from '../docs/care-record.admin.doc';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
@@ -183,15 +186,14 @@ export class CareRecordAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordService.createWithAppointment(
+    const data = await this.careRecordService.createWithAppointment(
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
     return {
-      data: {
-        id: created.id,
-      },
+      data: { id: data.id },
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
     };
   }
 
@@ -213,13 +215,15 @@ export class CareRecordAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.update(
+    const data = await this.careRecordService.update(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @CareRecordAdminUpdateStatusDoc()
@@ -240,13 +244,15 @@ export class CareRecordAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updateStatus(
+    const data = await this.careRecordService.updateStatus(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @CareRecordAdminUpdatePaymentStatusDoc()
@@ -267,13 +273,15 @@ export class CareRecordAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdatePaymentStatusRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updatePaymentStatus(
+    const data = await this.careRecordService.updatePaymentStatus(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @CareRecordAdminUpdateTechnicianDoc()
@@ -294,13 +302,15 @@ export class CareRecordAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordUpdateTechnicianRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.updateTechnician(
+    const data = await this.careRecordService.updateTechnician(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @CareRecordAdminDeleteDoc()
@@ -320,12 +330,14 @@ export class CareRecordAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careRecordService.delete(
+    const data = await this.careRecordService.delete(
       id,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @CareRecordAdminCreateChecklistDoc()
@@ -345,15 +357,95 @@ export class CareRecordAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareRecordCreateRequestDto
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.careRecordService.createWithAppointment(
+    const data = await this.careRecordService.createWithAppointment(
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
     return {
-      data: {
-        id: created.id,
-      },
+      data: { id: data.id },
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  // === Trash/Restore ===
+
+  @CareRecordAdminTrashListDoc()
+  @ResponsePaging('care-record.trashList')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/trash')
+  async trashList(
+    @PaginationOffsetQuery({
+      availableSearch: CARE_RECORD_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    pagination: IPaginationQueryOffsetParams
+  ): Promise<IResponsePagingReturn<CareRecordListResponseDto>> {
+    const result = await this.careRecordService.getTrashList(pagination);
+    const mapped = this.careRecordUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
+  }
+
+  @CareRecordAdminRestoreDoc()
+  @Response('care-record.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Post('/restore/:id')
+  async restore(
+    @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') restoredBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.careRecordService.restore(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      restoredBy
+    );
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  @CareRecordAdminForceDeleteDoc()
+  @Response('care-record.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Delete('/force-delete/:id')
+  async forceDelete(
+    @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.careRecordService.forceDelete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
+    return {
+      metadataActivityLog: this.careRecordUtil.mapActivityLogMetadata(data),
     };
   }
 }

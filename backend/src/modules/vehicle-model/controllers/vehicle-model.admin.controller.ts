@@ -71,6 +71,8 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.vehicle-model')
@@ -163,6 +165,7 @@ export class VehicleModelAdminController {
 
   @VehicleModelAdminCreateDoc()
   @Response('vehicle-model.create')
+  @ActivityLog(EnumActivityLogAction.adminVehicleModelCreate)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.create],
@@ -187,11 +190,16 @@ export class VehicleModelAdminController {
       },
       createdBy
     );
-    return { data: created };
+    return {
+      data: { id: created.id },
+      metadataActivityLog:
+        this.vehicleModelUtil.mapActivityLogMetadata(created),
+    };
   }
 
   @VehicleModelAdminUpdateDoc()
   @Response('vehicle-model.update')
+  @ActivityLog(EnumActivityLogAction.adminVehicleModelUpdate)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.update],
@@ -208,7 +216,7 @@ export class VehicleModelAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleModelService.update(
+    const updated = await this.vehicleModelService.update(
       id,
       body,
       {
@@ -218,11 +226,15 @@ export class VehicleModelAdminController {
       },
       updatedBy
     );
-    return {};
+    return {
+      metadataActivityLog:
+        this.vehicleModelUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @VehicleModelAdminUpdateStatusDoc()
   @Response('vehicle-model.updateStatus')
+  @ActivityLog(EnumActivityLogAction.adminVehicleModelUpdateStatus)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.update],
@@ -239,7 +251,7 @@ export class VehicleModelAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleModelService.updateStatus(
+    const updated = await this.vehicleModelService.updateStatus(
       id,
       body,
       {
@@ -249,11 +261,15 @@ export class VehicleModelAdminController {
       },
       updatedBy
     );
-    return {};
+    return {
+      metadataActivityLog:
+        this.vehicleModelUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @VehicleModelAdminDeleteDoc()
   @Response('vehicle-model.delete')
+  @ActivityLog(EnumActivityLogAction.adminVehicleModelDelete)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.vehicleModel,
     action: [EnumPolicyAction.delete],
@@ -269,7 +285,7 @@ export class VehicleModelAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.vehicleModelService.delete(
+    const deleted = await this.vehicleModelService.delete(
       id,
       {
         ipAddress,
@@ -278,6 +294,9 @@ export class VehicleModelAdminController {
       },
       deletedBy
     );
-    return {};
+    return {
+      metadataActivityLog:
+        this.vehicleModelUtil.mapActivityLogMetadata(deleted),
+    };
   }
 }

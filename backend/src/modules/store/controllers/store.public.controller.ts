@@ -26,6 +26,7 @@ import { EnumStoreStatus } from '../enums/store.enum';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { StoreUtil } from '../utils/store.util';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.store')
 @Controller({

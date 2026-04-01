@@ -219,3 +219,50 @@ export function CareRecordAdminCreateChecklistDoc(): MethodDecorator {
     }),
   );
 }
+
+export function CareRecordAdminTrashListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all trashed care records',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<CareRecordListResponseDto>('care-record.trashList', {
+      dto: CareRecordListResponseDto,
+    }),
+  );
+}
+
+export function CareRecordAdminRestoreDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'restore a soft-deleted care record from trash',
+    }),
+    DocRequest({
+      params: CareRecordDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('care-record.restore'),
+  );
+}
+
+export function CareRecordAdminForceDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'permanently delete a care record (irreversible)',
+    }),
+    DocRequest({
+      params: CareRecordDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('care-record.forceDelete'),
+  );
+}

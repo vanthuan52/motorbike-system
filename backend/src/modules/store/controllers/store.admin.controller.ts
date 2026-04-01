@@ -50,6 +50,9 @@ import {
   StoreAdminParamsIdDoc,
   StoreAdminUpdateDoc,
   StoreAdminUpdateStatusDoc,
+  StoreAdminTrashListDoc,
+  StoreAdminRestoreDoc,
+  StoreAdminForceDeleteDoc,
 } from '../docs/store.admin.doc';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -85,7 +88,7 @@ export class StoreAdminController {
   @StoreAdminListDoc()
   @ResponsePaging('store.list')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.store,
     action: [EnumPolicyAction.read],
   })
   @RoleProtected('admin')
@@ -114,7 +117,7 @@ export class StoreAdminController {
   @StoreAdminParamsIdDoc()
   @Response('store.get')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.store,
     action: [EnumPolicyAction.read],
   })
   @RoleProtected('admin')
@@ -133,7 +136,7 @@ export class StoreAdminController {
   @StoreAdminCreateDoc()
   @Response('store.create')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.store,
     action: [EnumPolicyAction.create],
   })
   @RoleProtected('admin')
@@ -162,7 +165,7 @@ export class StoreAdminController {
   @StoreAdminUpdateDoc()
   @Response('store.update')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.store,
     action: [EnumPolicyAction.update],
   })
   @RoleProtected('admin')
@@ -194,7 +197,7 @@ export class StoreAdminController {
   @StoreAdminDeleteDoc()
   @Response('store.delete')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.store,
     action: [EnumPolicyAction.delete],
   })
   @RoleProtected('admin')
@@ -224,7 +227,7 @@ export class StoreAdminController {
   @StoreAdminUpdateStatusDoc()
   @Response('store.updateStatus')
   @PolicyAbilityProtected({
-    subject: EnumPolicySubject.user,
+    subject: EnumPolicySubject.store,
     action: [EnumPolicyAction.update],
   })
   @RoleProtected('admin')
@@ -249,6 +252,95 @@ export class StoreAdminController {
         geoLocation,
       },
       updatedBy
+    );
+    return {};
+  }
+
+  // === Trash/Restore ===
+
+  @StoreAdminTrashListDoc()
+  @ResponsePaging('store.trashList')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.store,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/trash')
+  async trashList(
+    @PaginationOffsetQuery({
+      availableSearch: StoreDefaultAvailableSearch,
+    })
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.StoreSelect,
+      Prisma.StoreWhereInput
+    >
+  ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
+    const result = await this.storeService.getTrashList(pagination);
+    const mapped = this.storeUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
+  }
+
+  @StoreAdminRestoreDoc()
+  @Response('store.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.store,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Post('/restore/:storeId')
+  async restore(
+    @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    storeId: string,
+    @AuthJwtPayload('userId') restoredBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.storeService.restore(
+      storeId,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      restoredBy
+    );
+    return {};
+  }
+
+  @StoreAdminForceDeleteDoc()
+  @Response('store.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.store,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Delete('/force-delete/:storeId')
+  async forceDelete(
+    @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+    storeId: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.storeService.forceDelete(
+      storeId,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      },
+      deletedBy
     );
     return {};
   }

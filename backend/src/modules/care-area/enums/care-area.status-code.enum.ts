@@ -5,4 +5,6 @@ export enum EnumCareAreaStatusCodeError {
   used = 6503,
   inactiveForbidden = 6504,
   nameExisted = 6505,
+  alreadyDeleted = 6506,
+  notInTrash = 6507,
 }

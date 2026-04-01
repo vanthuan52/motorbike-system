@@ -31,6 +31,9 @@ import {
   CareAreaAdminCreateDoc,
   CareAreaAdminUpdateDoc,
   CareAreaAdminDeleteDoc,
+  CareAreaAdminTrashListDoc,
+  CareAreaAdminRestoreDoc,
+  CareAreaAdminForceDeleteDoc,
 } from '../docs/care-area.admin.doc';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
@@ -140,7 +143,10 @@ export class CareAreaAdminController {
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return { data: { id: created.id } };
+    return {
+      data: { id: created.id },
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(created),
+    };
   }
 
   @CareAreaWithServiceChecklistDoc()
@@ -200,13 +206,15 @@ export class CareAreaAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null,
     @Body() body: CareAreaUpdateRequestDto
   ): Promise<IResponseReturn<void>> {
-    await this.careAreaService.update(
+    const data = await this.careAreaService.update(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @CareAreaAdminDeleteDoc()
@@ -226,11 +234,94 @@ export class CareAreaAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.careAreaService.delete(
+    const data = await this.careAreaService.delete(
       id,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  // === Trash/Restore ===
+
+  @CareAreaAdminTrashListDoc()
+  @ResponsePaging('care-area.trashList')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careArea,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/trash')
+  async trashList(
+    @PaginationOffsetQuery({
+      availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
+      availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
+    })
+    pagination: IPaginationQueryOffsetParams
+  ): Promise<IResponsePagingReturn<CareAreaListResponseDto>> {
+    const result = await this.careAreaService.getTrashList(pagination);
+    const mapped = this.careAreaUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
+  }
+
+  @CareAreaAdminRestoreDoc()
+  @Response('care-area.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careArea,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Post('/restore/:id')
+  async restore(
+    @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') restoredBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.careAreaService.restore(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      restoredBy
+    );
+    return {
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  @CareAreaAdminForceDeleteDoc()
+  @Response('care-area.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careArea,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Delete('/force-delete/:id')
+  async forceDelete(
+    @Param('id', RequestRequiredPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.careAreaService.forceDelete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
+    return {
+      metadataActivityLog: this.careAreaUtil.mapActivityLogMetadata(data),
+    };
   }
 }

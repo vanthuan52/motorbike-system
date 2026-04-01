@@ -133,7 +133,7 @@ export class DeviceAdminController {
     @Param('deviceOwnershipId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     deviceOwnershipId: string
   ): Promise<IResponseReturn<void>> {
-    return this.deviceService.removeByAdmin(
+    const removed = await this.deviceService.removeByAdmin(
       userId,
       deviceOwnershipId,
       {
@@ -143,5 +143,8 @@ export class DeviceAdminController {
       },
       removedBy
     );
+    return {
+      metadataActivityLog: this.deviceUtil.mapActivityLogMetadata(removed),
+    };
   }
 }

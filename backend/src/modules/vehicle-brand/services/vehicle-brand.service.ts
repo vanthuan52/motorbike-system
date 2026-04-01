@@ -87,7 +87,7 @@ export class VehicleBrandService implements IVehicleBrandService {
     payload: VehicleBrandCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<DatabaseIdDto> {
+  ): Promise<VehicleBrandModel> {
     // Check slug conflict
     const existingSlug = await this.vehicleBrandRepository.findOne({
       slug: payload.slug,
@@ -108,7 +108,7 @@ export class VehicleBrandService implements IVehicleBrandService {
       status: EnumVehicleBrandStatus.active,
     });
 
-    return { id: created.id };
+    return created;
   }
 
   async update(
@@ -116,7 +116,7 @@ export class VehicleBrandService implements IVehicleBrandService {
     payload: VehicleBrandUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleBrandModel> {
     const vehicleBrand = await this.findOneById(id);
 
     if (payload.slug && payload.slug !== vehicleBrand.slug) {
@@ -131,13 +131,15 @@ export class VehicleBrandService implements IVehicleBrandService {
       }
     }
 
-    await this.vehicleBrandRepository.update(id, {
+    const updated = await this.vehicleBrandRepository.update(id, {
       name: payload.name ?? undefined,
       slug: payload.slug ? payload.slug.toLowerCase() : undefined,
       description: payload.description ?? undefined,
       orderBy: payload.orderBy ?? undefined,
       country: payload.country ?? undefined,
     });
+
+    return updated;
   }
 
   async updateStatus(
@@ -145,20 +147,24 @@ export class VehicleBrandService implements IVehicleBrandService {
     payload: VehicleBrandUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleBrandModel> {
     await this.findOneById(id);
-    await this.vehicleBrandRepository.update(id, { status });
+    const updated = await this.vehicleBrandRepository.update(id, {
+      status: payload.status,
+    });
+    return updated;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<void> {
+  ): Promise<VehicleBrandModel> {
     await this.findOneById(id);
-    await this.vehicleBrandRepository.update(id, {
+    const deleted = await this.vehicleBrandRepository.update(id, {
       deletedAt: new Date(),
     });
+    return deleted;
   }
 
   async findBySlug(slug: string): Promise<VehicleBrandModel> {

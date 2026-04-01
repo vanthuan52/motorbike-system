@@ -2,28 +2,26 @@ import {
   ServicePriceDoc,
   ServicePriceEntity,
 } from '../entities/service-price.entity';
-import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
+import { EnumServicePriceStatus } from '../enums/service-price.enum';
 
-export interface IServicePriceEntity
-  extends Omit<ServicePriceEntity, 'ServicePrice'> {
+export interface IServicePriceEntity extends Omit<
+  ServicePriceEntity,
+  'ServicePrice'
+> {
   servicePrice: ServicePriceEntity;
 }
 
-export interface IServicePriceDoc
-  extends Omit<ServicePriceDoc, 'ServicePrice'> {
+export interface IServicePriceDoc extends Omit<
+  ServicePriceDoc,
+  'ServicePrice'
+> {
   servicePrice: ServicePriceDoc;
 }
 
-export interface IModelServicePrice
-  extends Omit<
-    ServicePriceEntity,
-    | '_id'
-    | 'price'
-    | 'vehicleService'
-    | 'vehicleModel'
-    | 'dateStart'
-    | 'dateEnd'
-  > {
+export interface IModelServicePrice extends Omit<
+  ServicePriceEntity,
+  '_id' | 'price' | 'vehicleService' | 'vehicleModel' | 'dateStart' | 'dateEnd'
+> {
   _id: string | null;
   servicePriceId: string;
 
@@ -33,7 +31,7 @@ export interface IModelServicePrice
   vehicleModelId: string;
   vehicleModelName: string;
 
-  status: ENUM_SERVICE_PRICE_STATUS;
+  status: EnumServicePriceStatus;
 
   price: number | null;
   dateStart: Date | null;

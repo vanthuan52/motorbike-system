@@ -42,23 +42,23 @@ export interface IVehicleModelService {
     payload: VehicleModelCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<DatabaseIdDto>;
- 
+  ): Promise<VehicleModelModel>;
+
   update(
     id: string,
     payload: VehicleModelUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
- 
+  ): Promise<VehicleModelModel>;
+
   updateStatus(
     id: string,
     payload: VehicleModelUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
- 
-  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<void>;
+  ): Promise<VehicleModelModel>;
+
+  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<VehicleModelModel>;
 
   findBySlug(slug: string): Promise<VehicleModelModel>;
 

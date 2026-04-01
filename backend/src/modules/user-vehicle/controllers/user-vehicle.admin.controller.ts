@@ -48,6 +48,18 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import {
+  RequestGeoLocation,
+  RequestIPAddress,
+  RequestUserAgent,
+} from '@/common/request/decorators/request.decorator';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user-vehicle')
@@ -157,6 +169,7 @@ export class UserVehicleAdminController {
 
   @UserVehicleAdminCreateDoc()
   @Response('user-vehicle.create')
+  @ActivityLog(EnumActivityLogAction.adminUserVehicleCreate)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.create],
@@ -166,14 +179,25 @@ export class UserVehicleAdminController {
   @AuthJwtAccessProtected()
   @Post('/create')
   async create(
-    @Body() body: UserVehicleCreateRequestDto
+    @Body() body: UserVehicleCreateRequestDto,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<DatabaseIdDto>> {
-    const created = await this.userVehicleService.create(body);
-    return { data: created };
+    const created = await this.userVehicleService.create(body, {
+      ipAddress,
+      userAgent,
+      geoLocation,
+    });
+    return {
+      data: { id: created.id },
+      metadataActivityLog: this.userVehicleUtil.mapActivityLogMetadata(created),
+    };
   }
 
   @UserVehicleAdminUpdateDoc()
   @Response('user-vehicle.update')
+  @ActivityLog(EnumActivityLogAction.adminUserVehicleUpdate)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.update],
@@ -185,14 +209,28 @@ export class UserVehicleAdminController {
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     id: string,
-    @Body() body: UserVehicleUpdateRequestDto
+    @Body() body: UserVehicleUpdateRequestDto,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.userVehicleService.update(id, body);
-    return {};
+    const updated = await this.userVehicleService.update(
+      id,
+      body,
+      {
+        ipAddress,
+        userAgent,
+        geoLocation,
+      }
+    );
+    return {
+      metadataActivityLog: this.userVehicleUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @UserVehicleAdminDeleteDoc()
   @Response('user-vehicle.delete')
+  @ActivityLog(EnumActivityLogAction.adminUserVehicleDelete)
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.userVehicle,
     action: [EnumPolicyAction.delete],
@@ -203,9 +241,18 @@ export class UserVehicleAdminController {
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe)
-    id: string
+    id: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.userVehicleService.delete(id);
-    return {};
+    const deleted = await this.userVehicleService.delete(id, {
+      ipAddress,
+      userAgent,
+      geoLocation,
+    });
+    return {
+      metadataActivityLog: this.userVehicleUtil.mapActivityLogMetadata(deleted),
+    };
   }
 }

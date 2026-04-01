@@ -4,6 +4,7 @@ import { VehicleServiceModel } from '../models/vehicle-service.model';
 import slugify from 'slugify';
 import { VehicleServiceListResponseDto } from '../dtos/response/vehicle-service.list.response.dto';
 import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
+import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
 
 @Injectable()
 export class VehicleServiceUtil {
@@ -13,6 +14,16 @@ export class VehicleServiceUtil {
     return vehicleServices.map(
       c => this.mapOne(c) as any as VehicleServiceListResponseDto
     );
+  }
+
+  mapActivityLogMetadata(
+    vehicleService: VehicleServiceModel
+  ): IActivityLogMetadata {
+    return {
+      _id: vehicleService.id,
+      name: vehicleService.name,
+      slug: vehicleService.slug,
+    };
   }
 
   mapOne(vehicleService: VehicleServiceModel): VehicleServiceDto {

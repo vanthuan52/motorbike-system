@@ -40,23 +40,23 @@ export interface IVehicleBrandService {
     payload: VehicleBrandCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<DatabaseIdDto>;
- 
+  ): Promise<VehicleBrandModel>;
+
   update(
     id: string,
     payload: VehicleBrandUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
- 
+  ): Promise<VehicleBrandModel>;
+
   updateStatus(
     id: string,
     payload: VehicleBrandUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
- 
-  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<void>;
+  ): Promise<VehicleBrandModel>;
+
+  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<VehicleBrandModel>;
 
   findBySlug(slug: string): Promise<VehicleBrandModel>;
 

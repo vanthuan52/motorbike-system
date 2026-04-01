@@ -8,7 +8,6 @@ import {
 import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { ServiceChecklistModel } from '../models/service-checklist.model';
 import { Prisma } from '@/generated/prisma-client';
 
@@ -39,7 +38,7 @@ export interface IServiceChecklistService {
     payload: ServiceChecklistCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IResponseReturn<{ id: string }>>;
+  ): Promise<ServiceChecklistModel>;
 
   createMany(data: ServiceChecklistCreateRequestDto[]): Promise<number>;
 
@@ -48,11 +47,11 @@ export interface IServiceChecklistService {
     payload: ServiceChecklistUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<ServiceChecklistModel>;
 
   delete(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<ServiceChecklistModel>;
 }

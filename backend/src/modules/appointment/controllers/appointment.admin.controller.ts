@@ -9,6 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   PaginationOffsetQuery,
   PaginationQueryFilterEqualBoolean,
@@ -36,16 +37,18 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
   AppointmentAdminCreateDoc,
   AppointmentAdminDeleteDoc,
-  AppointmentAdminGetDoc,
+  AppointmentAdminParamsIdDoc,
   AppointmentAdminListDoc,
   AppointmentAdminUpdateDoc,
   AppointmentAdminUpdateStatusDoc,
+  AppointmentAdminTrashListDoc,
+  AppointmentAdminRestoreDoc,
+  AppointmentAdminForceDeleteDoc,
 } from '../docs/appointment.admin.doc';
 import { AppointmentService } from '../services/appointment.service';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
-import { AppointmentResponseDto } from '../dtos/response/appointment.response.dto';
 import { AppointmentUtil } from '../utils/appointment.util';
 import {
   IPaginationEqual,
@@ -61,6 +64,8 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
+import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.appointment')
@@ -101,7 +106,7 @@ export class AppointmentAdminController {
     status?: Record<string, IPaginationIn>,
     @PaginationQueryFilterEqualBoolean('isActive')
     isActive?: Record<string, IPaginationEqual>
-  ): Promise<IResponsePagingReturn<AppointmentResponseDto>> {
+  ): Promise<IResponsePagingReturn<AppointmentListResponseDto>> {
     const result = await this.appointmentService.getListOffset(pagination, {
       ...status,
       ...isActive,
@@ -113,7 +118,7 @@ export class AppointmentAdminController {
     };
   }
 
-  @AppointmentAdminGetDoc()
+  @AppointmentAdminParamsIdDoc()
   @Response('appointment.get')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.appointment,
@@ -125,9 +130,9 @@ export class AppointmentAdminController {
   @Get('/get/:id')
   async get(
     @Param('id') id: string
-  ): Promise<IResponseReturn<AppointmentResponseDto>> {
+  ): Promise<IResponseReturn<AppointmentGetFullResponseDto>> {
     const appointment = await this.appointmentService.findOneById(id);
-    const mapped = this.appointmentUtil.mapOne(appointment);
+    const mapped = this.appointmentUtil.mapGetPopulate(appointment);
     return { data: mapped };
   }
 
@@ -147,13 +152,16 @@ export class AppointmentAdminController {
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
-  ): Promise<IResponseReturn<{ id: string }>> {
-    const created = await this.appointmentService.createByAdmin(
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
+    const data = await this.appointmentService.create(
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return { data: { id: created._id } };
+    return {
+      data: { id: data.id },
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @AppointmentAdminUpdateDoc()
@@ -174,13 +182,15 @@ export class AppointmentAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.updateByAdmin(
+    const data = await this.appointmentService.update(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @AppointmentAdminUpdateStatusDoc()
@@ -201,13 +211,15 @@ export class AppointmentAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.updateStatusByAdmin(
+    const data = await this.appointmentService.updateStatus(
       id,
       body,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(data),
+    };
   }
 
   @AppointmentAdminDeleteDoc()
@@ -227,11 +239,96 @@ export class AppointmentAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    await this.appointmentService.deleteByAdmin(
+    const data = await this.appointmentService.delete(
       id,
       { ipAddress, userAgent, geoLocation },
       userId
     );
-    return {};
+    return {
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  // === Trash/Restore ===
+
+  @AppointmentAdminTrashListDoc()
+  @ResponsePaging('appointment.trashList')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/trash')
+  async trashList(
+    @PaginationOffsetQuery({
+      availableSearch: ['code', 'customerName', 'customerPhone'],
+    })
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >
+  ): Promise<IResponsePagingReturn<AppointmentListResponseDto>> {
+    const result = await this.appointmentService.getTrashList(pagination);
+    const mapped = this.appointmentUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
+  }
+
+  @AppointmentAdminRestoreDoc()
+  @Response('appointment.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Post('/restore/:id')
+  async restore(
+    @Param('id') id: string,
+    @AuthJwtPayload('userId') restoredBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.appointmentService.restore(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      restoredBy
+    );
+    return {
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  @AppointmentAdminForceDeleteDoc()
+  @Response('appointment.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.appointment,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Delete('/force-delete/:id')
+  async forceDelete(
+    @Param('id') id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.appointmentService.forceDelete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
+    return {
+      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(data),
+    };
   }
 }

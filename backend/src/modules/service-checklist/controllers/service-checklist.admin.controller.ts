@@ -150,7 +150,7 @@ export class ServiceChecklistAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<{ id: string }>> {
-    return this.serviceChecklistService.create(
+    const created = await this.serviceChecklistService.create(
       body,
       {
         ipAddress,
@@ -159,6 +159,11 @@ export class ServiceChecklistAdminController {
       },
       createdBy
     );
+    return {
+      data: { id: created.id },
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(created),
+    };
   }
 
   @ServiceChecklistAdminUpdateDoc()
@@ -180,7 +185,7 @@ export class ServiceChecklistAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.serviceChecklistService.update(
+    const updated = await this.serviceChecklistService.update(
       id,
       body,
       {
@@ -190,6 +195,10 @@ export class ServiceChecklistAdminController {
       },
       updatedBy
     );
+    return {
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(updated),
+    };
   }
 
   @ServiceChecklistAdminDeleteDoc()
@@ -210,7 +219,7 @@ export class ServiceChecklistAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    return this.serviceChecklistService.delete(
+    const deleted = await this.serviceChecklistService.delete(
       id,
       {
         ipAddress,
@@ -219,5 +228,9 @@ export class ServiceChecklistAdminController {
       },
       deletedBy
     );
+    return {
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(deleted),
+    };
   }
 }

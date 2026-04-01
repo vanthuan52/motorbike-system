@@ -1,8 +1,6 @@
 import {
   IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
@@ -20,49 +18,53 @@ export interface IAppointmentService {
     filters?: Record<string, any>
   ): Promise<IPaginationOffsetReturn<AppointmentModel>>;
 
-  getListCursor(
-    pagination: IPaginationQueryCursorParams<
-      Prisma.AppointmentSelect,
-      Prisma.AppointmentWhereInput
-    >,
-    filters?: Record<string, any>
-  ): Promise<IPaginationCursorReturn<AppointmentModel>>;
-
   findOneById(id: string): Promise<AppointmentModel>;
-
-  findOneWithRelationsById(id: string): Promise<AppointmentModel>;
-
-  findOne(find: Record<string, any>): Promise<AppointmentModel | null>;
-
-  findOneWithRelations(
-    find: Record<string, any>
-  ): Promise<AppointmentModel | null>;
 
   create(
     payload: AppointmentCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<{ _id: string }>;
+  ): Promise<AppointmentModel>;
 
   update(
     id: string,
     payload: AppointmentUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void>;
+  ): Promise<AppointmentModel>;
 
   updateStatus(
     id: string,
     payload: AppointmentUpdateStatusRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void>;
+  ): Promise<AppointmentModel>;
 
-  delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
-
-  softDelete(
+  delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<void>;
+  ): Promise<AppointmentModel>;
+
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<AppointmentModel>>;
+
+  restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<AppointmentModel>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<AppointmentModel>;
 }

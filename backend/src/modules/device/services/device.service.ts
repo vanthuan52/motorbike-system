@@ -12,11 +12,6 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import {
-  IResponsePagingReturn,
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
-
 import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
 import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/device.ownership.response';
 import { EnumDeviceStatusCodeError } from '@/modules/device/enums/device.status-code.enum';
@@ -25,7 +20,7 @@ import { DeviceOwnershipRepository } from '@/modules/device/repositories/device.
 import { DeviceUtil } from '@/modules/device/utils/device.util';
 import { SessionRepository } from '@/modules/session/repositories/session.repository';
 import { SessionUtil } from '@/modules/session/utils/session.util';
-import { Prisma } from '@/generated/prisma-client';
+import { Prisma, DeviceOwnership } from '@/generated/prisma-client';
 
 @Injectable()
 export class DeviceService implements IDeviceService {
@@ -82,7 +77,7 @@ export class DeviceService implements IDeviceService {
     deviceOwnershipId: string,
     { name, notificationToken, platform }: DeviceRefreshRequestDto,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     const existDeviceOwnership =
       await this.deviceOwnershipRepository.existActive(
         userId,
@@ -121,7 +116,7 @@ export class DeviceService implements IDeviceService {
     userId: string,
     deviceOwnershipId: string,
     requestLog: IRequestLog
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<void> {
     const existDeviceOwnership =
       await this.deviceOwnershipRepository.existActive(
         userId,
@@ -165,7 +160,7 @@ export class DeviceService implements IDeviceService {
     deviceOwnershipId: string,
     requestLog: IRequestLog,
     removedBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<DeviceOwnership> {
     const existDeviceOwnership =
       await this.deviceOwnershipRepository.existActive(
         userId,
@@ -194,9 +189,7 @@ export class DeviceService implements IDeviceService {
         this.sessionUtil.deleteAllLogins(userId, sessions),
       ]);
 
-      return {
-        metadataActivityLog: this.deviceUtil.mapActivityLogMetadata(removed),
-      };
+      return removed;
     } catch (err: unknown) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,

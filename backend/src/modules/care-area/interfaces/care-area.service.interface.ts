@@ -8,7 +8,6 @@ import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.reque
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
 import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { CareAreaModel } from '../models/care-area.model';
 import { Prisma } from '@/generated/prisma-client';
 
@@ -49,26 +48,48 @@ export interface ICareAreaService {
     payload: CareAreaCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<{ id: string }>>;
+  ): Promise<CareAreaModel>;
 
   createMany(
     data: CareAreaCreateRequestDto[],
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<boolean>>;
+  ): Promise<boolean>;
 
   update(
     id: string,
     payload: CareAreaUpdateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<CareAreaModel>;
 
   delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<void>>;
+  ): Promise<CareAreaModel>;
 
   existByName(name: string): Promise<boolean>;
+
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.CareAreaSelect,
+      Prisma.CareAreaWhereInput
+    >,
+    filters?: Record<string, any>
+  ): Promise<IPaginationOffsetReturn<CareAreaModel>>;
+
+  restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<CareAreaModel>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<CareAreaModel>;
 }

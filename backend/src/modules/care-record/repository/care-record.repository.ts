@@ -21,6 +21,14 @@ export class CareRecordRepository {
     private readonly paginationService: PaginationService
   ) {}
 
+  private readonly standardInclude = {
+    appointment: true,
+    technician: true,
+    userVehicle: true,
+    store: true,
+    careArea: true,
+  };
+
   async findAll(
     {
       where: baseWhere,
@@ -37,6 +45,7 @@ export class CareRecordRepository {
     const mergedWhere: Prisma.CareRecordWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     const results = await this.databaseService.careRecord.findMany({
@@ -44,12 +53,7 @@ export class CareRecordRepository {
       skip,
       take: limit,
       orderBy: orderBy || { createdAt: 'desc' },
-      include: {
-        appointment: true,
-        technician: true,
-        userVehicle: true,
-        store: true,
-      },
+      include: this.standardInclude,
       ...rest,
     });
 
@@ -68,6 +72,7 @@ export class CareRecordRepository {
     const mergedWhere: Prisma.CareRecordWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
     return this.databaseService.careRecord.count({
@@ -88,13 +93,9 @@ export class CareRecordRepository {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
-        include: {
-          appointment: true,
-          technician: true,
-          userVehicle: true,
-          store: true,
-        },
+        include: this.standardInclude,
       }
     );
 
@@ -117,13 +118,9 @@ export class CareRecordRepository {
         ...params,
         where: {
           ...where,
+          deletedAt: null,
         },
-        include: {
-          appointment: true,
-          technician: true,
-          userVehicle: true,
-          store: true,
-        },
+        include: this.standardInclude,
         includeCount: true,
       }
     );
@@ -135,14 +132,12 @@ export class CareRecordRepository {
   }
 
   async findOneById(id: string): Promise<CareRecordModel | null> {
-    const result = await this.databaseService.careRecord.findUnique({
-      where: { id },
-      include: {
-        appointment: true,
-        technician: true,
-        userVehicle: true,
-        store: true,
+    const result = await this.databaseService.careRecord.findFirst({
+      where: {
+        id,
+        deletedAt: null,
       },
+      include: this.standardInclude,
     });
 
     return result ? CareRecordMapper.toDomain(result) : null;
@@ -152,13 +147,11 @@ export class CareRecordRepository {
     where: Prisma.CareRecordWhereInput
   ): Promise<CareRecordModel | null> {
     const result = await this.databaseService.careRecord.findFirst({
-      where,
-      include: {
-        appointment: true,
-        technician: true,
-        userVehicle: true,
-        store: true,
+      where: {
+        ...where,
+        deletedAt: null,
       },
+      include: this.standardInclude,
     });
 
     return result ? CareRecordMapper.toDomain(result) : null;
@@ -167,12 +160,7 @@ export class CareRecordRepository {
   async create(data: Prisma.CareRecordCreateInput): Promise<CareRecordModel> {
     const result = await this.databaseService.careRecord.create({
       data,
-      include: {
-        appointment: true,
-        technician: true,
-        userVehicle: true,
-        store: true,
-      },
+      include: this.standardInclude,
     });
 
     return CareRecordMapper.toDomain(result);
@@ -183,24 +171,104 @@ export class CareRecordRepository {
     data: Prisma.CareRecordUpdateInput
   ): Promise<CareRecordModel> {
     const result = await this.databaseService.careRecord.update({
-      where: { id },
-      data,
-      include: {
-        appointment: true,
-        technician: true,
-        userVehicle: true,
-        store: true,
+      where: {
+        id,
+        deletedAt: null,
       },
+      data,
+      include: this.standardInclude,
     });
 
     return CareRecordMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecordModel> {
+  /**
+   * Soft delete: sets deletedAt and deletedBy instead of removing the record.
+   */
+  async softDelete(id: string, deletedBy: string): Promise<CareRecordModel> {
+    const result = await this.databaseService.careRecord.update({
+      where: {
+        id,
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedBy,
+      },
+      include: this.standardInclude,
+    });
+
+    return CareRecordMapper.toDomain(result);
+  }
+
+  /**
+   * Restore a soft-deleted record by clearing deletedAt and deletedBy.
+   */
+  async restore(id: string, restoredBy: string): Promise<CareRecordModel> {
+    const result = await this.databaseService.careRecord.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy: restoredBy,
+      },
+      include: this.standardInclude,
+    });
+
+    return CareRecordMapper.toDomain(result);
+  }
+
+  /**
+   * Permanently remove a record from the database.
+   * WARNING: This action is irreversible.
+   */
+  async forceDelete(id: string): Promise<CareRecordModel> {
     const result = await this.databaseService.careRecord.delete({
       where: { id },
     });
 
     return CareRecordMapper.toDomain(result);
+  }
+
+  /**
+   * Find a care record by ID regardless of soft-delete status.
+   * Used for restore and trash detail operations.
+   */
+  async findOneByIdIncludeDeleted(id: string): Promise<CareRecordModel | null> {
+    const result = await this.databaseService.careRecord.findUnique({
+      where: { id },
+      include: this.standardInclude,
+    });
+
+    return result ? CareRecordMapper.toDomain(result) : null;
+  }
+
+  /**
+   * Find trashed (soft-deleted) care records with pagination.
+   * Only returns records WHERE deletedAt IS NOT NULL.
+   */
+  async findWithPaginationOffsetTrashed({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.CareRecordSelect,
+    Prisma.CareRecordWhereInput
+  >): Promise<IPaginationOffsetReturn<CareRecordModel>> {
+    const paginatedResult = await this.paginationService.offset<PrismaCareRecord>(
+      this.databaseService.careRecord,
+      {
+        ...params,
+        where: {
+          ...where,
+          deletedAt: { not: null },
+        },
+        include: this.standardInclude,
+      }
+    );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => CareRecordMapper.toDomain(item)),
+    };
   }
 }

@@ -9,8 +9,8 @@ import {
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { UserVehicleModel } from '../models/user-vehicle.model';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { Prisma } from '@/generated/prisma-client';
 
 export interface IUserVehicleService {
@@ -34,11 +34,18 @@ export interface IUserVehicleService {
 
   findOne(find: Prisma.UserVehicleWhereInput): Promise<UserVehicleModel | null>;
 
-  create(payload: UserVehicleCreateRequestDto): Promise<DatabaseIdDto>;
+  create(
+    payload: UserVehicleCreateRequestDto,
+    requestLog: IRequestLog
+  ): Promise<UserVehicleModel>;
 
-  update(id: string, payload: UserVehicleUpdateRequestDto): Promise<void>;
+  update(
+    id: string,
+    payload: UserVehicleUpdateRequestDto,
+    requestLog: IRequestLog
+  ): Promise<UserVehicleModel>;
 
-  delete(id: string): Promise<void>;
+  delete(id: string, requestLog: IRequestLog): Promise<UserVehicleModel>;
 
   updatePhoto(id: string, photo: AwsS3Dto): Promise<UserVehicleModel>;
 
