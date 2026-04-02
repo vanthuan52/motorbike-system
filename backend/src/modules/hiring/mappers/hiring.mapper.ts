@@ -20,8 +20,9 @@ export class HiringMapper {
       CONTRACT: EnumHiringJobType.contract,
       ETC: EnumHiringJobType.etc,
     };
-    model.jobType = jobTypeMap[prismaHiring.jobType] || EnumHiringJobType.fullTime;
-    model.status = prismaHiring.status?.toLowerCase() as EnumHiringStatus;
+    model.jobType =
+      jobTypeMap[prismaHiring.jobType] || EnumHiringJobType.fullTime;
+    model.status = prismaHiring.status as EnumHiringStatus;
 
     model.createdAt = prismaHiring.createdAt;
     model.updatedAt = prismaHiring.updatedAt;

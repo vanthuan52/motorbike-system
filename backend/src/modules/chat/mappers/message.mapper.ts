@@ -8,10 +8,12 @@ export class MessageMapper {
     const model = new MessageModel();
     model.id = prismaMessage.id;
     model.content = prismaMessage.content;
-    model.messageType = prismaMessage.messageType?.toLowerCase() as EnumMessageType;
+    model.messageType = prismaMessage.messageType as EnumMessageType;
     model.timestamp = prismaMessage.timestamp;
-    model.status = prismaMessage.status?.toLowerCase() as EnumMessageStatus;
+    model.status = prismaMessage.status as EnumMessageStatus;
     model.readBy = prismaMessage.readBy;
+    model.isUnsent = prismaMessage.isUnsent ?? false;
+    model.attachments = prismaMessage.attachments ?? undefined;
     model.conversationId = prismaMessage.conversationId;
     model.senderId = prismaMessage.senderId;
     model.receiverId = prismaMessage.receiverId;
@@ -24,7 +26,9 @@ export class MessageMapper {
     model.deletedBy = prismaMessage.deletedBy;
 
     if (prismaMessage.conversation) {
-      model.conversation = ConversationMapper.toDomain(prismaMessage.conversation);
+      model.conversation = ConversationMapper.toDomain(
+        prismaMessage.conversation
+      );
     }
     if (prismaMessage.sender) {
       model.sender = UserMapper.toDomain(prismaMessage.sender);

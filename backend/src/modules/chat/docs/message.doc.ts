@@ -10,7 +10,7 @@ import { MessageGetResponseDto } from '../dtos/response/message-response.dto';
 import {
   MessageDocParamsId,
   MessageDocParamsIdMessageId,
-} from '../constants/message.doc.constant';
+} from '../constants/chat.doc.constant';
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { MessageUpdateStatusRequestDto } from '../dtos/request/message-update-status.request.dto';
 

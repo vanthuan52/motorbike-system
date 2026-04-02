@@ -8,12 +8,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from '@/common/response/decorators/response.decorator';
-import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import {
+  UserCurrent,
+  UserProtected,
+} from '@/modules/user/decorators/user.decorator';
 import {
   AuthJwtAccessProtected,
   AuthJwtPayload,
 } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.interface';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { ConversationGetResponseDto } from '../dtos/response/get-conversation-response.dto';
 import {
@@ -24,9 +26,8 @@ import { UserService } from '@/modules/user/services/user.service';
 import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import { ConversationCreateRequestDto } from '../dtos/request/conversation-create-request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { ConversationService } from '../services/conversation.service';
-import { User } from '@/generated/prisma-client';
+import { IAuthJwtAccessTokenPayload } from '@/modules/auth/interfaces/auth.interface';
 
 @ApiTags('modules.chat')
 @Controller({
@@ -45,18 +46,18 @@ export class ConversationController {
   @AuthJwtAccessProtected()
   @Get('/get')
   async get(
-    @AuthJwtPayload<IAuthJwtAccessTokenPayload>('user')
-    user: User
+    @AuthJwtPayload() payload: IAuthJwtAccessTokenPayload
   ): Promise<IResponseReturn<ConversationGetResponseDto[]>> {
-    const conversations = await this.conversationService.getConversationsByUser(
-      user.id
-    );
+    const conversations =
+      await this.conversationService.getConversationsByUser(payload.userId);
 
-    const mapped = await Promise.all(
-      conversations.map(c =>
-        this.conversationService.mapConversations(c, user.id)
-      )
-    );
+    const mapped: ConversationGetResponseDto[] = conversations.map((c) => ({
+      id: c.id,
+      participants: c.participants,
+      lastMessage: c.lastMessage,
+      createdAt: c.createdAt,
+      updatedAt: c.updatedAt,
+    }));
 
     return { data: mapped };
   }
@@ -104,7 +105,8 @@ export class ConversationController {
         return { data: { id: existingConversation.id } };
       }
 
-      const created = await this.conversationService.create(participantsSorted);
+      const created =
+        await this.conversationService.create(participantsSorted);
 
       return { data: { id: created.id } };
     } catch (err) {

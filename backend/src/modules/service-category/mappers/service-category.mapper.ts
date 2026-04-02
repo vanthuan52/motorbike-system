@@ -9,7 +9,7 @@ export class ServiceCategoryMapper {
     model.slug = prismaCategory.slug;
     model.description = prismaCategory.description;
     model.orderBy = prismaCategory.order;
-    model.status = prismaCategory.status?.toLowerCase() as EnumStatus;
+    model.status = prismaCategory.status as EnumStatus;
 
     model.createdAt = prismaCategory.createdAt;
     model.updatedAt = prismaCategory.updatedAt;

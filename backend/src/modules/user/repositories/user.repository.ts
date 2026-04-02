@@ -38,6 +38,7 @@ import {
 import { UserModel } from '@/modules/user/models/user.model';
 import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { IUserLoginMetadataUpdate } from '@/modules/user/interfaces/user.interface';
 import { EnumPasswordHistoryType } from '@/modules/password-history/enums/password-history.enum';
 import { Prisma, User as PrismaUser } from '@/generated/prisma-client';
 
@@ -541,9 +542,11 @@ export class UserRepository {
       passwordExpired,
       passwordHash,
       passwordPeriodExpired,
-    }: IAuthPassword
+    }: IAuthPassword,
+    options?: IDatabaseOptions
   ): Promise<UserModel> {
-    const result = await this.databaseService.user.update({
+    const db = options?.tx || this.databaseService;
+    const result = await db.user.update({
       where: { id: userId, deletedAt: null },
       data: {
         password: passwordHash,
@@ -560,21 +563,6 @@ export class UserRepository {
             createdBy: userId,
           },
         },
-        sessions: {
-          updateMany: {
-            where: {
-              isRevoked: false,
-              expiredAt: {
-                gte: passwordCreated,
-              },
-            },
-            data: {
-              isRevoked: true,
-              revokedAt: passwordCreated,
-              revokedById: userId,
-            },
-          },
-        },
       },
     });
 
@@ -583,13 +571,7 @@ export class UserRepository {
 
   async updateLoginMetadata(
     userId: string,
-    {
-      loginFrom,
-      loginWith,
-    }: {
-      loginFrom: EnumUserLoginFrom;
-      loginWith: EnumUserLoginWith;
-    },
+    { loginFrom, loginWith }: IUserLoginMetadataUpdate,
     ipAddress: string,
     options?: IDatabaseOptions
   ): Promise<UserModel> {
@@ -698,7 +680,7 @@ export class UserRepository {
     return user;
   }
 
-  async forgotPassword(
+  async createForgotPasswordRequest(
     userId: string,
     email: string,
     { expiredAt, reference, hashedToken }: IUserForgotPasswordCreate

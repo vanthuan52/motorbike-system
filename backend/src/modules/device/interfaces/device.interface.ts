@@ -11,3 +11,8 @@ export interface IDeviceOwnership extends DeviceOwnershipModel {
   };
   sessions?: SessionModel[];
 }
+
+export interface IDeviceCheckingResult {
+  isNewDevice: boolean;
+  deviceOwnershipId: string;
+}

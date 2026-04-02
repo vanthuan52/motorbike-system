@@ -1,5 +1,9 @@
 import { MediaModel } from '../models/media.model';
-import { EnumMediaType, EnumMediaPurpose, EnumMediaAccessibility } from '../enums/media.enum';
+import {
+  EnumMediaType,
+  EnumMediaPurpose,
+  EnumMediaAccessibility,
+} from '../enums/media.enum';
 import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
 
 export class MediaMapper {
@@ -14,7 +18,7 @@ export class MediaMapper {
     model.bucket = prismaMedia.bucket;
     model.cdnUrl = prismaMedia.cdnUrl;
     model.completedUrl = prismaMedia.completedUrl;
-    model.type = prismaMedia.type?.toLowerCase() as EnumMediaType;
+    model.type = prismaMedia.type as EnumMediaType;
     const purposeMap: Record<string, EnumMediaPurpose> = {
       PROFILE_PHOTO: EnumMediaPurpose.profilePhoto,
       CARE_RECORD: EnumMediaPurpose.careRecord,
@@ -26,8 +30,8 @@ export class MediaMapper {
       GENERAL: EnumMediaPurpose.general,
     };
     model.purpose = purposeMap[prismaMedia.purpose] || EnumMediaPurpose.general;
-    model.status = prismaMedia.status?.toLowerCase() as EnumStatus;
-    model.accessibility = prismaMedia.accessibility?.toLowerCase() as EnumMediaAccessibility;
+    model.status = prismaMedia.status as EnumStatus;
+    model.accessibility = prismaMedia.accessibility as EnumMediaAccessibility;
 
     model.createdAt = prismaMedia.createdAt;
     model.updatedAt = prismaMedia.updatedAt;

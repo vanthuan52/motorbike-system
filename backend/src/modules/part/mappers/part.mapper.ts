@@ -10,7 +10,7 @@ export class PartMapper {
     model.name = prismaPart.name;
     model.slug = prismaPart.slug;
     model.description = prismaPart.description;
-    model.status = prismaPart.status?.toLowerCase() as EnumStatus;
+    model.status = prismaPart.status as EnumStatus;
     model.orderBy = prismaPart.order;
     model.partTypeId = prismaPart.partTypeId;
     model.vehicleBrandId = prismaPart.vehicleBrandId;

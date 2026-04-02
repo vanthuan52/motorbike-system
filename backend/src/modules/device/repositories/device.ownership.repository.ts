@@ -25,6 +25,7 @@ import {
   DeviceOwnership as PrismaDeviceOwnership,
   Prisma,
 } from '@/generated/prisma-client';
+import { IDeviceCheckingResult } from '../interfaces/device.interface';
 
 @Injectable()
 export class DeviceOwnershipRepository {
@@ -293,10 +294,7 @@ export class DeviceOwnershipRepository {
     userId: string,
     { fingerprint, name, notificationToken, platform }: DeviceRequestDto,
     options?: IDatabaseOptions
-  ): Promise<{
-    isNewDevice: boolean;
-    deviceOwnershipId: string;
-  }> {
+  ): Promise<IDeviceCheckingResult> {
     const db = options?.tx || this.databaseService;
     const today = this.helperService.dateCreate();
 

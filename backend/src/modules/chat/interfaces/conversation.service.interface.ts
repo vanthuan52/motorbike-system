@@ -12,8 +12,8 @@ export interface IConversationService {
 
   create(participants: string[]): Promise<ConversationModel>;
 
-  mapConversations(
-    conversation: ConversationModel,
-    userId: string
-  ): Promise<any>;
+  updateLastMessage(
+    conversationId: string,
+    messageId: string
+  ): Promise<ConversationModel>;
 }

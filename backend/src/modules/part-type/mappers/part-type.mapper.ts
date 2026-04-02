@@ -9,7 +9,7 @@ export class PartTypeMapper {
     model.slug = prismaPartType.slug;
     model.description = prismaPartType.description;
     model.orderBy = prismaPartType.order;
-    model.status = prismaPartType.status?.toLowerCase() as EnumStatus;
+    model.status = prismaPartType.status as EnumStatus;
 
     model.createdAt = prismaPartType.createdAt;
     model.updatedAt = prismaPartType.updatedAt;

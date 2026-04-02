@@ -11,10 +11,11 @@ import { EnumSessionStatusCodeError } from '@/modules/session/enums/session.stat
 import { ISessionService } from '@/modules/session/interfaces/session.service.interface';
 import { SessionRepository } from '@/modules/session/repositories/session.repository';
 import { SessionUtil } from '@/modules/session/utils/session.util';
-import { ISession } from '../interfaces/session.interface';
+import { ISession, ISessionLoginCreate } from '../interfaces/session.interface';
 import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 /**
  * Session Management Service
@@ -164,12 +165,7 @@ export class SessionService implements ISessionService {
 
   async createForLogin(
     userId: string,
-    sessionData: {
-      sessionId: string;
-      jti: string;
-      expiredAt: Date;
-      deviceOwnershipId: string;
-    },
+    sessionData: ISessionLoginCreate,
     requestLog: IRequestLog,
     options?: { tx?: Prisma.TransactionClient }
   ): Promise<void> {
@@ -180,4 +176,37 @@ export class SessionService implements ISessionService {
       options
     );
   }
+
+  async findActive(userId: string): Promise<DatabaseIdDto[]> {
+    return this.sessionRepository.findActive(userId);
+  }
+
+  async findActiveByDeviceOwnership(
+    userId: string,
+    deviceOwnershipId: string
+  ): Promise<DatabaseIdDto[]> {
+    return this.sessionRepository.findActiveByDeviceOwnership(
+      userId,
+      deviceOwnershipId
+    );
+  }
+
+  async revokeByDeviceOwnership(
+    deviceOwnershipId: string,
+    revokedById: string
+  ): Promise<void> {
+    await this.sessionRepository.revokeByDeviceOwnership(
+      deviceOwnershipId,
+      revokedById
+    );
+  }
+
+  async updateJti(
+    sessionId: string,
+    jti: string,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void> {
+    await this.sessionRepository.updateJti(sessionId, jti, options);
+  }
 }
+

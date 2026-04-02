@@ -17,10 +17,12 @@ import {
   AuthJwtAccessProtected,
   AuthJwtRefreshProtected,
   AuthJwtToken,
+  AuthJwtPayload,
 } from '../decorators/auth.jwt.decorator';
 import {
   AuthSharedChangePasswordDoc,
   AuthSharedRefreshDoc,
+  AuthSharedLogoutDoc,
 } from '../docs/auth.shared.doc';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
 import {
@@ -88,5 +90,28 @@ export class AuthSharedController {
     });
 
     return { data: tokens };
+  }
+
+  @AuthSharedLogoutDoc()
+  @Response('user.logout')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ApiKeyProtected()
+  @HttpCode(HttpStatus.OK)
+  @Post('/logout')
+  async logout(
+    @UserCurrent('id') userId: string,
+    @AuthJwtPayload('sessionId') sessionId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.authService.logout(userId, sessionId, {
+      ipAddress,
+      userAgent,
+      geoLocation,
+    });
+
+    return;
   }
 }

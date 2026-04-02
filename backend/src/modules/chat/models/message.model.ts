@@ -1,4 +1,5 @@
 import { EnumMessageType, EnumMessageStatus } from '../enums/message.enum';
+import { IMessageAttachment } from '../interfaces/message-attachment.interface';
 import { ConversationModel } from './conversation.model';
 import { UserModel } from '@/modules/user/models/user.model';
 
@@ -13,6 +14,8 @@ export class MessageModel {
   timestamp: Date;
   status: EnumMessageStatus;
   readBy: string[];
+  isUnsent: boolean;
+  attachments?: IMessageAttachment[];
 
   conversationId: string;
   conversation?: ConversationModel;

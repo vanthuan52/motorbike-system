@@ -46,14 +46,14 @@ export function AuthSharedChangePasswordDoc(): MethodDecorator {
   );
 }
 
-export function AuthLogoutDoc(): MethodDecorator {
+export function AuthSharedLogoutDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'logout',
     }),
     DocAuth({
       xApiKey: false,
-      jwtRefreshToken: true,
+      jwtAccessToken: true,
     }),
     DocResponse('auth.logout')
   );

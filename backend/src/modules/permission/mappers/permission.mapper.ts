@@ -12,10 +12,8 @@ export class PermissionMapper {
     model.code = prismaPermission.code;
     model.description = prismaPermission.description;
     model.group = prismaPermission.group;
-    model.action =
-      prismaPermission.action?.toLowerCase() as EnumPolicyAction;
-    model.subject =
-      prismaPermission.subject?.toLowerCase() as EnumPolicySubject;
+    model.action = prismaPermission.action as EnumPolicyAction;
+    model.subject = prismaPermission.subject as EnumPolicySubject;
     model.isActive = prismaPermission.isActive;
 
     model.createdAt = prismaPermission.createdAt;

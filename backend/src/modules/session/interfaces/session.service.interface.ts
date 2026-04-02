@@ -6,8 +6,8 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { ISession, ISessionLoginCreate } from './session.interface';
 import { Prisma } from '@/generated/prisma-client';
-import { ISession } from './session.interface';
 
 export interface ISessionService {
   getListOffsetByAdmin(
@@ -41,4 +41,25 @@ export interface ISessionService {
     revokedAt: Date,
     options?: { tx?: Prisma.TransactionClient }
   ): Promise<void>;
+  createForLogin(
+    userId: string,
+    sessionData: ISessionLoginCreate,
+    requestLog: IRequestLog,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void>;
+  findActive(userId: string): Promise<{ id: string }[]>;
+  findActiveByDeviceOwnership(
+    userId: string,
+    deviceOwnershipId: string
+  ): Promise<{ id: string }[]>;
+  revokeByDeviceOwnership(
+    deviceOwnershipId: string,
+    revokedById: string
+  ): Promise<void>;
+  updateJti(
+    sessionId: string,
+    jti: string,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void>;
 }
+

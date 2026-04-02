@@ -16,10 +16,25 @@ export interface IMessageService {
   ): Promise<MessageModel>;
 
   findAllMessages(conversationId: string): Promise<MessageModel[]>;
+
+  markMessageDelivered(messageId: string): Promise<MessageModel>;
+
   markMessageRead(
     message: MessageModel,
     readerId: string
   ): Promise<MessageModel>;
+
+  softDeleteMessage(
+    messageId: string,
+    userId: string
+  ): Promise<MessageModel>;
+
+  unsendMessage(
+    messageId: string,
+    senderId: string
+  ): Promise<MessageModel>;
+
+  findOneById(id: string): Promise<MessageModel | null>;
 
   getListOffset(
     pagination: IPaginationQueryOffsetParams<

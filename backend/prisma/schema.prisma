@@ -56,6 +56,7 @@ model User {
   lastLoginAt   DateTime?
   lastLoginFrom String?
   lastLoginWith String?
+  lastSeenAt    DateTime?
 
   twoFactor    Json?
   verification Json?
@@ -682,27 +683,39 @@ model CareRecordMedia {
 // ================================
 
 model Conversation {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  participants String[] @db.ObjectId
-  lastMessage  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  participantIds String[]  @db.ObjectId
+  lastMessageId  String?   @db.ObjectId
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  createdBy String? @db.ObjectId
+  updatedBy String? @db.ObjectId
+  deletedBy String? @db.ObjectId
 
   messages Message[]
 
-  @@unique([participants])
+  @@index([participantIds])
   @@map("conversations")
 }
 
 model Message {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   content     String
-  messageType String   @default("text")
-  timestamp   DateTime @default(now())
-  status      String   @default("sent")
-  readBy      String[] @db.ObjectId
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  messageType String    @default("text")
+  timestamp   DateTime  @default(now())
+  status      String    @default("sent")
+  readBy      String[]  @db.ObjectId
+  isUnsent    Boolean   @default(false)
+  attachments Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  createdBy String? @db.ObjectId
+  updatedBy String? @db.ObjectId
+  deletedBy String? @db.ObjectId
 
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id])
@@ -712,6 +725,9 @@ model Message {
   receiver       User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
   @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([timestamp])
   @@map("messages")
 }
 

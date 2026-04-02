@@ -1,5 +1,8 @@
 import { CareRecordModel } from '../models/care-record.model';
-import { EnumCareRecordStatus, EnumPaymentStatus } from '../enums/care-record.enum';
+import {
+  EnumCareRecordStatus,
+  EnumPaymentStatus,
+} from '../enums/care-record.enum';
 import { AppointmentMapper } from '@/modules/appointment/mappers/appointment.mapper';
 import { UserVehicleMapper } from '@/modules/user-vehicle/mappers/user-vehicle.mapper';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
@@ -23,8 +26,9 @@ export class CareRecordMapper {
       COMPLETED: EnumCareRecordStatus.completed,
       CANCEL: EnumCareRecordStatus.cancel,
     };
-    model.status = statusMap[prismaRecord.status] || EnumCareRecordStatus.pending;
-    model.paymentStatus = prismaRecord.paymentStatus?.toLowerCase() as EnumPaymentStatus;
+    model.status =
+      statusMap[prismaRecord.status] || EnumCareRecordStatus.pending;
+    model.paymentStatus = prismaRecord.paymentStatus as EnumPaymentStatus;
     model.paymentMethod = prismaRecord.paymentMethod;
     model.totalPrice = prismaRecord.totalPrice;
     model.deliveryDate = prismaRecord.deliveryDate;
@@ -57,23 +61,34 @@ export class CareRecordMapper {
     }
 
     // Child relations
-    if (prismaRecord.careRecordItems && Array.isArray(prismaRecord.careRecordItems)) {
+    if (
+      prismaRecord.careRecordItems &&
+      Array.isArray(prismaRecord.careRecordItems)
+    ) {
       model.careRecordItems = prismaRecord.careRecordItems.map((i: any) =>
         CareRecordItemMapper.toDomain(i)
       );
     }
-    if (prismaRecord.careRecordServices && Array.isArray(prismaRecord.careRecordServices)) {
+    if (
+      prismaRecord.careRecordServices &&
+      Array.isArray(prismaRecord.careRecordServices)
+    ) {
       model.careRecordServices = prismaRecord.careRecordServices.map((s: any) =>
         CareRecordServiceMapper.toDomain(s)
       );
     }
-    if (prismaRecord.careRecordMedias && Array.isArray(prismaRecord.careRecordMedias)) {
+    if (
+      prismaRecord.careRecordMedias &&
+      Array.isArray(prismaRecord.careRecordMedias)
+    ) {
       model.careRecordMedias = prismaRecord.careRecordMedias.map((m: any) =>
         CareRecordMediaMapper.toDomain(m)
       );
     }
     if (prismaRecord.careRecordCondition) {
-      model.careRecordCondition = CareRecordConditionMapper.toDomain(prismaRecord.careRecordCondition);
+      model.careRecordCondition = CareRecordConditionMapper.toDomain(
+        prismaRecord.careRecordCondition
+      );
     }
 
     return model;

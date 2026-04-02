@@ -1,5 +1,8 @@
 import { CareRecordServiceModel } from '../models/care-record-service.model';
-import { EnumCareRecordServiceStatus, EnumCareRecordServiceType } from '../enums/care-record-service.enum';
+import {
+  EnumCareRecordServiceStatus,
+  EnumCareRecordServiceType,
+} from '../enums/care-record-service.enum';
 import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
 import { VehicleServiceMapper } from '@/modules/vehicle-service/mappers/vehicle-service.mapper';
 import { CareRecordChecklistMapper } from '@/modules/care-record-checklist/mappers/care-record-checklist.mapper';
@@ -9,8 +12,8 @@ export class CareRecordServiceMapper {
     const model = new CareRecordServiceModel();
     model.id = prismaService.id;
     model.name = prismaService.name;
-    model.status = prismaService.status?.toLowerCase() as EnumCareRecordServiceStatus;
-    model.type = prismaService.type?.toLowerCase() as EnumCareRecordServiceType;
+    model.status = prismaService.status as EnumCareRecordServiceStatus;
+    model.type = prismaService.type as EnumCareRecordServiceType;
     model.careRecordId = prismaService.careRecordId;
     model.vehicleServiceId = prismaService.vehicleServiceId;
 
@@ -25,11 +28,16 @@ export class CareRecordServiceMapper {
       model.careRecord = CareRecordMapper.toDomain(prismaService.careRecord);
     }
     if (prismaService.vehicleService) {
-      model.vehicleService = VehicleServiceMapper.toDomain(prismaService.vehicleService);
+      model.vehicleService = VehicleServiceMapper.toDomain(
+        prismaService.vehicleService
+      );
     }
-    if (prismaService.careRecordChecklists && Array.isArray(prismaService.careRecordChecklists)) {
-      model.careRecordChecklists = prismaService.careRecordChecklists.map((c: any) =>
-        CareRecordChecklistMapper.toDomain(c)
+    if (
+      prismaService.careRecordChecklists &&
+      Array.isArray(prismaService.careRecordChecklists)
+    ) {
+      model.careRecordChecklists = prismaService.careRecordChecklists.map(
+        (c: any) => CareRecordChecklistMapper.toDomain(c)
       );
     }
 
