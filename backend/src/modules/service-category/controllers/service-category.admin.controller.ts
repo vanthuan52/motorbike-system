@@ -66,6 +66,8 @@ import {
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
 import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-category')
@@ -139,6 +141,7 @@ export class ServiceCategoryAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceCategoryCreate)
   @Post('/create')
   async create(
     @Body() body: ServiceCategoryCreateRequestDto,
@@ -168,6 +171,7 @@ export class ServiceCategoryAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceCategoryUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -199,6 +203,7 @@ export class ServiceCategoryAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceCategoryUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -230,6 +235,7 @@ export class ServiceCategoryAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceCategoryDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,

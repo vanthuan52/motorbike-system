@@ -1,4 +1,6 @@
 import { EnumMessageType, EnumMessageStatus } from '../enums/message.enum';
+import { ConversationModel } from './conversation.model';
+import { UserModel } from '@/modules/user/models/user.model';
 
 /**
  * Domain model representing a chat message.
@@ -13,8 +15,11 @@ export class MessageModel {
   readBy: string[];
 
   conversationId: string;
+  conversation?: ConversationModel;
   senderId: string;
+  sender?: UserModel;
   receiverId: string;
+  receiver?: UserModel;
 
   createdAt: Date;
   updatedAt: Date;

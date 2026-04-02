@@ -2,6 +2,9 @@ import {
   EnumCareRecordServiceStatus,
   EnumCareRecordServiceType,
 } from '../enums/care-record-service.enum';
+import { CareRecordModel } from '@/modules/care-record/models/care-record.model';
+import { VehicleServiceModel } from '@/modules/vehicle-service/models/vehicle-service.model';
+import { CareRecordChecklistModel } from '@/modules/care-record-checklist/models/care-record-checklist.model';
 
 /**
  * Domain model representing a service within a care record.
@@ -14,7 +17,12 @@ export class CareRecordServiceModel {
   type: EnumCareRecordServiceType;
 
   careRecordId: string;
+  careRecord?: CareRecordModel;
   vehicleServiceId?: string;
+  vehicleService?: VehicleServiceModel;
+
+  // Child relations
+  careRecordChecklists?: CareRecordChecklistModel[];
 
   createdAt: Date;
   updatedAt: Date;

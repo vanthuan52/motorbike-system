@@ -42,6 +42,8 @@ import { CandidateService } from '../services/candidate.service';
 import { CandidateUpdateStatusRequestDto } from '../dtos/request/candidate.update-status.request.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CandidateUtil } from '../utils/candidate.util';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.hiring')
@@ -52,7 +54,7 @@ import { Prisma } from '@/generated/prisma-client';
 export class CandidateAdminController {
   constructor(
     private readonly candidateService: CandidateService,
-    private readonly candidateUtil: CandidateUtil,
+    private readonly candidateUtil: CandidateUtil
   ) {}
 
   @CandidateAdminListDoc()
@@ -84,7 +86,7 @@ export class CandidateAdminController {
     status: Record<string, IPaginationIn>,
     @Query('hiring') hiring: string,
     @Query('appliedAtFrom') appliedAtFrom: string,
-    @Query('appliedAtTo') appliedAtTo: string,
+    @Query('appliedAtTo') appliedAtTo: string
   ): Promise<IResponsePagingReturn<CandidateResponseDto>> {
     const filters: Record<string, any> = {
       ...status,
@@ -127,7 +129,7 @@ export class CandidateAdminController {
   @AuthJwtAccessProtected()
   @Get('/get/:id')
   async get(
-    @Param('id') id: string,
+    @Param('id') id: string
   ): Promise<IResponseReturn<CandidateResponseDto>> {
     const candidate = await this.candidateService.findOneById(id);
     if (!candidate) {
@@ -148,10 +150,11 @@ export class CandidateAdminController {
   @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCandidateUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
-    @Body() payload: CandidateUpdateStatusRequestDto,
+    @Body() payload: CandidateUpdateStatusRequestDto
   ): Promise<IResponseReturn<void>> {
     await this.candidateService.updateStatus(id, payload);
     return {

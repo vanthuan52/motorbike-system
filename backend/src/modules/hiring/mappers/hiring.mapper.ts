@@ -1,5 +1,6 @@
 import { HiringModel } from '../models/hiring.model';
 import { EnumHiringJobType, EnumHiringStatus } from '../enums/hiring.enum';
+import { CandidateMapper } from './candidate.mapper';
 
 export class HiringMapper {
   static toDomain(prismaHiring: any): HiringModel {
@@ -28,6 +29,12 @@ export class HiringMapper {
     model.createdBy = prismaHiring.createdBy;
     model.updatedBy = prismaHiring.updatedBy;
     model.deletedBy = prismaHiring.deletedBy;
+
+    if (prismaHiring.candidates && Array.isArray(prismaHiring.candidates)) {
+      model.candidates = prismaHiring.candidates.map((c: any) =>
+        CandidateMapper.toDomain(c)
+      );
+    }
 
     return model;
   }

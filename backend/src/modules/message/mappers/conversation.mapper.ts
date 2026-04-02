@@ -1,4 +1,5 @@
 import { ConversationModel } from '../models/conversation.model';
+import { MessageMapper } from './message.mapper';
 
 export class ConversationMapper {
   static toDomain(prismaConversation: any): ConversationModel {
@@ -13,6 +14,12 @@ export class ConversationMapper {
     model.createdBy = prismaConversation.createdBy;
     model.updatedBy = prismaConversation.updatedBy;
     model.deletedBy = prismaConversation.deletedBy;
+
+    if (prismaConversation.messages && Array.isArray(prismaConversation.messages)) {
+      model.messages = prismaConversation.messages.map((m: any) =>
+        MessageMapper.toDomain(m)
+      );
+    }
 
     return model;
   }

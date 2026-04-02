@@ -66,6 +66,8 @@ import {
 } from '@/modules/user/interfaces/user.interface';
 import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
 import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full.response.dto';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.appointment')
@@ -145,6 +147,7 @@ export class AppointmentAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminAppointmentCreate)
   @Post('/create')
   async create(
     @Body() body: AppointmentCreateRequestDto,
@@ -173,6 +176,7 @@ export class AppointmentAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminAppointmentUpdate)
   @Put('/update/:id')
   async update(
     @Param('id') id: string,
@@ -202,6 +206,7 @@ export class AppointmentAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminAppointmentUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,
@@ -231,6 +236,7 @@ export class AppointmentAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminAppointmentDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id') id: string,
@@ -287,6 +293,7 @@ export class AppointmentAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminAppointmentRestore)
   @Post('/restore/:id')
   async restore(
     @Param('id') id: string,
@@ -314,6 +321,7 @@ export class AppointmentAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminAppointmentForceDelete)
   @Delete('/force-delete/:id')
   async forceDelete(
     @Param('id') id: string,

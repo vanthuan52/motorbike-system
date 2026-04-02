@@ -1,5 +1,6 @@
 import { CareRecordMediaModel } from '../models/care-record-media.model';
 import { EnumCareRecordMediaStage, EnumMediaFileType } from '../enums/care-record-media.enum';
+import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
 
 export class CareRecordMediaMapper {
   static toDomain(prismaMedia: any): CareRecordMediaModel {
@@ -17,6 +18,10 @@ export class CareRecordMediaMapper {
     model.createdBy = prismaMedia.createdBy;
     model.updatedBy = prismaMedia.updatedBy;
     model.deletedBy = prismaMedia.deletedBy;
+
+    if (prismaMedia.careRecord) {
+      model.careRecord = CareRecordMapper.toDomain(prismaMedia.careRecord);
+    }
 
     return model;
   }

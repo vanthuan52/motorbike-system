@@ -1,4 +1,6 @@
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { UserModel } from '@/modules/user/models/user.model';
+import { VehicleModelModel } from '@/modules/vehicle-model/models/vehicle-model.model';
 
 /**
  * Domain model representing a user's vehicle.
@@ -14,7 +16,9 @@ export class UserVehicleModel {
   photo?: AwsS3Dto;
 
   userId: string;
+  user?: UserModel;
   vehicleModelId: string;
+  vehicleModel?: VehicleModelModel;
 
   createdAt: Date;
   updatedAt: Date;

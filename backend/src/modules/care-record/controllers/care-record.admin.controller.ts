@@ -79,6 +79,8 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.care-record')
 @Controller({
@@ -178,6 +180,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordCreate)
   @Post('/create')
   async create(
     @AuthJwtPayload('userId') userId: string,
@@ -206,6 +209,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe) id: string,
@@ -235,6 +239,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe) id: string,
@@ -264,6 +269,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordUpdatePaymentStatus)
   @Patch('/update/:id/paymentStatus')
   async updatePaymentStatus(
     @Param('id', RequestRequiredPipe) id: string,
@@ -293,6 +299,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordUpdateTechnician)
   @Patch('/update/:id/technician')
   async updateTechnician(
     @Param('id', RequestRequiredPipe) id: string,
@@ -322,6 +329,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe) id: string,
@@ -349,6 +357,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordCreateChecklist)
   @Post('/create/:id/checklist')
   async createChecklist(
     @AuthJwtPayload('userId') userId: string,
@@ -404,6 +413,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordRestore)
   @Post('/restore/:id')
   async restore(
     @Param('id', RequestRequiredPipe) id: string,
@@ -431,6 +441,7 @@ export class CareRecordAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordForceDelete)
   @Delete('/force-delete/:id')
   async forceDelete(
     @Param('id', RequestRequiredPipe) id: string,

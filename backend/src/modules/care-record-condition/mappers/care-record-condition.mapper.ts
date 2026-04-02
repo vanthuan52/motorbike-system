@@ -6,6 +6,7 @@ import {
   EnumBodyCondition, 
   EnumExhaustCoverCondition 
 } from '../enums/care-record-condition.enum';
+import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
 
 export class CareRecordConditionMapper {
   static toDomain(prismaCondition: any): CareRecordConditionModel {
@@ -30,6 +31,10 @@ export class CareRecordConditionMapper {
     model.createdBy = prismaCondition.createdBy;
     model.updatedBy = prismaCondition.updatedBy;
     model.deletedBy = prismaCondition.deletedBy;
+
+    if (prismaCondition.careRecord) {
+      model.careRecord = CareRecordMapper.toDomain(prismaCondition.careRecord);
+    }
 
     return model;
   }

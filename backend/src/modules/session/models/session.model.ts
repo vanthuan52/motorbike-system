@@ -2,6 +2,7 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { UserModel } from '@/modules/user/models/user.model';
 
 /**
  * Domain model representing a user session.
@@ -19,6 +20,7 @@ export class SessionModel {
   revokedById?: string;
 
   userId: string;
+  user?: UserModel;
 
   createdAt: Date;
   updatedAt: Date;

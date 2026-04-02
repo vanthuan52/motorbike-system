@@ -1,4 +1,6 @@
 import { EnumStatus } from '@/common/enums/common.enum';
+import { PartTypeModel } from '@/modules/part-type/models/part-type.model';
+import { VehicleBrandModel } from '@/modules/vehicle-brand/models/vehicle-brand.model';
 
 /**
  * Domain model representing a vehicle part.
@@ -13,7 +15,9 @@ export class PartModel {
   orderBy: string;
 
   partTypeId: string;
+  partType?: PartTypeModel;
   vehicleBrandId: string;
+  vehicleBrand?: VehicleBrandModel;
 
   createdAt: Date;
   updatedAt: Date;

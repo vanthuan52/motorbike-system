@@ -1,3 +1,4 @@
+import { VehicleBrandModel } from '@/modules/vehicle-brand/models/vehicle-brand.model';
 import {
   EnumVehicleModelType,
   EnumVehicleModelFuelType,
@@ -25,6 +26,7 @@ export class VehicleModelModel {
   photo?: string;
 
   vehicleBrandId: string;
+  vehicleBrand?: VehicleBrandModel;
 
   createdAt: Date;
   updatedAt: Date;

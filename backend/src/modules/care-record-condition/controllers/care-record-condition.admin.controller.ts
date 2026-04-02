@@ -54,6 +54,8 @@ import {
   RequestIPAddress,
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.care-record-condition')
 @Controller({
@@ -130,6 +132,7 @@ export class CareRecordConditionAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordConditionCreate)
   @Post('/create')
   async create(
     @Body() body: CareRecordConditionCreateRequestDto,
@@ -155,6 +158,7 @@ export class CareRecordConditionAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordConditionUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -182,6 +186,7 @@ export class CareRecordConditionAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordConditionDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,

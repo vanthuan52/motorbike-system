@@ -1,5 +1,7 @@
 import { MessageModel } from '../models/message.model';
 import { EnumMessageType, EnumMessageStatus } from '../enums/message.enum';
+import { ConversationMapper } from './conversation.mapper';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
 
 export class MessageMapper {
   static toDomain(prismaMessage: any): MessageModel {
@@ -20,6 +22,16 @@ export class MessageMapper {
     model.createdBy = prismaMessage.createdBy;
     model.updatedBy = prismaMessage.updatedBy;
     model.deletedBy = prismaMessage.deletedBy;
+
+    if (prismaMessage.conversation) {
+      model.conversation = ConversationMapper.toDomain(prismaMessage.conversation);
+    }
+    if (prismaMessage.sender) {
+      model.sender = UserMapper.toDomain(prismaMessage.sender);
+    }
+    if (prismaMessage.receiver) {
+      model.receiver = UserMapper.toDomain(prismaMessage.receiver);
+    }
 
     return model;
   }

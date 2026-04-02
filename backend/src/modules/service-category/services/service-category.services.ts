@@ -118,7 +118,6 @@ export class ServiceCategoryService implements IServiceCategoryService {
     createdBy: string
   ): Promise<{ id: string }> {
     const { name, slug, description, orderBy } = payload;
-    // Check slug conflict
     const existingSlug =
       await this.serviceCategoryRepository.findOneBySlug(slug);
     if (existingSlug) {

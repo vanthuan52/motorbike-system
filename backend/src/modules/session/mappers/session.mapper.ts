@@ -1,5 +1,6 @@
 import { SessionModel } from '../models/session.model';
 import { EnumSessionStatus } from '../enums/session.enum';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
 
 export class SessionMapper {
   static toDomain(prismaSession: any): SessionModel {
@@ -26,6 +27,10 @@ export class SessionMapper {
     model.createdBy = prismaSession.createdBy;
     model.updatedBy = prismaSession.updatedBy;
     model.deletedBy = prismaSession.deletedBy;
+
+    if (prismaSession.user) {
+      model.user = UserMapper.toDomain(prismaSession.user);
+    }
 
     return model;
   }

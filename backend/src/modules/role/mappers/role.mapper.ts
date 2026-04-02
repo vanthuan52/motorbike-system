@@ -1,4 +1,5 @@
 import { RoleModel } from '../models/role.model';
+import { PermissionMapper } from '@/modules/permission/mappers/permission.mapper';
 
 export class RoleMapper {
   static toDomain(prismaRole: any): RoleModel {
@@ -15,6 +16,13 @@ export class RoleMapper {
     model.createdBy = prismaRole.createdBy;
     model.updatedBy = prismaRole.updatedBy;
     model.deletedBy = prismaRole.deletedBy;
+
+    // Map permissions via rolePermissions junction table
+    if (prismaRole.rolePermissions && Array.isArray(prismaRole.rolePermissions)) {
+      model.permissions = prismaRole.rolePermissions
+        .filter((rp: any) => rp.permission)
+        .map((rp: any) => PermissionMapper.toDomain(rp.permission));
+    }
 
     return model;
   }

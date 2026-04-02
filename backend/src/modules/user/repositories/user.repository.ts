@@ -38,6 +38,7 @@ import {
 import { UserModel } from '@/modules/user/models/user.model';
 import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { EnumPasswordHistoryType } from '@/modules/password-history/enums/password-history.enum';
 import { Prisma, User as PrismaUser } from '@/generated/prisma-client';
 
 @Injectable()
@@ -382,7 +383,7 @@ export class UserRepository {
         passwordHistories: {
           create: {
             password: passwordHash,
-            type: Prisma.EnumPasswordHistoryType.admin,
+            type: EnumPasswordHistoryType.admin,
             expiredAt: passwordPeriodExpired,
             createdAt: passwordCreated,
             createdBy,
@@ -497,7 +498,7 @@ export class UserRepository {
         passwordHistories: {
           create: {
             password: passwordHash,
-            type: Prisma.EnumPasswordHistoryType.admin,
+            type: EnumPasswordHistoryType.admin,
             expiredAt: passwordPeriodExpired,
             createdAt: passwordCreated,
             createdBy: updatedBy,
@@ -553,7 +554,7 @@ export class UserRepository {
         passwordHistories: {
           create: {
             password: passwordHash,
-            type: Prisma.EnumPasswordHistoryType.profile,
+            type: EnumPasswordHistoryType.profile,
             expiredAt: passwordPeriodExpired,
             createdAt: passwordCreated,
             createdBy: userId,
@@ -654,8 +655,6 @@ export class UserRepository {
 
     return user;
   }
-
-
 
   async createFromRegistration(
     userId: string,
@@ -763,7 +762,6 @@ export class UserRepository {
     return UserMapper.toDomain(result);
   }
 
-
   async reachMaxPasswordAttempt(
     userId: string,
     options?: IDatabaseOptions
@@ -821,7 +819,7 @@ export class UserRepository {
             passwordHistories: {
               create: {
                 password: passwordHash,
-                type: Prisma.EnumPasswordHistoryType.admin,
+                type: EnumPasswordHistoryType.admin,
                 expiredAt: passwordPeriodExpired,
                 createdAt: passwordCreated,
                 createdBy,

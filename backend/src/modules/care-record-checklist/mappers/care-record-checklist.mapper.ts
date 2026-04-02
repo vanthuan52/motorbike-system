@@ -1,5 +1,7 @@
 import { CareRecordChecklistModel } from '../models/care-record-checklist.model';
 import { EnumCareRecordChecklistResult, EnumCareRecordChecklistStatus } from '../enums/care-record-checklist.enum';
+import { CareRecordServiceMapper } from '@/modules/care-record-service/mappers/care-record-service.mapper';
+import { ServiceChecklistMapper } from '@/modules/service-checklist/mappers/service-checklist.mapper';
 
 export class CareRecordChecklistMapper {
   static toDomain(prismaChecklist: any): CareRecordChecklistModel {
@@ -32,6 +34,13 @@ export class CareRecordChecklistMapper {
     model.createdBy = prismaChecklist.createdBy;
     model.updatedBy = prismaChecklist.updatedBy;
     model.deletedBy = prismaChecklist.deletedBy;
+
+    if (prismaChecklist.careRecordService) {
+      model.careRecordService = CareRecordServiceMapper.toDomain(prismaChecklist.careRecordService);
+    }
+    if (prismaChecklist.serviceChecklist) {
+      model.serviceChecklist = ServiceChecklistMapper.toDomain(prismaChecklist.serviceChecklist);
+    }
 
     return model;
   }

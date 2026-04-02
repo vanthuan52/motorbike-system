@@ -72,6 +72,8 @@ import {
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.store')
@@ -142,6 +144,7 @@ export class StoreAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminStoreCreate)
   @Post('/create')
   async create(
     @Body() body: StoreCreateRequestDto,
@@ -171,6 +174,7 @@ export class StoreAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminStoreUpdate)
   @Put('/update/:storeId')
   async update(
     @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
@@ -203,6 +207,7 @@ export class StoreAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminStoreDelete)
   @Delete('/delete/:storeId')
   async delete(
     @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
@@ -233,6 +238,7 @@ export class StoreAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminStoreUpdateStatus)
   @Patch('/update/:storeId/status')
   async updateStatus(
     @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
@@ -294,6 +300,7 @@ export class StoreAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminStoreRestore)
   @Post('/restore/:storeId')
   async restore(
     @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
@@ -324,6 +331,7 @@ export class StoreAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminStoreForceDelete)
   @Delete('/force-delete/:storeId')
   async forceDelete(
     @Param('storeId', RequestRequiredPipe, RequestIsValidObjectIdPipe)

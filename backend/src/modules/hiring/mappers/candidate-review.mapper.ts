@@ -1,4 +1,6 @@
 import { CandidateReviewModel } from '../models/candidate-review.model';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { CandidateMapper } from './candidate.mapper';
 
 export class CandidateReviewMapper {
   static toDomain(prismaReview: any): CandidateReviewModel {
@@ -15,6 +17,13 @@ export class CandidateReviewMapper {
     model.createdBy = prismaReview.createdBy;
     model.updatedBy = prismaReview.updatedBy;
     model.deletedBy = prismaReview.deletedBy;
+
+    if (prismaReview.user) {
+      model.user = UserMapper.toDomain(prismaReview.user);
+    }
+    if (prismaReview.candidate) {
+      model.candidate = CandidateMapper.toDomain(prismaReview.candidate);
+    }
 
     return model;
   }

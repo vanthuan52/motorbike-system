@@ -5,6 +5,7 @@ import {
   EnumBodyCondition,
   EnumExhaustCoverCondition,
 } from '../enums/care-record-condition.enum';
+import { CareRecordModel } from '@/modules/care-record/models/care-record.model';
 
 /**
  * Domain model representing the initial condition assessment of a vehicle.
@@ -25,6 +26,7 @@ export class CareRecordConditionModel {
   hasFootMat: boolean;
 
   careRecordId: string;
+  careRecord?: CareRecordModel;
 
   createdAt: Date;
   updatedAt: Date;

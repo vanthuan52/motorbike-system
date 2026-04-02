@@ -68,4 +68,105 @@ export enum EnumActivityLogAction {
   adminUserVehicleCreate = 'adminUserVehicleCreate',
   adminUserVehicleUpdate = 'adminUserVehicleUpdate',
   adminUserVehicleDelete = 'adminUserVehicleDelete',
+
+  // Service Category
+  adminServiceCategoryCreate = 'adminServiceCategoryCreate',
+  adminServiceCategoryUpdate = 'adminServiceCategoryUpdate',
+  adminServiceCategoryUpdateStatus = 'adminServiceCategoryUpdateStatus',
+  adminServiceCategoryDelete = 'adminServiceCategoryDelete',
+
+  // Permission
+  adminPermissionCreate = 'adminPermissionCreate',
+  adminPermissionUpdate = 'adminPermissionUpdate',
+  adminPermissionDelete = 'adminPermissionDelete',
+
+  // Appointment
+  adminAppointmentCreate = 'adminAppointmentCreate',
+  adminAppointmentUpdate = 'adminAppointmentUpdate',
+  adminAppointmentUpdateStatus = 'adminAppointmentUpdateStatus',
+  adminAppointmentDelete = 'adminAppointmentDelete',
+  adminAppointmentRestore = 'adminAppointmentRestore',
+  adminAppointmentForceDelete = 'adminAppointmentForceDelete',
+
+  // Care Area
+  adminCareAreaCreate = 'adminCareAreaCreate',
+  adminCareAreaUpdate = 'adminCareAreaUpdate',
+  adminCareAreaDelete = 'adminCareAreaDelete',
+  adminCareAreaRestore = 'adminCareAreaRestore',
+  adminCareAreaForceDelete = 'adminCareAreaForceDelete',
+
+  // Care Record
+  adminCareRecordCreate = 'adminCareRecordCreate',
+  adminCareRecordUpdate = 'adminCareRecordUpdate',
+  adminCareRecordUpdateStatus = 'adminCareRecordUpdateStatus',
+  adminCareRecordUpdatePaymentStatus = 'adminCareRecordUpdatePaymentStatus',
+  adminCareRecordUpdateTechnician = 'adminCareRecordUpdateTechnician',
+  adminCareRecordDelete = 'adminCareRecordDelete',
+  adminCareRecordCreateChecklist = 'adminCareRecordCreateChecklist',
+  adminCareRecordRestore = 'adminCareRecordRestore',
+  adminCareRecordForceDelete = 'adminCareRecordForceDelete',
+
+  // Care Record Condition
+  adminCareRecordConditionCreate = 'adminCareRecordConditionCreate',
+  adminCareRecordConditionUpdate = 'adminCareRecordConditionUpdate',
+  adminCareRecordConditionDelete = 'adminCareRecordConditionDelete',
+
+  // Care Record Item
+  adminCareRecordItemCreate = 'adminCareRecordItemCreate',
+  adminCareRecordItemUpdate = 'adminCareRecordItemUpdate',
+  adminCareRecordItemApproval = 'adminCareRecordItemApproval',
+  adminCareRecordItemDelete = 'adminCareRecordItemDelete',
+
+  // Care Record Media
+  adminCareRecordMediaCreate = 'adminCareRecordMediaCreate',
+  adminCareRecordMediaUpdate = 'adminCareRecordMediaUpdate',
+  adminCareRecordMediaDelete = 'adminCareRecordMediaDelete',
+
+  // Care Record Service
+  adminCareRecordServiceCreate = 'adminCareRecordServiceCreate',
+  adminCareRecordServiceUpdate = 'adminCareRecordServiceUpdate',
+  adminCareRecordServiceUpdateStatus = 'adminCareRecordServiceUpdateStatus',
+  adminCareRecordServiceDelete = 'adminCareRecordServiceDelete',
+
+  // Part
+  adminPartCreate = 'adminPartCreate',
+  adminPartUpdate = 'adminPartUpdate',
+  adminPartUpdateStatus = 'adminPartUpdateStatus',
+  adminPartDelete = 'adminPartDelete',
+
+  // Part Type
+  adminPartTypeCreate = 'adminPartTypeCreate',
+  adminPartTypeUpdate = 'adminPartTypeUpdate',
+  adminPartTypeUpdateStatus = 'adminPartTypeUpdateStatus',
+  adminPartTypeDelete = 'adminPartTypeDelete',
+
+  // Store
+  adminStoreCreate = 'adminStoreCreate',
+  adminStoreUpdate = 'adminStoreUpdate',
+  adminStoreUpdateStatus = 'adminStoreUpdateStatus',
+  adminStoreDelete = 'adminStoreDelete',
+  adminStoreRestore = 'adminStoreRestore',
+  adminStoreForceDelete = 'adminStoreForceDelete',
+
+  // Hiring
+  adminHiringCreate = 'adminHiringCreate',
+  adminHiringUpdate = 'adminHiringUpdate',
+  adminHiringUpdateStatus = 'adminHiringUpdateStatus',
+  adminHiringDelete = 'adminHiringDelete',
+
+  // Candidate
+  adminCandidateUpdateStatus = 'adminCandidateUpdateStatus',
+
+  // Candidate Review
+  adminCandidateReviewCreate = 'adminCandidateReviewCreate',
+
+  // Care Record Checklist
+  adminCareRecordChecklistCreate = 'adminCareRecordChecklistCreate',
+  adminCareRecordChecklistUpdate = 'adminCareRecordChecklistUpdate',
+  adminCareRecordChecklistUpdateStatus = 'adminCareRecordChecklistUpdateStatus',
+  adminCareRecordChecklistUpdateResult = 'adminCareRecordChecklistUpdateResult',
+  adminCareRecordChecklistDelete = 'adminCareRecordChecklistDelete',
+
+  // Notification
+  userNotificationUpdateSetting = 'userNotificationUpdateSetting',
 }

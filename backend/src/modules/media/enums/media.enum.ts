@@ -27,3 +27,16 @@ export enum EnumMediaAccessibility {
   public = 'public',
   private = 'private',
 }
+
+export enum EnumMediaFileType {
+  jpg = 'jpg',
+  jpeg = 'jpeg',
+  png = 'png',
+  pdf = 'pdf',
+  csv = 'csv',
+  hbs = 'hbs',
+  mpeg = 'mpeg',
+  m4a = 'm4a',
+  mp3 = 'mp3',
+  mp4 = 'mp4',
+}

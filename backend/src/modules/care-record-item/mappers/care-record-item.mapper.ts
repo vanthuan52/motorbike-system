@@ -1,5 +1,9 @@
 import { CareRecordItemModel } from '../models/care-record-item.model';
 import { EnumCareRecordItemSource, EnumCareRecordItemType } from '../enums/care-record-item.enum';
+import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
+import { VehicleServiceMapper } from '@/modules/vehicle-service/mappers/vehicle-service.mapper';
+import { PartMapper } from '@/modules/part/mappers/part.mapper';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
 
 export class CareRecordItemMapper {
   static toDomain(prismaItem: any): CareRecordItemModel {
@@ -24,6 +28,19 @@ export class CareRecordItemMapper {
     model.createdBy = prismaItem.createdBy;
     model.updatedBy = prismaItem.updatedBy;
     model.deletedBy = prismaItem.deletedBy;
+
+    if (prismaItem.careRecord) {
+      model.careRecord = CareRecordMapper.toDomain(prismaItem.careRecord);
+    }
+    if (prismaItem.vehicleService) {
+      model.vehicleService = VehicleServiceMapper.toDomain(prismaItem.vehicleService);
+    }
+    if (prismaItem.part) {
+      model.part = PartMapper.toDomain(prismaItem.part);
+    }
+    if (prismaItem.technician) {
+      model.technician = UserMapper.toDomain(prismaItem.technician);
+    }
 
     return model;
   }

@@ -63,6 +63,8 @@ import {
   RequestIPAddress,
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.care-record-item')
 @Controller({
@@ -138,6 +140,7 @@ export class CareRecordItemAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordItemCreate)
   @Post('/create')
   async create(
     @Body() body: CareRecordItemCreateRequestDto,
@@ -163,6 +166,7 @@ export class CareRecordItemAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordItemUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -190,6 +194,7 @@ export class CareRecordItemAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordItemApproval)
   @Patch('/update/:id/approval')
   async updateApproval(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -217,6 +222,7 @@ export class CareRecordItemAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordItemDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
