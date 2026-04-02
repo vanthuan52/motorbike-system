@@ -5,7 +5,11 @@ import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 
 import { DeviceOwnershipRepository } from '@/modules/device/repositories/device.ownership.repository';
-import { EnumNotificationProcess } from '@/modules/notification/enums/notification.enum';
+import {
+  EnumNotificationChannel,
+  EnumNotificationProcess,
+  EnumNotificationType,
+} from '@/modules/notification/enums/notification.enum';
 import {
   INotificationAcceptTermPolicyPayload,
   INotificationEmailSendPayload,
@@ -27,10 +31,6 @@ import { NotificationEmailUtil } from '@/modules/notification/utils/notification
 import { NotificationPushUtil } from '@/modules/notification/utils/notification.push.util';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { IQueueResponse } from '@/queues/interfaces/queue.interface';
-import {
-  EnumNotificationChannel,
-  EnumNotificationType,
-} from '@/generated/prisma-client';
 
 @Injectable()
 export class NotificationProcessorService implements INotificationProcessorService {
@@ -580,94 +580,5 @@ export class NotificationProcessorService implements INotificationProcessorServi
     const results = await Promise.allSettled(promises);
 
     return { message: 'New device login notification processed', results };
-  }
-
-  async processPublishTermPolicy({
-    data: { data, proceedBy },
-  }: Job<
-    INotificationWorkerBulkPayload<INotificationPublishTermPolicyPayload>,
-    unknown,
-    EnumNotificationProcess
-  >): Promise<IQueueResponse> {
-    const users = await this.userRepository.findActive();
-    const activeSettings =
-      await this.notificationRepository.findActiveUserSettingByType(
-        users.map(u => u.id),
-        EnumNotificationType.transactional,
-        [EnumNotificationChannel.email]
-      );
-    const filteredSettings = new Set(activeSettings.map(s => s.userId));
-
-    const filteredUsers = users.filter(user => filteredSettings.has(user.id));
-
-    if (filteredUsers.length === 0) {
-      return {
-        message: 'No users to send publish term policy notification',
-        userCounts: users.length,
-        filteredUserCounts: 0,
-        batches: 0,
-      };
-    }
-
-    const chunks = this.helperService.arrayChunk(
-      filteredUsers,
-      this.emailBatchSize
-    );
-
-    for (const chunk of chunks) {
-      const emailPayload: INotificationEmailSendPayload[] = chunk.map(user => ({
-        userId: user.id,
-        email: user.email,
-        username: user.username,
-        notificationId: this.databaseUtil.createId(),
-      }));
-
-      await Promise.all([
-        this.notificationRepository.createManyPublishTermPolicy(
-          emailPayload,
-          data,
-          proceedBy
-        ),
-        this.notificationEmailUtil.sendPublishTermPolicy(emailPayload, data),
-      ]);
-    }
-
-    return {
-      message: 'Publish term policy notification processed',
-      userCounts: users.length,
-      filteredUserCounts: filteredUsers.length,
-      batches: chunks.length,
-    };
-  }
-
-  async processUserAcceptTermPolicy({
-    data: { userId, data },
-  }: Job<
-    INotificationWorkerPayload<INotificationAcceptTermPolicyPayload>,
-    unknown,
-    EnumNotificationProcess
-  >): Promise<IQueueResponse> {
-    const user = await this.userRepository.findOneActiveById(userId);
-
-    if (!user) {
-      return {
-        message:
-          'User not found, skipping user accept term policy notification',
-      };
-    }
-
-    const notificationId = this.databaseUtil.createId();
-
-    await this.notificationRepository.createUserAcceptTermPolicy(
-      notificationId,
-      user.id,
-      user.username,
-      data.type,
-      data.version
-    );
-
-    return {
-      message: 'User accept term policy notification processed',
-    };
   }
 }

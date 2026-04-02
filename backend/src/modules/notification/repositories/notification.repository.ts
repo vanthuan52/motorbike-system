@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
-import { IPaginationQueryCursorParams, IPaginationCursorReturn } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  IPaginationQueryCursorParams,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { NotificationUserSettingRequestDto } from '@/modules/notification/dtos/request/notification.user-setting.request.dto';
@@ -10,16 +13,29 @@ import {
   INotificationEmailSendPayload,
   INotificationPublishTermPolicyPayload,
 } from '@/modules/notification/interfaces/notification.interface';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import {
-  EnumActivityLogAction,
+  NotificationModel,
+  NotificationUserSettingModel,
+} from '../models/notification.model';
+import {
+  NotificationMapper,
+  NotificationUserSettingMapper,
+} from '../mappers/notification.mapper';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import {
   EnumNotificationChannel,
   EnumNotificationPriority,
   EnumNotificationType,
-  EnumTermPolicyType,
+} from '../enums/notification.enum';
+import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
-  Notification,
-  NotificationUserSetting,
+} from '@/modules/user/enums/user.enum';
+
+import {
+  Notification as PrismaNotification,
+  NotificationUserSetting as PrismaNotificationUserSetting,
   Prisma,
 } from '@/generated/prisma-client';
 
@@ -41,9 +57,9 @@ export class NotificationRepository {
       Prisma.NotificationSelect,
       Prisma.NotificationWhereInput
     >
-  ): Promise<IPaginationCursorReturn<Notification>> {
-    return this.paginationService.cursor<
-      Notification,
+  ): Promise<IPaginationCursorReturn<NotificationModel>> {
+    const paginatedResult = await this.paginationService.cursor<
+      PrismaNotification,
       Prisma.NotificationSelect,
       Prisma.NotificationWhereInput
     >(this.databaseService.notification, {
@@ -53,6 +69,11 @@ export class NotificationRepository {
         userId,
       },
     });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => NotificationMapper.toDomain(item)),
+    };
   }
 
   async existById(
@@ -68,14 +89,36 @@ export class NotificationRepository {
     });
   }
 
+  async initUserSetting(
+    userId: string,
+    options?: IDatabaseOptions
+  ): Promise<void> {
+    const db = options?.tx || this.databaseService;
+    const settings = Object.values(EnumNotificationChannel)
+      .map(channel =>
+        Object.values(EnumNotificationType).map(type => ({
+          userId,
+          channel,
+          type,
+          isActive: true,
+          createdBy: userId,
+        }))
+      )
+      .flat();
+
+    await db.notificationUserSetting.createMany({
+      data: settings,
+    });
+  }
+
   async createWelcomeByAdmin(
     notificationId: string,
     userId: string,
     username: string,
     createdBy: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.userActivity,
@@ -107,6 +150,7 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createWelcome(
@@ -114,10 +158,10 @@ export class NotificationRepository {
     verificationEmailNotificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification[]> {
+  ): Promise<NotificationModel[]> {
     const today = this.helperService.dateCreate();
 
-    return this.databaseService.$transaction([
+    const results = await this.databaseService.$transaction([
       this.databaseService.notification.create({
         data: {
           id: welcomeNotificationId,
@@ -178,15 +222,19 @@ export class NotificationRepository {
         },
       }),
     ]);
+
+    return results.map((item: PrismaNotification) =>
+      NotificationMapper.toDomain(item)
+    );
   }
 
   async createWelcomeSocial(
     notificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.userActivity,
@@ -218,6 +266,7 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createTemporaryPasswordByAdmin(
@@ -226,9 +275,9 @@ export class NotificationRepository {
     username: string,
     passwordExpiredAt: Date,
     createdBy: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.securityAlert,
@@ -254,15 +303,16 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createChangePassword(
     notificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.securityAlert,
@@ -287,15 +337,16 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createVerifiedEmail(
     notificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.userActivity,
@@ -322,15 +373,16 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createVerificationEmail(
     notificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.userActivity,
@@ -357,6 +409,7 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createMobileNumberVerified(
@@ -364,9 +417,9 @@ export class NotificationRepository {
     userId: string,
     username: string,
     mobileNumber: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.userActivity,
@@ -396,15 +449,16 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createForgotPassword(
     notificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.securityAlert,
@@ -430,15 +484,16 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createResetPassword(
     notificationId: string,
     userId: string,
     username: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.securityAlert,
@@ -464,6 +519,7 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createResetTwoFactorByAdmin(
@@ -471,9 +527,9 @@ export class NotificationRepository {
     userId: string,
     username: string,
     updatedBy: string
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.securityAlert,
@@ -499,6 +555,7 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createNewDeviceLogin(
@@ -510,9 +567,9 @@ export class NotificationRepository {
     device: string,
     city: string,
     loginAt: Date
-  ): Promise<Notification> {
+  ): Promise<NotificationModel> {
     const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
+    const result = await this.databaseService.notification.create({
       data: {
         id: notificationId,
         type: EnumNotificationType.securityAlert,
@@ -545,6 +602,7 @@ export class NotificationRepository {
         },
       },
     });
+    return NotificationMapper.toDomain(result);
   }
 
   async createManyPublishTermPolicy(
@@ -587,8 +645,8 @@ export class NotificationRepository {
   async markAsRead(
     userId: string,
     notificationId: string
-  ): Promise<Notification> {
-    return this.databaseService.notification.update({
+  ): Promise<NotificationModel> {
+    const result = await this.databaseService.notification.update({
       where: {
         id: notificationId,
         userId,
@@ -599,41 +657,7 @@ export class NotificationRepository {
         readAt: this.helperService.dateCreate(),
       },
     });
-  }
-
-  async createUserAcceptTermPolicy(
-    notificationId: string,
-    userId: string,
-    username: string,
-    type: EnumTermPolicyType,
-    version: number
-  ): Promise<Notification> {
-    const today = this.helperService.dateCreate();
-    return this.databaseService.notification.create({
-      data: {
-        id: notificationId,
-        type: EnumNotificationType.transactional,
-        title: 'notification.notify.userAcceptTermPolicy.title',
-        body: 'notification.notify.userAcceptTermPolicy.body',
-        userId,
-        metadata: { username, type, version },
-        isRead: false,
-        priority: EnumNotificationPriority.normal,
-        createdBy: userId,
-        deliveries: {
-          createMany: {
-            data: [
-              { channel: EnumNotificationChannel.push },
-              {
-                channel: EnumNotificationChannel.silent,
-                processedAt: today,
-                sentAt: today,
-              },
-            ],
-          },
-        },
-      },
-    });
+    return NotificationMapper.toDomain(result);
   }
 
   async markAllAsRead(userId: string): Promise<Prisma.BatchPayload> {
@@ -649,29 +673,39 @@ export class NotificationRepository {
     });
   }
 
-  async findUserSetting(userId: string): Promise<NotificationUserSetting[]> {
-    return this.databaseService.notificationUserSetting.findMany({
-      where: { userId },
-    });
+  async findUserSetting(
+    userId: string
+  ): Promise<NotificationUserSettingModel[]> {
+    const results = await this.databaseService.notificationUserSetting.findMany(
+      {
+        where: { userId },
+      }
+    );
+    return results.map(item => NotificationUserSettingMapper.toDomain(item));
   }
 
   async findActiveUserSettingByType(
     userIds: string[],
     type: EnumNotificationType,
     channels: EnumNotificationChannel[]
-  ): Promise<NotificationUserSetting[]> {
-    return this.databaseService.notificationUserSetting.findMany({
-      where: {
-        userId: {
-          in: userIds,
+  ): Promise<NotificationUserSettingModel[]> {
+    const results = await this.databaseService.notificationUserSetting.findMany(
+      {
+        where: {
+          userId: {
+            in: userIds,
+          },
+          type,
+          channel: {
+            in: channels,
+          },
+          isActive: true,
         },
-        type,
-        channel: {
-          in: channels,
-        },
-        isActive: true,
-      },
-    });
+      }
+    );
+    return results.map((item: PrismaNotificationUserSetting) =>
+      NotificationUserSettingMapper.toDomain(item)
+    );
   }
 
   async updateProcessAt(

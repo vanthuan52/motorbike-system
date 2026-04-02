@@ -79,9 +79,9 @@ export class RoleRepository {
     return result ? RoleMapper.toDomain(result) : null;
   }
 
-  async existByName(name: string): Promise<RoleModel | null> {
+  async existByType(type: string): Promise<RoleModel | null> {
     const result = await this.databaseService.role.findFirst({
-      where: { name },
+      where: { type },
       select: { id: true, type: true, name: true },
     });
 
@@ -118,7 +118,7 @@ export class RoleRepository {
         ...(permissionIds?.length && {
           rolePermissions: {
             createMany: {
-              data: permissionIds.map((permissionId) => ({
+              data: permissionIds.map(permissionId => ({
                 permissionId,
               })),
             },
@@ -132,7 +132,14 @@ export class RoleRepository {
 
   async update(
     id: string,
-    { permissionIds, ...others }: Partial<RoleUpdateRequestDto> & { updatedBy?: string; deletedBy?: string; deletedAt?: Date }
+    {
+      permissionIds,
+      ...others
+    }: Partial<RoleUpdateRequestDto> & {
+      updatedBy?: string;
+      deletedBy?: string;
+      deletedAt?: Date;
+    }
   ): Promise<RoleModel> {
     const result = await this.databaseService.role.update({
       where: { id },
@@ -163,7 +170,7 @@ export class RoleRepository {
     assignedBy?: string
   ): Promise<void> {
     await this.databaseService.rolePermission.createMany({
-      data: permissionIds.map((permissionId) => ({
+      data: permissionIds.map(permissionId => ({
         roleId,
         permissionId,
         assignedBy,
@@ -194,7 +201,7 @@ export class RoleRepository {
         where: { roleId },
       }),
       this.databaseService.rolePermission.createMany({
-        data: permissionIds.map((permissionId) => ({
+        data: permissionIds.map(permissionId => ({
           roleId,
           permissionId,
           assignedBy,
@@ -212,6 +219,6 @@ export class RoleRepository {
       select: { roleId: true },
     });
 
-    return userRoles.map((ur) => ur.roleId);
+    return userRoles.map(ur => ur.roleId);
   }
 }

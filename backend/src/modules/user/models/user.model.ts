@@ -1,4 +1,5 @@
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
+import { RoleModel } from '@/modules/role/models/role.model';
 import {
   EnumUserStatus,
   EnumUserGender,
@@ -23,7 +24,9 @@ export class UserModel {
   verifiedAt?: Date;
   status: EnumUserStatus;
   gender?: EnumUserGender;
+  passwordAttempt: number;
   photo?: AwsS3Dto;
+  roles?: RoleModel[];
 
   signUpDate?: Date;
   signUpFrom?: EnumUserSignUpFrom;

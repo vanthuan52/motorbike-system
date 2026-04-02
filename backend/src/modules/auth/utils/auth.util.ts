@@ -316,7 +316,7 @@ export class AuthUtil {
   ): IAuthJwtAccessTokenPayload {
     return {
       userId: data.id,
-      roleId: data.roleId,
+      roles: data.roles?.map(r => r.id) || (data['role'] ? [data['role'].id] : []),
       username: data.username,
       email: data.email,
       sessionId,
@@ -580,7 +580,7 @@ export class AuthUtil {
 
     const tokens: AuthTokenResponseDto = {
       tokenType: this.jwtPrefix,
-      roleType: user.role.type,
+      roles: user.roles?.map(r => r.type) || (user['role'] ? [user['role'].type] : []),
       expiresIn: this.jwtAccessTokenExpirationTimeInSeconds,
       accessToken,
       refreshToken,
@@ -650,7 +650,7 @@ export class AuthUtil {
 
     const tokens: AuthTokenResponseDto = {
       tokenType: this.jwtPrefix,
-      roleType: user.role.type,
+      roles: user.roles?.map(r => r.type) || (user['role'] ? [user['role'].type] : []),
       expiresIn: this.jwtAccessTokenExpirationTimeInSeconds,
       accessToken,
       refreshToken: newRefreshToken,

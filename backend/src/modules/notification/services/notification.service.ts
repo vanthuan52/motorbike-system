@@ -3,11 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IPaginationQueryCursorParams, IPaginationCursorReturn } from '@/common/pagination/interfaces/pagination.interface';
-import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
-  IResponseReturn,
-} from '@/common/response/interfaces/response.interface';
+  IPaginationQueryCursorParams,
+  IPaginationCursorReturn,
+} from '@/common/pagination/interfaces/pagination.interface';
+import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { NotificationUserSettingDto } from '@/modules/notification/dtos/notification.user-setting.dto';
 import { NotificationUserSettingRequestDto } from '@/modules/notification/dtos/request/notification.user-setting.request.dto';
 import { NotificationUserSettingResponseDto } from '@/modules/notification/dtos/response/notification.user-setting.response.dto';
@@ -15,6 +16,7 @@ import { EnumNotificationStatusCodeError } from '@/modules/notification/enums/no
 import { INotificationService } from '@/modules/notification/interfaces/notification.service.interface';
 import { NotificationRepository } from '@/modules/notification/repositories/notification.repository';
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
@@ -105,5 +107,12 @@ export class NotificationService implements INotificationService {
     );
 
     return;
+  }
+
+  async initUserSetting(
+    userId: string,
+    options?: IDatabaseOptions
+  ): Promise<void> {
+    await this.notificationRepository.initUserSetting(userId, options);
   }
 }

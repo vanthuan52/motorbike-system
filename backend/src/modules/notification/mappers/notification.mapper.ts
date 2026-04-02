@@ -1,26 +1,59 @@
-import { NotificationModel } from '../models/notification.model';
-import { EnumNotificationType, EnumNotificationPriority } from '@/generated/prisma-client';
+import {
+  NotificationModel,
+  NotificationUserSettingModel,
+} from '../models/notification.model';
+import {
+  EnumNotificationChannel,
+  EnumNotificationPriority,
+  EnumNotificationType,
+} from '../enums/notification.enum';
+import {
+  Notification as PrismaNotification,
+  NotificationUserSetting as PrismaNotificationUserSetting,
+} from '@/generated/prisma-client';
 
 export class NotificationMapper {
-  static toDomain(prismaNotification: any): NotificationModel {
-    const model = new NotificationModel();
-    model.id = prismaNotification.id;
-    model.type = prismaNotification.type as EnumNotificationType;
-    model.title = prismaNotification.title;
-    model.body = prismaNotification.body;
-    model.userId = prismaNotification.userId;
-    model.metadata = prismaNotification.metadata;
-    model.isRead = prismaNotification.isRead;
-    model.readAt = prismaNotification.readAt;
-    model.priority = prismaNotification.priority as EnumNotificationPriority;
+  static toDomain(prismaNotification: PrismaNotification): NotificationModel {
+    return new NotificationModel({
+      id: prismaNotification.id,
+      type: prismaNotification.type as unknown as EnumNotificationType,
+      title: prismaNotification.title,
+      body: prismaNotification.body,
+      userId: prismaNotification.userId,
+      metadata: prismaNotification.metadata as Record<string, any> | undefined,
+      isRead: prismaNotification.isRead,
+      readAt: prismaNotification.readAt || undefined,
+      priority:
+        prismaNotification.priority as unknown as EnumNotificationPriority,
 
-    model.createdAt = prismaNotification.createdAt;
-    model.updatedAt = prismaNotification.updatedAt;
-    model.deletedAt = prismaNotification.deletedAt;
-    model.createdBy = prismaNotification.createdBy;
-    model.updatedBy = prismaNotification.updatedBy;
-    model.deletedBy = prismaNotification.deletedBy;
+      createdAt: prismaNotification.createdAt,
+      updatedAt: prismaNotification.updatedAt,
+      deletedAt: prismaNotification.deletedAt || undefined,
+      createdBy: prismaNotification.createdBy || undefined,
+      updatedBy: prismaNotification.updatedBy || undefined,
+      deletedBy: prismaNotification.deletedBy || undefined,
+    });
+  }
+}
 
-    return model;
+export class NotificationUserSettingMapper {
+  static toDomain(
+    prismaUserSetting: PrismaNotificationUserSetting
+  ): NotificationUserSettingModel {
+    return new NotificationUserSettingModel({
+      id: prismaUserSetting.id,
+      type: prismaUserSetting.type as unknown as EnumNotificationType,
+      channel:
+        prismaUserSetting.channel as unknown as EnumNotificationChannel,
+      isActive: prismaUserSetting.isActive,
+      userId: prismaUserSetting.userId,
+
+      createdAt: prismaUserSetting.createdAt,
+      updatedAt: prismaUserSetting.updatedAt,
+      deletedAt: prismaUserSetting.deletedAt || undefined,
+      createdBy: prismaUserSetting.createdBy || undefined,
+      updatedBy: prismaUserSetting.updatedBy || undefined,
+      deletedBy: prismaUserSetting.deletedBy || undefined,
+    });
   }
 }

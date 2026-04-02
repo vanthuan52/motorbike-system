@@ -11,6 +11,7 @@ import {
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity-log.interface';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import { ActivityLogModel } from '../models/activity-log.model';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { ActivityLogMapper } from '../mappers/activity-log.mapper';
@@ -94,9 +95,11 @@ export class ActivityLogRepository {
     userId: string,
     action: EnumActivityLogAction,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
-    metadata?: IActivityLogMetadata
+    metadata?: IActivityLogMetadata,
+    options?: IDatabaseOptions
   ): Promise<ActivityLogModel> {
-    const result = await this.databaseService.activityLog.create({
+    const db = options?.tx || this.databaseService;
+    const result = await db.activityLog.create({
       data: {
         userId,
         action,

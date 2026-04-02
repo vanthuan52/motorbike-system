@@ -11,11 +11,9 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { ISession } from '@/modules/session/interfaces/session.interface';
-import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { SessionModel } from '@/modules/session/models/session.model';
-import { Prisma } from '@/generated/prisma-client';
+import { Prisma, Session as PrismaSession } from '@/generated/prisma-client';
 
 @Injectable()
 export class SessionRepository {
@@ -36,9 +34,9 @@ export class SessionRepository {
       Prisma.SessionWhereInput
     >,
     isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationOffsetReturn<ISession>> {
+  ): Promise<IPaginationOffsetReturn<SessionModel>> {
     return this.paginationService.offset<
-      ISession,
+      PrismaSession,
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >(this.databaseService.session, {
@@ -63,9 +61,9 @@ export class SessionRepository {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >
-  ): Promise<IPaginationCursorReturn<ISession>> {
+  ): Promise<IPaginationCursorReturn<SessionModel>> {
     return this.paginationService.cursor<
-      ISession,
+      PrismaSession,
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >(this.databaseService.session, {
@@ -141,11 +139,7 @@ export class SessionRepository {
     });
   }
 
-  async revoke(
-    userId: string,
-    sessionId: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<SessionModel> {
+  async revoke(userId: string, sessionId: string): Promise<SessionModel> {
     return this.databaseService.session.update({
       where: {
         id: sessionId,
@@ -160,28 +154,11 @@ export class SessionRepository {
           },
         },
         updatedBy: userId,
-        user: {
-          update: {
-            activityLogs: {
-              create: {
-                action: EnumActivityLogAction.userRevokeSession,
-                ipAddress,
-                userAgent: this.databaseUtil.toPlainObject(userAgent),
-                geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-                createdBy: userId,
-              },
-            },
-          },
-        },
       },
     });
   }
 
-  async revokeByAdmin(
-    sessionId: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog,
-    revokedBy: string
-  ): Promise<ISession> {
+  async revokeByAdmin(sessionId: string, revokedBy: string): Promise<ISession> {
     return this.databaseService.session.update({
       where: {
         id: sessionId,
@@ -195,22 +172,85 @@ export class SessionRepository {
           },
         },
         updatedBy: revokedBy,
-        user: {
-          update: {
-            activityLogs: {
-              create: {
-                action: EnumActivityLogAction.userRevokeSessionByAdmin,
-                ipAddress,
-                userAgent: this.databaseUtil.toPlainObject(userAgent),
-                geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-                createdBy: revokedBy,
-              },
-            },
-          },
-        },
       },
       include: {
         user: true,
+      },
+    });
+  }
+
+  async revokeAllActive(
+    userId: string,
+    revokedAt: Date,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void> {
+    const db = options?.tx || this.databaseService;
+    await db.session.updateMany({
+      where: {
+        userId,
+        isRevoked: false,
+        expiredAt: {
+          gte: revokedAt,
+        },
+      },
+      data: {
+        isRevoked: true,
+        revokedAt,
+        revokedById: userId,
+      },
+    });
+  }
+
+  async revokeByDeviceOwnership(
+    deviceOwnershipId: string,
+    revokedById: string
+  ): Promise<void> {
+    const revokedAt = this.helperService.dateCreate();
+    await this.databaseService.session.updateMany({
+      where: {
+        deviceOwnershipId,
+        isRevoked: false,
+        expiredAt: {
+          gte: revokedAt,
+        },
+      },
+      data: {
+        isRevoked: true,
+        revokedAt,
+        revokedById,
+      },
+    });
+  }
+
+  async createForLogin(
+    userId: string,
+    {
+      sessionId,
+      jti,
+      expiredAt,
+      deviceOwnershipId,
+    }: {
+      sessionId: string;
+      jti: string;
+      expiredAt: Date;
+      deviceOwnershipId: string;
+    },
+    { ipAddress, userAgent, geoLocation }: IRequestLog,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void> {
+    const db = options?.tx || this.databaseService;
+    await db.session.create({
+      data: {
+        id: sessionId,
+        jti,
+        expiredAt,
+        isRevoked: false,
+        ipAddress,
+        userAgent: this.databaseUtil.toPlainObject(userAgent),
+        geoLocation: this.databaseUtil.toPlainObject(geoLocation),
+        createdBy: userId,
+        userId,
+        deviceOwnershipId,
       },
     });
   }

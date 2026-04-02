@@ -12,7 +12,9 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
+import { DeviceRequestDto } from '@/modules/device/dtos/requests/device.request.dto';
 import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/device.ownership.response';
 import { EnumDeviceStatusCodeError } from '@/modules/device/enums/device.status-code.enum';
 import { IDeviceService } from '@/modules/device/interfaces/device.service.interface';
@@ -20,6 +22,8 @@ import { DeviceOwnershipRepository } from '@/modules/device/repositories/device.
 import { DeviceUtil } from '@/modules/device/utils/device.util';
 import { SessionRepository } from '@/modules/session/repositories/session.repository';
 import { SessionUtil } from '@/modules/session/utils/session.util';
+import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma, DeviceOwnership } from '@/generated/prisma-client';
 
 @Injectable()
@@ -28,7 +32,8 @@ export class DeviceService implements IDeviceService {
     private readonly deviceOwnershipRepository: DeviceOwnershipRepository,
     private readonly sessionRepository: SessionRepository,
     private readonly sessionUtil: SessionUtil,
-    private readonly deviceUtil: DeviceUtil
+    private readonly deviceUtil: DeviceUtil,
+    private readonly activityLogService: ActivityLogService
   ) {}
 
   async getListOffsetByAdmin(
@@ -91,16 +96,22 @@ export class DeviceService implements IDeviceService {
     }
 
     try {
-      await this.deviceOwnershipRepository.refresh(
-        userId,
-        existDeviceOwnership.id,
-        {
-          name,
-          notificationToken,
-          platform,
-        },
-        requestLog
-      );
+      await Promise.all([
+        this.deviceOwnershipRepository.refresh(
+          userId,
+          existDeviceOwnership.id,
+          {
+            name,
+            notificationToken,
+            platform,
+          }
+        ),
+        this.activityLogService.create(
+          userId,
+          EnumActivityLogAction.userDeviceRefresh,
+          requestLog
+        ),
+      ]);
 
       return;
     } catch (err: unknown) {
@@ -139,8 +150,12 @@ export class DeviceService implements IDeviceService {
         this.deviceOwnershipRepository.remove(
           userId,
           existDeviceOwnership.id,
-          requestLog,
           userId
+        ),
+        this.activityLogService.create(
+          userId,
+          EnumActivityLogAction.userRemoveDevice,
+          requestLog
         ),
         this.sessionUtil.deleteAllLogins(userId, sessions),
       ]);
@@ -183,8 +198,12 @@ export class DeviceService implements IDeviceService {
         this.deviceOwnershipRepository.remove(
           userId,
           existDeviceOwnership.id,
-          requestLog,
           removedBy
+        ),
+        this.activityLogService.create(
+          removedBy,
+          EnumActivityLogAction.adminDeviceRemove,
+          requestLog
         ),
         this.sessionUtil.deleteAllLogins(userId, sessions),
       ]);
@@ -197,5 +216,22 @@ export class DeviceService implements IDeviceService {
         _error: err,
       });
     }
+  }
+
+  // =========================== Cross-module service calls ==============================
+
+  async upsertForLogin(
+    userId: string,
+    device: DeviceRequestDto,
+    options?: IDatabaseOptions
+  ): Promise<{
+    isNewDevice: boolean;
+    deviceOwnershipId: string;
+  }> {
+    return this.deviceOwnershipRepository.upsertForLogin(
+      userId,
+      device,
+      options
+    );
   }
 }

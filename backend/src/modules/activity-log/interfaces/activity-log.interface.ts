@@ -1,8 +1,8 @@
 import { ActivityLogModel } from '../models/activity-log.model';
-import { User } from '@/generated/prisma-client';
+import { UserModel } from '@/modules/user/models/user.model';
 
 export interface IActivityLog extends ActivityLogModel {
-  user?: User;
+  user?: UserModel;
 }
 
 export type IActivityLogMetadata = Record<string, string | number | Date>;

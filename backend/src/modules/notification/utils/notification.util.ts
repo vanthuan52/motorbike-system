@@ -21,7 +21,6 @@ import {
   INotificationWorkerBulkPayload,
   INotificationWorkerPayload,
 } from '@/modules/notification/interfaces/notification.interface';
-
 import { EnumQueue, EnumQueuePriority } from '@/queues/enums/queue.enum';
 import {
   EnumNotificationChannel,
