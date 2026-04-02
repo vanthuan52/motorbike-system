@@ -76,4 +76,10 @@ export interface IAuthService {
     data: AuthForgotPasswordResetRequestDto,
     requestLog: IRequestLog
   ): Promise<void>;
+  logout(
+    userId: string,
+    sessionId: string,
+    requestLog: IRequestLog
+  ): Promise<void>;
 }
+

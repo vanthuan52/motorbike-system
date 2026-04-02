@@ -25,22 +25,18 @@ export class UserMapper {
     user.isVerified = prismaUser.isVerified;
     user.verifiedAt = prismaUser.verifiedAt;
 
-    user.status = prismaUser.status?.toLowerCase() as EnumUserStatus;
-    user.gender = prismaUser.gender?.toLowerCase() as EnumUserGender;
+    user.status = prismaUser.status as EnumUserStatus;
+    user.gender = prismaUser.gender as EnumUserGender;
 
     user.photo = prismaUser.photo;
 
     user.signUpDate = prismaUser.signUpDate;
-    user.signUpFrom =
-      prismaUser.signUpFrom?.toLowerCase() as EnumUserSignUpFrom;
-    user.signUpWith =
-      prismaUser.signUpWith?.toLowerCase() as EnumUserSignUpWith;
+    user.signUpFrom = prismaUser.signUpFrom as EnumUserSignUpFrom;
+    user.signUpWith = prismaUser.signUpWith as EnumUserSignUpWith;
 
     user.lastLoginAt = prismaUser.lastLoginAt;
-    user.lastLoginFrom =
-      prismaUser.lastLoginFrom?.toLowerCase() as EnumUserLoginFrom;
-    user.lastLoginWith =
-      prismaUser.lastLoginWith?.toLowerCase() as EnumUserLoginWith;
+    user.lastLoginFrom = prismaUser.lastLoginFrom as EnumUserLoginFrom;
+    user.lastLoginWith = prismaUser.lastLoginWith as EnumUserLoginWith;
 
     user.createdAt = prismaUser.createdAt;
     user.updatedAt = prismaUser.updatedAt;

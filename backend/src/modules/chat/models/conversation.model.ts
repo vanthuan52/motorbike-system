@@ -6,8 +6,8 @@ import { MessageModel } from './message.model';
  */
 export class ConversationModel {
   id: string;
-  participants: string[];
-  lastMessage?: string;
+  participantIds: string[];
+  lastMessageId?: string;
 
   // Child relations
   messages?: MessageModel[];

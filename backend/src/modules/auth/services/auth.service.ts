@@ -34,7 +34,6 @@ import {
 import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.enum';
 import { UserService } from '@/modules/user/services/user.service';
 import { EnumSessionStatusCodeError } from '@/modules/session/enums/session.status-code.enum';
-import { SessionRepository } from '@/modules/session/repositories/session.repository';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { VerificationService } from '@/modules/verification/services/verification.service';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
@@ -70,7 +69,6 @@ import { Prisma } from '@/generated/prisma-client';
 export class AuthService implements IAuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly sessionRepository: SessionRepository,
     private readonly verificationService: VerificationService,
     private readonly roleService: RoleService,
     private readonly sessionService: SessionService,
@@ -465,20 +463,34 @@ export class AuthService implements IAuthService {
         expiredInMs,
       } = this.authUtil.refreshToken(user, refreshToken);
 
-      await Promise.all([
-        this.sessionUtil.updateLogin(
-          userId,
-          sessionId,
-          session,
-          newJti,
-          expiredInMs
-        ),
-        this.activityLogService.create(
-          userId,
-          EnumActivityLogAction.userRefreshToken,
-          requestLog
-        ),
-      ]);
+      await this.databaseService.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          await this.userService.updateLoginMetadata(
+            userId,
+            { loginFrom, loginWith },
+            requestLog.ipAddress,
+            { tx }
+          );
+
+          await this.sessionService.updateJti(sessionId, newJti, { tx });
+
+          await this.activityLogService.create(
+            userId,
+            EnumActivityLogAction.userRefreshToken,
+            requestLog,
+            undefined,
+            { tx }
+          );
+        }
+      );
+
+      await this.sessionUtil.updateLogin(
+        userId,
+        sessionId,
+        session,
+        newJti,
+        expiredInMs
+      );
 
       return tokens;
     } catch (err: unknown) {
@@ -584,12 +596,7 @@ export class AuthService implements IAuthService {
     { newPassword, oldPassword }: AuthChangePasswordRequestDto,
     requestLog: IRequestLog
   ): Promise<void> {
-    if (this.authUtil.checkPasswordAttempt(user)) {
-      throw new ForbiddenException({
-        statusCode: EnumUserStatusCodeError.passwordAttemptMax,
-        message: 'auth.error.passwordAttemptMax',
-      });
-    } else if (!this.authUtil.validatePassword(oldPassword, user.password)) {
+    if (!this.authUtil.validatePassword(oldPassword, user.password)) {
       await this.userService.increasePasswordAttempt(user.id);
 
       throw new BadRequestException({
@@ -598,21 +605,31 @@ export class AuthService implements IAuthService {
       });
     }
 
-    await this.userService.resetPasswordAttempt(user.id);
-
     try {
-      const sessions = await this.sessionRepository.findActive(user.id);
+      const sessions = await this.sessionService.findActive(user.id);
       const password = this.authUtil.createPassword(user.id, newPassword);
 
-      await Promise.all([
-        this.userService.changeUserPassword(user.id, password),
-        this.sessionUtil.deleteAllLogins(user.id, sessions),
-        this.activityLogService.create(
-          user.id,
-          EnumActivityLogAction.userChangePassword,
-          requestLog
-        ),
-      ]);
+      await this.databaseService.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          await this.userService.changeUserPassword(user.id, password, { tx });
+          
+          await this.sessionService.revokeAllActive(
+            user.id,
+            password.passwordCreated,
+            { tx }
+          );
+
+          await this.activityLogService.create(
+            user.id,
+            EnumActivityLogAction.userChangePassword,
+            requestLog,
+            undefined,
+            { tx }
+          );
+        }
+      );
+
+      await this.sessionUtil.deleteAllLogins(user.id, sessions);
 
       // @note: send email after all creation
       await this.notificationUtil.sendChangePassword(user.id);
@@ -626,6 +643,15 @@ export class AuthService implements IAuthService {
       });
     }
   }
+
+  async logout(
+    userId: string,
+    sessionId: string,
+    requestLog: IRequestLog
+  ): Promise<void> {
+    await this.sessionService.revoke(userId, sessionId, requestLog);
+  }
+
 
   async verifyEmail(
     { token }: AuthVerifyEmailRequestDto,
@@ -647,12 +673,9 @@ export class AuthService implements IAuthService {
           await this.verificationService.confirmUserEmail(verification.id, {
             tx,
           });
-          await this.userService.updateVerificationStatus(
-            verification.userId,
-            {
-              tx,
-            }
-          );
+          await this.userService.updateVerificationStatus(verification.userId, {
+            tx,
+          });
           await this.activityLogService.create(
             verification.userId,
             EnumActivityLogAction.userVerifiedEmail,
@@ -724,22 +747,24 @@ export class AuthService implements IAuthService {
         EnumVerificationType.email
       );
 
-      await this.databaseService.$transaction(async tx => {
-        await this.verificationService.requestEmailVerification(
-          user.id,
-          user.email,
-          emailVerification,
-          { tx }
-        );
+      await this.databaseService.$transaction(
+        async (tx: Prisma.TransactionClient) => {
+          await this.verificationService.requestEmailVerification(
+            user.id,
+            user.email,
+            emailVerification,
+            { tx }
+          );
 
-        await this.activityLogService.create(
-          user.id,
-          EnumActivityLogAction.userSendVerificationEmail,
-          requestLog,
-          undefined,
-          { tx }
-        );
-      });
+          await this.activityLogService.create(
+            user.id,
+            EnumActivityLogAction.userSendVerificationEmail,
+            requestLog,
+            undefined,
+            { tx }
+          );
+        }
+      );
 
       await this.notificationUtil.sendVerificationEmail(user.id, {
         expiredAt: this.helperService.dateFormatToIso(
@@ -800,7 +825,7 @@ export class AuthService implements IAuthService {
 
       await this.databaseService.$transaction(
         async (tx: Prisma.TransactionClient) => {
-          await this.userService.forgotPassword(
+          await this.userService.createForgotPasswordRequest(
             user.id,
             email,
             resetPassword
@@ -849,7 +874,7 @@ export class AuthService implements IAuthService {
     }
 
     try {
-      const sessions = await this.sessionRepository.findActive(
+      const sessions = await this.sessionService.findActive(
         resetPassword.userId
       );
       const password = this.authUtil.createPassword(
@@ -924,17 +949,14 @@ export class AuthService implements IAuthService {
 
     // 1.5. Revoke old active sessions for this device ownership
     const activeSessions =
-      await this.sessionRepository.findActiveByDeviceOwnership(
+      await this.sessionService.findActiveByDeviceOwnership(
         user.id,
         deviceOwnershipId
       );
 
     if (activeSessions.length > 0) {
       await Promise.all([
-        this.sessionRepository.revokeByDeviceOwnership(
-          deviceOwnershipId,
-          user.id
-        ),
+        this.sessionService.revokeByDeviceOwnership(deviceOwnershipId, user.id),
         this.sessionUtil.deleteAllLogins(user.id, activeSessions),
       ]);
     }

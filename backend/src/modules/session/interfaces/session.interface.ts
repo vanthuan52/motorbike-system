@@ -11,3 +11,10 @@ export interface ISessionCache {
   expiredAt: Date;
   jti: string;
 }
+
+export interface ISessionLoginCreate {
+  sessionId: string;
+  jti: string;
+  expiredAt: Date;
+  deviceOwnershipId: string;
+}

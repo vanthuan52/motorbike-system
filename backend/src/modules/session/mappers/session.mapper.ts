@@ -11,7 +11,7 @@ export class SessionMapper {
     model.userAgent = prismaSession.userAgent;
     model.expiredAt = prismaSession.expiredAt;
     model.revokeAt = prismaSession.revokeAt;
-    model.status = prismaSession.status?.toLowerCase() as EnumSessionStatus;
+    model.status = prismaSession.status as EnumSessionStatus;
     model.hostname = prismaSession.hostname;
     model.protocol = prismaSession.protocol;
     model.originalUrl = prismaSession.originalUrl;

@@ -11,8 +11,13 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { ISession } from '@/modules/session/interfaces/session.interface';
+import {
+  ISession,
+  ISessionLoginCreate,
+} from '@/modules/session/interfaces/session.interface';
 import { SessionModel } from '@/modules/session/models/session.model';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { SessionMapper } from '../mappers/session.mapper';
 import { Prisma, Session as PrismaSession } from '@/generated/prisma-client';
 
 @Injectable()
@@ -79,11 +84,7 @@ export class SessionRepository {
     });
   }
 
-  async findActive(userId: string): Promise<
-    {
-      id: string;
-    }[]
-  > {
+  async findActive(userId: string): Promise<DatabaseIdDto[]> {
     return this.databaseService.session.findMany({
       where: {
         userId,
@@ -101,11 +102,7 @@ export class SessionRepository {
   async findActiveByDeviceOwnership(
     userId: string,
     deviceOwnershipId: string
-  ): Promise<
-    {
-      id: string;
-    }[]
-  > {
+  ): Promise<DatabaseIdDto[]> {
     return this.databaseService.session.findMany({
       where: {
         userId,
@@ -127,7 +124,7 @@ export class SessionRepository {
   ): Promise<SessionModel> {
     const today = this.helperService.dateCreate();
 
-    return this.databaseService.session.findFirst({
+    const session = await this.databaseService.session.findFirst({
       where: {
         id: sessionId,
         userId,
@@ -137,10 +134,12 @@ export class SessionRepository {
         isRevoked: false,
       },
     });
+
+    return SessionMapper.toDomain(session);
   }
 
   async revoke(userId: string, sessionId: string): Promise<SessionModel> {
-    return this.databaseService.session.update({
+    const session = await this.databaseService.session.update({
       where: {
         id: sessionId,
         userId,
@@ -156,10 +155,12 @@ export class SessionRepository {
         updatedBy: userId,
       },
     });
+
+    return SessionMapper.toDomain(session);
   }
 
   async revokeByAdmin(sessionId: string, revokedBy: string): Promise<ISession> {
-    return this.databaseService.session.update({
+    const session = await this.databaseService.session.update({
       where: {
         id: sessionId,
       },
@@ -177,6 +178,8 @@ export class SessionRepository {
         user: true,
       },
     });
+
+    return SessionMapper.toDomain(session);
   }
 
   async revokeAllActive(
@@ -224,17 +227,7 @@ export class SessionRepository {
 
   async createForLogin(
     userId: string,
-    {
-      sessionId,
-      jti,
-      expiredAt,
-      deviceOwnershipId,
-    }: {
-      sessionId: string;
-      jti: string;
-      expiredAt: Date;
-      deviceOwnershipId: string;
-    },
+    { sessionId, jti, expiredAt, deviceOwnershipId }: ISessionLoginCreate,
     { ipAddress, userAgent, geoLocation }: IRequestLog,
     options?: { tx?: Prisma.TransactionClient }
   ): Promise<void> {
@@ -252,6 +245,18 @@ export class SessionRepository {
         userId,
         deviceOwnershipId,
       },
+    });
+  }
+
+  async updateJti(
+    sessionId: string,
+    jti: string,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void> {
+    const db = options?.tx || this.databaseService;
+    await db.session.update({
+      where: { id: sessionId },
+      data: { jti },
     });
   }
 }

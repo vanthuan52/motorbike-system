@@ -11,7 +11,7 @@ export class VehicleBrandMapper {
     model.description = prismaBrand.description;
     model.orderBy = prismaBrand.orderBy;
     model.country = prismaBrand.country;
-    model.status = prismaBrand.status?.toLowerCase() as EnumVehicleBrandStatus;
+    model.status = prismaBrand.status as EnumVehicleBrandStatus;
     model.photo = prismaBrand.photo;
 
     model.createdAt = prismaBrand.createdAt;

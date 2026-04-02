@@ -23,9 +23,8 @@ export class VehicleModelMapper {
       ELECTRIC: EnumVehicleModelType.electric,
     };
     model.type = typeMap[prismaModel.type] || EnumVehicleModelType.unknown;
-    model.fuelType =
-      prismaModel.fuelType?.toLowerCase() as EnumVehicleModelFuelType;
-    model.status = prismaModel.status?.toLowerCase();
+    model.fuelType = prismaModel.fuelType as EnumVehicleModelFuelType;
+    model.status = prismaModel.status;
     model.orderBy = prismaModel.order;
     model.yearStart = prismaModel.yearStart;
     model.yearEnd = prismaModel.yearEnd;

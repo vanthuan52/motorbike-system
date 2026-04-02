@@ -316,7 +316,8 @@ export class AuthUtil {
   ): IAuthJwtAccessTokenPayload {
     return {
       userId: data.id,
-      roles: data.roles?.map(r => r.id) || (data['role'] ? [data['role'].id] : []),
+      roles:
+        data.roles?.map(r => r.id) || (data['role'] ? [data['role'].id] : []),
       username: data.username,
       email: data.email,
       sessionId,
@@ -471,7 +472,7 @@ export class AuthUtil {
    */
   extractHeaderGoogle(request: IRequestApp<IAuthSocialPayload>): string[] {
     return (
-      (request.headers[`${this.googleHeader?.toLowerCase()}`] as string)?.split(
+      (request.headers[`${this.googleHeader}`] as string)?.split(
         `${this.googlePrefix} `
       ) ?? []
     );
@@ -499,7 +500,7 @@ export class AuthUtil {
    */
   extractHeaderApple(request: IRequestApp<IAuthSocialPayload>): string[] {
     return (
-      (request.headers[`${this.appleHeader?.toLowerCase()}`] as string)?.split(
+      (request.headers[`${this.appleHeader}`] as string)?.split(
         `${this.applePrefix} `
       ) ?? []
     );
@@ -532,7 +533,7 @@ export class AuthUtil {
    */
   extractHeaderJwt(request: IRequestApp): string[] {
     return (
-      (request.headers[`${this.jwtHeader?.toLowerCase()}`] as string)?.split(
+      (request.headers[`${this.jwtHeader}`] as string)?.split(
         `${this.jwtPrefix} `
       ) ?? []
     );
@@ -580,7 +581,9 @@ export class AuthUtil {
 
     const tokens: AuthTokenResponseDto = {
       tokenType: this.jwtPrefix,
-      roles: user.roles?.map(r => r.type) || (user['role'] ? [user['role'].type] : []),
+      roles:
+        user.roles?.map(r => r.type) ||
+        (user['role'] ? [user['role'].type] : []),
       expiresIn: this.jwtAccessTokenExpirationTimeInSeconds,
       accessToken,
       refreshToken,
@@ -650,7 +653,9 @@ export class AuthUtil {
 
     const tokens: AuthTokenResponseDto = {
       tokenType: this.jwtPrefix,
-      roles: user.roles?.map(r => r.type) || (user['role'] ? [user['role'].type] : []),
+      roles:
+        user.roles?.map(r => r.type) ||
+        (user['role'] ? [user['role'].type] : []),
       expiresIn: this.jwtAccessTokenExpirationTimeInSeconds,
       accessToken,
       refreshToken: newRefreshToken,

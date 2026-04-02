@@ -25,6 +25,7 @@ import { SessionUtil } from '@/modules/session/utils/session.util';
 import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma, DeviceOwnership } from '@/generated/prisma-client';
+import { IDeviceCheckingResult } from '../interfaces/device.interface';
 
 @Injectable()
 export class DeviceService implements IDeviceService {
@@ -224,10 +225,7 @@ export class DeviceService implements IDeviceService {
     userId: string,
     device: DeviceRequestDto,
     options?: IDatabaseOptions
-  ): Promise<{
-    isNewDevice: boolean;
-    deviceOwnershipId: string;
-  }> {
+  ): Promise<IDeviceCheckingResult> {
     return this.deviceOwnershipRepository.upsertForLogin(
       userId,
       device,

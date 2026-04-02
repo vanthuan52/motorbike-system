@@ -37,6 +37,7 @@ import {
   IUserLogin,
   IUserLoginResult,
   IUserForgotPasswordCreate,
+  IUserLoginMetadataUpdate,
 } from '@/modules/user/interfaces/user.interface';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
 import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
@@ -46,6 +47,7 @@ import {
 } from '@/modules/user/enums/user.enum';
 import { UserModel } from '@/modules/user/models/user.model';
 import { Prisma } from '@/generated/prisma-client';
+import { ForgotPasswordModel } from '../models/forgot-password.model';
 
 export interface IUserService {
   validateUserGuard(
@@ -142,10 +144,7 @@ export interface IUserService {
   ): Promise<IUser>;
   updateLoginMetadata(
     userId: string,
-    data: {
-      loginFrom: EnumUserLoginFrom;
-      loginWith: EnumUserLoginWith;
-    },
+    data: IUserLoginMetadataUpdate,
     ipAddress: string,
     options?: IDatabaseOptions
   ): Promise<void>;
@@ -157,8 +156,10 @@ export interface IUserService {
     password: IAuthPassword,
     options?: IDatabaseOptions
   ): Promise<IUser>;
-  findOneLatestByForgotPassword(userId: string): Promise<IUser | null>;
-  forgotPassword(
+  findOneLatestByForgotPassword(
+    userId: string
+  ): Promise<ForgotPasswordModel | null>;
+  createForgotPasswordRequest(
     userId: string,
     email: string,
     passwordReset: IUserForgotPasswordCreate
@@ -171,7 +172,11 @@ export interface IUserService {
   ): Promise<UserModel>;
   increasePasswordAttempt(userId: string): Promise<void>;
   resetPasswordAttempt(userId: string): Promise<void>;
-  changeUserPassword(userId: string, password: IAuthPassword): Promise<void>;
+  changeUserPassword(
+    userId: string,
+    password: IAuthPassword,
+    options?: IDatabaseOptions
+  ): Promise<void>;
   findOneActiveByForgotPasswordToken(token: string): Promise<any | null>;
   resetPassword(
     userId: string,

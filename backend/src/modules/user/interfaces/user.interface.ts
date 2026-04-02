@@ -20,6 +20,11 @@ export interface IUserLogin {
   sessionId: string;
 }
 
+export interface IUserLoginMetadataUpdate {
+  loginFrom: EnumUserLoginFrom;
+  loginWith: EnumUserLoginWith;
+}
+
 export interface IUserLoginResult {
   user: UserModel;
   device: DeviceModel;

@@ -8,7 +8,7 @@ export class RoleMapper {
     model.name = prismaRole.name;
     model.description = prismaRole.description;
     model.isActive = prismaRole.isActive;
-    model.type = prismaRole.type?.toLowerCase();
+    model.type = prismaRole.type;
 
     model.createdAt = prismaRole.createdAt;
     model.updatedAt = prismaRole.updatedAt;
@@ -18,7 +18,10 @@ export class RoleMapper {
     model.deletedBy = prismaRole.deletedBy;
 
     // Map permissions via rolePermissions junction table
-    if (prismaRole.rolePermissions && Array.isArray(prismaRole.rolePermissions)) {
+    if (
+      prismaRole.rolePermissions &&
+      Array.isArray(prismaRole.rolePermissions)
+    ) {
       model.permissions = prismaRole.rolePermissions
         .filter((rp: any) => rp.permission)
         .map((rp: any) => PermissionMapper.toDomain(rp.permission));

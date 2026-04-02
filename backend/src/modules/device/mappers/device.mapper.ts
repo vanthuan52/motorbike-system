@@ -10,11 +10,11 @@ export class DeviceMapper {
     model.id = prismaDevice.id;
     model.fingerprint = prismaDevice.fingerprint;
     model.name = prismaDevice.name;
-    model.platform = prismaDevice.platform?.toLowerCase() as EnumDevicePlatform;
+    model.platform = prismaDevice.platform as EnumDevicePlatform;
     model.lastActiveAt = prismaDevice.lastActiveAt;
     model.notificationToken = prismaDevice.notificationToken;
     model.notificationProvider =
-      prismaDevice.notificationProvider?.toLowerCase() as EnumDeviceNotificationProvider;
+      prismaDevice.notificationProvider as EnumDeviceNotificationProvider;
 
     model.createdAt = prismaDevice.createdAt;
     model.createdBy = prismaDevice.createdBy;

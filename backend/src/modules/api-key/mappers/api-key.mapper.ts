@@ -5,7 +5,7 @@ export class ApiKeyMapper {
   static toDomain(prismaApiKey: any): ApiKeyModel {
     const model = new ApiKeyModel();
     model.id = prismaApiKey.id;
-    model.type = prismaApiKey.type?.toLowerCase() as EnumApiKeyType;
+    model.type = prismaApiKey.type as EnumApiKeyType;
     model.name = prismaApiKey.name;
     model.key = prismaApiKey.key;
     model.hash = prismaApiKey.hash;

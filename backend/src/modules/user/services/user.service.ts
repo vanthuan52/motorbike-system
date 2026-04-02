@@ -62,6 +62,7 @@ import { EnumUserStatusCodeError } from '@/modules/user/enums/user.status-code.e
 import {
   IUser,
   IUserForgotPasswordCreate,
+  IUserLoginMetadataUpdate,
 } from '@/modules/user/interfaces/user.interface';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { IUserService } from '@/modules/user/interfaces/user.service.interface';
@@ -768,10 +769,7 @@ export class UserService implements IUserService {
 
   async updateLoginMetadata(
     userId: string,
-    data: {
-      loginFrom: EnumUserLoginFrom;
-      loginWith: EnumUserLoginWith;
-    },
+    data: IUserLoginMetadataUpdate,
     ipAddress: string,
     options?: IDatabaseOptions
   ): Promise<void> {
@@ -822,25 +820,27 @@ export class UserService implements IUserService {
     return user as IUser;
   }
 
-  async findOneLatestByForgotPassword(userId: string): Promise<IUser | null> {
-    return this.userRepository.findOneLatestByForgotPassword(
-      userId
-    ) as unknown as Promise<IUser | null>;
+  async findOneLatestByForgotPassword(
+    userId: string
+  ): Promise<ForgotPasswordModel | null> {
+    const forgotPassword =
+      await this.userRepository.findOneLatestByForgotPassword(userId);
+    if (!forgotPassword) return null;
+    return forgotPassword;
   }
 
-  async forgotPassword(
+  async createForgotPasswordRequest(
     userId: string,
     email: string,
     passwordReset: IUserForgotPasswordCreate
   ): Promise<void> {
-    await this.userRepository.forgotPassword(userId, email, passwordReset);
+    await this.userRepository.createForgotPasswordRequest(
+      userId,
+      email,
+      passwordReset
+    );
   }
 
-  // =========================== Methods exposed for cross-module service calls ==============================
-
-  /**
-   * Update a user's verification status. Called by auth service after email-verification flow.
-   */
   async updateVerificationStatus(
     userId: string,
     options?: IDatabaseOptions
@@ -858,9 +858,10 @@ export class UserService implements IUserService {
 
   async changeUserPassword(
     userId: string,
-    password: IAuthPassword
+    password: IAuthPassword,
+    options?: IDatabaseOptions
   ): Promise<void> {
-    await this.userRepository.changePassword(userId, password);
+    await this.userRepository.changePassword(userId, password, options);
   }
 
   async findOneActiveByForgotPasswordToken(

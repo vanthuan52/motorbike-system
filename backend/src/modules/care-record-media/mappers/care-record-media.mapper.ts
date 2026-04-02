@@ -1,5 +1,8 @@
 import { CareRecordMediaModel } from '../models/care-record-media.model';
-import { EnumCareRecordMediaStage, EnumMediaFileType } from '../enums/care-record-media.enum';
+import {
+  EnumCareRecordMediaStage,
+  EnumMediaFileType,
+} from '../enums/care-record-media.enum';
 import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
 
 export class CareRecordMediaMapper {
@@ -8,8 +11,8 @@ export class CareRecordMediaMapper {
     model.id = prismaMedia.id;
     model.url = prismaMedia.url;
     model.description = prismaMedia.description;
-    model.stage = prismaMedia.stage?.toLowerCase() as EnumCareRecordMediaStage;
-    model.type = prismaMedia.type?.toLowerCase() as EnumMediaFileType;
+    model.stage = prismaMedia.stage as EnumCareRecordMediaStage;
+    model.type = prismaMedia.type as EnumMediaFileType;
     model.careRecordId = prismaMedia.careRecordId;
 
     model.createdAt = prismaMedia.createdAt;

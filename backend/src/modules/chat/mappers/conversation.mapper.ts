@@ -5,8 +5,8 @@ export class ConversationMapper {
   static toDomain(prismaConversation: any): ConversationModel {
     const model = new ConversationModel();
     model.id = prismaConversation.id;
-    model.participants = prismaConversation.participants;
-    model.lastMessage = prismaConversation.lastMessage;
+    model.participantIds = prismaConversation.participantIds;
+    model.lastMessageId = prismaConversation.lastMessageId;
 
     model.createdAt = prismaConversation.createdAt;
     model.updatedAt = prismaConversation.updatedAt;
@@ -15,7 +15,10 @@ export class ConversationMapper {
     model.updatedBy = prismaConversation.updatedBy;
     model.deletedBy = prismaConversation.deletedBy;
 
-    if (prismaConversation.messages && Array.isArray(prismaConversation.messages)) {
+    if (
+      prismaConversation.messages &&
+      Array.isArray(prismaConversation.messages)
+    ) {
       model.messages = prismaConversation.messages.map((m: any) =>
         MessageMapper.toDomain(m)
       );

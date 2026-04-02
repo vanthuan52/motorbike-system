@@ -11,7 +11,7 @@ export class CandidateMapper {
     model.email = prismaCandidate.email;
     model.phone = prismaCandidate.phone;
     model.appliedAt = prismaCandidate.appliedAt;
-    model.status = prismaCandidate.status?.toLowerCase() as EnumCandidateStatus;
+    model.status = prismaCandidate.status as EnumCandidateStatus;
     model.resume = prismaCandidate.resume;
     model.hiringId = prismaCandidate.hiringId;
 
