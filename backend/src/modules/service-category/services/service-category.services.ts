@@ -12,10 +12,10 @@ import { ServiceCategoryUpdateStatusRequestDto } from '../dtos/request/service-c
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IServiceCategoryListFilters } from '../interfaces/service-category.filter.interface';
 import { EnumServiceCategoryStatusCodeError } from '../enums/service-category.status-code.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { ServiceCategoryModel } from '../models/service-category.model';
@@ -37,7 +37,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IServiceCategoryListFilters
   ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,
@@ -64,7 +64,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IServiceCategoryListFilters
   ): Promise<IPaginationCursorReturn<ServiceCategoryModel>> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...where,

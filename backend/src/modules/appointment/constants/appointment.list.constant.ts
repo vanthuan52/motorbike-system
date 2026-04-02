@@ -1,11 +1,13 @@
 import { EnumAppointmentStatus } from '../enums/appointment.enum';
 
-export const APPOINTMENTS_DEFAULT_AVAILABLE_SEARCH = ['name'];
-export const APPOINTMENTS_DEFAULT_AVAILABLE_ORDER_BY = [
+export const AppointmentDefaultAvailableSearch = [
+  'code',
+  'customerName',
+  'customerPhone',
+];
+export const AppointmentDefaultAvailableOrderBy = [
   'orderBy',
   'createdAt',
   'updatedAt',
 ];
-export const APPOINTMENTS_DEFAULT_STATUS = Object.values(
-  EnumAppointmentStatus,
-);
+export const AppointmentDefaultStatus = Object.values(EnumAppointmentStatus);

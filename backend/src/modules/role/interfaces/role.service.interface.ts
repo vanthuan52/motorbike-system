@@ -1,10 +1,10 @@
 import {
-  IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IRoleListFilters } from './role.filter.interface';
 import {
   IRequestApp,
   IRequestLog,
@@ -21,7 +21,7 @@ export interface IRoleService {
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >,
-    type?: Record<string, IPaginationIn>
+    filters?: IRoleListFilters
   ): Promise<IPaginationOffsetReturn<RoleModel>>;
 
   getListCursor(
@@ -29,7 +29,7 @@ export interface IRoleService {
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >,
-    type?: Record<string, IPaginationIn>
+    filters?: IRoleListFilters
   ): Promise<IPaginationCursorReturn<RoleModel>>;
 
   getOne(id: string): Promise<RoleModel>;
@@ -60,5 +60,5 @@ export interface IRoleService {
     requiredRoles: string[]
   ): Promise<PermissionModel[]>;
 
-  findRoleByName(name: string): Promise<RoleModel | null>;
+  findRoleByType(type: string): Promise<RoleModel | null>;
 }

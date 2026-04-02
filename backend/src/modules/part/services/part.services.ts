@@ -11,12 +11,12 @@ import { EnumPartStatus } from '../enums/part.enum';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
 import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IPartListFilters } from '../interfaces/part.filter.interface';
 import { EnumPartStatusCodeError } from '../enums/part.status-code.enum';
 import { PartTypeService } from '@/modules/part-type/services/part-type.services';
 import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
@@ -39,21 +39,12 @@ export class PartService implements IPartService {
       where,
       orderBy,
     }: IPaginationQueryOffsetParams<Prisma.PartSelect, Prisma.PartWhereInput>,
-    status?: Record<string, IPaginationIn>,
-    partTypeId?: string,
-    vehicleBrandId?: string
+    filters?: IPartListFilters
   ): Promise<IPaginationOffsetReturn<PartModel>> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...where,
-      ...status,
+      ...filters,
     };
-
-    if (partTypeId) {
-      mergedWhere.partTypeId = partTypeId;
-    }
-    if (vehicleBrandId) {
-      mergedWhere.vehicleBrandId = vehicleBrandId;
-    }
 
     const { data, ...others } =
       await this.partRepository.findWithPaginationOffset({
@@ -78,21 +69,12 @@ export class PartService implements IPartService {
       cursorField,
       includeCount,
     }: IPaginationQueryCursorParams<Prisma.PartSelect, Prisma.PartWhereInput>,
-    status?: Record<string, IPaginationIn>,
-    partTypeId?: string,
-    vehicleBrandId?: string
+    filters?: IPartListFilters
   ): Promise<IPaginationCursorReturn<PartModel>> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...where,
-      ...status,
+      ...filters,
     };
-
-    if (partTypeId) {
-      mergedWhere.partTypeId = partTypeId;
-    }
-    if (vehicleBrandId) {
-      mergedWhere.vehicleBrandId = vehicleBrandId;
-    }
 
     const { data, ...others } =
       await this.partRepository.findWithPaginationCursor({

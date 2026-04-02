@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
-  IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { ISessionListFilters } from '@/modules/session/interfaces/session.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { EnumSessionStatusCodeError } from '@/modules/session/enums/session.status-code.enum';
 import { ISessionService } from '@/modules/session/interfaces/session.service.interface';
@@ -14,8 +14,9 @@ import { SessionUtil } from '@/modules/session/utils/session.util';
 import { ISession, ISessionLoginCreate } from '../interfaces/session.interface';
 import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { Prisma } from '@/generated/prisma-client';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { SessionModel } from '../models/session.model';
+import { Prisma } from '@/generated/prisma-client';
 
 /**
  * Session Management Service
@@ -45,13 +46,16 @@ export class SessionService implements ISessionService {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >,
-    isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationOffsetReturn<ISession>> {
-    return this.sessionRepository.findWithPaginationOffsetByAdmin(
-      userId,
-      pagination,
-      isRevoked
-    );
+    filters?: ISessionListFilters
+  ): Promise<IPaginationOffsetReturn<SessionModel>> {
+    const { data, ...others } =
+      await this.sessionRepository.findWithPaginationOffsetByAdmin(
+        userId,
+        pagination,
+        filters
+      );
+
+    return { data, ...others };
   }
 
   /**
@@ -67,11 +71,14 @@ export class SessionService implements ISessionService {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >
-  ): Promise<IPaginationCursorReturn<ISession>> {
-    return this.sessionRepository.findActiveWithPaginationCursor(
-      userId,
-      pagination
-    );
+  ): Promise<IPaginationCursorReturn<SessionModel>> {
+    const { data, ...others } =
+      await this.sessionRepository.findActiveWithPaginationCursor(
+        userId,
+        pagination
+      );
+
+    return { data, ...others };
   }
 
   /**
@@ -209,4 +216,3 @@ export class SessionService implements ISessionService {
     await this.sessionRepository.updateJti(sessionId, jti, options);
   }
 }
-

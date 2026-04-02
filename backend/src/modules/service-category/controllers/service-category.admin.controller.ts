@@ -105,7 +105,7 @@ export class ServiceCategoryAdminController {
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
     const result = await this.serviceCategoryService.getListOffset(
       pagination,
-      status
+      { ...status }
     );
     const mapped = this.serviceCategoryUtil.mapList(result.data);
     return {

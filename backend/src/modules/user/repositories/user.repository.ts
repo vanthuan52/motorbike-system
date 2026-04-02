@@ -7,12 +7,11 @@ import { HelperService } from '@/common/helper/services/helper.service';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import {
   IPaginationCursorReturn,
-  IPaginationEqual,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IUserListFilters } from '@/modules/user/interfaces/user.filter.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
 import { IRole } from '@/modules/role/interfaces/role.interface';
@@ -75,8 +74,7 @@ export class UserRepository {
       where,
       ...params
     }: IPaginationQueryOffsetParams<Prisma.UserSelect, Prisma.UserWhereInput>,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IPaginationOffsetReturn<UserModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaUser,
@@ -86,8 +84,7 @@ export class UserRepository {
       ...params,
       where: {
         ...where,
-        ...status,
-        ...role,
+        ...filters,
         deletedAt: null,
       },
       include: {
@@ -112,9 +109,7 @@ export class UserRepository {
       where,
       ...params
     }: IPaginationQueryCursorParams<Prisma.UserSelect, Prisma.UserWhereInput>,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-    country?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IPaginationCursorReturn<UserModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaUser,
@@ -124,9 +119,7 @@ export class UserRepository {
       ...params,
       where: {
         ...where,
-        ...status,
-        ...country,
-        ...role,
+        ...filters,
         deletedAt: null,
       },
       include: {
@@ -162,13 +155,11 @@ export class UserRepository {
   }
 
   async findExport(
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<UserModel[]> {
     const results = await this.databaseService.user.findMany({
       where: {
-        ...status,
-        ...role,
+        ...filters,
         deletedAt: null,
       },
       include: {

@@ -119,11 +119,10 @@ export class UserAdminController {
     @PaginationQueryFilterEqualString('role')
     role?: Record<string, IPaginationEqual>
   ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-    const result = await this.userService.getListOffsetByAdmin(
-      pagination,
-      status,
-      role
-    );
+    const result = await this.userService.getListOffsetByAdmin(pagination, {
+      ...status,
+      ...role,
+    });
     const mapped = this.userUtil.mapList(result.data);
     return {
       ...result,
@@ -309,10 +308,8 @@ export class UserAdminController {
     @PaginationQueryFilterInEnum<EnumUserStatus>('status', UserDefaultStatus)
     status?: Record<string, IPaginationIn>,
     @PaginationQueryFilterEqualString('role')
-    role?: Record<string, IPaginationEqual>,
-    @PaginationQueryFilterEqualString('country')
-    country?: Record<string, IPaginationEqual>
+    role?: Record<string, IPaginationEqual>
   ): Promise<IResponseFileReturn> {
-    return this.userService.exportByAdmin(status, role, country);
+    return this.userService.exportByAdmin({ ...status, ...role });
   }
 }

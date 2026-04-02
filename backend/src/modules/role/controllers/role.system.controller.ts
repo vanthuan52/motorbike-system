@@ -59,7 +59,9 @@ export class RoleSystemController {
     @PaginationQueryFilterInEnum('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    const result = await this.roleService.getListCursor(pagination, type);
+    const result = await this.roleService.getListCursor(pagination, {
+      ...type,
+    });
     const mapped = this.roleUtil.mapList(result.data);
     return {
       ...result,

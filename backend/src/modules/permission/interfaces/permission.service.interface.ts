@@ -1,10 +1,10 @@
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IPermissionListFilters } from './permission.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
@@ -17,7 +17,7 @@ export interface IPermissionService {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    group?: Record<string, IPaginationIn>
+    filters?: IPermissionListFilters
   ): Promise<IPaginationOffsetReturn<PermissionModel>>;
 
   getListCursor(
@@ -25,7 +25,7 @@ export interface IPermissionService {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    group?: Record<string, IPaginationIn>
+    filters?: IPermissionListFilters
   ): Promise<IPaginationCursorReturn<PermissionModel>>;
 
   getOne(id: string): Promise<PermissionModel>;

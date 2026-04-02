@@ -69,10 +69,9 @@ export class VehicleBrandPublicController {
     @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {
-    const result = await this.vehicleBrandService.getListOffset(
-      pagination,
-      status
-    );
+    const result = await this.vehicleBrandService.getListOffset(pagination, {
+      ...status,
+    });
     const mapped = this.vehicleBrandUtil.mapList(result.data);
     return {
       ...result,

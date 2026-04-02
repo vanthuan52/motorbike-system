@@ -95,7 +95,7 @@ export class SessionAdminController {
     const result = await this.sessionService.getListOffsetByAdmin(
       userId,
       pagination,
-      isRevoked
+      { ...isRevoked }
     );
     const mapped = this.sessionUtil.mapList(result.data);
     return {

@@ -114,11 +114,10 @@ export class ApiKeyAdminController {
     @PaginationQueryFilterInEnum<EnumApiKeyType>('type', ApiKeyDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ApiKeyDto>> {
-    const result = await this.apiKeyService.getListOffset(
-      pagination,
-      isActive,
-      type
-    );
+    const result = await this.apiKeyService.getListOffset(pagination, {
+      ...isActive,
+      ...type,
+    });
     const mapped = this.apiKeyUtil.mapList(result.data);
     return {
       ...result,

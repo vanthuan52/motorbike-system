@@ -6,12 +6,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IRoleListFilters } from '@/modules/role/interfaces/role.filter.interface';
 import {
   IRequestApp,
   IRequestLog,
@@ -39,11 +39,11 @@ export class RoleService implements IRoleService {
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >,
-    type?: Record<string, IPaginationIn>
+    filters?: IRoleListFilters
   ): Promise<IPaginationOffsetReturn<RoleModel>> {
     return this.roleRepository.findWithPaginationOffsetByAdmin(
       pagination,
-      type
+      filters
     );
   }
 
@@ -52,9 +52,9 @@ export class RoleService implements IRoleService {
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >,
-    type?: Record<string, IPaginationIn>
+    filters?: IRoleListFilters
   ): Promise<IPaginationCursorReturn<RoleModel>> {
-    return this.roleRepository.findWithPaginationCursor(pagination, type);
+    return this.roleRepository.findWithPaginationCursor(pagination, filters);
   }
 
   async getOne(id: string): Promise<RoleModel> {
@@ -86,7 +86,7 @@ export class RoleService implements IRoleService {
     requestLog: IRequestLog,
     createdBy: string
   ): Promise<RoleModel> {
-    const exist = await this.roleRepository.existByName(name);
+    const exist = await this.roleRepository.findRoleByName(name);
     if (exist) {
       throw new ConflictException({
         statusCode: EnumRoleStatusCodeError.exist,

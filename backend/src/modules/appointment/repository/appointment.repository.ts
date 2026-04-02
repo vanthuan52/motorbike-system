@@ -78,13 +78,16 @@ export class AppointmentRepository {
     });
   }
 
-  async findWithPaginationOffset({
-    where,
-    ...params
-  }: IPaginationQueryOffsetParams<
-    Prisma.AppointmentSelect,
-    Prisma.AppointmentWhereInput
-  >): Promise<IPaginationOffsetReturn<AppointmentModel>> {
+  async findWithPaginationOffset(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
+    filters?: Prisma.AppointmentWhereInput
+  ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const paginatedResult =
       await this.paginationService.offset<PrismaAppointment>(
         this.databaseService.appointment,
@@ -92,6 +95,7 @@ export class AppointmentRepository {
           ...params,
           where: {
             ...where,
+            ...filters,
             deletedAt: null,
           },
           include: {
@@ -288,13 +292,16 @@ export class AppointmentRepository {
    * Find trashed (soft-deleted) appointments with pagination.
    * Only returns records WHERE deletedAt IS NOT NULL.
    */
-  async findWithPaginationOffsetTrashed({
-    where,
-    ...params
-  }: IPaginationQueryOffsetParams<
-    Prisma.AppointmentSelect,
-    Prisma.AppointmentWhereInput
-  >): Promise<IPaginationOffsetReturn<AppointmentModel>> {
+  async findWithPaginationOffsetTrashed(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.AppointmentSelect,
+      Prisma.AppointmentWhereInput
+    >,
+    filters?: Prisma.AppointmentWhereInput
+  ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const paginatedResult =
       await this.paginationService.offset<PrismaAppointment>(
         this.databaseService.appointment,
@@ -302,6 +309,7 @@ export class AppointmentRepository {
           ...params,
           where: {
             ...where,
+            ...filters,
             deletedAt: { not: null },
           },
           include: {

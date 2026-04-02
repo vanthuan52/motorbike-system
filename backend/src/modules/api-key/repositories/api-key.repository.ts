@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import {
-  IPaginationEqual,
-  IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IApiKeyListFilters } from '@/modules/api-key/interfaces/api-key.filter.interface';
 import { ApiKeyCreateRequestDto } from '@/modules/api-key/dtos/request/api-key.create.request.dto';
 import { ApiKeyUpdateDateRequestDto } from '@/modules/api-key/dtos/request/api-key.update-date.request.dto';
 import { ApiKeyUpdateStatusRequestDto } from '@/modules/api-key/dtos/request/api-key.update-status.request.dto';
@@ -35,13 +34,11 @@ export class ApiKeyRepository {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    isActive?: Record<string, IPaginationEqual>,
-    type?: Record<string, IPaginationIn>
+    filters?: IApiKeyListFilters
   ): Promise<ApiKeyModel[]> {
     const mergedWhere: Prisma.ApiKeyWhereInput = {
       ...baseWhere,
-      ...isActive,
-      ...type,
+      ...filters,
     };
 
     const results = await this.databaseService.apiKey.findMany({
@@ -64,13 +61,11 @@ export class ApiKeyRepository {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    isActive?: Record<string, IPaginationEqual>,
-    type?: Record<string, IPaginationIn>
+    filters?: IApiKeyListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.ApiKeyWhereInput = {
       ...baseWhere,
-      ...isActive,
-      ...type,
+      ...filters,
     };
 
     return this.databaseService.apiKey.count({
@@ -86,8 +81,7 @@ export class ApiKeyRepository {
       Prisma.ApiKeySelect,
       Prisma.ApiKeyWhereInput
     >,
-    isActive?: Record<string, IPaginationEqual>,
-    type?: Record<string, IPaginationIn>
+    filters?: IApiKeyListFilters
   ): Promise<IPaginationOffsetReturn<ApiKeyModel>> {
     const paginatedResult = await this.paginationService.offset<PrismaApiKey>(
       this.databaseService.apiKey,
@@ -95,8 +89,7 @@ export class ApiKeyRepository {
         ...params,
         where: {
           ...where,
-          isActive: isActive,
-          type: type,
+          ...filters,
         },
         include: {
           user: false,
@@ -118,8 +111,7 @@ export class ApiKeyRepository {
       Prisma.ApiKeySelect,
       Prisma.ApiKeyWhereInput
     >,
-    isActive?: Record<string, IPaginationEqual>,
-    type?: Record<string, IPaginationIn>
+    filters?: IApiKeyListFilters
   ): Promise<IPaginationCursorReturn<ApiKeyModel>> {
     const paginatedResult = await this.paginationService.cursor<PrismaApiKey>(
       this.databaseService.apiKey,
@@ -127,8 +119,7 @@ export class ApiKeyRepository {
         ...params,
         where: {
           ...where,
-          isActive: isActive,
-          type: type,
+          ...filters,
         },
         include: {
           user: false,

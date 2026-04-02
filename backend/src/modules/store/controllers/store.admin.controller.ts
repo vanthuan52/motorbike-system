@@ -108,7 +108,9 @@ export class StoreAdminController {
     @PaginationQueryFilterInEnum('status', StoreDefaultStatus)
     status?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
-    const result = await this.storeService.getListOffset(pagination, status);
+    const result = await this.storeService.getListOffset(pagination, {
+      ...status,
+    });
     const mapped = this.storeUtil.mapList(result.data);
     return {
       ...result,

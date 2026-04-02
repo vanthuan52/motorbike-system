@@ -98,10 +98,9 @@ export class RoleAdminController {
     @PaginationQueryFilterInEnum('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
-    const result = await this.roleService.getListOffsetByAdmin(
-      pagination,
-      type
-    );
+    const result = await this.roleService.getListOffsetByAdmin(pagination, {
+      ...type,
+    });
     const mapped = this.roleUtil.mapList(result.data);
     return {
       ...result,

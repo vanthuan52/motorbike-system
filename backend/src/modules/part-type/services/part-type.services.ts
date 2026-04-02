@@ -11,12 +11,12 @@ import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.reque
 import { EnumPartTypeStatus } from '../enums/part-type.enum';
 import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IPartTypeListFilters } from '../interfaces/part-type.filter.interface';
 import { EnumPartTypeStatusCodeError } from '../enums/part-type.status-code.enum';
 import { Prisma } from '@/generated/prisma-client';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -36,11 +36,11 @@ export class PartTypeService implements IPartTypeService {
       Prisma.PartTypeSelect,
       Prisma.PartTypeWhereInput
     >,
-    status?: Record<string, IPaginationIn>
+    filters?: IPartTypeListFilters
   ): Promise<IPaginationOffsetReturn<PartTypeModel>> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
-      ...status,
+      ...filters,
     };
 
     const { data, ...others } =
@@ -69,11 +69,11 @@ export class PartTypeService implements IPartTypeService {
       Prisma.PartTypeSelect,
       Prisma.PartTypeWhereInput
     >,
-    status?: Record<string, IPaginationIn>
+    filters?: IPartTypeListFilters
   ): Promise<IPaginationCursorReturn<PartTypeModel>> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...where,
-      ...status,
+      ...filters,
     };
 
     const { data, ...others } =

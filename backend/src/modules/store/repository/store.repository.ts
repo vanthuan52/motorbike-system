@@ -24,7 +24,7 @@ export class StoreRepository {
       where,
       ...params
     }: IPaginationQueryOffsetParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
-    status?: Record<string, IPaginationIn>
+    filters?: Prisma.StoreWhereInput
   ): Promise<IPaginationOffsetReturn<StoreModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaStore,
@@ -34,7 +34,7 @@ export class StoreRepository {
       ...params,
       where: {
         ...where,
-        ...status,
+        ...filters,
         deletedAt: null,
       },
     });
@@ -50,7 +50,7 @@ export class StoreRepository {
       where,
       ...params
     }: IPaginationQueryCursorParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
-    status?: Record<string, IPaginationIn>
+    filters?: Prisma.StoreWhereInput
   ): Promise<IPaginationCursorReturn<StoreModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaStore,
@@ -60,7 +60,7 @@ export class StoreRepository {
       ...params,
       where: {
         ...where,
-        ...status,
+        ...filters,
         deletedAt: null,
       },
     });

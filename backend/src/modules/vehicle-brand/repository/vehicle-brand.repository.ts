@@ -6,8 +6,8 @@ import {
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
-  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IVehicleBrandListFilters } from '../interfaces/vehicle-brand.filter.interface';
 import {
   VehicleBrand as PrismaVehicleBrand,
   Prisma,
@@ -30,7 +30,7 @@ export class VehicleBrandRepository {
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleBrandListFilters
   ): Promise<IPaginationOffsetReturn<VehicleBrandModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaVehicleBrand,
@@ -59,7 +59,7 @@ export class VehicleBrandRepository {
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleBrandListFilters
   ): Promise<IPaginationCursorReturn<VehicleBrandModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaVehicleBrand,

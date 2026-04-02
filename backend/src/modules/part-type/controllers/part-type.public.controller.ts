@@ -65,7 +65,9 @@ export class PartTypePublicController {
     @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
-    const result = await this.partTypeService.getListOffset(pagination, status);
+    const result = await this.partTypeService.getListOffset(pagination, {
+      ...status,
+    });
     const mapped = this.partTypeUtil.mapList(result.data);
     return {
       ...result,

@@ -5,10 +5,10 @@ import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-bran
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IVehicleBrandListFilters } from './vehicle-brand.filter.interface';
 import { VehicleBrandModel } from '../models/vehicle-brand.model';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -19,7 +19,7 @@ export interface IVehicleBrandService {
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleBrandListFilters
   ): Promise<IPaginationOffsetReturn<VehicleBrandModel>>;
 
   getListCursor(
@@ -27,7 +27,7 @@ export interface IVehicleBrandService {
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleBrandListFilters
   ): Promise<IPaginationCursorReturn<VehicleBrandModel>>;
 
   findOneById(id: string): Promise<VehicleBrandModel>;

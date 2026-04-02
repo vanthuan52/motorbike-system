@@ -69,6 +69,10 @@ import { AppointmentGetFullResponseDto } from '../dtos/response/appointment.full
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
+import {
+  AppointmentDefaultAvailableSearch,
+  AppointmentDefaultStatus,
+} from '../constants/appointment.list.constant';
 
 @ApiTags('modules.admin.appointment')
 @Controller({
@@ -93,18 +97,13 @@ export class AppointmentAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: ['code', 'customerName', 'customerPhone'],
+      availableSearch: AppointmentDefaultAvailableSearch,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', [
-      'PENDING',
-      'CONFIRMED',
-      'CANCELLED',
-      'COMPLETED',
-    ])
+    @PaginationQueryFilterInEnum('status', AppointmentDefaultStatus)
     status?: Record<string, IPaginationIn>,
     @PaginationQueryFilterEqualBoolean('isActive')
     isActive?: Record<string, IPaginationEqual>

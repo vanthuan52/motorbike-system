@@ -2,12 +2,12 @@ import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
 import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IPartListFilters } from './part.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { PartModel } from '../models/part.model';
 import { Prisma } from '@/generated/prisma-client';
@@ -18,9 +18,7 @@ export interface IPartService {
       Prisma.PartSelect,
       Prisma.PartWhereInput
     >,
-    status?: Record<string, IPaginationIn>,
-    partTypeId?: string,
-    vehicleBrandId?: string
+    filters?: IPartListFilters
   ): Promise<IPaginationOffsetReturn<PartModel>>;
 
   getListCursor(
@@ -28,9 +26,7 @@ export interface IPartService {
       Prisma.PartSelect,
       Prisma.PartWhereInput
     >,
-    status?: Record<string, IPaginationIn>,
-    partTypeId?: string,
-    vehicleBrandId?: string
+    filters?: IPartListFilters
   ): Promise<IPaginationCursorReturn<PartModel>>;
 
   findOneById(partId: string): Promise<PartModel>;

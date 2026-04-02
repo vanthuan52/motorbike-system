@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IRoleListFilters } from '@/modules/role/interfaces/role.filter.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { RoleCreateRequestDto } from '@/modules/role/dtos/request/role.create.request.dto';
 import { RoleUpdateRequestDto } from '@/modules/role/dtos/request/role.update.request.dto';
 import { RoleModel } from '@/modules/role/models/role.model';
 import { RoleMapper } from '@/modules/role/mappers/role.mapper';
-import { Prisma, Role } from '@/generated/prisma-client';
+import { Prisma, Role as PrismaRole } from '@/generated/prisma-client';
 
 @Injectable()
 export class RoleRepository {
@@ -26,17 +26,17 @@ export class RoleRepository {
       where,
       ...params
     }: IPaginationQueryOffsetParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
-    type?: Record<string, IPaginationIn>
+    filters?: IRoleListFilters
   ): Promise<IPaginationOffsetReturn<RoleModel>> {
     const result = await this.paginationService.offset<
-      Role,
+      PrismaRole,
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >(this.databaseService.role, {
       ...params,
       where: {
         ...where,
-        ...type,
+        ...filters,
       },
     });
 
@@ -51,17 +51,17 @@ export class RoleRepository {
       where,
       ...params
     }: IPaginationQueryCursorParams<Prisma.RoleSelect, Prisma.RoleWhereInput>,
-    type?: Record<string, IPaginationIn>
+    filters?: IRoleListFilters
   ): Promise<IPaginationCursorReturn<RoleModel>> {
     const result = await this.paginationService.cursor<
-      Role,
+      PrismaRole,
       Prisma.RoleSelect,
       Prisma.RoleWhereInput
     >(this.databaseService.role, {
       ...params,
       where: {
         ...where,
-        ...type,
+        ...filters,
       },
     });
 
@@ -74,6 +74,14 @@ export class RoleRepository {
   async findOneById(id: string): Promise<RoleModel | null> {
     const result = await this.databaseService.role.findUnique({
       where: { id },
+    });
+
+    return result ? RoleMapper.toDomain(result) : null;
+  }
+
+  async findRoleByName(name: string): Promise<RoleModel | null> {
+    const result = await this.databaseService.role.findFirst({
+      where: { name },
     });
 
     return result ? RoleMapper.toDomain(result) : null;
