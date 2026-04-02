@@ -11,11 +11,11 @@ export class AuthTokenResponseDto {
   tokenType: string;
 
   @ApiProperty({
-    example: 'user',
-    type: String,
+    example: ['ADMIN', 'USER'],
+    type: [String],
     required: true,
   })
-  roleType: string;
+  roles: string[];
 
   @ApiProperty({
     example: 3600,

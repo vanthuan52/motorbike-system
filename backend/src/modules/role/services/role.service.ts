@@ -177,8 +177,8 @@ export class RoleService implements IRoleService {
 
     if (requiredRoles.length > 0) {
       // Check if user has any of the required roles (by name or type string)
-      const hasRequiredRole = roles?.some((r) =>
-        requiredRoles.includes(r.type) || requiredRoles.includes(r.name)
+      const hasRequiredRole = roles?.some(
+        r => requiredRoles.includes(r.type) || requiredRoles.includes(r.name)
       );
 
       if (!hasRequiredRole) {
@@ -190,12 +190,12 @@ export class RoleService implements IRoleService {
     }
 
     // Get permissions from all user roles
-    const roleIds = roles?.map((r) => r.id) ?? [];
+    const roleIds = roles?.map(r => r.id) ?? [];
     return this.permissionService.findByRoleIds(roleIds);
   }
 
   /* ======================== Service to Service call ============================== */
-  async findRoleByName(name: string): Promise<RoleModel | null> {
-    return this.roleRepository.existByName(name);
+  async findRoleByType(type: string): Promise<RoleModel | null> {
+    return this.roleRepository.existByType(type);
   }
 }

@@ -8,8 +8,6 @@ import {
   EnumUserLoginFrom,
   EnumUserLoginWith,
 } from '../enums/user.enum';
-import { User as PrismaUser } from '@/generated/prisma-client';
-import { IUser } from '../interfaces/user.interface';
 
 export class UserMapper {
   /**
@@ -44,8 +42,6 @@ export class UserMapper {
     user.lastLoginWith =
       prismaUser.lastLoginWith?.toLowerCase() as EnumUserLoginWith;
 
-    user.verification = prismaUser.verification;
-
     user.createdAt = prismaUser.createdAt;
     user.updatedAt = prismaUser.updatedAt;
     user.deletedAt = prismaUser.deletedAt;
@@ -54,22 +50,10 @@ export class UserMapper {
     user.updatedBy = prismaUser.updatedBy;
     user.deletedBy = prismaUser.deletedBy;
 
-    return user;
-  }
-
-  /**
-   * Maps a Prisma User with included userRoles→role to IUser with roles array.
-   */
-  static toDomainWithRoles(prismaUser: any): IUser {
-    const user = UserMapper.toDomain(prismaUser) as IUser;
-
-    // Map userRoles relation to roles array
     if (prismaUser.userRoles && Array.isArray(prismaUser.userRoles)) {
       user.roles = prismaUser.userRoles
         .filter((ur: any) => ur.role && !ur.revokedAt)
         .map((ur: any) => RoleMapper.toDomain(ur.role));
-    } else {
-      user.roles = [];
     }
 
     return user;

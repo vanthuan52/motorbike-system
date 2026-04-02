@@ -16,7 +16,7 @@ import { INotificationPushProcessorService } from '@/modules/notification/interf
 import { NotificationRepository } from '@/modules/notification/repositories/notification.repository';
 import { NotificationPushUtil } from '@/modules/notification/utils/notification.push.util';
 import { IQueueResponse } from 'src/queues/interfaces/queue.interface';
-import { EnumNotificationChannel } from '@/generated/prisma-client';
+import { EnumNotificationChannel } from '@/modules/notification/enums/notification.enum';
 
 @Injectable()
 export class NotificationPushProcessorService

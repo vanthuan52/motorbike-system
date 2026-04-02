@@ -4,6 +4,7 @@ import { VerificationRepository } from '@/modules/verification/repositories/veri
 import { UserService } from '@/modules/user/services/user.service';
 import { IUserVerificationCreate } from '@/modules/verification/interfaces/verification.interface';
 import { VerificationModel } from '../models/verification.model';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 
 @Injectable()
 export class VerificationService {
@@ -26,26 +27,9 @@ export class VerificationService {
 
   async confirmUserEmail(
     verificationId: string,
-    userId: string,
-    requestLog: IRequestLog
+    options?: IDatabaseOptions
   ): Promise<VerificationModel> {
-    return this.verificationRepository.verifyEmail(
-      verificationId,
-      userId,
-      requestLog
-    );
-  }
-
-  /**
-   * Mark the user as verified after a successful email confirmation.
-   * Calls UserService to respect SoC — no direct cross-module repository access.
-   */
-  async updateVerified(
-    userId: string,
-    requestLog: IRequestLog
-  ): Promise<{ isVerified: boolean }> {
-    const updated = await this.userService.markVerified(userId, requestLog);
-    return { isVerified: updated.isVerified };
+    return this.verificationRepository.verifyEmail(verificationId, options);
   }
 
   /**
@@ -56,13 +40,13 @@ export class VerificationService {
     userId: string,
     userEmail: string,
     verification: IUserVerificationCreate,
-    requestLog: IRequestLog
+    options?: IDatabaseOptions
   ): Promise<void> {
     await this.verificationRepository.requestVerificationEmail(
       userId,
       userEmail,
       verification,
-      requestLog
+      options
     );
   }
 }

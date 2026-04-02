@@ -47,6 +47,8 @@ export class DeviceOwnershipModel {
   createdBy?: string;
   updatedBy?: string;
 
+  devices?: DeviceModel[];
+
   constructor(data?: Partial<DeviceOwnershipModel>) {
     Object.assign(this, data);
   }

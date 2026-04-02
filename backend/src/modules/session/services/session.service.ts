@@ -12,6 +12,8 @@ import { ISessionService } from '@/modules/session/interfaces/session.service.in
 import { SessionRepository } from '@/modules/session/repositories/session.repository';
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { ISession } from '../interfaces/session.interface';
+import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 /**
@@ -25,7 +27,8 @@ import { Prisma } from '@/generated/prisma-client';
 export class SessionService implements ISessionService {
   constructor(
     private readonly sessionRepository: SessionRepository,
-    private readonly sessionUtil: SessionUtil
+    private readonly sessionUtil: SessionUtil,
+    private readonly activityLogService: ActivityLogService
   ) {}
 
   /**
@@ -96,7 +99,12 @@ export class SessionService implements ISessionService {
     }
 
     await Promise.all([
-      this.sessionRepository.revoke(userId, sessionId, requestLog),
+      this.sessionRepository.revoke(userId, sessionId),
+      this.activityLogService.create(
+        userId,
+        EnumActivityLogAction.userRevokeSession,
+        requestLog
+      ),
       this.sessionUtil.deleteOneLogin(userId, sessionId),
     ]);
   }
@@ -129,10 +137,47 @@ export class SessionService implements ISessionService {
     }
 
     const [removed] = await Promise.all([
-      this.sessionRepository.revokeByAdmin(sessionId, requestLog, revokedBy),
+      this.sessionRepository.revokeByAdmin(sessionId, revokedBy),
+      this.activityLogService.create(
+        revokedBy,
+        EnumActivityLogAction.userRevokeSessionByAdmin,
+        requestLog
+      ),
       this.sessionUtil.deleteOneLogin(userId, sessionId),
     ]);
 
     return removed;
+  }
+
+  /**
+   * Revokes all active user sessions from the database
+   */
+  async revokeAllActive(
+    userId: string,
+    revokedAt: Date,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void> {
+    await this.sessionRepository.revokeAllActive(userId, revokedAt, options);
+  }
+
+  // =========================== Cross-module service calls ==============================
+
+  async createForLogin(
+    userId: string,
+    sessionData: {
+      sessionId: string;
+      jti: string;
+      expiredAt: Date;
+      deviceOwnershipId: string;
+    },
+    requestLog: IRequestLog,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void> {
+    await this.sessionRepository.createForLogin(
+      userId,
+      sessionData,
+      requestLog,
+      options
+    );
   }
 }

@@ -10,6 +10,13 @@ export enum EnumActivityLogAction {
   userResetPassword = 'userResetPassword',
   userVerifyEmail = 'userVerifyEmail',
   userVerifiedEmail = 'userVerifiedEmail',
+  userCreated = 'userCreated',
+  userBlocked = 'userBlocked',
+  userUpdateStatus = 'userUpdateStatus',
+  userUpdatePhotoProfile = 'userUpdatePhotoProfile',
+  userDeleteSelf = 'userDeleteSelf',
+  userClaimUsername = 'userClaimUsername',
+  userUpdatePasswordByAdmin = 'userUpdatePasswordByAdmin',
   userSendVerificationEmail = 'userSendVerificationEmail',
   userRevokeSession = 'userRevokeSession',
   userRevokeSessionByAdmin = 'userRevokeSessionByAdmin',
@@ -34,6 +41,10 @@ export enum EnumActivityLogAction {
   adminApiKeyUpdateDate = 'adminApiKeyUpdateDate',
   adminApiKeyUpdateStatus = 'adminApiKeyUpdateStatus',
   adminApiKeyDelete = 'adminApiKeyDelete',
+
+  // device
+  userDeviceRefresh = 'userDeviceRefresh',
+  userRemoveDevice = 'userRemoveDevice',
 
   // Vehicle Brand
   adminVehicleBrandCreate = 'adminVehicleBrandCreate',

@@ -36,4 +36,9 @@ export interface ISessionService {
     requestLog: IRequestLog,
     revokedBy: string
   ): Promise<ISession>;
+  revokeAllActive(
+    userId: string,
+    revokedAt: Date,
+    options?: { tx?: Prisma.TransactionClient }
+  ): Promise<void>;
 }

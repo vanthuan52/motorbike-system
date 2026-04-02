@@ -26,7 +26,7 @@ export interface IAuthJwtAccessTokenPayload {
   userId: string;
   sessionId: string;
   deviceOwnershipId: string;
-  roleIds: string;
+  roles: string[];
 
   // standard JWT claims
   jti?: string;
@@ -40,7 +40,7 @@ export interface IAuthJwtAccessTokenPayload {
 
 export type IAuthJwtRefreshTokenPayload = Omit<
   IAuthJwtAccessTokenPayload,
-  'type' | 'roleId' | 'username' | 'email' | 'verification'
+  'type' | 'roles' | 'username' | 'email' | 'verification'
 >;
 
 export interface IAuthSocialPayload extends Pick<

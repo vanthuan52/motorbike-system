@@ -1,5 +1,7 @@
 import { AwsS3PresignDto } from '@/common/aws/dtos/aws.s3-presign.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { IFile } from '@/common/file/interfaces/file.interface';
 import {
   IPaginationEqual,
@@ -13,9 +15,7 @@ import {
   IRequestApp,
   IRequestLog,
 } from '@/common/request/interfaces/request.interface';
-import {
-  IResponseFileReturn,
-} from '@/common/response/interfaces/response.interface';
+import { IResponseFileReturn } from '@/common/response/interfaces/response.interface';
 import {
   UserCheckEmailRequestDto,
   UserCheckUsernameRequestDto,
@@ -32,15 +32,26 @@ import {
   UserCheckEmailResponseDto,
   UserCheckUsernameResponseDto,
 } from '@/modules/user/dtos/response/user.check.response.dto';
-import { IUser } from '@/modules/user/interfaces/user.interface';
+import {
+  IUser,
+  IUserLogin,
+  IUserLoginResult,
+  IUserForgotPasswordCreate,
+} from '@/modules/user/interfaces/user.interface';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
+import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
+import {
+  EnumUserLoginFrom,
+  EnumUserLoginWith,
+} from '@/modules/user/enums/user.enum';
+import { UserModel } from '@/modules/user/models/user.model';
 import { Prisma } from '@/generated/prisma-client';
 
 export interface IUserService {
   validateUserGuard(
     request: IRequestApp,
     requiredVerified: boolean
-  ): Promise<IUser>;
+  ): Promise<UserModel>;
   getListOffsetByAdmin(
     pagination: IPaginationQueryOffsetParams<
       Prisma.UserSelect,
@@ -48,7 +59,7 @@ export interface IUserService {
     >,
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationOffsetReturn<IUser>>;
+  ): Promise<IPaginationOffsetReturn<UserModel>>;
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.UserSelect,
@@ -57,19 +68,19 @@ export interface IUserService {
     status?: Record<string, IPaginationIn>,
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationCursorReturn<IUser>>;
-  getOne(id: string): Promise<IUser>;
+  ): Promise<IPaginationCursorReturn<UserModel>>;
+  getOne(id: string): Promise<UserModel>;
   createByAdmin(
     { email, name, roleId }: UserCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<IUser>;
+  ): Promise<UserModel>;
   updateStatusByAdmin(
     userId: string,
     { status }: UserUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IUser>;
+  ): Promise<UserModel>;
   checkUsername({
     username,
   }: UserCheckUsernameRequestDto): Promise<UserCheckUsernameResponseDto>;
@@ -106,7 +117,7 @@ export interface IUserService {
     userId: string,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<IUser>;
+  ): Promise<UserModel>;
   importByAdmin(
     data: UserImportRequestDto[],
     createdBy: string,
@@ -117,4 +128,55 @@ export interface IUserService {
     role?: Record<string, IPaginationEqual>,
     country?: Record<string, IPaginationEqual>
   ): Promise<IResponseFileReturn>;
+  // =========================== Service to Service calll ==============================
+  createRandomUsername(): string;
+  findOneWithRoleByEmail(email: string): Promise<IUser | null>;
+  findOneActiveByEmail(email: string): Promise<UserModel | null>;
+  createFromSocial(
+    email: string,
+    username: string,
+    roleId: string,
+    loginWith: EnumUserLoginWith,
+    others: any,
+    options?: IDatabaseOptions
+  ): Promise<IUser>;
+  updateLoginMetadata(
+    userId: string,
+    data: {
+      loginFrom: EnumUserLoginFrom;
+      loginWith: EnumUserLoginWith;
+    },
+    ipAddress: string,
+    options?: IDatabaseOptions
+  ): Promise<void>;
+  createFromRegistration(
+    userId: string,
+    username: string,
+    roleId: string,
+    others: any,
+    password: IAuthPassword,
+    options?: IDatabaseOptions
+  ): Promise<IUser>;
+  findOneLatestByForgotPassword(userId: string): Promise<IUser | null>;
+  forgotPassword(
+    userId: string,
+    email: string,
+    passwordReset: IUserForgotPasswordCreate
+  ): Promise<void>;
+
+  // =========================== Methods exposed for cross-module service calls ==============================
+  updateVerificationStatus(
+    userId: string,
+    options?: IDatabaseOptions
+  ): Promise<UserModel>;
+  increasePasswordAttempt(userId: string): Promise<void>;
+  resetPasswordAttempt(userId: string): Promise<void>;
+  changeUserPassword(userId: string, password: IAuthPassword): Promise<void>;
+  findOneActiveByForgotPasswordToken(token: string): Promise<any | null>;
+  resetPassword(
+    userId: string,
+    forgotPasswordId: string,
+    password: IAuthPassword,
+    options?: IDatabaseOptions
+  ): Promise<void>;
 }

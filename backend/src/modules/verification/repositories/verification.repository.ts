@@ -3,15 +3,12 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
-import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IUserVerificationCreate } from '@/modules/verification/interfaces/verification.interface';
-import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { EnumUserStatus } from '@/modules/user/enums/user.enum';
-import {
-  EnumVerificationType,
-} from '@/modules/verification/enums/verification.enum';
+import { EnumVerificationType } from '@/modules/verification/enums/verification.enum';
 import { VerificationModel } from '@/modules/verification/models/verification.model';
-import { Prisma } from '@/generated/prisma-client';
+import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
+import { VerificationMapper } from '@/modules/verification/mappers/verification.mapper';
 
 @Injectable()
 export class VerificationRepository {
@@ -26,7 +23,7 @@ export class VerificationRepository {
   ): Promise<VerificationModel | null> {
     const today = this.helperService.dateCreate();
 
-    return this.databaseService.verification.findFirst({
+    const result = await this.databaseService.verification.findFirst({
       where: {
         token,
         isUsed: false,
@@ -40,12 +37,14 @@ export class VerificationRepository {
         },
       },
     });
+
+    return result ? VerificationMapper.toDomain(result) : null;
   }
 
   async findOneLatestByVerificationEmail(
     userId: string
   ): Promise<VerificationModel | null> {
-    return this.databaseService.verification.findFirst({
+    const result = await this.databaseService.verification.findFirst({
       where: {
         userId,
         type: EnumVerificationType.email,
@@ -58,96 +57,66 @@ export class VerificationRepository {
         createdAt: EnumPaginationOrderDirectionType.desc,
       },
     });
+
+    return result ? VerificationMapper.toDomain(result) : null;
   }
 
   async verifyEmail(
     id: string,
-    userId: string,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
+    options?: IDatabaseOptions
   ): Promise<VerificationModel> {
     const today = this.helperService.dateCreate();
+    const db = options?.tx || this.databaseService;
 
-    return this.databaseService.verification.update({
+    const result = await db.verification.update({
       where: {
         id,
       },
       data: {
         isUsed: true,
         verifiedAt: today,
-        user: {
-          update: {
-            verifiedAt: today,
-            isVerified: true,
-            activityLogs: {
-              create: {
-                action: EnumActivityLogAction.userVerifiedEmail,
-                ipAddress,
-                userAgent: this.databaseUtil.toPlainObject(userAgent),
-                geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-                createdBy: userId,
-              },
-            },
-          },
-        },
       },
     });
+
+    return VerificationMapper.toDomain(result);
   }
 
   async requestVerificationEmail(
     userId: string,
     userEmail: string,
     { expiredAt, reference, hashedToken, type }: IUserVerificationCreate,
-    { ipAddress, userAgent, geoLocation }: IRequestLog
-  ): Promise<any> {
+    options?: IDatabaseOptions
+  ): Promise<VerificationModel> {
     const today = this.helperService.dateCreate();
+    const db = options?.tx || this.databaseService;
 
-    return this.databaseService.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        const [_, newVerification] = await Promise.all([
-          tx.verification.updateMany({
-            where: {
-              userId,
-              type,
-              isUsed: false,
-              expiredAt: {
-                gt: today,
-              },
-            },
-            data: {
-              expiredAt: today,
-            },
-          }),
-          tx.user.update({
-            where: {
-              id: userId,
-            },
-            data: {
-              verifications: {
-                create: {
-                  expiredAt,
-                  reference,
-                  token: hashedToken,
-                  type,
-                  to: userEmail,
-                  createdBy: userId,
-                  createdAt: today,
-                },
-              },
-              activityLogs: {
-                create: {
-                  action: EnumActivityLogAction.userSendVerificationEmail,
-                  ipAddress,
-                  userAgent: this.databaseUtil.toPlainObject(userAgent),
-                  geoLocation: this.databaseUtil.toPlainObject(geoLocation),
-                  createdBy: userId,
-                },
-              },
-            },
-          }),
-        ]);
+    await db.verification.updateMany({
+      where: {
+        userId,
+        type,
+        isUsed: false,
+        expiredAt: {
+          gt: today,
+        },
+      },
+      data: {
+        expiredAt: today,
+      },
+    });
 
-        return newVerification;
-      }
-    );
+    const newVerification = await db.verification.create({
+      data: {
+        expiredAt,
+        reference,
+        token: hashedToken,
+        type,
+        to: userEmail,
+        userId,
+        createdBy: userId,
+        createdAt: today,
+      },
+    });
+
+    return VerificationMapper.toDomain(newVerification);
   }
 }

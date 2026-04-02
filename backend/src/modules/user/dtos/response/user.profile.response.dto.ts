@@ -6,8 +6,14 @@ import { UserDto } from '@/modules/user/dtos/user.dto';
 export class UserProfileResponseDto extends UserDto {
   @ApiProperty({
     required: true,
-    type: RoleDto,
+    type: [RoleDto],
   })
   @Type(() => RoleDto)
-  role: RoleDto;
+  roles: RoleDto[];
+
+  @ApiProperty({
+    required: true,
+    type: [String],
+  })
+  permissions: string[];
 }

@@ -37,3 +37,10 @@ export enum EnumNotificationChannel {
   inApp = 'inApp',
   silent = 'silent',
 }
+
+export enum EnumNotificationPriority {
+  low = 'low',
+  normal = 'normal',
+  high = 'high',
+  critical = 'critical',
+}

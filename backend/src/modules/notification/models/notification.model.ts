@@ -1,5 +1,6 @@
 import {
   EnumNotificationChannel,
+  EnumNotificationPriority,
   EnumNotificationType,
 } from '../enums/notification.enum';
 
@@ -10,12 +11,13 @@ import {
 export class NotificationModel {
   id: string;
   type: EnumNotificationType;
-  channel: EnumNotificationChannel;
   title: string;
-  content: string;
-  isRead: boolean;
-
+  body: string;
   userId: string;
+  metadata?: Record<string, any>;
+  isRead: boolean;
+  readAt?: Date;
+  priority: EnumNotificationPriority;
 
   createdAt: Date;
   updatedAt: Date;
@@ -36,13 +38,13 @@ export class NotificationModel {
 
 /**
  * Domain model representing a user's notification preference settings.
- * Maps from Prisma NotificationSetting to application domain layer.
+ * Maps from Prisma NotificationUserSetting to application domain layer.
  */
 export class NotificationUserSettingModel {
   id: string;
   type: EnumNotificationType;
   channel: EnumNotificationChannel;
-  isEnabled: boolean;
+  isActive: boolean;
 
   userId: string;
 
