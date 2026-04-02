@@ -1,5 +1,5 @@
 import { UserModel } from '@/modules/user/models/user.model';
-import { EnumPasswordHistoryType } from '@/generated/prisma-client';
+import { EnumPasswordHistoryType } from '../enums/password-history.enum';
 
 export class PasswordHistoryModel {
   id: string;

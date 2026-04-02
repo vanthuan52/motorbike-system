@@ -2,6 +2,8 @@ import {
   EnumCareRecordChecklistResult,
   EnumCareRecordChecklistStatus,
 } from '../enums/care-record-checklist.enum';
+import { CareRecordServiceModel } from '@/modules/care-record-service/models/care-record-service.model';
+import { ServiceChecklistModel } from '@/modules/service-checklist/models/service-checklist.model';
 
 /**
  * Domain model representing a care record checklist entry.
@@ -18,7 +20,9 @@ export class CareRecordChecklistModel {
   imageAfter?: string;
 
   careRecordServiceId: string;
+  careRecordService?: CareRecordServiceModel;
   serviceChecklistId?: string;
+  serviceChecklist?: ServiceChecklistModel;
 
   createdAt: Date;
   updatedAt: Date;

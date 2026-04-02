@@ -1,5 +1,7 @@
 import { CandidateModel } from '../models/candidate.model';
 import { EnumCandidateStatus } from '../enums/hiring.enum';
+import { HiringMapper } from './hiring.mapper';
+import { CandidateReviewMapper } from './candidate-review.mapper';
 
 export class CandidateMapper {
   static toDomain(prismaCandidate: any): CandidateModel {
@@ -19,6 +21,15 @@ export class CandidateMapper {
     model.createdBy = prismaCandidate.createdBy;
     model.updatedBy = prismaCandidate.updatedBy;
     model.deletedBy = prismaCandidate.deletedBy;
+
+    if (prismaCandidate.hiring) {
+      model.hiring = HiringMapper.toDomain(prismaCandidate.hiring);
+    }
+    if (prismaCandidate.reviews && Array.isArray(prismaCandidate.reviews)) {
+      model.reviews = prismaCandidate.reviews.map((r: any) =>
+        CandidateReviewMapper.toDomain(r)
+      );
+    }
 
     return model;
   }

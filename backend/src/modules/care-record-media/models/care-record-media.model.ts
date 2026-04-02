@@ -1,4 +1,5 @@
 import { EnumCareRecordMediaStage } from '../enums/care-record-media.enum';
+import { CareRecordModel } from '@/modules/care-record/models/care-record.model';
 
 /**
  * Domain model representing a media attachment for a care record.
@@ -12,6 +13,7 @@ export class CareRecordMediaModel {
   type: string;
 
   careRecordId: string;
+  careRecord?: CareRecordModel;
 
   createdAt: Date;
   updatedAt: Date;

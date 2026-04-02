@@ -1,4 +1,5 @@
 import { EnumStatus } from '@/common/enums/common.enum';
+import { ServiceCategoryModel } from '@/modules/service-category/models/service-category.model';
 
 /**
  * Domain model representing a vehicle service category item.
@@ -14,6 +15,7 @@ export class VehicleServiceModel {
   photo?: string;
 
   serviceCategoryId: string;
+  serviceCategory?: ServiceCategoryModel;
 
   createdAt: Date;
   updatedAt: Date;

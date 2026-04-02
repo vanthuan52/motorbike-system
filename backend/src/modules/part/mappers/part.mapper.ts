@@ -1,5 +1,7 @@
 import { PartModel } from '../models/part.model';
 import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import { PartTypeMapper } from '@/modules/part-type/mappers/part-type.mapper';
+import { VehicleBrandMapper } from '@/modules/vehicle-brand/mappers/vehicle-brand.mapper';
 
 export class PartMapper {
   static toDomain(prismaPart: any): PartModel {
@@ -19,6 +21,13 @@ export class PartMapper {
     model.createdBy = prismaPart.createdBy;
     model.updatedBy = prismaPart.updatedBy;
     model.deletedBy = prismaPart.deletedBy;
+
+    if (prismaPart.partType) {
+      model.partType = PartTypeMapper.toDomain(prismaPart.partType);
+    }
+    if (prismaPart.vehicleBrand) {
+      model.vehicleBrand = VehicleBrandMapper.toDomain(prismaPart.vehicleBrand);
+    }
 
     return model;
   }

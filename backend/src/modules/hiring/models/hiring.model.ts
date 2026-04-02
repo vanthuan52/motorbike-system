@@ -1,4 +1,5 @@
 import { EnumHiringJobType, EnumHiringStatus } from '../enums/hiring.enum';
+import { CandidateModel } from './candidate.model';
 
 /**
  * Domain model representing a hiring/job posting.
@@ -16,6 +17,9 @@ export class HiringModel {
   category: string;
   jobType: EnumHiringJobType;
   status: EnumHiringStatus;
+
+  // Child relations
+  candidates?: CandidateModel[];
 
   createdAt: Date;
   updatedAt: Date;

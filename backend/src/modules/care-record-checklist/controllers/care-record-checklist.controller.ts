@@ -73,6 +73,8 @@ import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.care-record-checklist')
 @Controller({
@@ -154,6 +156,7 @@ export class CareRecordChecklistController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistCreate)
   @Post('/create')
   async create(
     @AuthJwtPayload('userId') userId: string,
@@ -179,6 +182,7 @@ export class CareRecordChecklistController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -206,6 +210,7 @@ export class CareRecordChecklistController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -233,6 +238,7 @@ export class CareRecordChecklistController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistUpdateResult)
   @Patch('/update/:id/result')
   async updateResult(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -260,6 +266,7 @@ export class CareRecordChecklistController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,

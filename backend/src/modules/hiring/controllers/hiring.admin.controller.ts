@@ -50,6 +50,8 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { HiringUtil } from '../utils/hiring.util';
 import { HiringResponseDto } from '../dtos/hiring-response.dto';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.hiring')
@@ -130,6 +132,7 @@ export class HiringAdminController {
   @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminHiringCreate)
   @Post('/create')
   async create(
     @Body() body: HiringCreateRequestDto
@@ -147,6 +150,7 @@ export class HiringAdminController {
   @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminHiringUpdate)
   @Put('/update/:id')
   async update(
     @Param('id') id: string,
@@ -165,6 +169,7 @@ export class HiringAdminController {
   @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminHiringDelete)
   @Delete('/delete/:id')
   async delete(@Param('id') id: string): Promise<IResponseReturn<void>> {
     await this.hiringService.delete(id);
@@ -180,6 +185,7 @@ export class HiringAdminController {
   @RoleProtected('admin', 'user')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminHiringUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id') id: string,

@@ -3,6 +3,7 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { UserModel } from '@/modules/user/models/user.model';
 
 /**
  * Domain model representing an activity log entry.
@@ -17,6 +18,7 @@ export class ActivityLogModel {
   metadata?: Record<string, unknown>;
 
   userId: string;
+  user?: UserModel;
 
   createdAt: Date;
   updatedAt: Date;

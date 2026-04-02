@@ -1,3 +1,5 @@
+import { PermissionModel } from '@/modules/permission/models/permission.model';
+
 /**
  * Domain model representing a system role.
  * Maps from Prisma Role to application domain layer.
@@ -8,6 +10,9 @@ export class RoleModel {
   description?: string;
   isActive: boolean;
   type: string;
+
+  // Child relations (via junction table RolePermission)
+  permissions?: PermissionModel[];
 
   createdAt: Date;
   updatedAt: Date;

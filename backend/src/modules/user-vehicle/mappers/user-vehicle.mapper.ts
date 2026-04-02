@@ -1,4 +1,6 @@
 import { UserVehicleModel } from '../models/user-vehicle.model';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-model.mapper';
 
 export class UserVehicleMapper {
   static toDomain(prismaVehicle: any): UserVehicleModel {
@@ -19,6 +21,13 @@ export class UserVehicleMapper {
     model.createdBy = prismaVehicle.createdBy;
     model.updatedBy = prismaVehicle.updatedBy;
     model.deletedBy = prismaVehicle.deletedBy;
+
+    if (prismaVehicle.user) {
+      model.user = UserMapper.toDomain(prismaVehicle.user);
+    }
+    if (prismaVehicle.vehicleModel) {
+      model.vehicleModel = VehicleModelMapper.toDomain(prismaVehicle.vehicleModel);
+    }
 
     return model;
   }

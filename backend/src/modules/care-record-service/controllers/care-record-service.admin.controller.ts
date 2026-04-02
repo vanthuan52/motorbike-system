@@ -72,6 +72,8 @@ import {
   RequestIPAddress,
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.care-record-service')
 @Controller({
@@ -204,6 +206,7 @@ export class CareRecordServiceAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordServiceCreate)
   @Post('/create')
   async create(
     @Body() body: CareRecordServiceCreateRequestDto,
@@ -229,6 +232,7 @@ export class CareRecordServiceAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordServiceUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -256,6 +260,7 @@ export class CareRecordServiceAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordServiceUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -283,6 +288,7 @@ export class CareRecordServiceAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordServiceDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,

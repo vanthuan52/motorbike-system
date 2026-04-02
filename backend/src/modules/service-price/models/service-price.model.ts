@@ -1,3 +1,6 @@
+import { VehicleServiceModel } from '@/modules/vehicle-service/models/vehicle-service.model';
+import { VehicleModelModel } from '@/modules/vehicle-model/models/vehicle-model.model';
+
 /**
  * Domain model representing a service price entry.
  * Maps from Prisma ServicePrice to application domain layer.
@@ -9,7 +12,9 @@ export class ServicePriceModel {
   dateEnd?: Date;
 
   vehicleServiceId: string;
+  vehicleService?: VehicleServiceModel;
   vehicleModelId: string;
+  vehicleModel?: VehicleModelModel;
 
   createdAt: Date;
   updatedAt: Date;

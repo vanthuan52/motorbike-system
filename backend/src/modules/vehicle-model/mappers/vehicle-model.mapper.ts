@@ -1,6 +1,9 @@
 import { VehicleModelModel } from '../models/vehicle-model.model';
-import { EnumVehicleModelType, EnumVehicleModelFuelType } from '../enums/vehicle-model.enum';
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import {
+  EnumVehicleModelType,
+  EnumVehicleModelFuelType,
+} from '../enums/vehicle-model.enum';
+import { VehicleBrandMapper } from '@/modules/vehicle-brand/mappers/vehicle-brand.mapper';
 
 export class VehicleModelMapper {
   static toDomain(prismaModel: any): VehicleModelModel {
@@ -20,8 +23,9 @@ export class VehicleModelMapper {
       ELECTRIC: EnumVehicleModelType.electric,
     };
     model.type = typeMap[prismaModel.type] || EnumVehicleModelType.unknown;
-    model.fuelType = prismaModel.fuelType?.toLowerCase() as EnumVehicleModelFuelType;
-    model.status = prismaModel.status?.toLowerCase() as EnumStatus;
+    model.fuelType =
+      prismaModel.fuelType?.toLowerCase() as EnumVehicleModelFuelType;
+    model.status = prismaModel.status?.toLowerCase();
     model.orderBy = prismaModel.order;
     model.yearStart = prismaModel.yearStart;
     model.yearEnd = prismaModel.yearEnd;
@@ -34,6 +38,12 @@ export class VehicleModelMapper {
     model.createdBy = prismaModel.createdBy;
     model.updatedBy = prismaModel.updatedBy;
     model.deletedBy = prismaModel.deletedBy;
+
+    if (prismaModel.vehicleBrand) {
+      model.vehicleBrand = VehicleBrandMapper.toDomain(
+        prismaModel.vehicleBrand
+      );
+    }
 
     return model;
   }

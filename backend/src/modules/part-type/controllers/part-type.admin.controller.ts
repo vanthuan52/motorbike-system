@@ -66,6 +66,8 @@ import {
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
 import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.part-type')
 @Controller({
@@ -132,6 +134,7 @@ export class PartTypeAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminPartTypeCreate)
   @Post('/create')
   async create(
     @Body() body: PartTypeCreateRequestDto,
@@ -161,6 +164,7 @@ export class PartTypeAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminPartTypeUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -192,6 +196,7 @@ export class PartTypeAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminPartTypeUpdateStatus)
   @Patch('/update/:id/status')
   async updateStatus(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -223,6 +228,7 @@ export class PartTypeAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminPartTypeDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,

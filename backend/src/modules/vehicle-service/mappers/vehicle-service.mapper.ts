@@ -1,5 +1,5 @@
 import { VehicleServiceModel } from '../models/vehicle-service.model';
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import { ServiceCategoryMapper } from '@/modules/service-category/mappers/service-category.mapper';
 
 export class VehicleServiceMapper {
   static toDomain(prismaService: any): VehicleServiceModel {
@@ -9,7 +9,7 @@ export class VehicleServiceMapper {
     model.slug = prismaService.slug;
     model.description = prismaService.description;
     model.orderBy = prismaService.order;
-    model.status = prismaService.status?.toLowerCase() as EnumStatus;
+    model.status = prismaService.status;
     model.photo = prismaService.photo;
     model.serviceCategoryId = prismaService.serviceCategoryId;
 
@@ -19,6 +19,12 @@ export class VehicleServiceMapper {
     model.createdBy = prismaService.createdBy;
     model.updatedBy = prismaService.updatedBy;
     model.deletedBy = prismaService.deletedBy;
+
+    if (prismaService.serviceCategory) {
+      model.serviceCategory = ServiceCategoryMapper.toDomain(
+        prismaService.serviceCategory
+      );
+    }
 
     return model;
   }

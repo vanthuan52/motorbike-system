@@ -1,3 +1,6 @@
+import { UserModel } from '@/modules/user/models/user.model';
+import { CandidateModel } from './candidate.model';
+
 /**
  * Domain model representing a candidate review/feedback.
  * Maps from Prisma CandidateReview to application domain layer.
@@ -8,7 +11,9 @@ export class CandidateReviewModel {
   rating?: number;
 
   userId: string;
+  user?: UserModel;
   candidateId: string;
+  candidate?: CandidateModel;
 
   createdAt: Date;
   updatedAt: Date;

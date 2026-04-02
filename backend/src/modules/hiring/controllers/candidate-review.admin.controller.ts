@@ -35,9 +35,9 @@ import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { CandidateReviewUtil } from '../utils/candidate-review.util';
 import { CandidateReviewResponseDto } from '../dtos/candidate-review-response.dto';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
-import {
-  IPaginationQueryOffsetParams,
-} from '@/common/pagination/interfaces/pagination.interface';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.hiring')
@@ -109,6 +109,7 @@ export class CandidateReviewAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCandidateReviewCreate)
   @Post('/create')
   async create(
     @Body() payload: CandidateReviewCreateRequestDto

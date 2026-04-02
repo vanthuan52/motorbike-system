@@ -1,4 +1,8 @@
 import { EnumAppointmentStatus } from '../enums/appointment.enum';
+import { UserModel } from '@/modules/user/models/user.model';
+import { UserVehicleModel } from '@/modules/user-vehicle/models/user-vehicle.model';
+import { VehicleModelModel } from '@/modules/vehicle-model/models/vehicle-model.model';
+import { VehicleServiceModel } from '@/modules/vehicle-service/models/vehicle-service.model';
 
 /**
  * Domain model representing a service appointment.
@@ -16,8 +20,12 @@ export class AppointmentModel {
   status: EnumAppointmentStatus;
 
   userId?: string;
+  user?: UserModel;
   userVehicleId?: string;
+  userVehicle?: UserVehicleModel;
   vehicleModelId: string;
+  vehicleModel?: VehicleModelModel;
+  vehicleServices?: VehicleServiceModel[];
 
   createdAt: Date;
   updatedAt: Date;

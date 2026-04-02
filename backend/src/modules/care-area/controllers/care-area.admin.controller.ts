@@ -65,6 +65,8 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.care-area')
 @Controller({
@@ -130,6 +132,7 @@ export class CareAreaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareAreaCreate)
   @Post('/create')
   async create(
     @AuthJwtPayload('userId') userId: string,
@@ -197,6 +200,7 @@ export class CareAreaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareAreaUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe) id: string,
@@ -226,6 +230,7 @@ export class CareAreaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareAreaDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe) id: string,
@@ -280,6 +285,7 @@ export class CareAreaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareAreaRestore)
   @Post('/restore/:id')
   async restore(
     @Param('id', RequestRequiredPipe) id: string,
@@ -307,6 +313,7 @@ export class CareAreaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareAreaForceDelete)
   @Delete('/force-delete/:id')
   async forceDelete(
     @Param('id', RequestRequiredPipe) id: string,

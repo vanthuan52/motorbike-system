@@ -137,7 +137,7 @@ export class PermissionAdminController {
     action: [EnumPolicyAction.read, EnumPolicyAction.create],
   })
   @RoleProtected('admin')
-  @ActivityLog(EnumActivityLogAction.adminRoleCreate)
+  @ActivityLog(EnumActivityLogAction.adminPermissionCreate)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -173,7 +173,7 @@ export class PermissionAdminController {
     action: [EnumPolicyAction.read, EnumPolicyAction.update],
   })
   @RoleProtected('admin')
-  @ActivityLog(EnumActivityLogAction.adminRoleUpdate)
+  @ActivityLog(EnumActivityLogAction.adminPermissionUpdate)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
@@ -212,7 +212,7 @@ export class PermissionAdminController {
     action: [EnumPolicyAction.read, EnumPolicyAction.delete],
   })
   @RoleProtected('admin')
-  @ActivityLog(EnumActivityLogAction.adminRoleDelete)
+  @ActivityLog(EnumActivityLogAction.adminPermissionDelete)
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()

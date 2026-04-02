@@ -1,5 +1,6 @@
 import { ActivityLogModel } from '../models/activity-log.model';
 import { EnumActivityLogAction } from '../enums/activity-log.enum';
+import { UserMapper } from '@/modules/user/mappers/user.mapper';
 
 export class ActivityLogMapper {
   static toDomain(prismaLog: any): ActivityLogModel {
@@ -28,6 +29,10 @@ export class ActivityLogMapper {
     model.createdBy = prismaLog.createdBy;
     model.updatedBy = prismaLog.updatedBy;
     model.deletedBy = prismaLog.deletedBy;
+
+    if (prismaLog.user) {
+      model.user = UserMapper.toDomain(prismaLog.user);
+    }
 
     return model;
   }

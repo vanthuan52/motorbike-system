@@ -46,7 +46,13 @@ import { NotificationUserSettingResponseDto } from '@/modules/notification/dtos/
 import { NotificationService } from '@/modules/notification/services/notification.service';
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
-import { GeoLocation, Prisma, UserAgent } from '@/generated/prisma-client';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.shared.notification')
 @Controller({
@@ -130,6 +136,7 @@ export class NotificationSharedController {
   @UserProtected()
   @AuthJwtAccessProtected()
   @ApiKeyProtected()
+  @ActivityLog(EnumActivityLogAction.userNotificationUpdateSetting)
   @Put('/update/setting')
   async updateUserSetting(
     @AuthJwtPayload('userId')

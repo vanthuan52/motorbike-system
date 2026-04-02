@@ -1,3 +1,6 @@
+import { CareAreaModel } from '@/modules/care-area/models/care-area.model';
+import { VehicleServiceModel } from '@/modules/vehicle-service/models/vehicle-service.model';
+
 /**
  * Domain model representing a service checklist template.
  * Maps from Prisma ServiceChecklist to application domain layer.
@@ -9,7 +12,11 @@ export class ServiceChecklistModel {
   description?: string;
   orderBy: string;
   vehicleType: string[];
+
   careAreaId: string;
+  careArea?: CareAreaModel;
+  vehicleServiceId?: string;
+  vehicleService?: VehicleServiceModel;
 
   createdAt: Date;
   updatedAt: Date;

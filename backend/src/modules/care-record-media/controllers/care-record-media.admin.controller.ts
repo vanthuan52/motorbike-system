@@ -61,6 +61,8 @@ import {
   RequestIPAddress,
   RequestUserAgent,
 } from '@/common/request/decorators/request.decorator';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 
 @ApiTags('modules.admin.care-record-media')
 @Controller({
@@ -137,6 +139,7 @@ export class CareRecordMediaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordMediaCreate)
   @Post('/create')
   async create(
     @Body() body: CareRecordMediaCreateRequestDto,
@@ -162,6 +165,7 @@ export class CareRecordMediaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordMediaUpdate)
   @Put('/update/:id')
   async update(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
@@ -189,6 +193,7 @@ export class CareRecordMediaAdminController {
   @RoleProtected('admin')
   @UserProtected()
   @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordMediaDelete)
   @Delete('/delete/:id')
   async delete(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,

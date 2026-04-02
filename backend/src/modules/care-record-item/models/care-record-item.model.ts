@@ -2,6 +2,10 @@ import {
   EnumCareRecordItemSource,
   EnumCareRecordItemType,
 } from '../enums/care-record-item.enum';
+import { CareRecordModel } from '@/modules/care-record/models/care-record.model';
+import { VehicleServiceModel } from '@/modules/vehicle-service/models/vehicle-service.model';
+import { PartModel } from '@/modules/part/models/part.model';
+import { UserModel } from '@/modules/user/models/user.model';
 
 /**
  * Domain model representing an item (part/service) within a care record.
@@ -19,9 +23,13 @@ export class CareRecordItemModel {
   note?: string;
 
   careRecordId: string;
+  careRecord?: CareRecordModel;
   vehicleServiceId: string;
+  vehicleService?: VehicleServiceModel;
   partId?: string;
+  part?: PartModel;
   technicianId?: string;
+  technician?: UserModel;
 
   createdAt: Date;
   updatedAt: Date;

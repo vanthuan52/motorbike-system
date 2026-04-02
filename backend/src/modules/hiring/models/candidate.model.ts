@@ -1,4 +1,6 @@
 import { EnumCandidateStatus } from '../enums/hiring.enum';
+import { HiringModel } from './hiring.model';
+import { CandidateReviewModel } from './candidate-review.model';
 
 /**
  * Domain model representing a job candidate.
@@ -14,6 +16,10 @@ export class CandidateModel {
   resume?: string;
 
   hiringId: string;
+  hiring?: HiringModel;
+
+  // Child relations
+  reviews?: CandidateReviewModel[];
 
   createdAt: Date;
   updatedAt: Date;
