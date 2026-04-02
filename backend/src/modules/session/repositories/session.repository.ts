@@ -3,12 +3,12 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
-  IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { ISessionListFilters } from '@/modules/session/interfaces/session.filter.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
@@ -38,9 +38,9 @@ export class SessionRepository {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >,
-    isRevoked?: Record<string, IPaginationEqual>
+    filters?: ISessionListFilters
   ): Promise<IPaginationOffsetReturn<SessionModel>> {
-    return this.paginationService.offset<
+    const paginatedResult = await this.paginationService.offset<
       PrismaSession,
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
@@ -48,13 +48,18 @@ export class SessionRepository {
       ...others,
       where: {
         ...where,
-        ...isRevoked,
+        ...filters,
         userId,
       },
       include: {
         user: true,
       },
     });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => SessionMapper.toDomain(item)),
+    };
   }
 
   async findActiveWithPaginationCursor(
@@ -67,7 +72,7 @@ export class SessionRepository {
       Prisma.SessionWhereInput
     >
   ): Promise<IPaginationCursorReturn<SessionModel>> {
-    return this.paginationService.cursor<
+    const paginatedResult = await this.paginationService.cursor<
       PrismaSession,
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
@@ -82,6 +87,11 @@ export class SessionRepository {
         user: true,
       },
     });
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item => SessionMapper.toDomain(item)),
+    };
   }
 
   async findActive(userId: string): Promise<DatabaseIdDto[]> {

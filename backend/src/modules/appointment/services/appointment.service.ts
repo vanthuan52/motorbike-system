@@ -49,7 +49,7 @@ export class AppointmentService implements IAppointmentService {
         filters
       );
     return {
-      data: data as AppointmentModel[],
+      data,
       ...others,
     };
   }
@@ -62,7 +62,7 @@ export class AppointmentService implements IAppointmentService {
         message: 'appointment.error.notFound',
       });
     }
-    return appointment as AppointmentModel;
+    return appointment;
   }
 
   async findOneByIdOrFail(id: string): Promise<AppointmentModel> {
@@ -140,7 +140,7 @@ export class AppointmentService implements IAppointmentService {
     };
 
     const created = await this.appointmentRepository.create(data);
-    return created as AppointmentModel;
+    return created;
   }
 
   async update(
@@ -223,7 +223,7 @@ export class AppointmentService implements IAppointmentService {
     };
 
     const updated = await this.appointmentRepository.update(id, data);
-    return updated as AppointmentModel;
+    return updated;
   }
 
   async updateStatus(
@@ -237,17 +237,17 @@ export class AppointmentService implements IAppointmentService {
       status,
       updatedBy: actionBy,
     });
-    return updated as AppointmentModel;
+    return updated;
   }
 
   async delete(
     id: string,
     requestLog: IRequestLog,
     actionBy: string
-  ): Promise<IResponseReturn<void>> {
+  ): Promise<AppointmentModel> {
     await this.findOneByIdOrFail(id);
     const deleted = await this.appointmentRepository.softDelete(id, actionBy);
-    return deleted as AppointmentModel;
+    return deleted;
   }
 
   // === Trash/Restore ===
@@ -265,7 +265,7 @@ export class AppointmentService implements IAppointmentService {
         filters
       );
     return {
-      data: data as AppointmentModel[],
+      data,
       ...others,
     };
   }
@@ -292,7 +292,7 @@ export class AppointmentService implements IAppointmentService {
     }
 
     const updated = await this.appointmentRepository.restore(id, restoredBy);
-    return updated as AppointmentModel;
+    return updated;
   }
 
   async forceDelete(
@@ -317,10 +317,6 @@ export class AppointmentService implements IAppointmentService {
     }
 
     const deleted = await this.appointmentRepository.forceDelete(id);
-    return {
-      metadataActivityLog: this.appointmentUtil.mapActivityLogMetadata(
-        deleted as any
-      ),
-    };
+    return deleted;
   }
 }

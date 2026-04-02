@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IPermissionListFilters } from '@/modules/permission/interfaces/permission.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
@@ -30,11 +30,11 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    group?: Record<string, IPaginationIn>
+    filters?: IPermissionListFilters
   ): Promise<IPaginationOffsetReturn<PermissionModel>> {
     return this.permissionRepository.findWithPaginationOffsetByAdmin(
       pagination,
-      group
+      filters
     );
   }
 
@@ -43,11 +43,11 @@ export class PermissionService implements IPermissionService {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    group?: Record<string, IPaginationIn>
+    filters?: IPermissionListFilters
   ): Promise<IPaginationCursorReturn<PermissionModel>> {
     return this.permissionRepository.findWithPaginationCursor(
       pagination,
-      group
+      filters
     );
   }
 

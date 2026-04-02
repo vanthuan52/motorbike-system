@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IPermissionListFilters } from '@/modules/permission/interfaces/permission.filter.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { PermissionCreateRequestDto } from '@/modules/permission/dtos/request/permission.create.request.dto';
 import { PermissionUpdateRequestDto } from '@/modules/permission/dtos/request/permission.update.request.dto';
@@ -32,7 +32,7 @@ export class PermissionRepository {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    group?: Record<string, IPaginationIn>
+    filters?: IPermissionListFilters
   ): Promise<IPaginationOffsetReturn<PermissionModel>> {
     const result = await this.paginationService.offset<
       PrismaPermission,
@@ -42,7 +42,7 @@ export class PermissionRepository {
       ...params,
       where: {
         ...where,
-        ...group,
+        ...filters,
       },
     });
 
@@ -60,7 +60,7 @@ export class PermissionRepository {
       Prisma.PermissionSelect,
       Prisma.PermissionWhereInput
     >,
-    group?: Record<string, IPaginationIn>
+    filters?: IPermissionListFilters
   ): Promise<IPaginationCursorReturn<PermissionModel>> {
     const result = await this.paginationService.cursor<
       PrismaPermission,
@@ -70,7 +70,7 @@ export class PermissionRepository {
       ...params,
       where: {
         ...where,
-        ...group,
+        ...filters,
       },
     });
 

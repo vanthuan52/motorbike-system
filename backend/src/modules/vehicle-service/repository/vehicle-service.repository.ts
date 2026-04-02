@@ -6,8 +6,8 @@ import {
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
-  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IVehicleServiceListFilters } from '../interfaces/vehicle-service.filter.interface';
 import { VehicleServiceModel } from '@/modules/vehicle-service/models/vehicle-service.model';
 import { VehicleServiceMapper } from '../mappers/vehicle-service.mapper';
 import {
@@ -30,7 +30,7 @@ export class VehicleServiceRepository {
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleServiceListFilters
   ): Promise<IPaginationOffsetReturn<VehicleServiceModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaVehicleService,
@@ -62,7 +62,7 @@ export class VehicleServiceRepository {
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleServiceListFilters
   ): Promise<IPaginationCursorReturn<VehicleServiceModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaVehicleService,

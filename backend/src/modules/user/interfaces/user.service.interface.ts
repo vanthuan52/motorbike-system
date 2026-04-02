@@ -4,13 +4,12 @@ import { IDatabaseOptions } from '@/common/database/interfaces/database.interfac
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { IFile } from '@/common/file/interfaces/file.interface';
 import {
-  IPaginationEqual,
-  IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IUserListFilters } from './user.filter.interface';
 import {
   IRequestApp,
   IRequestLog,
@@ -59,17 +58,14 @@ export interface IUserService {
       Prisma.UserSelect,
       Prisma.UserWhereInput
     >,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IPaginationOffsetReturn<UserModel>>;
   getListCursor(
     pagination: IPaginationQueryCursorParams<
       Prisma.UserSelect,
       Prisma.UserWhereInput
     >,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-    country?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IPaginationCursorReturn<UserModel>>;
   getOne(id: string): Promise<UserModel>;
   createByAdmin(
@@ -126,9 +122,7 @@ export interface IUserService {
     requestLog: IRequestLog
   ): Promise<void>;
   exportByAdmin(
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-    country?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IResponseFileReturn>;
   // =========================== Service to Service calll ==============================
   createRandomUsername(): string;

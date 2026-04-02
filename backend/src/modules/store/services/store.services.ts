@@ -35,10 +35,10 @@ export class StoreService implements IStoreService {
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >,
-    status?: Record<string, IPaginationIn>
+    filters?: Prisma.StoreWhereInput
   ): Promise<IPaginationOffsetReturn<StoreModel>> {
     const { data, ...others } =
-      await this.storeRepository.findWithPaginationOffset(pagination, status);
+      await this.storeRepository.findWithPaginationOffset(pagination, filters);
 
     return {
       data,
@@ -51,10 +51,10 @@ export class StoreService implements IStoreService {
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >,
-    status?: Record<string, IPaginationIn>
+    filters?: Prisma.StoreWhereInput
   ): Promise<IPaginationCursorReturn<StoreModel>> {
     const { data, ...others } =
-      await this.storeRepository.findWithPaginationCursor(pagination, status);
+      await this.storeRepository.findWithPaginationCursor(pagination, filters);
 
     return {
       data,

@@ -7,10 +7,10 @@ import { VehicleServiceUploadPhotoRequestDto } from '../dtos/request/vehicle-ser
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IVehicleServiceListFilters } from './vehicle-service.filter.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { Prisma } from '@/generated/prisma-client';
@@ -21,7 +21,7 @@ export interface IVehicleServiceService {
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleServiceListFilters
   ): Promise<IPaginationOffsetReturn<VehicleServiceModel>>;
 
   getListCursor(
@@ -29,7 +29,7 @@ export interface IVehicleServiceService {
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleServiceListFilters
   ): Promise<IPaginationCursorReturn<VehicleServiceModel>>;
 
   findOneById(id: string): Promise<VehicleServiceModel>;

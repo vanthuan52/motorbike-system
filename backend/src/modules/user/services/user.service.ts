@@ -23,13 +23,12 @@ import { IFile } from '@/common/file/interfaces/file.interface';
 import { FileService } from '@/common/file/services/file.service';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
-  IPaginationEqual,
-  IPaginationIn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IUserListFilters } from '@/modules/user/interfaces/user.filter.interface';
 import {
   IRequestApp,
   IRequestLog,
@@ -153,13 +152,11 @@ export class UserService implements IUserService {
       Prisma.UserSelect,
       Prisma.UserWhereInput
     >,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IPaginationOffsetReturn<UserModel>> {
     return this.userRepository.findWithPaginationOffset(
       pagination,
-      status,
-      role
+      filters
     );
   }
 
@@ -168,13 +165,11 @@ export class UserService implements IUserService {
       Prisma.UserSelect,
       Prisma.UserWhereInput
     >,
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IPaginationCursorReturn<UserModel>> {
     return this.userRepository.findWithPaginationCursor(
       pagination,
-      status,
-      role
+      filters
     );
   }
 
@@ -728,11 +723,9 @@ export class UserService implements IUserService {
   }
 
   async exportByAdmin(
-    status?: Record<string, IPaginationIn>,
-    role?: Record<string, IPaginationEqual>,
-    country?: Record<string, IPaginationEqual>
+    filters?: IUserListFilters
   ): Promise<IResponseFileReturn> {
-    const data = await this.userRepository.findExport(status, role);
+    const data = await this.userRepository.findExport(filters);
 
     const users = this.userUtil.mapExport(data);
     const csvString = this.fileService.writeCsv(users);

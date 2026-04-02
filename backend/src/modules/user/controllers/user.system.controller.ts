@@ -75,11 +75,12 @@ export class UserSystemController {
     @PaginationQueryFilterInEnum<EnumUserStatus>('status', UserDefaultStatus)
     status?: Record<string, IPaginationIn>,
     @PaginationQueryFilterEqualString('role')
-    role?: Record<string, IPaginationEqual>,
-    @PaginationQueryFilterEqualString('country')
-    country?: Record<string, IPaginationEqual>
+    role?: Record<string, IPaginationEqual>
   ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-    const result = await this.userService.getListCursor(pagination, status, role, country);
+    const result = await this.userService.getListCursor(pagination, {
+      ...status,
+      ...role,
+    });
     const mapped = this.userUtil.mapList(result.data);
     return {
       ...result,

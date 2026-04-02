@@ -14,10 +14,10 @@ import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IVehicleBrandListFilters } from '../interfaces/vehicle-brand.filter.interface';
 import { EnumVehicleBrandStatusCodeError } from '../enums/vehicle-brand.status-code.enum';
 import { VehicleBrandModel } from '../models/vehicle-brand.model';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
@@ -45,7 +45,7 @@ export class VehicleBrandService implements IVehicleBrandService {
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleBrandListFilters
   ): Promise<IPaginationOffsetReturn<VehicleBrandModel>> {
     return this.vehicleBrandRepository.findWithPaginationOffset(
       pagination,
@@ -58,7 +58,7 @@ export class VehicleBrandService implements IVehicleBrandService {
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleBrandListFilters
   ): Promise<IPaginationCursorReturn<VehicleBrandModel>> {
     return this.vehicleBrandRepository.findWithPaginationCursor(
       pagination,

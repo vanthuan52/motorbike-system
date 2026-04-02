@@ -2,6 +2,7 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IAppointmentListFilters } from './appointment.filter.interface';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';
 import { AppointmentUpdateRequestDto } from '../dtos/request/appointment.update.request.dto';
 import { AppointmentUpdateStatusRequestDto } from '../dtos/request/appointment.update-status.request.dto';
@@ -15,7 +16,7 @@ export interface IAppointmentService {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IAppointmentListFilters
   ): Promise<IPaginationOffsetReturn<AppointmentModel>>;
 
   findOneById(id: string): Promise<AppointmentModel>;
@@ -53,7 +54,7 @@ export interface IAppointmentService {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IAppointmentListFilters
   ): Promise<IPaginationOffsetReturn<AppointmentModel>>;
 
   restore(

@@ -53,7 +53,9 @@ export class PermissionSystemController {
     @PaginationQueryFilterInEnum('type', RoleDefaultType)
     type?: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
-    const result = await this.permissionService.getListCursor(pagination, type);
+    const result = await this.permissionService.getListCursor(pagination, {
+      ...type,
+    });
     const mapped = this.permissionUtil.mapList(result.data);
     return {
       ...result,

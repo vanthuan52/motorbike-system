@@ -17,15 +17,14 @@ import { VehicleServiceUtil } from '../utils/vehicle-service.util';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { IVehicleServiceListFilters } from '../interfaces/vehicle-service.filter.interface';
 import { EnumVehicleServiceStatusCodeError } from '../enums/vehicle-service.status-code.enum';
 import { VehicleServiceModel } from '../models/vehicle-service.model';
-import { Prisma } from '@/generated/prisma-client';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class VehicleServiceService implements IVehicleServiceService {
@@ -46,7 +45,7 @@ export class VehicleServiceService implements IVehicleServiceService {
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleServiceListFilters
   ): Promise<IPaginationOffsetReturn<VehicleServiceModel>> {
     return this.vehicleServiceRepository.findWithPaginationOffset(
       pagination,
@@ -59,7 +58,7 @@ export class VehicleServiceService implements IVehicleServiceService {
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleServiceListFilters
   ): Promise<IPaginationCursorReturn<VehicleServiceModel>> {
     return this.vehicleServiceRepository.findWithPaginationCursor(
       pagination,
@@ -165,7 +164,10 @@ export class VehicleServiceService implements IVehicleServiceService {
     };
 
     try {
-      const updated = await this.vehicleServiceRepository.update(id, updateData);
+      const updated = await this.vehicleServiceRepository.update(
+        id,
+        updateData
+      );
       return updated;
     } catch (error: any) {
       if (error.code === 'P2025') {
@@ -191,7 +193,7 @@ export class VehicleServiceService implements IVehicleServiceService {
     });
     return updated;
   }
- 
+
   async delete(
     id: string,
     requestLog: IRequestLog,
@@ -241,10 +243,7 @@ export class VehicleServiceService implements IVehicleServiceService {
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
   }
 
-  async updatePhoto(
-    id: string,
-    photo: AwsS3Dto
-  ): Promise<VehicleServiceModel> {
+  async updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleServiceModel> {
     return this.vehicleServiceRepository.update(id, {
       photo: photo.completedUrl,
     });

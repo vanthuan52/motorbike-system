@@ -104,12 +104,13 @@ export class PartAdminController {
     @Query('partType') partTypeId: string,
     @Query('vehicleBrand') vehicleBrandId: string
   ): Promise<IResponsePagingReturn<PartListResponseDto>> {
-    const result = await this.partService.getListOffset(
-      pagination,
-      status,
-      partTypeId,
-      vehicleBrandId
-    );
+    const filters: Record<string, any> = {
+      ...status,
+    };
+    if (partTypeId) filters['partTypeId'] = partTypeId;
+    if (vehicleBrandId) filters['vehicleBrandId'] = vehicleBrandId;
+
+    const result = await this.partService.getListOffset(pagination, filters);
     const mapped = this.partUtil.mapList(result.data);
     return {
       ...result,

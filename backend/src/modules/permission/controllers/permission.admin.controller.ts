@@ -101,7 +101,7 @@ export class PermissionAdminController {
   ): Promise<IResponsePagingReturn<PermissionListResponseDto>> {
     const result = await this.permissionService.getListOffsetByAdmin(
       pagination,
-      group
+      { ...group }
     );
     const mapped = this.permissionUtil.mapList(result.data);
     return {

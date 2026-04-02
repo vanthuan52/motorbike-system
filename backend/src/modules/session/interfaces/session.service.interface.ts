@@ -1,12 +1,13 @@
 import {
-  IPaginationEqual,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
+import { ISessionListFilters } from './session.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { ISession, ISessionLoginCreate } from './session.interface';
+import { SessionModel } from '../models/session.model';
 import { Prisma } from '@/generated/prisma-client';
 
 export interface ISessionService {
@@ -16,15 +17,15 @@ export interface ISessionService {
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >,
-    isRevoked?: Record<string, IPaginationEqual>
-  ): Promise<IPaginationOffsetReturn<ISession>>;
+    filters?: ISessionListFilters
+  ): Promise<IPaginationOffsetReturn<SessionModel>>;
   getListCursor(
     userId: string,
     pagination: IPaginationQueryCursorParams<
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
     >
-  ): Promise<IPaginationCursorReturn<ISession>>;
+  ): Promise<IPaginationCursorReturn<SessionModel>>;
   revoke(
     userId: string,
     sessionId: string,
@@ -62,4 +63,3 @@ export interface ISessionService {
     options?: { tx?: Prisma.TransactionClient }
   ): Promise<void>;
 }
-
