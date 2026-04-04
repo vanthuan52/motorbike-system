@@ -22,7 +22,17 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "paths": {
-      "@/*": ["src/*"]
+      "@/app/*": ["src/app/*"],
+      "@/common/*": ["src/common/*"],
+      "@/configs/*": ["src/configs/*"],
+      "@/config": ["src/configs/index.ts"],
+      "@/modules/*": ["src/modules/*"],
+      "@/routes/*": ["src/router/routes/*"],
+      "@/router": ["src/router/router.module.ts"],
+      "@/migration/*": ["src/migration/*"],
+      "@/test/*": ["test/*"],
+      "@/generated/*": ["generated/*"],
+      "@/prisma/client": ["generated/prisma-client"]
     },
     "forceConsistentCasingInFileNames": true,
     "strictBindCallApply": false,

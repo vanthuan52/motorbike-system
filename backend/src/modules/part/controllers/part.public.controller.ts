@@ -24,9 +24,9 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
 import {
-  PART_DEFAULT_AVAILABLE_ORDER_BY,
-  PART_DEFAULT_AVAILABLE_SEARCH,
-  PART_DEFAULT_STATUS,
+  PartDefaultAvailableOrderBy,
+  PartDefaultAvailableSearch,
+  PartDefaultStatus,
 } from '../constants/part.list.constant';
 import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -61,11 +61,11 @@ export class PartPublicController {
   @Get('/list')
   async list(
     @PaginationCursorQuery({
-      availableSearch: PART_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: PART_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: PartDefaultAvailableSearch,
+      availableOrderBy: PartDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryCursorParams,
-    @PaginationQueryFilterInEnum('status', PART_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', PartDefaultStatus)
     status: Record<string, IPaginationIn>,
     @Query('partType') partTypeId: string,
     @Query('vehicleBrand') vehicleBrandId: string

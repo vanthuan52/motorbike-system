@@ -51,11 +51,11 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY,
-  VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH,
-  VEHICLE_MODEL_DEFAULT_FUEL_TYPE,
-  VEHICLE_MODEL_DEFAULT_STATUS,
-  VEHICLE_MODEL_DEFAULT_TYPE,
+  VehicleModelDefaultAvailableOrderBy,
+  VehicleModelDefaultAvailableSearch,
+  VehicleModelDefaultFuelType,
+  VehicleModelDefaultStatus,
+  VehicleModelDefaultType,
 } from '../constants/vehicle-model.list.constant';
 import { VehicleModelService } from '../services/vehicle-model.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -73,8 +73,8 @@ import {
 } from '@/modules/user/interfaces/user.interface';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { Prisma } from '@/generated/prisma-client';
 import { IVehicleModelListFilters } from '../interfaces/vehicle-model.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.vehicle-model')
 @Controller({
@@ -99,18 +99,18 @@ export class VehicleModelAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: VehicleModelDefaultAvailableSearch,
+      availableOrderBy: VehicleModelDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', VEHICLE_MODEL_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', VehicleModelDefaultStatus)
     status: Record<string, IPaginationIn>,
-    @PaginationQueryFilterInEnum('type', VEHICLE_MODEL_DEFAULT_TYPE)
+    @PaginationQueryFilterInEnum('type', VehicleModelDefaultType)
     type: Record<string, IPaginationIn>,
-    @PaginationQueryFilterInEnum('fuelType', VEHICLE_MODEL_DEFAULT_FUEL_TYPE)
+    @PaginationQueryFilterInEnum('fuelType', VehicleModelDefaultFuelType)
     fuelType: Record<string, IPaginationIn>,
     @Query('vehicleBrand')
     vehicleBrandId?: string,

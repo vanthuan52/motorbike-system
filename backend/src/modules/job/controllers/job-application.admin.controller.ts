@@ -32,7 +32,6 @@ import {
   IPaginationQueryOffsetParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { EnumJobApplicationStatus } from '../enums/job.enum';
 import {
   IResponseReturn,
   IResponsePagingReturn,
@@ -45,6 +44,7 @@ import { JobApplicationUtil } from '../utils/job-application.util';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { IJobApplicationListFilters } from '../interfaces/job-application.filter.interface';
+import { JobApplicationDefaultStatus } from '../constants/job.constant';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.job')
@@ -76,14 +76,7 @@ export class JobApplicationAdminController {
       Prisma.JobApplicationSelect,
       Prisma.JobApplicationWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', [
-      EnumJobApplicationStatus.hired,
-      EnumJobApplicationStatus.interviewScheduled,
-      EnumJobApplicationStatus.new,
-      EnumJobApplicationStatus.rejected,
-      EnumJobApplicationStatus.reviewed,
-      EnumJobApplicationStatus.interviewing,
-    ])
+    @PaginationQueryFilterInEnum('status', JobApplicationDefaultStatus)
     status: Record<string, IPaginationIn>,
     @Query('jobId') jobId: string,
     @Query('appliedAtFrom') appliedAtFrom: string,

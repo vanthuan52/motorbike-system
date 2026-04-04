@@ -1,4 +1,4 @@
-import { EnumJobStatus, EnumJobType } from '../enums/job.enum';
+import { EnumJobApplicationStatus, EnumJobStatus, EnumJobType } from '../enums/job.enum';
 
 export const JobDefaultStatus = [
   EnumJobStatus.draft,
@@ -14,3 +14,5 @@ export const JobDefaultJobType = [
 ];
 
 export const JobDefaultAvailableSearch = ['title', 'status'];
+
+export const JobApplicationDefaultStatus = Object.values(EnumJobApplicationStatus);

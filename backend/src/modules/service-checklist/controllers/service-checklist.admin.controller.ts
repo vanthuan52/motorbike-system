@@ -45,19 +45,22 @@ import {
 import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import {
-  SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
-  SERVICE_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
+  ServiceChecklistDefaultAvailableOrderBy,
+  ServiceChecklistDefaultAvailableSearch,
 } from '../constants/service-checklist.list.constant';
 import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { ServiceChecklistUtil } from '../utils/service-checklist.util';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { Prisma } from '@/generated/prisma-client';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
-import { EnumPolicyAction, EnumPolicySubject } from '@/modules/policy/enums/policy.enum';
+import {
+  EnumPolicyAction,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
 import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-checklist')
 @Controller({
@@ -82,8 +85,8 @@ export class ServiceChecklistAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServiceChecklistDefaultAvailableSearch,
+      availableOrderBy: ServiceChecklistDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.ServiceChecklistSelect,

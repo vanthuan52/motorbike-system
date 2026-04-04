@@ -57,10 +57,10 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
-  CARE_RECORD_DEFAULT_AVAILABLE_SEARCH,
-  CARE_RECORD_DEFAULT_PAYMENT_STATUS,
-  CARE_RECORD_DEFAULT_STATUS,
+  CareRecordDefaultAvailableOrderBy,
+  CareRecordDefaultAvailableSearch,
+  CareRecordDefaultPaymentStatus,
+  CareRecordDefaultStatus,
 } from '../constants/care-record.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
@@ -107,17 +107,17 @@ export class CareRecordAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: CARE_RECORD_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareRecordDefaultAvailableSearch,
+      availableOrderBy: CareRecordDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('appointmentId', RequestOptionalParseObjectIdPipe)
     appointmentId: string,
-    @PaginationQueryFilterInEnum('status', CARE_RECORD_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', CareRecordDefaultStatus)
     status: Record<string, IPaginationIn>,
     @PaginationQueryFilterInEnum(
       'paymentStatus',
-      CARE_RECORD_DEFAULT_PAYMENT_STATUS
+      CareRecordDefaultPaymentStatus
     )
     paymentStatus: Record<string, IPaginationIn>,
     @Query('technicianId', RequestOptionalParseObjectIdPipe)
@@ -393,8 +393,8 @@ export class CareRecordAdminController {
   @Get('/trash')
   async trashList(
     @PaginationOffsetQuery({
-      availableSearch: CARE_RECORD_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareRecordDefaultAvailableSearch,
+      availableOrderBy: CareRecordDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams
   ): Promise<IResponsePagingReturn<CareRecordListResponseDto>> {

@@ -55,8 +55,8 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
-  SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
+  ServicePriceDefaultAvailableOrderBy,
+  ServicePriceDefaultAvailableSearch,
 } from '../constants/service-price.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { IModelServicePrice } from '../interfaces/service-price.interface';
@@ -70,8 +70,8 @@ import { ServicePriceUtil } from '../utils/service-price.util';
 import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
 import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { Prisma } from '@/generated/prisma-client';
 import { IServicePriceListFilters } from '../interfaces/service-price.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-price')
 @Controller({
@@ -99,8 +99,8 @@ export class ServicePriceAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServicePriceDefaultAvailableSearch,
+      availableOrderBy: ServicePriceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.ServicePriceSelect,
@@ -255,8 +255,8 @@ export class ServicePriceAdminController {
   @Get('/list/combined')
   async listServicePriceCombined(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServicePriceDefaultAvailableSearch,
+      availableOrderBy: ServicePriceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('vehicleService', RequestOptionalParseObjectIdPipe)
@@ -356,8 +356,8 @@ export class ServicePriceAdminController {
     @Param('vehicleServiceId', RequestRequiredPipe)
     vehicleServiceId: string,
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServicePriceDefaultAvailableSearch,
+      availableOrderBy: ServicePriceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
@@ -404,8 +404,8 @@ export class ServicePriceAdminController {
   @Get('/list/history/:vehicleServiceId/:vehicleModelId')
   async listHistory(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServicePriceDefaultAvailableSearch,
+      availableOrderBy: ServicePriceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Param('vehicleServiceId', RequestRequiredPipe, RequestIsValidObjectIdPipe)

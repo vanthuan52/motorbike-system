@@ -1,4 +1,5 @@
-export const CARE_RECORD_ITEM_DEFAULT_AVAILABLE_SEARCH = [];
-export const CARE_RECORD_ITEM_DEFAULT_AVAILABLE_ORDER_BY = ['createdAt'];
+export const CareRecordItemDefaultAvailableSearch: string[] = [];
+export const CareRecordItemDefaultAvailableOrderBy = ['createdAt'];
 
-export const CARE_RECORD_ITEM_DEFAULT_STATUS = [];
+export const CareRecordItemDefaultStatus: string[] = [];
+

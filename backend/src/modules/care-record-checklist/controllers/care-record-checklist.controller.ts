@@ -46,10 +46,10 @@ import {
 } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
-  CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
-  CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
-  CARE_RECORD_CHECKLIST_DEFAULT_RESULT,
-  CARE_RECORD_CHECKLIST_DEFAULT_STATUS,
+  CareRecordChecklistDefaultAvailableOrderBy,
+  CareRecordChecklistDefaultAvailableSearch,
+  CareRecordChecklistDefaultResult,
+  CareRecordChecklistDefaultStatus,
 } from '../constants/care-record-checklist.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
@@ -100,13 +100,13 @@ export class CareRecordChecklistController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareRecordChecklistDefaultAvailableSearch,
+      availableOrderBy: CareRecordChecklistDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
-    @PaginationQueryFilterInEnum('status', CARE_RECORD_CHECKLIST_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', CareRecordChecklistDefaultStatus)
     status: Record<string, IPaginationIn>,
-    @PaginationQueryFilterInEnum('result', CARE_RECORD_CHECKLIST_DEFAULT_RESULT)
+    @PaginationQueryFilterInEnum('result', CareRecordChecklistDefaultResult)
     result: Record<string, IPaginationIn>,
     @Query('careRecordService', RequestOptionalParseObjectIdPipe)
     careRecordServiceId: string

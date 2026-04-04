@@ -49,9 +49,9 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
-  SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
-  SERVICE_CATEGORY_DEFAULT_STATUS,
+  ServiceCategoryDefaultAvailableOrderBy,
+  ServiceCategoryDefaultAvailableSearch,
+  ServiceCategoryDefaultStatus,
 } from '../constants/service-category.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -93,14 +93,14 @@ export class ServiceCategoryAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServiceCategoryDefaultAvailableSearch,
+      availableOrderBy: ServiceCategoryDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', SERVICE_CATEGORY_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', ServiceCategoryDefaultStatus)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
     const result = await this.serviceCategoryService.getListOffset(

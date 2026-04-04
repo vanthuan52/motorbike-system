@@ -22,10 +22,10 @@ import {
   IPaginationQueryCursorParams,
   IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
-import { EnumStoreStatus } from '../enums/store.enum';
 import { StoreListResponseDto } from '../dtos/response/store.list.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { StoreUtil } from '../utils/store.util';
+import { StoreDefaultStatus } from '../constants/store.constant';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.public.store')
@@ -63,10 +63,7 @@ export class StorePublicController {
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', [
-      EnumStoreStatus.active,
-      EnumStoreStatus.inactive,
-    ])
+    @PaginationQueryFilterInEnum('status', StoreDefaultStatus)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<StoreListResponseDto>> {
     const result = await this.storeService.getListCursor(pagination, {

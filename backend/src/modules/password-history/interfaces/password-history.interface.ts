@@ -1,5 +1,3 @@
-import { PasswordHistory, User } from '@/generated/prisma-client';
+import { PasswordHistoryModel } from '../models/password-history.model';
 
-export interface IPasswordHistory extends PasswordHistory {
-    user: User;
-}
+export interface IPasswordHistory extends PasswordHistoryModel {}

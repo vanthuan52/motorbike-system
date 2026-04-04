@@ -1,8 +1,9 @@
-import { ENUM_CARE_RECORD_SERVICE_STATUS } from '../enums/care-record-service.enum';
+import { EnumCareRecordServiceStatus } from '../enums/care-record-service.enum';
 
-export const CARE_RECORD_SERVICE_DEFAULT_AVAILABLE_SEARCH = ['name'];
-export const CARE_RECORD_SERVICE_DEFAULT_AVAILABLE_ORDER_BY = ['createdAt'];
+export const CareRecordServiceDefaultAvailableSearch = ['name'];
+export const CareRecordServiceDefaultAvailableOrderBy = ['createdAt'];
 
-export const CARE_RECORD_SERVICE_DEFAULT_STATUS = Object.values(
-  ENUM_CARE_RECORD_SERVICE_STATUS,
+export const CareRecordServiceDefaultStatus = Object.values(
+  EnumCareRecordServiceStatus,
 );
+

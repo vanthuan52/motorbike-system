@@ -3,23 +3,17 @@ import {
   EnumPaymentStatus,
 } from '../enums/care-record.enum';
 
-export const CARE_RECORD_DEFAULT_AVAILABLE_SEARCH = [];
-export const CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY = [
+export const CareRecordDefaultAvailableSearch: string[] = [];
+export const CareRecordDefaultAvailableOrderBy = [
   'receivedAt',
   'handoverTime',
   'createdAt',
 ];
 
-export const CARE_RECORD_DEFAULT_STATUS = Object.values(
+export const CareRecordDefaultStatus = Object.values(
   EnumCareRecordStatus,
 );
 
-export const CARE_RECORD_DEFAULT_PAYMENT_STATUS =
+export const CareRecordDefaultPaymentStatus =
   Object.values(EnumPaymentStatus);
 
-export const VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH = ['name'];
-export const VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY = [
-  'orderBy',
-  'createdAt',
-  'updatedAt',
-];

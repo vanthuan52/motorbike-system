@@ -45,8 +45,8 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  CARE_RECORD_ITEM_DEFAULT_AVAILABLE_ORDER_BY,
-  CARE_RECORD_ITEM_DEFAULT_AVAILABLE_SEARCH,
+  CareRecordItemDefaultAvailableOrderBy,
+  CareRecordItemDefaultAvailableSearch,
 } from '../constants/care-record-item.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
@@ -90,8 +90,8 @@ export class CareRecordItemAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: CARE_RECORD_ITEM_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_RECORD_ITEM_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareRecordItemDefaultAvailableSearch,
+      availableOrderBy: CareRecordItemDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('careRecordId', RequestOptionalParseObjectIdPipe)

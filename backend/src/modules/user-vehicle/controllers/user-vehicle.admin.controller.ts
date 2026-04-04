@@ -36,8 +36,8 @@ import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decor
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import {
-  USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
-  USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
+  UserVehicleDefaultAvailableOrderBy,
+  UserVehicleDefaultAvailableSearch,
 } from '../constants/user-vehicle.list.constant';
 import { UserVehicleService } from '../services/user-vehicle.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -60,8 +60,8 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
-import { Prisma } from '@/generated/prisma-client';
 import { IUserVehicleListFilters } from '../interfaces/user-vehicle.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.user-vehicle')
 @Controller({
@@ -86,8 +86,8 @@ export class UserVehicleAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: UserVehicleDefaultAvailableSearch,
+      availableOrderBy: UserVehicleDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.UserVehicleSelect,
@@ -127,8 +127,8 @@ export class UserVehicleAdminController {
     @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     userId: string,
     @PaginationOffsetQuery({
-      availableSearch: USER_VEHICLE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: USER_VEHICLE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: UserVehicleDefaultAvailableSearch,
+      availableOrderBy: UserVehicleDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.UserVehicleSelect,
@@ -215,15 +215,11 @@ export class UserVehicleAdminController {
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
-    const updated = await this.userVehicleService.update(
-      id,
-      body,
-      {
-        ipAddress,
-        userAgent,
-        geoLocation,
-      }
-    );
+    const updated = await this.userVehicleService.update(id, body, {
+      ipAddress,
+      userAgent,
+      geoLocation,
+    });
     return {
       metadataActivityLog: this.userVehicleUtil.mapActivityLogMetadata(updated),
     };
