@@ -10,16 +10,17 @@ import { UserModel } from '@/modules/user/models/user.model';
  */
 export class SessionModel {
   id: string;
-  jti?: string;
+  userId: string;
+  deviceOwnershipId: string;
+  jti: string;
   ipAddress: string;
-  userAgent?: UserAgent;
+  userAgent: UserAgent;
   geoLocation?: GeoLocation;
   expiredAt: Date;
-  isRevoked: boolean;
   revokedAt?: Date;
+  isRevoked: boolean;
   revokedById?: string;
 
-  userId: string;
   user?: UserModel;
 
   createdAt: Date;

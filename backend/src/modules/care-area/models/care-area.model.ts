@@ -6,7 +6,7 @@ export class CareAreaModel {
   id: string;
   name: string;
   description?: string;
-  orderBy: string;
+  orderBy: number;
 
   createdAt: Date;
   updatedAt: Date;

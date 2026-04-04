@@ -15,6 +15,8 @@ import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log
 import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import { Prisma } from '@/generated/prisma-client';
 
+import { IActivityLogListFilters } from '../interfaces/activity-log.filter.interface';
+
 @Injectable()
 export class ActivityLogService implements IActivityLogService {
   constructor(private readonly activityRepository: ActivityLogRepository) {}
@@ -24,7 +26,7 @@ export class ActivityLogService implements IActivityLogService {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IActivityLogListFilters
   ): Promise<IPaginationOffsetReturn<ActivityLogModel>> {
     return this.activityRepository.findWithPaginationOffset(
       pagination,
@@ -37,7 +39,7 @@ export class ActivityLogService implements IActivityLogService {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IActivityLogListFilters
   ): Promise<IPaginationCursorReturn<ActivityLogModel>> {
     return this.activityRepository.findWithPaginationCursor(
       pagination,

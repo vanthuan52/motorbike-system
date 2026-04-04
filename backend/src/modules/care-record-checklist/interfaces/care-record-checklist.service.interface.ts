@@ -16,6 +16,7 @@ import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-
 import { CareRecordChecklistGetFullResponseDto } from '../dtos/response/care-record-checklist.full.response.dto';
 import { CareRecordChecklistModel } from '../models/care-record-checklist.model';
 import { Prisma } from '@/generated/prisma-client';
+import { ICareRecordChecklistListFilters } from './care-record-checklist.filter.interface';
 
 export interface ICareRecordChecklistService {
   getListOffset(
@@ -23,7 +24,7 @@ export interface ICareRecordChecklistService {
       Prisma.CareRecordChecklistSelect,
       Prisma.CareRecordChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordChecklistListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordChecklistModel>>;
 
   getListCursor(
@@ -31,7 +32,7 @@ export interface ICareRecordChecklistService {
       Prisma.CareRecordChecklistSelect,
       Prisma.CareRecordChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordChecklistListFilters
   ): Promise<IPaginationCursorReturn<CareRecordChecklistModel>>;
 
   findOneById(id: string): Promise<CareRecordChecklistModel>;

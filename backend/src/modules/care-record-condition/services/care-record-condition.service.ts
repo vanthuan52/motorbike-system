@@ -23,6 +23,8 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
+import { ICareRecordConditionListFilters } from '../interfaces/care-record-condition.filter.interface';
+
 @Injectable()
 export class CareRecordConditionService implements ICareRecordConditionService {
   constructor(
@@ -35,7 +37,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       Prisma.CareRecordConditionSelect,
       Prisma.CareRecordConditionWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordConditionListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordCondition>> {
     const { data, ...others } =
       await this.careRecordConditionRepository.findWithPaginationOffset({
@@ -57,7 +59,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       Prisma.CareRecordConditionSelect,
       Prisma.CareRecordConditionWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordConditionListFilters
   ): Promise<IPaginationCursorReturn<CareRecordCondition>> {
     const { data, ...others } =
       await this.careRecordConditionRepository.findWithPaginationCursor({

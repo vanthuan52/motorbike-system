@@ -3,9 +3,10 @@ import {
   EnumPolicyAction,
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
+import { Permission as PrismaPermission } from '@/generated/prisma-client';
 
 export class PermissionMapper {
-  static toDomain(prismaPermission: any): PermissionModel {
+  static toDomain(prismaPermission: PrismaPermission): PermissionModel {
     const model = new PermissionModel();
     model.id = prismaPermission.id;
     model.name = prismaPermission.name;
@@ -18,6 +19,10 @@ export class PermissionMapper {
 
     model.createdAt = prismaPermission.createdAt;
     model.updatedAt = prismaPermission.updatedAt;
+    model.deletedAt = prismaPermission.deletedAt;
+    model.createdBy = prismaPermission.createdBy;
+    model.updatedBy = prismaPermission.updatedBy;
+    model.deletedBy = prismaPermission.deletedBy;
 
     return model;
   }

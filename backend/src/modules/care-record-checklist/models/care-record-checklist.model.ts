@@ -16,8 +16,8 @@ export class CareRecordChecklistModel {
   status: EnumCareRecordChecklistStatus;
   note?: string;
   wearPercentage?: number;
-  imageBefore?: string;
-  imageAfter?: string;
+  imageBeforeCdnUrl?: string;
+  imageAfterCdnUrl?: string;
 
   careRecordServiceId: string;
   careRecordService?: CareRecordServiceModel;

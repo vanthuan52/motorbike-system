@@ -7,9 +7,9 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { AwsModule } from '@/common/aws/aws.module';
-import { CandidatePublicController } from '@/modules/hiring/controllers/candidate.public.controller';
-import { HiringModule } from '@/modules/hiring/hiring.module';
-import { HiringPublicController } from '@/modules/hiring/controllers/hiring.public.controller';
+import { JobApplicationPublicController } from '@/modules/job/controllers/jobApplication.public.controller';
+import { JobModule } from '@/modules/job/job.module';
+import { JobPublicController } from '@/modules/job/controllers/job.public.controller';
 import { StorePublicController } from '@/modules/store/controllers/store.public.controller';
 import { PartTypePublicController } from '@/modules/part-type/controllers/part-type.public.controller';
 import { PartTypeModule } from '@/modules/part-type/part-type.module';
@@ -40,8 +40,8 @@ import { HelloModule } from '@/modules/hello/hello.module';
     HelloPublicController,
     AuthPublicController,
     PartTypePublicController,
-    CandidatePublicController,
-    HiringPublicController,
+    JobApplicationPublicController,
+    JobPublicController,
     StorePublicController,
     ServiceCategoryPublicController,
     PartPublicController,
@@ -62,7 +62,7 @@ import { HelloModule } from '@/modules/hello/hello.module';
     SessionModule,
     PartTypeModule,
     ApiKeyModule,
-    HiringModule,
+    JobModule,
     StoreModule,
     ServiceCategoryModule,
     PartModule,

@@ -11,23 +11,17 @@ import { CareRecordItemMapper } from '@/modules/care-record-item/mappers/care-re
 import { CareRecordServiceMapper } from '@/modules/care-record-service/mappers/care-record-service.mapper';
 import { CareRecordMediaMapper } from '@/modules/care-record-media/mappers/care-record-media.mapper';
 import { CareRecordConditionMapper } from '@/modules/care-record-condition/mappers/care-record-condition.mapper';
+import { CareRecord as PrismaCareRecord } from '@/generated/prisma-client';
 
 export class CareRecordMapper {
-  static toDomain(prismaRecord: any): CareRecordModel {
+  static toDomain(prismaRecord: PrismaCareRecord): CareRecordModel {
     const model = new CareRecordModel();
     model.id = prismaRecord.id;
     model.vehicleModelName = prismaRecord.vehicleModelName;
     model.isInitialConditionRecorded = prismaRecord.isInitialConditionRecorded;
     model.receivedAt = prismaRecord.receivedAt;
     model.confirmedByOwner = prismaRecord.confirmedByOwner;
-    const statusMap: Record<string, EnumCareRecordStatus> = {
-      PENDING: EnumCareRecordStatus.pending,
-      IN_PROGRESS: EnumCareRecordStatus.inProgress,
-      COMPLETED: EnumCareRecordStatus.completed,
-      CANCEL: EnumCareRecordStatus.cancel,
-    };
-    model.status =
-      statusMap[prismaRecord.status] || EnumCareRecordStatus.pending;
+    model.status = prismaRecord.status as EnumCareRecordStatus;
     model.paymentStatus = prismaRecord.paymentStatus as EnumPaymentStatus;
     model.paymentMethod = prismaRecord.paymentMethod;
     model.totalPrice = prismaRecord.totalPrice;

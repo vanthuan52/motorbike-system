@@ -10,6 +10,8 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import { CareRecordMediaModel } from '../models/care-record-media.model';
 import { Prisma } from '@generated/prisma-client';
 
+import { ICareRecordMediaListFilters } from '../interfaces/care-record-media.filter.interface';
+
 @Injectable()
 export class CareRecordMediaRepository {
   constructor(
@@ -28,7 +30,7 @@ export class CareRecordMediaRepository {
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordMediaListFilters
   ): Promise<CareRecordMediaModel[]> {
     const mergedWhere: Prisma.CareRecordMediaWhereInput = {
       ...baseWhere,
@@ -55,7 +57,7 @@ export class CareRecordMediaRepository {
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordMediaListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.CareRecordMediaWhereInput = {
       ...baseWhere,

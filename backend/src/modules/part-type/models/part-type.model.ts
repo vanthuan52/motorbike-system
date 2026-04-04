@@ -1,4 +1,5 @@
-import { EnumStatus } from '@/common/enums/common.enum';
+import { EnumPartTypeStatus } from '../enums/part-type.enum';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 
 /**
  * Domain model representing a part type/category.
@@ -9,8 +10,10 @@ export class PartTypeModel {
   name: string;
   slug: string;
   description?: string;
-  orderBy: string;
-  status: EnumStatus;
+  orderBy: number;
+  status: EnumPartTypeStatus;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -25,7 +28,7 @@ export class PartTypeModel {
   }
 
   isActive(): boolean {
-    return this.status === EnumStatus.active && !this.deletedAt;
+    return this.status === EnumPartTypeStatus.active && !this.deletedAt;
   }
 
   isDeleted(): boolean {

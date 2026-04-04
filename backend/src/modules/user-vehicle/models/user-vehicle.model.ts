@@ -1,6 +1,6 @@
-import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { UserModel } from '@/modules/user/models/user.model';
 import { VehicleModelModel } from '@/modules/vehicle-model/models/vehicle-model.model';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 
 /**
  * Domain model representing a user's vehicle.
@@ -13,7 +13,8 @@ export class UserVehicleModel {
   licensePlateNumber: string;
   engineNumber?: string;
   chassisNumber?: string;
-  photo?: AwsS3Dto;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
 
   userId: string;
   user?: UserModel;

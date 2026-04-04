@@ -11,6 +11,7 @@ import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import { Prisma } from '@/generated/prisma-client';
+import { IActivityLogListFilters } from './activity-log.filter.interface';
 
 export interface IActivityLogService {
   getListOffset(
@@ -18,7 +19,7 @@ export interface IActivityLogService {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IActivityLogListFilters
   ): Promise<IPaginationOffsetReturn<ActivityLogModel>>;
 
   getListCursor(
@@ -26,7 +27,7 @@ export interface IActivityLogService {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IActivityLogListFilters
   ): Promise<IPaginationCursorReturn<ActivityLogModel>>;
 
   create(

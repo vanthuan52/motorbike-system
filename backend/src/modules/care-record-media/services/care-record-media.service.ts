@@ -14,6 +14,8 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordMediaModel } from '../models/care-record-media.model';
 import { Prisma } from '@generated/prisma-client';
 
+import { ICareRecordMediaListFilters } from '../interfaces/care-record-media.filter.interface';
+
 @Injectable()
 export class CareRecordMediaService implements ICareRecordMediaService {
   constructor(
@@ -25,7 +27,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordMediaListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordMediaModel>> {
     const { data, ...others } =
       await this.careRecordMediaRepository.findWithPaginationOffset({
@@ -44,7 +46,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordMediaListFilters
   ): Promise<IPaginationCursorReturn<CareRecordMediaModel>> {
     const { data, ...others } =
       await this.careRecordMediaRepository.findWithPaginationCursor({

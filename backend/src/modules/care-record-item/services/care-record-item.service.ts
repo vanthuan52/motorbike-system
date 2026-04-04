@@ -16,6 +16,8 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordItemModel } from '../models/care-record-item.model';
 import { Prisma } from '@generated/prisma-client';
 
+import { ICareRecordItemListFilters } from '../interfaces/care-record-item.filter.interface';
+
 @Injectable()
 export class CareRecordItemService implements ICareRecordItemService {
   constructor(
@@ -27,7 +29,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       Prisma.CareRecordItemSelect,
       Prisma.CareRecordItemWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordItemListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordItemModel>> {
     const { data, ...others } =
       await this.careRecordItemRepository.findWithPaginationOffset({
@@ -46,7 +48,7 @@ export class CareRecordItemService implements ICareRecordItemService {
       Prisma.CareRecordItemSelect,
       Prisma.CareRecordItemWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordItemListFilters
   ): Promise<IPaginationCursorReturn<CareRecordItemModel>> {
     const { data, ...others } =
       await this.careRecordItemRepository.findWithPaginationCursor({

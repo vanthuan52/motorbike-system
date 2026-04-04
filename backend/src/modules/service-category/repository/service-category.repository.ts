@@ -14,6 +14,8 @@ import {
   Prisma,
 } from '@/generated/prisma-client';
 
+import { IServiceCategoryListFilters } from '../interfaces/service-category.filter.interface';
+
 @Injectable()
 export class ServiceCategoryRepository {
   constructor(
@@ -32,7 +34,7 @@ export class ServiceCategoryRepository {
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceCategoryListFilters
   ): Promise<ServiceCategoryModel[]> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...baseWhere,
@@ -59,7 +61,7 @@ export class ServiceCategoryRepository {
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceCategoryListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.ServiceCategoryWhereInput = {
       ...baseWhere,

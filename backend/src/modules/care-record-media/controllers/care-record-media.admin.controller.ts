@@ -63,6 +63,7 @@ import {
 } from '@/common/request/decorators/request.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { ICareRecordMediaListFilters } from '../interfaces/care-record-media.filter.interface';
 
 @ApiTags('modules.admin.care-record-media')
 @Controller({
@@ -94,7 +95,7 @@ export class CareRecordMediaAdminController {
     @Query('careRecord', RequestOptionalParseObjectIdPipe)
     careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordMediaListResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: ICareRecordMediaListFilters = {};
 
     if (careRecordId) {
       filters['careRecordId'] = careRecordId;

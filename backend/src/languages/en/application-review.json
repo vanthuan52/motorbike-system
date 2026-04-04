@@ -1,0 +1,9 @@
+{
+  "list": "JobApplications review list retrieved successfully.",
+  "create": "New jobApplication review created successfully.",
+  "error": {
+    "notFoundJobApplication": "Sorry, we couldn't find the jobApplication you requested.",
+    "notFound": "Sorry, we couldn't find the jobApplication review you requested.",
+    "createFailed": "Failed to create new jobApplication review."
+  }
+}

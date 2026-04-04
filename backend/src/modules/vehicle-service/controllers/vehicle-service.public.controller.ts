@@ -29,6 +29,7 @@ import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { Prisma } from '@/generated/prisma-client';
 import { VehicleServiceUtil } from '../utils/vehicle-service.util';
+import { IVehicleServiceListFilters } from '../interfaces/vehicle-service.filter.interface';
 
 @ApiTags('modules.public.vehicle-service')
 @Controller({
@@ -69,7 +70,7 @@ export class VehicleServicePublicController {
     @Query('serviceCategory', OptionalParseUUIDPipe)
     serviceCategoryId?: string
   ): Promise<IResponsePagingReturn<VehicleServiceListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IVehicleServiceListFilters = {
       ...status,
     };
 

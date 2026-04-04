@@ -1,9 +1,12 @@
 import { ServiceChecklistModel } from '../models/service-checklist.model';
 import { CareAreaMapper } from '@/modules/care-area/mappers/care-area.mapper';
 import { VehicleServiceMapper } from '@/modules/vehicle-service/mappers/vehicle-service.mapper';
+import { ServiceChecklist as PrismaServiceChecklist } from '@/generated/prisma-client';
 
 export class ServiceChecklistMapper {
-  static toDomain(prismaChecklist: any): ServiceChecklistModel {
+  static toDomain(
+    prismaChecklist: PrismaServiceChecklist
+  ): ServiceChecklistModel {
     const model = new ServiceChecklistModel();
     model.id = prismaChecklist.id;
     model.name = prismaChecklist.name;
@@ -25,7 +28,9 @@ export class ServiceChecklistMapper {
       model.careArea = CareAreaMapper.toDomain(prismaChecklist.careArea);
     }
     if (prismaChecklist.vehicleService) {
-      model.vehicleService = VehicleServiceMapper.toDomain(prismaChecklist.vehicleService);
+      model.vehicleService = VehicleServiceMapper.toDomain(
+        prismaChecklist.vehicleService
+      );
     }
 
     return model;

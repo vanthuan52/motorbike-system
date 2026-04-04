@@ -1,6 +1,7 @@
-import { EnumStatus } from '@/common/enums/common.enum';
 import { PartTypeModel } from '@/modules/part-type/models/part-type.model';
 import { VehicleBrandModel } from '@/modules/vehicle-brand/models/vehicle-brand.model';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
+import { EnumPartStatus } from '../enums/part.enum';
 
 /**
  * Domain model representing a vehicle part.
@@ -11,8 +12,10 @@ export class PartModel {
   name: string;
   slug: string;
   description?: string;
-  status: EnumStatus;
-  orderBy: string;
+  status: EnumPartStatus;
+  orderBy: number;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
 
   partTypeId: string;
   partType?: PartTypeModel;
@@ -32,7 +35,7 @@ export class PartModel {
   }
 
   isActive(): boolean {
-    return this.status === EnumStatus.active && !this.deletedAt;
+    return this.status === EnumPartStatus.active && !this.deletedAt;
   }
 
   isDeleted(): boolean {

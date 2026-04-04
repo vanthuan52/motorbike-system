@@ -56,6 +56,7 @@ import {
 } from '@/common/request/decorators/request.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { ICareRecordConditionListFilters } from '../interfaces/care-record-condition.filter.interface';
 
 @ApiTags('modules.admin.care-record-condition')
 @Controller({
@@ -86,7 +87,7 @@ export class CareRecordConditionAdminController {
     @Query('careRecord', RequestOptionalParseObjectIdPipe)
     careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordConditionDto>> {
-    const filters: Record<string, any> = {};
+    const filters: ICareRecordConditionListFilters = {};
 
     if (careRecordId) {
       filters['careRecordId'] = careRecordId;

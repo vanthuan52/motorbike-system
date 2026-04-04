@@ -65,6 +65,7 @@ import {
 } from '@/common/request/decorators/request.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { ICareRecordItemListFilters } from '../interfaces/care-record-item.filter.interface';
 
 @ApiTags('modules.admin.care-record-item')
 @Controller({
@@ -93,10 +94,10 @@ export class CareRecordItemAdminController {
       availableOrderBy: CARE_RECORD_ITEM_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('careRecord', RequestOptionalParseObjectIdPipe)
+    @Query('careRecordId', RequestOptionalParseObjectIdPipe)
     careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordItemListResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: ICareRecordItemListFilters = {};
 
     if (careRecordId) {
       filters['careRecordId'] = careRecordId;

@@ -57,6 +57,7 @@ import { Prisma } from '@/generated/prisma-client';
 import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import { EnumPolicyAction, EnumPolicySubject } from '@/modules/policy/enums/policy.enum';
+import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
 
 @ApiTags('modules.admin.service-checklist')
 @Controller({
@@ -92,7 +93,7 @@ export class ServiceChecklistAdminController {
     careAreaId: string,
     @Query('vehicleType') vehicleType: EnumVehicleModelType
   ): Promise<IResponsePagingReturn<ServiceChecklistListResponseDto>> {
-    const filters: Prisma.ServiceChecklistWhereInput = {};
+    const filters: IServiceChecklistListFilters = {};
 
     if (careAreaId) {
       filters.careAreaId = careAreaId;

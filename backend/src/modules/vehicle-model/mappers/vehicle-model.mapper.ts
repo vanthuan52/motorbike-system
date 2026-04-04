@@ -1,12 +1,9 @@
 import { VehicleModelModel } from '../models/vehicle-model.model';
-import {
-  EnumVehicleModelType,
-  EnumVehicleModelFuelType,
-} from '../enums/vehicle-model.enum';
 import { VehicleBrandMapper } from '@/modules/vehicle-brand/mappers/vehicle-brand.mapper';
+import { VehicleModel as PrismaVehicleModel } from '@/generated/prisma-client';
 
 export class VehicleModelMapper {
-  static toDomain(prismaModel: any): VehicleModelModel {
+  static toDomain(prismaModel: PrismaVehicleModel): VehicleModelModel {
     const model = new VehicleModelModel();
     model.id = prismaModel.id;
     model.name = prismaModel.name;
@@ -15,20 +12,13 @@ export class VehicleModelMapper {
     model.description = prismaModel.description;
     model.engineDisplacement = prismaModel.engineDisplacement;
     model.modelYear = prismaModel.modelYear;
-    const typeMap: Record<string, EnumVehicleModelType> = {
-      SCOOTER: EnumVehicleModelType.scooter,
-      MANUAL_OR_CLUTCH: EnumVehicleModelType.manualOrClutch,
-      MANUAL: EnumVehicleModelType.manual,
-      CLUTCH: EnumVehicleModelType.clutch,
-      ELECTRIC: EnumVehicleModelType.electric,
-    };
-    model.type = typeMap[prismaModel.type] || EnumVehicleModelType.unknown;
-    model.fuelType = prismaModel.fuelType as EnumVehicleModelFuelType;
+    model.type = prismaModel.type;
+    model.fuelType = prismaModel.fuelType;
     model.status = prismaModel.status;
-    model.orderBy = prismaModel.order;
+    model.orderBy = prismaModel.orderBy;
     model.yearStart = prismaModel.yearStart;
     model.yearEnd = prismaModel.yearEnd;
-    model.photo = prismaModel.photo;
+    model.photoCdnUrl = prismaModel.photoCdnUrl ?? undefined;
     model.vehicleBrandId = prismaModel.vehicleBrandId;
 
     model.createdAt = prismaModel.createdAt;

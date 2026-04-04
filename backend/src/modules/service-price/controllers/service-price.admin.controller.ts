@@ -71,6 +71,7 @@ import { ServicePriceListResponseDto } from '../dtos/response/service-price.list
 import { EnumPaginationType } from '@/common/pagination/enums/pagination.enum';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { IServicePriceListFilters } from '../interfaces/service-price.filter.interface';
 
 @ApiTags('modules.admin.service-price')
 @Controller({
@@ -412,7 +413,7 @@ export class ServicePriceAdminController {
     @Param('vehicleModelId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
     vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IServicePriceListFilters = {
       vehicleService: vehicleServiceId,
       vehicleModel: vehicleModelId,
     };

@@ -2,8 +2,8 @@ import {
   EnumMediaType,
   EnumMediaPurpose,
   EnumMediaAccessibility,
+  EnumMediaStatus,
 } from '../enums/media.enum';
-import { EnumStatus } from '@/common/enums/common.enum';
 
 /**
  * Domain model representing a media file (image, video, document).
@@ -21,8 +21,9 @@ export class MediaModel {
   completedUrl: string;
   type: EnumMediaType;
   purpose: EnumMediaPurpose;
-  status: EnumStatus;
+  status: EnumMediaStatus;
   accessibility: EnumMediaAccessibility;
+  metadata?: Record<string, any>;
 
   createdAt: Date;
   updatedAt: Date;
@@ -37,7 +38,7 @@ export class MediaModel {
   }
 
   isActive(): boolean {
-    return this.status === EnumStatus.active && !this.deletedAt;
+    return this.status === EnumMediaStatus.active && !this.deletedAt;
   }
 
   isDeleted(): boolean {

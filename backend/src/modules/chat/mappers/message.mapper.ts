@@ -2,9 +2,10 @@ import { MessageModel } from '../models/message.model';
 import { EnumMessageType, EnumMessageStatus } from '../enums/message.enum';
 import { ConversationMapper } from './conversation.mapper';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { Message as PrismaMessage } from '@/generated/prisma-client';
 
 export class MessageMapper {
-  static toDomain(prismaMessage: any): MessageModel {
+  static toDomain(prismaMessage: PrismaMessage): MessageModel {
     const model = new MessageModel();
     model.id = prismaMessage.id;
     model.content = prismaMessage.content;

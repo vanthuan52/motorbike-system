@@ -9,6 +9,8 @@ import {
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { PartType, Prisma } from '@/generated/prisma-client';
 
+import { IPartTypeListFilters } from '../interfaces/part-type.filter.interface';
+
 @Injectable()
 export class PartTypeRepository {
   constructor(
@@ -27,7 +29,7 @@ export class PartTypeRepository {
       Prisma.PartTypeSelect,
       Prisma.PartTypeWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IPartTypeListFilters
   ): Promise<PartType[]> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...baseWhere,
@@ -50,7 +52,7 @@ export class PartTypeRepository {
       Prisma.PartTypeSelect,
       Prisma.PartTypeWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IPartTypeListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.PartTypeWhereInput = {
       ...baseWhere,

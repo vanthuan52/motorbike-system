@@ -34,14 +34,14 @@ export class PartCreateRequestDto {
   slug: string;
 
   @ApiProperty({
-    example: '0',
+    example: 0,
     description: 'Thứ tự sắp xếp khi hiển thị các dịch vụ',
     required: false,
-    default: '0',
+    default: 0,
   })
   @IsOptional()
-  @IsString()
-  orderBy?: string;
+  @IsInt()
+  orderBy?: number;
 
   @ApiProperty({
     example: faker.string.uuid(),

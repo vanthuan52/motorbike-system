@@ -72,6 +72,7 @@ import {
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
 import { Prisma } from '@/generated/prisma-client';
+import { IVehicleServiceListFilters } from '../interfaces/vehicle-service.filter.interface';
 
 @ApiTags('modules.admin.vehicle-service')
 @Controller({
@@ -108,7 +109,7 @@ export class VehicleServiceAdminController {
     @Query('serviceCategory')
     serviceCategoryId?: string
   ): Promise<IResponsePagingReturn<VehicleServiceListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IVehicleServiceListFilters = {
       ...status,
     };
 

@@ -16,6 +16,8 @@ import { ServiceChecklistUtil } from '../utils/service-checklist.util';
 import { ServiceChecklistModel } from '../models/service-checklist.model';
 import { Prisma } from '@/generated/prisma-client';
 
+import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
+
 @Injectable()
 export class ServiceChecklistService implements IServiceChecklistService {
   constructor(
@@ -40,7 +42,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceChecklistListFilters
   ): Promise<IPaginationOffsetReturn<ServiceChecklistModel>> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...where,
@@ -67,7 +69,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceChecklistListFilters
   ): Promise<IPaginationCursorReturn<ServiceChecklistModel>> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...where,
@@ -119,7 +121,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       name,
       code,
       description: description ?? null,
-      orderBy: orderBy ?? '0',
+      orderBy: orderBy ?? 0,
       vehicleType: [],
       careArea: { connect: { id: careArea } },
       createdBy,
@@ -191,7 +193,7 @@ export class ServiceChecklistService implements IServiceChecklistService {
       name: item.name,
       code: item.code,
       description: item.description ?? null,
-      orderBy: item.orderBy ?? '0',
+      orderBy: item.orderBy ?? 0,
       vehicleType: item.vehicleType || [],
       careAreaId: item.careArea,
     }));

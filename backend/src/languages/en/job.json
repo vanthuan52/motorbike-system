@@ -1,0 +1,16 @@
+{
+  "list": "Job list retrieved successfully.",
+  "get": "Job details fetched successfully.",
+  "create": "New job created successfully.",
+  "update": "Job updated successfully.",
+  "delete": "Job deleted successfully.",
+  "updateStatus": "Job status updated to {status}.",
+  "error": {
+    "notFound": "Sorry, we couldn't find the job you requested.",
+    "notFoundJob": "Sorry, we couldn't find the job you requested.",
+    "updateStatusFailed": "Failed to update job status.",
+    "deleteFailed": "Failed to delete job.",
+    "createFailed": "Failed to create new job.",
+    "slugExisted": "This job slug already exists."
+  }
+}

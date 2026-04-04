@@ -1,7 +1,8 @@
 import { CareAreaModel } from '../models/care-area.model';
+import { CareArea as PrismaCareArea } from '@/generated/prisma-client';
 
 export class CareAreaMapper {
-  static toDomain(prismaArea: any): CareAreaModel {
+  static toDomain(prismaArea: PrismaCareArea): CareAreaModel {
     const model = new CareAreaModel();
     model.id = prismaArea.id;
     model.name = prismaArea.name;

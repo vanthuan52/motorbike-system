@@ -11,6 +11,8 @@ import { Part as PrismaPart, Prisma } from '@/generated/prisma-client';
 import { PartModel } from '../models/part.model';
 import { PartMapper } from '../mappers/part.mapper';
 
+import { IPartListFilters } from '../interfaces/part.filter.interface';
+
 @Injectable()
 export class PartRepository {
   constructor(
@@ -26,7 +28,7 @@ export class PartRepository {
       orderBy,
       ...rest
     }: IPaginationQueryOffsetParams<Prisma.PartSelect, Prisma.PartWhereInput>,
-    filters?: Record<string, any>
+    filters?: IPartListFilters
   ): Promise<PartModel[]> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...baseWhere,
@@ -52,7 +54,7 @@ export class PartRepository {
     {
       where: baseWhere,
     }: IPaginationQueryOffsetParams<Prisma.PartSelect, Prisma.PartWhereInput>,
-    filters?: Record<string, any>
+    filters?: IPartListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.PartWhereInput = {
       ...baseWhere,

@@ -14,6 +14,7 @@ import {
   VehicleModel as PrismaVehicleModel,
   Prisma,
 } from '@/generated/prisma-client';
+import { IVehicleModelListFilters } from '../interfaces/vehicle-model.filter.interface';
 
 @Injectable()
 export class VehicleModelRepository {
@@ -30,7 +31,7 @@ export class VehicleModelRepository {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleModelListFilters
   ): Promise<IPaginationOffsetReturn<VehicleModelModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaVehicleModel,
@@ -62,7 +63,7 @@ export class VehicleModelRepository {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleModelListFilters
   ): Promise<IPaginationCursorReturn<VehicleModelModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaVehicleModel,

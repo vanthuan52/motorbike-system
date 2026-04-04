@@ -10,6 +10,7 @@ import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-mode
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareAreaModel } from '../models/care-area.model';
 import { Prisma } from '@/generated/prisma-client';
+import { ICareAreaListFilters } from './care-area.filter.interface';
 
 export interface ICareAreaService {
   getListOffset(
@@ -17,7 +18,7 @@ export interface ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<IPaginationOffsetReturn<CareAreaModel>>;
 
   getListCursor(
@@ -25,7 +26,7 @@ export interface ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<IPaginationCursorReturn<CareAreaModel>>;
 
   getListOffsetWithServiceChecklists(
@@ -78,7 +79,7 @@ export interface ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<IPaginationOffsetReturn<CareAreaModel>>;
 
   restore(

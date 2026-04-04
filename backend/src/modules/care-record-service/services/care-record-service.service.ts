@@ -20,6 +20,8 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordServiceModel } from '../models/care-record-service.model';
 import { Prisma } from '@generated/prisma-client';
 
+import { ICareRecordServiceListFilters } from '../interfaces/care-record-service.filter.interface';
+
 @Injectable()
 export class CareRecordServiceService implements ICareRecordServiceService {
   constructor(
@@ -33,7 +35,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceSelect,
       Prisma.CareRecordServiceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordServiceListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordServiceModel>> {
     const { data, ...others } =
       await this.careRecordServiceRepository.findWithPaginationOffset({
@@ -52,7 +54,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceSelect,
       Prisma.CareRecordServiceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordServiceListFilters
   ): Promise<IPaginationCursorReturn<CareRecordServiceModel>> {
     const { data, ...others } =
       await this.careRecordServiceRepository.findWithPaginationCursor({
@@ -71,7 +73,7 @@ export class CareRecordServiceService implements ICareRecordServiceService {
       Prisma.CareRecordServiceSelect,
       Prisma.CareRecordServiceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordServiceListFilters
   ): Promise<
     IPaginationOffsetReturn<{
       service: CareRecordServiceModel;

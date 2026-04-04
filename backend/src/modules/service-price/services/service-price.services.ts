@@ -18,6 +18,8 @@ import { IResponseReturn } from '@/common/response/interfaces/response.interface
 import { ServicePriceUtil } from '../utils/service-price.util';
 import { Prisma } from '@/generated/prisma-client';
 
+import { IServicePriceListFilters } from '../interfaces/service-price.filter.interface';
+
 @Injectable()
 export class ServicePriceService implements IServicePriceService {
   constructor(
@@ -37,7 +39,7 @@ export class ServicePriceService implements IServicePriceService {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<IPaginationOffsetReturn<ServicePriceModel>> {
     return this.servicePriceRepository.findWithPaginationOffset(
       {
@@ -62,7 +64,7 @@ export class ServicePriceService implements IServicePriceService {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<IPaginationCursorReturn<ServicePriceModel>> {
     return this.servicePriceRepository.findWithPaginationCursor(
       {

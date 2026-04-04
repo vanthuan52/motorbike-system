@@ -104,7 +104,7 @@ export class VehicleServiceService implements IVehicleServiceService {
         name: payload.name,
         slug: payload.slug.toLowerCase(),
         description: payload.description,
-        orderBy: payload.orderBy ? payload.orderBy : '0',
+        orderBy: payload.orderBy ?? 0,
         status: payload.status
           ? payload.status
           : EnumVehicleServiceStatus.active,

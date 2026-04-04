@@ -148,17 +148,17 @@ export enum EnumActivityLogAction {
   adminStoreRestore = 'adminStoreRestore',
   adminStoreForceDelete = 'adminStoreForceDelete',
 
-  // Hiring
-  adminHiringCreate = 'adminHiringCreate',
-  adminHiringUpdate = 'adminHiringUpdate',
-  adminHiringUpdateStatus = 'adminHiringUpdateStatus',
-  adminHiringDelete = 'adminHiringDelete',
+  // Job
+  adminJobCreate = 'adminJobCreate',
+  adminJobUpdate = 'adminJobUpdate',
+  adminJobUpdateStatus = 'adminJobUpdateStatus',
+  adminJobDelete = 'adminJobDelete',
 
-  // Candidate
-  adminCandidateUpdateStatus = 'adminCandidateUpdateStatus',
+  // JobApplication
+  adminJobApplicationUpdateStatus = 'adminJobApplicationUpdateStatus',
 
-  // Candidate Review
-  adminCandidateReviewCreate = 'adminCandidateReviewCreate',
+  // JobApplication Review
+  adminApplicationReviewCreate = 'adminApplicationReviewCreate',
 
   // Care Record Checklist
   adminCareRecordChecklistCreate = 'adminCareRecordChecklistCreate',

@@ -10,6 +10,7 @@ import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checkl
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { ServiceChecklistModel } from '../models/service-checklist.model';
 import { Prisma } from '@/generated/prisma-client';
+import { IServiceChecklistListFilters } from './service-checklist.filter.interface';
 
 export interface IServiceChecklistService {
   existByName(name: string): Promise<boolean>;
@@ -19,7 +20,7 @@ export interface IServiceChecklistService {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceChecklistListFilters
   ): Promise<IPaginationOffsetReturn<ServiceChecklistModel>>;
 
   getListCursor(
@@ -27,7 +28,7 @@ export interface IServiceChecklistService {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceChecklistListFilters
   ): Promise<IPaginationCursorReturn<ServiceChecklistModel>>;
 
   findOneById(id: string): Promise<ServiceChecklistModel>;

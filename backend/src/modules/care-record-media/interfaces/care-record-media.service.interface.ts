@@ -10,6 +10,7 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordMediaModel } from '../models/care-record-media.model';
 import { Prisma } from '@/generated/prisma-client';
+import { ICareRecordMediaListFilters } from './care-record-media.filter.interface';
 
 export interface ICareRecordMediaService {
   getListOffset(
@@ -17,7 +18,7 @@ export interface ICareRecordMediaService {
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordMediaListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordMediaModel>>;
 
   getListCursor(
@@ -25,7 +26,7 @@ export interface ICareRecordMediaService {
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordMediaListFilters
   ): Promise<IPaginationCursorReturn<CareRecordMediaModel>>;
 
   findOneById(id: string): Promise<CareRecordMediaModel>;

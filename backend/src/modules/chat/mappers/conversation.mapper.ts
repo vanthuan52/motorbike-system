@@ -1,8 +1,9 @@
 import { ConversationModel } from '../models/conversation.model';
 import { MessageMapper } from './message.mapper';
+import { Conversation as PrismaConversation } from '@/generated/prisma-client';
 
 export class ConversationMapper {
-  static toDomain(prismaConversation: any): ConversationModel {
+  static toDomain(prismaConversation: PrismaConversation): ConversationModel {
     const model = new ConversationModel();
     model.id = prismaConversation.id;
     model.participantIds = prismaConversation.participantIds;

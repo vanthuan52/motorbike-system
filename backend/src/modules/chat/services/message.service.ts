@@ -23,6 +23,8 @@ import { Prisma } from '@/generated/prisma-client';
 // Maximum time (in hours) allowed to unsend a message
 const UNSEND_TIME_LIMIT_HOURS = 24;
 
+import { IMessageListFilters } from '../interfaces/message.filter.interface';
+
 @Injectable()
 export class MessageService implements IMessageService {
   constructor(
@@ -161,7 +163,7 @@ export class MessageService implements IMessageService {
       Prisma.MessageSelect,
       Prisma.MessageWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMessageListFilters
   ): Promise<IPaginationOffsetReturn<MessageModel>> {
     const { data, ...others } =
       await this.messageRepository.findWithPaginationOffset({
@@ -181,7 +183,7 @@ export class MessageService implements IMessageService {
       Prisma.MessageSelect,
       Prisma.MessageWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMessageListFilters
   ): Promise<IPaginationCursorReturn<MessageModel>> {
     const { data, ...others } =
       await this.messageRepository.findWithPaginationCursor({

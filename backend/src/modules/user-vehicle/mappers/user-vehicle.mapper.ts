@@ -1,9 +1,10 @@
 import { UserVehicleModel } from '../models/user-vehicle.model';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-model.mapper';
+import { UserVehicle as PrismaUserVehicle } from '@/generated/prisma-client';
 
 export class UserVehicleMapper {
-  static toDomain(prismaVehicle: any): UserVehicleModel {
+  static toDomain(prismaVehicle: PrismaUserVehicle): UserVehicleModel {
     const model = new UserVehicleModel();
     model.id = prismaVehicle.id;
     model.modelYear = prismaVehicle.modelYear;
@@ -11,7 +12,7 @@ export class UserVehicleMapper {
     model.licensePlateNumber = prismaVehicle.licensePlateNumber;
     model.engineNumber = prismaVehicle.engineNumber;
     model.chassisNumber = prismaVehicle.chassisNumber;
-    model.photo = prismaVehicle.photo;
+    model.photoCdnUrl = prismaVehicle.photoCdnUrl ?? undefined;
     model.userId = prismaVehicle.userId;
     model.vehicleModelId = prismaVehicle.vehicleModelId;
 
@@ -26,7 +27,9 @@ export class UserVehicleMapper {
       model.user = UserMapper.toDomain(prismaVehicle.user);
     }
     if (prismaVehicle.vehicleModel) {
-      model.vehicleModel = VehicleModelMapper.toDomain(prismaVehicle.vehicleModel);
+      model.vehicleModel = VehicleModelMapper.toDomain(
+        prismaVehicle.vehicleModel
+      );
     }
 
     return model;

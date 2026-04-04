@@ -1,8 +1,9 @@
 import { ApiKeyModel } from '../models/api-key.model';
 import { EnumApiKeyType } from '../enums/api-key.enum';
+import { ApiKey as PrismaApiKey } from '@/generated/prisma-client';
 
 export class ApiKeyMapper {
-  static toDomain(prismaApiKey: any): ApiKeyModel {
+  static toDomain(prismaApiKey: PrismaApiKey): ApiKeyModel {
     const model = new ApiKeyModel();
     model.id = prismaApiKey.id;
     model.type = prismaApiKey.type as EnumApiKeyType;

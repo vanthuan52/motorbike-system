@@ -1,8 +1,9 @@
 import { VehicleServiceModel } from '../models/vehicle-service.model';
 import { ServiceCategoryMapper } from '@/modules/service-category/mappers/service-category.mapper';
+import { VehicleService as PrismaVehicleService } from '@/generated/prisma-client';
 
 export class VehicleServiceMapper {
-  static toDomain(prismaService: any): VehicleServiceModel {
+  static toDomain(prismaService: PrismaVehicleService): VehicleServiceModel {
     const model = new VehicleServiceModel();
     model.id = prismaService.id;
     model.name = prismaService.name;
@@ -10,7 +11,8 @@ export class VehicleServiceMapper {
     model.description = prismaService.description;
     model.orderBy = prismaService.order;
     model.status = prismaService.status;
-    model.photo = prismaService.photo;
+    model.basePrice = prismaService.basePrice;
+    model.photoCdnUrl = prismaService.photoCdnUrl ?? undefined;
     model.serviceCategoryId = prismaService.serviceCategoryId;
 
     model.createdAt = prismaService.createdAt;

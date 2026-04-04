@@ -4,12 +4,12 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { StoreModel } from '../models/store.model';
 import { StoreMapper } from '../mappers/store.mapper';
+import { IStoreListFilters } from '../interfaces/store.filter.interface';
 import { Store as PrismaStore, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class StoreRepository {
       where,
       ...params
     }: IPaginationQueryOffsetParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
-    filters?: Prisma.StoreWhereInput
+    filters?: IStoreListFilters
   ): Promise<IPaginationOffsetReturn<StoreModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaStore,
@@ -50,7 +50,7 @@ export class StoreRepository {
       where,
       ...params
     }: IPaginationQueryCursorParams<Prisma.StoreSelect, Prisma.StoreWhereInput>,
-    filters?: Prisma.StoreWhereInput
+    filters?: IStoreListFilters
   ): Promise<IPaginationCursorReturn<StoreModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaStore,

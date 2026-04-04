@@ -1,3 +1,4 @@
+import { UserModel } from '@/modules/user/models/user.model';
 import { EnumVerificationType } from '../enums/verification.enum';
 
 /**
@@ -16,8 +17,11 @@ export class VerificationModel {
   hashedToken: string;
   link?: string;
   encryptedLink?: string;
+  verifiedAt?: Date;
+  isUsed?: boolean;
 
   userId: string;
+  user?: UserModel;
 
   createdAt: Date;
   updatedAt: Date;

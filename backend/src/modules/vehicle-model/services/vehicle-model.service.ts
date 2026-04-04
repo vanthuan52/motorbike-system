@@ -32,6 +32,8 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { Prisma } from '@/generated/prisma-client';
 
+import { IVehicleModelListFilters } from '../interfaces/vehicle-model.filter.interface';
+
 @Injectable()
 export class VehicleModelService implements IVehicleModelService {
   private readonly uploadPath: string;
@@ -52,7 +54,7 @@ export class VehicleModelService implements IVehicleModelService {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleModelListFilters
   ): Promise<IPaginationOffsetReturn<VehicleModelModel>> {
     return this.vehicleModelRepository.findWithPaginationOffset(
       pagination,
@@ -65,7 +67,7 @@ export class VehicleModelService implements IVehicleModelService {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleModelListFilters
   ): Promise<IPaginationCursorReturn<VehicleModelModel>> {
     return this.vehicleModelRepository.findWithPaginationCursor(
       pagination,
@@ -126,7 +128,7 @@ export class VehicleModelService implements IVehicleModelService {
       description: payload.description,
       engineDisplacement: payload.engineDisplacement,
       modelYear: payload.modelYear,
-      orderBy: payload.orderBy ? payload.orderBy : '0',
+      orderBy: payload.orderBy ?? 0,
       vehicleBrand: { connect: { id: payload.vehicleBrand } },
       status: payload.status ? payload.status : EnumVehicleModelStatus.active,
       type: payload.type ? payload.type : EnumVehicleModelType.unknown,

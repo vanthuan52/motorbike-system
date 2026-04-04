@@ -1,0 +1,16 @@
+{
+  "list": "Danh sách tin tuyển dụng được lấy thành công.",
+  "get": "Chi tiết tin tuyển dụng được truy xuất thành công.",
+  "create": "Tạo tin tuyển dụng mới thành công.",
+  "update": "Cập nhật tin tuyển dụng thành công.",
+  "delete": "Xóa tin tuyển dụng thành công.",
+  "updateStatus": "Trạng thái tin tuyển dụng đã được cập nhật thành {status}.",
+  "error": {
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy tin tuyển dụng bạn yêu cầu.",
+    "notFoundJob": "Rất tiếc, chúng tôi không tìm thấy tin tuyển dụng bạn yêu cầu.",
+    "updateStatusFailed": "Cập nhật trạng thái tin tuyển dụng thất bại.",
+    "deleteFailed": "Xóa tin tuyển dụng thất bại.",
+    "createFailed": "Tạo tin tuyển dụng mới thất bại.",
+    "slugExisted": "Slug của tin tuyển dụng này đã tồn tại."
+  }
+}

@@ -155,7 +155,7 @@ export class PartService implements IPartService {
       slug,
       vehicleBrand: { connect: { id: payload.vehicleBrand } },
       partType: { connect: { id: payload.partType } },
-      orderBy: payload.orderBy ?? '0',
+      orderBy: payload.orderBy ?? 0,
       description: payload.description ?? null,
       status: payload.status ?? EnumPartStatus.active,
       createdBy: createdBy,

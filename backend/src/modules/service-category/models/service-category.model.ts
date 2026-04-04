@@ -1,4 +1,5 @@
-import { EnumStatus } from '@/common/enums/common.enum';
+import { EnumServiceCategoryStatus } from '../enums/service-category.enum';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 
 /**
  * Domain model representing a service category.
@@ -9,8 +10,10 @@ export class ServiceCategoryModel {
   name: string;
   slug: string;
   description?: string;
-  orderBy: string;
-  status: EnumStatus;
+  orderBy: number;
+  status: EnumServiceCategoryStatus;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -25,7 +28,7 @@ export class ServiceCategoryModel {
   }
 
   isActive(): boolean {
-    return this.status === EnumStatus.active && !this.deletedAt;
+    return this.status === EnumServiceCategoryStatus.active && !this.deletedAt;
   }
 
   isDeleted(): boolean {

@@ -74,6 +74,7 @@ import {
 } from '@/common/request/decorators/request.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { ICareRecordServiceListFilters } from '../interfaces/care-record-service.filter.interface';
 
 @ApiTags('modules.admin.care-record-service')
 @Controller({
@@ -107,7 +108,7 @@ export class CareRecordServiceAdminController {
     @Query('careRecord', RequestOptionalParseObjectIdPipe)
     careRecordId: string
   ): Promise<IResponsePagingReturn<CareRecordServiceListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: ICareRecordServiceListFilters = {
       ...status,
     };
 
@@ -149,7 +150,7 @@ export class CareRecordServiceAdminController {
   ): Promise<
     IResponsePagingReturn<CareRecordServiceWithChecklistsResponseDto>
   > {
-    const filters: Record<string, any> = {
+    const filters: ICareRecordServiceListFilters = {
       ...status,
     };
 

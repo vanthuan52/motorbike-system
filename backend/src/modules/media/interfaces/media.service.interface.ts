@@ -15,6 +15,7 @@ import { MediaEmbeddedResponseDto } from '../dtos/response/media.embedded.respon
 import { MediaGetResponseDto } from '../dtos/response/media.get.response.dto';
 import { MediaListResponseDto } from '../dtos/response/media.list.response.dto';
 import { Prisma } from '@/generated/prisma-client';
+import { IMediaListFilters } from './media.filter.interface';
 
 /**
  * Media service interface
@@ -27,7 +28,7 @@ export interface IMediaService {
       Prisma.MediaSelect,
       Prisma.MediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMediaListFilters
   ): Promise<IPaginationOffsetReturn<MediaModel>>;
 
   getListCursor(
@@ -35,7 +36,7 @@ export interface IMediaService {
       Prisma.MediaSelect,
       Prisma.MediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMediaListFilters
   ): Promise<IPaginationCursorReturn<MediaModel>>;
 
   // CRUD Operations

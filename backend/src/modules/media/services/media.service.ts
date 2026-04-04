@@ -32,6 +32,8 @@ import { Prisma } from '@/generated/prisma-client';
  * Media service
  * @description Handles business logic for media operations
  */
+import { IMediaListFilters } from '../interfaces/media.filter.interface';
+
 @Injectable()
 export class MediaService implements IMediaService {
   constructor(private readonly mediaRepository: MediaRepository) {}
@@ -41,7 +43,7 @@ export class MediaService implements IMediaService {
       Prisma.MediaSelect,
       Prisma.MediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMediaListFilters
   ): Promise<IPaginationOffsetReturn<MediaModel>> {
     const { data, ...others } =
       await this.mediaRepository.findWithPaginationOffset({
@@ -60,7 +62,7 @@ export class MediaService implements IMediaService {
       Prisma.MediaSelect,
       Prisma.MediaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMediaListFilters
   ): Promise<IPaginationCursorReturn<MediaModel>> {
     const { data, ...others } =
       await this.mediaRepository.findWithPaginationCursor({

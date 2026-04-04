@@ -1,0 +1,12 @@
+{
+    "list":"JobApplications list retrieved successfully.",
+    "get":"JobApplication details fetched successfully.",
+    "create":"New jobApplication created successfully.",
+    "delete":"JobApplication deleted successfully.",
+    "updateStatus":"JobApplication status updated to {status}.",
+    "error":{
+        "notFound":"Sorry, we couldn't find the jobApplication you requested.",
+        "updateStatusFailed":"Failed to update jobApplication status.",
+        "createFailed":"Failed to create new jobApplication."
+    }
+}

@@ -3,11 +3,12 @@ import {
   EnumMediaType,
   EnumMediaPurpose,
   EnumMediaAccessibility,
+  EnumMediaStatus,
 } from '../enums/media.enum';
-import { EnumUserStatus as EnumStatus } from '@/modules/user/enums/user.enum';
+import { Media as PrismaMedia } from '@/generated/prisma-client';
 
 export class MediaMapper {
-  static toDomain(prismaMedia: any): MediaModel {
+  static toDomain(prismaMedia: PrismaMedia): MediaModel {
     const model = new MediaModel();
     model.id = prismaMedia.id;
     model.key = prismaMedia.key;
@@ -19,19 +20,10 @@ export class MediaMapper {
     model.cdnUrl = prismaMedia.cdnUrl;
     model.completedUrl = prismaMedia.completedUrl;
     model.type = prismaMedia.type as EnumMediaType;
-    const purposeMap: Record<string, EnumMediaPurpose> = {
-      PROFILE_PHOTO: EnumMediaPurpose.profilePhoto,
-      CARE_RECORD: EnumMediaPurpose.careRecord,
-      CARE_RECORD_MEDIA: EnumMediaPurpose.careRecordMedia,
-      VEHICLE: EnumMediaPurpose.vehicle,
-      VEHICLE_BRAND: EnumMediaPurpose.vehicleBrand,
-      CHAT_ATTACHMENT: EnumMediaPurpose.chatAttachment,
-      STORE: EnumMediaPurpose.store,
-      GENERAL: EnumMediaPurpose.general,
-    };
-    model.purpose = purposeMap[prismaMedia.purpose] || EnumMediaPurpose.general;
-    model.status = prismaMedia.status as EnumStatus;
+    model.purpose = prismaMedia.purpose as EnumMediaPurpose;
+    model.status = prismaMedia.status as EnumMediaStatus;
     model.accessibility = prismaMedia.accessibility as EnumMediaAccessibility;
+    model.metadata = prismaMedia.metadata as Record<string, any> | undefined;
 
     model.createdAt = prismaMedia.createdAt;
     model.updatedAt = prismaMedia.updatedAt;

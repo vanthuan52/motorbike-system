@@ -1,5 +1,7 @@
-import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
+import { VehicleModelModel } from '@/modules/vehicle-model/models/vehicle-model.model';
+import { PartModel } from '@/modules/part/models/part.model';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 
 /**
  * Domain model representing a vehicle brand (e.g., Honda, Yamaha).
@@ -10,10 +12,13 @@ export class VehicleBrandModel {
   name: string;
   slug: string;
   description?: string;
-  orderBy: string;
+  orderBy: number;
   country?: string;
   status: EnumVehicleBrandStatus;
-  photo?: AwsS3Dto;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
+  vehicleModels?: VehicleModelModel[];
+  parts?: PartModel[];
 
   createdAt: Date;
   updatedAt: Date;

@@ -1,25 +1,23 @@
 import { SessionModel } from '../models/session.model';
-import { EnumSessionStatus } from '../enums/session.enum';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
+import { UserAgent, GeoLocation } from '@/modules/user/interfaces/user.interface';
 
 export class SessionMapper {
   static toDomain(prismaSession: any): SessionModel {
     const model = new SessionModel();
-    model.id = prismaSession.id;
-    model.jti = prismaSession.jti;
-    model.ip = prismaSession.ip;
-    model.userAgent = prismaSession.userAgent;
-    model.expiredAt = prismaSession.expiredAt;
-    model.revokeAt = prismaSession.revokeAt;
-    model.status = prismaSession.status as EnumSessionStatus;
-    model.hostname = prismaSession.hostname;
-    model.protocol = prismaSession.protocol;
-    model.originalUrl = prismaSession.originalUrl;
-    model.method = prismaSession.method;
-    model.xForwardedFor = prismaSession.xForwardedFor;
-    model.xForwardedHost = prismaSession.xForwardedHost;
-    model.xForwardedPorto = prismaSession.xForwardedPorto;
     model.userId = prismaSession.userId;
+    model.deviceOwnershipId = prismaSession.deviceOwnershipId;
+    model.jti = prismaSession.jti;
+    model.ipAddress = prismaSession.ipAddress;
+    
+    // Convert Json to Domain types
+    model.userAgent = prismaSession.userAgent as UserAgent;
+    model.geoLocation = prismaSession.geoLocation as GeoLocation | undefined;
+    
+    model.expiredAt = prismaSession.expiredAt;
+    model.revokedAt = prismaSession.revokedAt;
+    model.isRevoked = prismaSession.isRevoked;
+    model.revokedById = prismaSession.revokedById;
 
     model.createdAt = prismaSession.createdAt;
     model.updatedAt = prismaSession.updatedAt;

@@ -10,6 +10,7 @@ import { ServicePriceModel } from '../models/service-price.model';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
 import { Prisma } from '@/generated/prisma-client';
+import { IServicePriceListFilters } from './service-price.filter.interface';
 
 export interface IServicePriceService {
   getListOffset(
@@ -17,7 +18,7 @@ export interface IServicePriceService {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<IPaginationOffsetReturn<ServicePriceModel>>;
 
   getListCursor(
@@ -25,7 +26,7 @@ export interface IServicePriceService {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<IPaginationCursorReturn<ServicePriceModel>>;
 
   findOneById(id: string): Promise<ServicePriceModel>;

@@ -4,9 +4,10 @@ import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { UserVehicleMapper } from '@/modules/user-vehicle/mappers/user-vehicle.mapper';
 import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-model.mapper';
 import { VehicleServiceMapper } from '@/modules/vehicle-service/mappers/vehicle-service.mapper';
+import { Appointment as PrismaAppointment } from '@/generated/prisma-client';
 
 export class AppointmentMapper {
-  static toDomain(prismaAppointment: any): AppointmentModel {
+  static toDomain(prismaAppointment: PrismaAppointment): AppointmentModel {
     const model = new AppointmentModel();
     model.id = prismaAppointment.id;
     model.name = prismaAppointment.name;
@@ -24,7 +25,8 @@ export class AppointmentMapper {
       CANCELED: EnumAppointmentStatus.canceled,
       MISSED: EnumAppointmentStatus.missed,
     };
-    model.status = statusMap[prismaAppointment.status] || EnumAppointmentStatus.pending;
+    model.status =
+      statusMap[prismaAppointment.status] || EnumAppointmentStatus.pending;
     model.userId = prismaAppointment.userId;
     model.userVehicleId = prismaAppointment.userVehicleId;
     model.vehicleModelId = prismaAppointment.vehicleModelId;
@@ -40,12 +42,19 @@ export class AppointmentMapper {
       model.user = UserMapper.toDomain(prismaAppointment.user);
     }
     if (prismaAppointment.userVehicle) {
-      model.userVehicle = UserVehicleMapper.toDomain(prismaAppointment.userVehicle);
+      model.userVehicle = UserVehicleMapper.toDomain(
+        prismaAppointment.userVehicle
+      );
     }
     if (prismaAppointment.vehicleModel) {
-      model.vehicleModel = VehicleModelMapper.toDomain(prismaAppointment.vehicleModel);
+      model.vehicleModel = VehicleModelMapper.toDomain(
+        prismaAppointment.vehicleModel
+      );
     }
-    if (prismaAppointment.vehicleServices && Array.isArray(prismaAppointment.vehicleServices)) {
+    if (
+      prismaAppointment.vehicleServices &&
+      Array.isArray(prismaAppointment.vehicleServices)
+    ) {
       model.vehicleServices = prismaAppointment.vehicleServices.map((vs: any) =>
         VehicleServiceMapper.toDomain(vs)
       );

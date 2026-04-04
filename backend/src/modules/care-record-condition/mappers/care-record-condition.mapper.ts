@@ -7,9 +7,12 @@ import {
   EnumExhaustCoverCondition,
 } from '../enums/care-record-condition.enum';
 import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
+import { CareRecordCondition as PrismaCareRecordCondition } from '@/generated/prisma-client';
 
 export class CareRecordConditionMapper {
-  static toDomain(prismaCondition: any): CareRecordConditionModel {
+  static toDomain(
+    prismaCondition: PrismaCareRecordCondition
+  ): CareRecordConditionModel {
     const model = new CareRecordConditionModel();
     model.id = prismaCondition.id;
     model.odoKm = prismaCondition.odoKm;

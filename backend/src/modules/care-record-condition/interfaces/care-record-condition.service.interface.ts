@@ -9,6 +9,7 @@ import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
+import { ICareRecordConditionListFilters } from './care-record-condition.filter.interface';
 
 export interface ICareRecordConditionService {
   getListOffset(
@@ -16,7 +17,7 @@ export interface ICareRecordConditionService {
       Prisma.CareRecordConditionSelect,
       Prisma.CareRecordConditionWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordConditionListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordCondition>>;
 
   getListCursor(
@@ -24,7 +25,7 @@ export interface ICareRecordConditionService {
       Prisma.CareRecordConditionSelect,
       Prisma.CareRecordConditionWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordConditionListFilters
   ): Promise<IPaginationCursorReturn<CareRecordCondition>>;
 
   findOneById(id: string): Promise<CareRecordCondition>;

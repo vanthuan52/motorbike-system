@@ -14,6 +14,8 @@ import {
   ServicePrice as PrismaServicePrice,
 } from '@/generated/prisma-client';
 
+import { IServicePriceListFilters } from '../interfaces/service-price.filter.interface';
+
 @Injectable()
 export class ServicePriceRepository {
   constructor(
@@ -28,7 +30,7 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
@@ -51,7 +53,7 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<IPaginationOffsetReturn<ServicePriceModel>> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
@@ -92,7 +94,7 @@ export class ServicePriceRepository {
       Prisma.ServicePriceSelect,
       Prisma.ServicePriceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServicePriceListFilters
   ): Promise<IPaginationCursorReturn<ServicePriceModel>> {
     const mergedWhere: Prisma.ServicePriceWhereInput = {
       ...where,
@@ -266,7 +268,7 @@ export class ServicePriceRepository {
       skip?: number;
       orderBy?: Prisma.ServicePriceOrderByWithRelationInput[];
     },
-    filters?: Prisma.ServicePriceWhereInput
+    filters?: IServicePriceListFilters
   ): Promise<ServicePriceModel[]> {
     const results = await this.databaseService.servicePrice.findMany({
       where: { ...filters, deletedAt: null },

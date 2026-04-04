@@ -14,6 +14,8 @@ import {
   Prisma,
 } from '@/generated/prisma-client';
 
+import { ICareRecordChecklistListFilters } from '../interfaces/care-record-checklist.filter.interface';
+
 @Injectable()
 export class CareRecordChecklistRepository {
   constructor(
@@ -32,7 +34,7 @@ export class CareRecordChecklistRepository {
       Prisma.CareRecordChecklistSelect,
       Prisma.CareRecordChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordChecklistListFilters
   ): Promise<CareRecordChecklistModel[]> {
     const mergedWhere: Prisma.CareRecordChecklistWhereInput = {
       ...baseWhere,
@@ -63,7 +65,7 @@ export class CareRecordChecklistRepository {
       Prisma.CareRecordChecklistSelect,
       Prisma.CareRecordChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordChecklistListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.CareRecordChecklistWhereInput = {
       ...baseWhere,

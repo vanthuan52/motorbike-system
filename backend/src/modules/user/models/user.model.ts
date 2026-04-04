@@ -1,5 +1,5 @@
-import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { RoleModel } from '@/modules/role/models/role.model';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 import {
   EnumUserStatus,
   EnumUserGender,
@@ -25,7 +25,8 @@ export class UserModel {
   status: EnumUserStatus;
   gender?: EnumUserGender;
   passwordAttempt: number;
-  photo?: AwsS3Dto;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
   roles?: RoleModel[];
 
   signUpDate?: Date;
