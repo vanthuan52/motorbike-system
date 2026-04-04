@@ -22,6 +22,7 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareAreaModel } from '../models/care-area.model';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { Prisma } from '@/generated/prisma-client';
+import { ICareAreaListFilters } from '../interfaces/care-area.filter.interface';
 
 @Injectable()
 export class CareAreaService implements ICareAreaService {
@@ -36,7 +37,7 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<IPaginationOffsetReturn<CareAreaModel>> {
     const { data, ...others } =
       await this.careAreaRepository.findWithPaginationOffset({
@@ -58,7 +59,7 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<IPaginationCursorReturn<CareAreaModel>> {
     const { data, ...others } =
       await this.careAreaRepository.findWithPaginationCursor({
@@ -151,7 +152,7 @@ export class CareAreaService implements ICareAreaService {
     const updated = await this.careAreaRepository.update(id, {
       name: name ?? careArea.name,
       description: description ?? careArea.description,
-      orderBy: orderBy ?? (careArea.orderBy as string),
+      orderBy: orderBy ?? careArea.orderBy,
       updatedBy: actionBy,
     });
 
@@ -193,7 +194,7 @@ export class CareAreaService implements ICareAreaService {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<IPaginationOffsetReturn<CareAreaModel>> {
     const { data, ...others } =
       await this.careAreaRepository.findWithPaginationOffsetTrashed({

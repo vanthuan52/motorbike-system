@@ -1,7 +1,7 @@
 export interface IMessageAttachment {
-  url: string;
+  cdnUrl: string;
   filename: string;
   mimeType: string;
   size: number;
-  thumbnailUrl?: string;
+  thumbnailCdnUrl?: string;
 }

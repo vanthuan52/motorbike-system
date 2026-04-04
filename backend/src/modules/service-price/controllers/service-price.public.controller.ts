@@ -10,6 +10,7 @@ import { ServicePriceListResponseDto } from '../dtos/response/service-price.list
 import { SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY } from '../constants/service-price.list.constant';
 import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { ServicePriceUtil } from '../utils/service-price.util';
+import { IServicePriceListFilters } from '../interfaces/service-price.filter.interface';
 
 @ApiTags('modules.public.service-price')
 @Controller({
@@ -36,7 +37,7 @@ export class ServicePricePublicController {
     @Query('vehicleModel', RequestOptionalParseObjectIdPipe)
     vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: IServicePriceListFilters = {};
 
     if (vehicleServiceId) {
       filters['vehicleService'] = vehicleServiceId;

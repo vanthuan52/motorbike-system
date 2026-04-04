@@ -25,6 +25,7 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { AppointmentUtil } from '../utils/appointment.util';
 import { EnumAppointmentStatusCodeError } from '../enums/appointment.status-code.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { IAppointmentListFilters } from '../interfaces/appointment.filter.interface';
 
 @Injectable()
 export class AppointmentService implements IAppointmentService {
@@ -41,7 +42,7 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Prisma.AppointmentWhereInput
+    filters?: IAppointmentListFilters
   ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const { data, ...others } =
       await this.appointmentRepository.findWithPaginationOffset(
@@ -257,7 +258,7 @@ export class AppointmentService implements IAppointmentService {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Prisma.AppointmentWhereInput
+    filters?: IAppointmentListFilters
   ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const { data, ...others } =
       await this.appointmentRepository.findWithPaginationOffsetTrashed(

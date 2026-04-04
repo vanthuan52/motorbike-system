@@ -9,6 +9,7 @@ import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.r
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordModel } from '../models/care-record.model';
 import { Prisma } from '@/generated/prisma-client';
+import { ICareRecordListFilters } from './care-record.filter.interface';
 
 export interface ICareRecordService {
   getListOffset(
@@ -16,7 +17,7 @@ export interface ICareRecordService {
       Prisma.CareRecordSelect,
       Prisma.CareRecordWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordModel>>;
 
   findOne(where: Prisma.CareRecordWhereInput): Promise<CareRecordModel | null>;
@@ -47,7 +48,7 @@ export interface ICareRecordService {
       Prisma.CareRecordSelect,
       Prisma.CareRecordWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordModel>>;
 
   restore(

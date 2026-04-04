@@ -11,6 +11,8 @@ import { CareAreaModel } from '../models/care-area.model';
 import { CareAreaMapper } from '../mappers/care-area.mapper';
 import { CareArea as PrismaCareArea, Prisma } from '@/generated/prisma-client';
 
+import { ICareAreaListFilters } from '../interfaces/care-area.filter.interface';
+
 @Injectable()
 export class CareAreaRepository {
   constructor(
@@ -29,7 +31,7 @@ export class CareAreaRepository {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<CareAreaModel[]> {
     const mergedWhere: Prisma.CareAreaWhereInput = {
       ...baseWhere,
@@ -55,7 +57,7 @@ export class CareAreaRepository {
       Prisma.CareAreaSelect,
       Prisma.CareAreaWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareAreaListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.CareAreaWhereInput = {
       ...baseWhere,

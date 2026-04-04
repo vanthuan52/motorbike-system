@@ -61,6 +61,7 @@ import {
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
 import { Prisma } from '@/generated/prisma-client';
+import { IUserVehicleListFilters } from '../interfaces/user-vehicle.filter.interface';
 
 @ApiTags('modules.admin.user-vehicle')
 @Controller({
@@ -95,7 +96,7 @@ export class UserVehicleAdminController {
     @Query('vehicleModel')
     vehicleModelId: string
   ): Promise<IResponsePagingReturn<UserVehicleListResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: IUserVehicleListFilters = {};
 
     if (vehicleModelId) {
       filters['vehicleModelId'] = vehicleModelId;
@@ -134,7 +135,7 @@ export class UserVehicleAdminController {
       Prisma.UserVehicleWhereInput
     >
   ): Promise<IResponsePagingReturn<UserVehicleListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IUserVehicleListFilters = {
       userId: userId,
     };
     const result = await this.userVehicleService.getListOffset(

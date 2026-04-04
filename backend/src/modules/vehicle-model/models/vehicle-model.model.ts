@@ -1,4 +1,5 @@
 import { VehicleBrandModel } from '@/modules/vehicle-brand/models/vehicle-brand.model';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 import {
   EnumVehicleModelType,
   EnumVehicleModelFuelType,
@@ -20,10 +21,11 @@ export class VehicleModelModel {
   type: EnumVehicleModelType;
   fuelType: EnumVehicleModelFuelType;
   status: EnumStatus;
-  orderBy: string;
+  orderBy: number;
   yearStart?: number;
   yearEnd?: number;
-  photo?: string;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
 
   vehicleBrandId: string;
   vehicleBrand?: VehicleBrandModel;

@@ -11,10 +11,7 @@ import {
 import { ISessionListFilters } from '@/modules/session/interfaces/session.filter.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import {
-  ISession,
-  ISessionLoginCreate,
-} from '@/modules/session/interfaces/session.interface';
+import { ISessionLoginCreate } from '@/modules/session/interfaces/session.interface';
 import { SessionModel } from '@/modules/session/models/session.model';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { SessionMapper } from '../mappers/session.mapper';
@@ -70,7 +67,8 @@ export class SessionRepository {
     }: IPaginationQueryCursorParams<
       Prisma.SessionSelect,
       Prisma.SessionWhereInput
-    >
+    >,
+    filters?: ISessionListFilters
   ): Promise<IPaginationCursorReturn<SessionModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaSession,
@@ -80,6 +78,7 @@ export class SessionRepository {
       ...others,
       where: {
         ...where,
+        ...filters,
         userId,
         isRevoked: false,
       },
@@ -169,7 +168,10 @@ export class SessionRepository {
     return SessionMapper.toDomain(session);
   }
 
-  async revokeByAdmin(sessionId: string, revokedBy: string): Promise<ISession> {
+  async revokeByAdmin(
+    sessionId: string,
+    revokedBy: string
+  ): Promise<SessionModel> {
     const session = await this.databaseService.session.update({
       where: {
         id: sessionId,

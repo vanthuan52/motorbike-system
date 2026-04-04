@@ -9,7 +9,6 @@ import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status
 import { StoreRepository } from '../repository/store.repository';
 import { IStoreService } from '../interfaces/store.service.interface';
 import {
-  IPaginationIn,
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
@@ -22,6 +21,7 @@ import { EnumStoreStatus } from '../enums/store.enum';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { Prisma } from '@/generated/prisma-client';
+import { IStoreListFilters } from '../interfaces/store.filter.interface';
 
 @Injectable()
 export class StoreService implements IStoreService {
@@ -35,7 +35,7 @@ export class StoreService implements IStoreService {
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >,
-    filters?: Prisma.StoreWhereInput
+    filters?: IStoreListFilters
   ): Promise<IPaginationOffsetReturn<StoreModel>> {
     const { data, ...others } =
       await this.storeRepository.findWithPaginationOffset(pagination, filters);
@@ -51,7 +51,7 @@ export class StoreService implements IStoreService {
       Prisma.StoreSelect,
       Prisma.StoreWhereInput
     >,
-    filters?: Prisma.StoreWhereInput
+    filters?: IStoreListFilters
   ): Promise<IPaginationCursorReturn<StoreModel>> {
     const { data, ...others } =
       await this.storeRepository.findWithPaginationCursor(pagination, filters);

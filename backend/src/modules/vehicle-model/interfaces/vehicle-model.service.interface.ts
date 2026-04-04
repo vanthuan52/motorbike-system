@@ -14,6 +14,7 @@ import {
 import { Prisma } from '@/generated/prisma-client';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { IVehicleModelListFilters } from './vehicle-model.filter.interface';
 
 export interface IVehicleModelService {
   getListOffset(
@@ -21,7 +22,7 @@ export interface IVehicleModelService {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleModelListFilters
   ): Promise<IPaginationOffsetReturn<VehicleModelModel>>;
 
   getListCursor(
@@ -29,7 +30,7 @@ export interface IVehicleModelService {
       Prisma.VehicleModelSelect,
       Prisma.VehicleModelWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IVehicleModelListFilters
   ): Promise<IPaginationCursorReturn<VehicleModelModel>>;
 
   findOneById(id: string): Promise<VehicleModelModel>;

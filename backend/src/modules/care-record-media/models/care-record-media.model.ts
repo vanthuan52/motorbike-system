@@ -7,7 +7,7 @@ import { CareRecordModel } from '@/modules/care-record/models/care-record.model'
  */
 export class CareRecordMediaModel {
   id: string;
-  url?: string;
+  cdnUrl?: string;
   description?: string;
   stage: EnumCareRecordMediaStage;
   type: string;

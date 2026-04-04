@@ -3,9 +3,13 @@ import {
   EnumDevicePlatform,
   EnumDeviceNotificationProvider,
 } from '../enums/device.enum';
+import {
+  Device as PrismaDevice,
+  DeviceOwnership as PrismaDeviceOwnership,
+} from '@/generated/prisma-client';
 
 export class DeviceMapper {
-  static toDeviceDomain(prismaDevice: any): DeviceModel {
+  static toDeviceDomain(prismaDevice: PrismaDevice): DeviceModel {
     const model = new DeviceModel();
     model.id = prismaDevice.id;
     model.fingerprint = prismaDevice.fingerprint;
@@ -24,7 +28,9 @@ export class DeviceMapper {
     return model;
   }
 
-  static toDeviceOwnershipDomain(prismaOwnership: any): DeviceOwnershipModel {
+  static toDeviceOwnershipDomain(
+    prismaOwnership: PrismaDeviceOwnership
+  ): DeviceOwnershipModel {
     const model = new DeviceOwnershipModel();
     model.id = prismaOwnership.id;
     model.deviceId = prismaOwnership.deviceId;

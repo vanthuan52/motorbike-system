@@ -22,7 +22,7 @@ export class VehicleBrandDto extends DatabaseDto {
     description: 'Thứ tự hiển thị',
   })
   @Expose()
-  orderBy?: string;
+  orderBy?: number;
 
   @ApiProperty({
     example: EnumVehicleBrandStatus.active,

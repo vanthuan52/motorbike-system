@@ -1,9 +1,10 @@
 import { ServicePriceModel } from '../models/service-price.model';
 import { VehicleServiceMapper } from '@/modules/vehicle-service/mappers/vehicle-service.mapper';
 import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-model.mapper';
+import { ServicePrice as PrismaServicePrice } from '@/generated/prisma-client';
 
 export class ServicePriceMapper {
-  static toDomain(prismaPrice: any): ServicePriceModel {
+  static toDomain(prismaPrice: PrismaServicePrice): ServicePriceModel {
     const model = new ServicePriceModel();
     model.id = prismaPrice.id;
     model.price = prismaPrice.price;
@@ -20,10 +21,14 @@ export class ServicePriceMapper {
     model.deletedBy = prismaPrice.deletedBy;
 
     if (prismaPrice.vehicleService) {
-      model.vehicleService = VehicleServiceMapper.toDomain(prismaPrice.vehicleService);
+      model.vehicleService = VehicleServiceMapper.toDomain(
+        prismaPrice.vehicleService
+      );
     }
     if (prismaPrice.vehicleModel) {
-      model.vehicleModel = VehicleModelMapper.toDomain(prismaPrice.vehicleModel);
+      model.vehicleModel = VehicleModelMapper.toDomain(
+        prismaPrice.vehicleModel
+      );
     }
 
     return model;

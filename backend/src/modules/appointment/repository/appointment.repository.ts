@@ -14,6 +14,7 @@ import {
   Appointment as PrismaAppointment,
   Prisma,
 } from '@/generated/prisma-client';
+import { IAppointmentListFilters } from '../interfaces/appointment.filter.interface';
 
 @Injectable()
 export class AppointmentRepository {
@@ -33,7 +34,7 @@ export class AppointmentRepository {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IAppointmentListFilters
   ): Promise<AppointmentModel[]> {
     const mergedWhere: Prisma.AppointmentWhereInput = {
       ...baseWhere,
@@ -65,7 +66,7 @@ export class AppointmentRepository {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IAppointmentListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.AppointmentWhereInput = {
       ...baseWhere,
@@ -86,7 +87,7 @@ export class AppointmentRepository {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Prisma.AppointmentWhereInput
+    filters?: IAppointmentListFilters
   ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const paginatedResult =
       await this.paginationService.offset<PrismaAppointment>(
@@ -300,7 +301,7 @@ export class AppointmentRepository {
       Prisma.AppointmentSelect,
       Prisma.AppointmentWhereInput
     >,
-    filters?: Prisma.AppointmentWhereInput
+    filters?: IAppointmentListFilters
   ): Promise<IPaginationOffsetReturn<AppointmentModel>> {
     const paginatedResult =
       await this.paginationService.offset<PrismaAppointment>(

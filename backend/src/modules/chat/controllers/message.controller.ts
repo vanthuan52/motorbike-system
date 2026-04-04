@@ -26,6 +26,7 @@ import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pip
 import { MessageUpdateStatusRequestDto } from '../dtos/request/message-update-status.request.dto';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import { Message, Prisma } from '@/generated/prisma-client';
+import { IMessageListFilters } from '../interfaces/message.filter.interface';
 
 @ApiTags('modules.chat')
 @Controller({
@@ -49,7 +50,7 @@ export class MessageSharedController {
     @Param('conversationId', RequestOptionalParseObjectIdPipe)
     conversationId: string
   ): Promise<IResponsePagingReturn<MessageGetResponseDto>> {
-    const filters: Record<string, any> = {};
+    const filters: IMessageListFilters = {};
 
     if (conversationId) {
       filters.conversationId = conversationId;

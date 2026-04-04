@@ -1,5 +1,6 @@
 import { EnumStatus } from '@/common/enums/common.enum';
 import { ServiceCategoryModel } from '@/modules/service-category/models/service-category.model';
+import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 
 /**
  * Domain model representing a vehicle service category item.
@@ -10,9 +11,11 @@ export class VehicleServiceModel {
   name: string;
   slug: string;
   description?: string;
-  orderBy: string;
+  orderBy: number;
   status: EnumStatus;
-  photo?: string;
+  basePrice: number;
+  photoCdnUrl?: string;
+  mediaAttachments?: MediaAttachmentModel[];
 
   serviceCategoryId: string;
   serviceCategory?: ServiceCategoryModel;

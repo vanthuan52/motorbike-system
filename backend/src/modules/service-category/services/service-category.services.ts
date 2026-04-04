@@ -131,7 +131,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
       name,
       slug: slug.toLowerCase(),
       description: description ?? null,
-      orderBy: orderBy ?? '0',
+      orderBy: orderBy ?? 0,
       status: EnumServiceCategoryStatus.active,
       createdBy: createdBy,
     };

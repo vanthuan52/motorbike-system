@@ -20,6 +20,8 @@ import {
   ActivityLog as PrismaActivityLog,
 } from '@/generated/prisma-client';
 
+import { IActivityLogListFilters } from '../interfaces/activity-log.filter.interface';
+
 @Injectable()
 export class ActivityLogRepository {
   constructor(
@@ -36,7 +38,7 @@ export class ActivityLogRepository {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IActivityLogListFilters
   ): Promise<IPaginationOffsetReturn<ActivityLogModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaActivityLog,
@@ -67,7 +69,7 @@ export class ActivityLogRepository {
       Prisma.ActivityLogSelect,
       Prisma.ActivityLogWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IActivityLogListFilters
   ): Promise<IPaginationCursorReturn<ActivityLogModel>> {
     const paginatedResult = await this.paginationService.cursor<
       PrismaActivityLog,

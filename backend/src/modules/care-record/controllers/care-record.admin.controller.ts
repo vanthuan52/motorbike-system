@@ -81,6 +81,8 @@ import {
 } from '@/modules/user/interfaces/user.interface';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { ICareRecordListFilters } from '../interfaces/care-record.filter.interface';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 
 @ApiTags('modules.admin.care-record')
 @Controller({
@@ -109,7 +111,7 @@ export class CareRecordAdminController {
       availableOrderBy: CARE_RECORD_DEFAULT_AVAILABLE_ORDER_BY,
     })
     pagination: IPaginationQueryOffsetParams,
-    @Query('appointment')
+    @Query('appointmentId', RequestOptionalParseObjectIdPipe)
     appointmentId: string,
     @PaginationQueryFilterInEnum('status', CARE_RECORD_DEFAULT_STATUS)
     status: Record<string, IPaginationIn>,
@@ -118,12 +120,12 @@ export class CareRecordAdminController {
       CARE_RECORD_DEFAULT_PAYMENT_STATUS
     )
     paymentStatus: Record<string, IPaginationIn>,
-    @Query('technician')
+    @Query('technicianId', RequestOptionalParseObjectIdPipe)
     technicianId: string,
-    @Query('userVehicle')
+    @Query('userVehicleId', RequestOptionalParseObjectIdPipe)
     userVehicleId: string
   ): Promise<IResponsePagingReturn<CareRecordListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: ICareRecordListFilters = {
       ...status,
       ...paymentStatus,
     };

@@ -11,6 +11,7 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordServiceModel } from '../models/care-record-service.model';
 import { Prisma } from '@generated/prisma-client';
+import { ICareRecordServiceListFilters } from './care-record-service.filter.interface';
 
 export interface ICareRecordServiceService {
   getListOffset(
@@ -18,7 +19,7 @@ export interface ICareRecordServiceService {
       Prisma.CareRecordServiceSelect,
       Prisma.CareRecordServiceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordServiceListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordServiceModel>>;
 
   getListCursor(
@@ -26,7 +27,7 @@ export interface ICareRecordServiceService {
       Prisma.CareRecordServiceSelect,
       Prisma.CareRecordServiceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordServiceListFilters
   ): Promise<IPaginationCursorReturn<CareRecordServiceModel>>;
 
   getListOffsetWithChecklists(
@@ -34,7 +35,7 @@ export interface ICareRecordServiceService {
       Prisma.CareRecordServiceSelect,
       Prisma.CareRecordServiceWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordServiceListFilters
   ): Promise<
     IPaginationOffsetReturn<{
       service: CareRecordServiceModel;

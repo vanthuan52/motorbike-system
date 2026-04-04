@@ -10,7 +10,7 @@ export class ServiceChecklistModel {
   name: string;
   code: string;
   description?: string;
-  orderBy: string;
+  orderBy: number;
   vehicleType: string[];
 
   careAreaId: string;

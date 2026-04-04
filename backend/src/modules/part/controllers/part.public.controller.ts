@@ -30,6 +30,7 @@ import {
 } from '../constants/part.list.constant';
 import { PartGetFullResponseDto } from '../dtos/response/part.full.response.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { IPartListFilters } from '../interfaces/part.filter.interface';
 
 @ApiTags('modules.public.part')
 @Controller({
@@ -69,7 +70,7 @@ export class PartPublicController {
     @Query('partType') partTypeId: string,
     @Query('vehicleBrand') vehicleBrandId: string
   ): Promise<IResponsePagingReturn<PartListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IPartListFilters = {
       ...status,
     };
     if (partTypeId) filters['partTypeId'] = partTypeId;

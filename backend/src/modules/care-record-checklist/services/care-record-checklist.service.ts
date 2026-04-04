@@ -22,6 +22,8 @@ import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { CareRecordChecklist, Prisma } from '@/generated/prisma-client';
 
+import { ICareRecordChecklistListFilters } from '../interfaces/care-record-checklist.filter.interface';
+
 @Injectable()
 export class CareRecordChecklistService implements ICareRecordChecklistService {
   constructor(
@@ -33,7 +35,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       Prisma.CareRecordChecklistSelect,
       Prisma.CareRecordChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordChecklistListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordChecklist>> {
     const { data, ...others } =
       await this.careRecordChecklistRepository.findWithPaginationOffset({
@@ -52,7 +54,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       Prisma.CareRecordChecklistSelect,
       Prisma.CareRecordChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordChecklistListFilters
   ): Promise<IPaginationCursorReturn<CareRecordChecklist>> {
     const { data, ...others } =
       await this.careRecordChecklistRepository.findWithPaginationCursor({

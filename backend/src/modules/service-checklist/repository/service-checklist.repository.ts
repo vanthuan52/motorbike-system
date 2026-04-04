@@ -9,6 +9,8 @@ import {
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
 
+import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
+
 @Injectable()
 export class ServiceChecklistRepository {
   constructor(
@@ -27,7 +29,7 @@ export class ServiceChecklistRepository {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceChecklistListFilters
   ): Promise<ServiceChecklist[]> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...baseWhere,
@@ -53,7 +55,7 @@ export class ServiceChecklistRepository {
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IServiceChecklistListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...baseWhere,

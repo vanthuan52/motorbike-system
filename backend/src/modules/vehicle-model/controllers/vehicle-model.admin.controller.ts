@@ -74,6 +74,7 @@ import {
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { Prisma } from '@/generated/prisma-client';
+import { IVehicleModelListFilters } from '../interfaces/vehicle-model.filter.interface';
 
 @ApiTags('modules.admin.vehicle-model')
 @Controller({
@@ -118,7 +119,7 @@ export class VehicleModelAdminController {
     @Query('modelYear')
     modelYear?: number
   ): Promise<IResponsePagingReturn<VehicleModelListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IVehicleModelListFilters = {
       ...status,
       ...type,
       ...fuelType,

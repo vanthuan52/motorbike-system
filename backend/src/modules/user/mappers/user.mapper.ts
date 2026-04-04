@@ -28,7 +28,7 @@ export class UserMapper {
     user.status = prismaUser.status as EnumUserStatus;
     user.gender = prismaUser.gender as EnumUserGender;
 
-    user.photo = prismaUser.photo;
+    user.photoCdnUrl = prismaUser.photoCdnUrl ?? undefined;
 
     user.signUpDate = prismaUser.signUpDate;
     user.signUpFrom = prismaUser.signUpFrom as EnumUserSignUpFrom;

@@ -1,0 +1,10 @@
+{
+  "list": "Danh sách bình luận ứng viên được lấy thành công.",
+  "get": "Chi tiết ứng viên được truy xuất thành công.",
+  "create": "Tạo bình luận ứng viên mới thành công.",
+  "error": {
+    "notFoundJobApplication": "Rất tiếc, chúng tôi không tìm thấy bình luận ứng viên bạn yêu cầu.",
+    "notFound": "Rất tiếc, chúng tôi không tìm thấy ứng viên bạn yêu cầu.",
+    "createFailed": "Tạo bình luận ứng viên mới thất bại."
+  }
+}

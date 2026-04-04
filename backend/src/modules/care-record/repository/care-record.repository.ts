@@ -14,6 +14,8 @@ import {
 import { CareRecordModel } from '../models/care-record.model';
 import { CareRecordMapper } from '../mappers/care-record.mapper';
 
+import { ICareRecordListFilters } from '../interfaces/care-record.filter.interface';
+
 @Injectable()
 export class CareRecordRepository {
   constructor(
@@ -40,7 +42,7 @@ export class CareRecordRepository {
       Prisma.CareRecordSelect,
       Prisma.CareRecordWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordListFilters
   ): Promise<CareRecordModel[]> {
     const mergedWhere: Prisma.CareRecordWhereInput = {
       ...baseWhere,
@@ -67,7 +69,7 @@ export class CareRecordRepository {
       Prisma.CareRecordSelect,
       Prisma.CareRecordWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordListFilters
   ): Promise<number> {
     const mergedWhere: Prisma.CareRecordWhereInput = {
       ...baseWhere,

@@ -44,7 +44,7 @@ export class PartDto extends DatabaseDto {
     description: 'Display order',
   })
   @Expose()
-  orderBy?: string;
+  orderBy?: number;
 
   @ApiProperty({
     type: String,

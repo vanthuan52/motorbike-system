@@ -25,6 +25,8 @@ import { UserService } from '@/modules/user/services/user.service';
 import { Prisma } from '@/generated/prisma-client';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 
+import { IUserVehicleListFilters } from '../interfaces/user-vehicle.filter.interface';
+
 @Injectable()
 export class UserVehicleService implements IUserVehicleService {
   private readonly uploadPath: string;
@@ -45,7 +47,7 @@ export class UserVehicleService implements IUserVehicleService {
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IUserVehicleListFilters
   ): Promise<IPaginationOffsetReturn<UserVehicleModel>> {
     return this.userVehicleRepository.findWithPaginationOffset(
       pagination,
@@ -58,7 +60,7 @@ export class UserVehicleService implements IUserVehicleService {
       Prisma.UserVehicleSelect,
       Prisma.UserVehicleWhereInput
     >,
-    filters?: Record<string, IPaginationIn>
+    filters?: IUserVehicleListFilters
   ): Promise<IPaginationCursorReturn<UserVehicleModel>> {
     return this.userVehicleRepository.findWithPaginationCursor(
       pagination,

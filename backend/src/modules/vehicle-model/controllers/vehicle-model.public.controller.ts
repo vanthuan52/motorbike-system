@@ -33,6 +33,7 @@ import { VehicleModelDto } from '../dtos/vehicle-model.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { VehicleModelUtil } from '../utils/vehicle-model.util';
 import { Prisma } from '@/generated/prisma-client';
+import { IVehicleModelListFilters } from '../interfaces/vehicle-model.filter.interface';
 
 @ApiTags('modules.public.vehicle-model')
 @Controller({
@@ -81,7 +82,7 @@ export class VehicleModelPublicController {
     @Query('modelYear')
     modelYear?: number
   ): Promise<IResponsePagingReturn<VehicleModelListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IVehicleModelListFilters = {
       ...status,
       ...type,
       ...fuelType,

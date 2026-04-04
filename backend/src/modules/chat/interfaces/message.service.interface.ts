@@ -8,6 +8,7 @@ import {
 import { ConversationModel } from '../models/conversation.model';
 import { MessageModel } from '../models/message.model';
 import { Prisma } from '@/generated/prisma-client';
+import { IMessageListFilters } from './message.filter.interface';
 
 export interface IMessageService {
   sendMessage(
@@ -41,7 +42,7 @@ export interface IMessageService {
       Prisma.MessageSelect,
       Prisma.MessageWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMessageListFilters
   ): Promise<IPaginationOffsetReturn<MessageModel>>;
 
   getListCursor(
@@ -49,6 +50,6 @@ export interface IMessageService {
       Prisma.MessageSelect,
       Prisma.MessageWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: IMessageListFilters
   ): Promise<IPaginationCursorReturn<MessageModel>>;
 }

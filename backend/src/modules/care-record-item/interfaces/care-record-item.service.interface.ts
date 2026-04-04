@@ -11,6 +11,7 @@ import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-rec
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordItemModel } from '../models/care-record-item.model';
 import { Prisma } from '@/generated/prisma-client';
+import { ICareRecordItemListFilters } from './care-record-item.filter.interface';
 
 export interface ICareRecordItemService {
   getListOffset(
@@ -18,7 +19,7 @@ export interface ICareRecordItemService {
       Prisma.CareRecordItemSelect,
       Prisma.CareRecordItemWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordItemListFilters
   ): Promise<IPaginationOffsetReturn<CareRecordItemModel>>;
 
   getListCursor(
@@ -26,7 +27,7 @@ export interface ICareRecordItemService {
       Prisma.CareRecordItemSelect,
       Prisma.CareRecordItemWhereInput
     >,
-    filters?: Record<string, any>
+    filters?: ICareRecordItemListFilters
   ): Promise<IPaginationCursorReturn<CareRecordItemModel>>;
 
   findOneById(id: string): Promise<CareRecordItemModel>;

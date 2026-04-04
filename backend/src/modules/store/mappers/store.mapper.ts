@@ -11,7 +11,7 @@ export class StoreMapper {
       workHours: prismaStore.workHours,
       description: prismaStore.description || undefined,
       slug: prismaStore.slug,
-      status: prismaStore.status as unknown as EnumStoreStatus,
+      status: prismaStore.status as EnumStoreStatus,
 
       createdAt: prismaStore.createdAt,
       updatedAt: prismaStore.updatedAt,

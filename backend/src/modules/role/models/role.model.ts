@@ -7,11 +7,11 @@ import { PermissionModel } from '@/modules/permission/models/permission.model';
 export class RoleModel {
   id: string;
   name: string;
+  code: string; // unique
   description?: string;
   isActive: boolean;
   type: string;
 
-  // Child relations (via junction table RolePermission)
   permissions?: PermissionModel[];
 
   createdAt: Date;

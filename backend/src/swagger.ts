@@ -36,25 +36,25 @@ export default async function (app: NestApplication): Promise<void> {
           properties: {
             appName,
           },
-        }),
+        })
       )
       .setContact(appAuthorName, appUrl, appAuthorEmail)
       .addServer('/')
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        'accessToken',
+        'accessToken'
       )
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        'refreshToken',
+        'refreshToken'
       )
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        'google',
+        'google'
       )
       .addBearerAuth(
         { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-        'apple',
+        'apple'
       )
       .addApiKey({ type: 'apiKey', in: 'header', name: 'x-api-key' }, 'xApiKey')
       .build();
@@ -64,7 +64,7 @@ export default async function (app: NestApplication): Promise<void> {
     });
 
     try {
-      writeFileSync('generated/swagger.json', JSON.stringify(document));
+      writeFileSync('generated/swagger/swagger.json', JSON.stringify(document));
     } catch {}
 
     SwaggerModule.setup(docPrefix, app, document, {

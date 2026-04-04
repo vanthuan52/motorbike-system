@@ -71,6 +71,7 @@ import {
 import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
 import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
+import { IPartListFilters } from '../interfaces/part.filter.interface';
 
 @ApiTags('modules.admin.part')
 @Controller({
@@ -104,7 +105,7 @@ export class PartAdminController {
     @Query('partType') partTypeId: string,
     @Query('vehicleBrand') vehicleBrandId: string
   ): Promise<IResponsePagingReturn<PartListResponseDto>> {
-    const filters: Record<string, any> = {
+    const filters: IPartListFilters = {
       ...status,
     };
     if (partTypeId) filters['partTypeId'] = partTypeId;

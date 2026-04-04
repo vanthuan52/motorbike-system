@@ -1,9 +1,0 @@
-{
-  "list": "Candidates review list retrieved successfully.",
-  "create": "New candidate review created successfully.",
-  "error": {
-    "notFoundCandidate": "Sorry, we couldn't find the candidate you requested.",
-    "notFound": "Sorry, we couldn't find the candidate review you requested.",
-    "createFailed": "Failed to create new candidate review."
-  }
-}

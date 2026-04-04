@@ -25,8 +25,8 @@ export class CareAreaDto extends DatabaseDto {
   @ApiPropertyOptional({
     type: String,
     description: 'Display order',
-    example: '0',
+    example: 0,
   })
   @Expose()
-  orderBy?: string;
+  orderBy?: number;
 }
