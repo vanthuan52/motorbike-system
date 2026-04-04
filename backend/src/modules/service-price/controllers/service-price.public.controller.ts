@@ -7,7 +7,7 @@ import { ResponsePaging } from '@/common/response/decorators/response.decorator'
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { ServicePriceListResponseDto } from '../dtos/response/service-price.list.response.dto';
-import { SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY } from '../constants/service-price.list.constant';
+import { ServicePriceDefaultAvailableOrderBy, ServicePriceDefaultAvailableSearch } from '../constants/service-price.list.constant';
 import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { ServicePriceUtil } from '../utils/service-price.util';
 import { IServicePriceListFilters } from '../interfaces/service-price.filter.interface';
@@ -28,8 +28,8 @@ export class ServicePricePublicController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
-      availableOrderBy: SERVICE_PRICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServicePriceDefaultAvailableSearch,
+      availableOrderBy: ServicePriceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('vehicleService', RequestOptionalParseObjectIdPipe)

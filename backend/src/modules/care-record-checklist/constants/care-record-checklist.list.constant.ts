@@ -1,15 +1,16 @@
 import {
-  ENUM_CARE_RECORD_CHECKLIST_RESULT,
-  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+  EnumCareRecordChecklistResult,
+  EnumCareRecordChecklistStatus,
 } from '../enums/care-record-checklist.enum';
 
-export const CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_SEARCH = ['name'];
-export const CARE_RECORD_CHECKLIST_DEFAULT_AVAILABLE_ORDER_BY = ['createdAt'];
+export const CareRecordChecklistDefaultAvailableSearch = ['name'];
+export const CareRecordChecklistDefaultAvailableOrderBy = ['createdAt'];
 
-export const CARE_RECORD_CHECKLIST_DEFAULT_STATUS = Object.values(
-  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+export const CareRecordChecklistDefaultStatus = Object.values(
+  EnumCareRecordChecklistStatus,
 );
 
-export const CARE_RECORD_CHECKLIST_DEFAULT_RESULT = Object.values(
-  ENUM_CARE_RECORD_CHECKLIST_RESULT,
+export const CareRecordChecklistDefaultResult = Object.values(
+  EnumCareRecordChecklistResult,
 );
+

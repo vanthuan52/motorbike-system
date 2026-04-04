@@ -9,9 +9,8 @@ import {
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareAreaModel } from '../models/care-area.model';
 import { CareAreaMapper } from '../mappers/care-area.mapper';
-import { CareArea as PrismaCareArea, Prisma } from '@/generated/prisma-client';
-
 import { ICareAreaListFilters } from '../interfaces/care-area.filter.interface';
+import { CareArea as PrismaCareArea, Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareAreaRepository {

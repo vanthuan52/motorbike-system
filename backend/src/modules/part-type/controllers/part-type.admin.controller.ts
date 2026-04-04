@@ -49,9 +49,9 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  PART_TYPE_DEFAULT_AVAILABLE_ORDER_BY,
-  PART_TYPE_DEFAULT_AVAILABLE_SEARCH,
-  PART_TYPE_DEFAULT_STATUS,
+  PartTypeDefaultAvailableOrderBy,
+  PartTypeDefaultAvailableSearch,
+  PartTypeDefaultStatus,
 } from '../constants/part-type.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -92,11 +92,11 @@ export class PartTypeAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: PART_TYPE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: PART_TYPE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: PartTypeDefaultAvailableSearch,
+      availableOrderBy: PartTypeDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
-    @PaginationQueryFilterInEnum('status', PART_TYPE_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', PartTypeDefaultStatus)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<PartTypeListResponseDto>> {
     const result = await this.partTypeService.getListOffset(pagination, {

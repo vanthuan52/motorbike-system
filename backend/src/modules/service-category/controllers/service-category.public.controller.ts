@@ -24,9 +24,9 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
 import {
-  SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
-  SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
-  SERVICE_CATEGORY_DEFAULT_STATUS,
+  ServiceCategoryDefaultAvailableOrderBy,
+  ServiceCategoryDefaultAvailableSearch,
+  ServiceCategoryDefaultStatus,
 } from '../constants/service-category.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
 import { ServiceCategoryUtil } from '../utils/service-category.util';
@@ -49,7 +49,12 @@ export class ServiceCategoryPublicController {
   async get(
     @Param('slug', RequestRequiredPipe) slug: string
   ): Promise<IResponseReturn<ServiceCategoryDto>> {
-    return this.serviceCategoryService.findBySlug(slug);
+    const result = await this.serviceCategoryService.findBySlug(slug);
+    const mapped = this.serviceCategoryUtil.mapGet(result);
+    return {
+      ...result,
+      data: mapped,
+    };
   }
 
   @ServiceCategoryPublicListDoc()
@@ -57,20 +62,19 @@ export class ServiceCategoryPublicController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: SERVICE_CATEGORY_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: SERVICE_CATEGORY_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: ServiceCategoryDefaultAvailableSearch,
+      availableOrderBy: ServiceCategoryDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', SERVICE_CATEGORY_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', ServiceCategoryDefaultStatus)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
-    const result = await this.serviceCategoryService.getListOffset(
-      pagination,
-      { ...status }
-    );
+    const result = await this.serviceCategoryService.getListOffset(pagination, {
+      ...status,
+    });
     const mapped = this.serviceCategoryUtil.mapList(result.data);
     return {
       ...result,

@@ -11,8 +11,8 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import {
-  CARE_RECORD_MEDIA_DEFAULT_AVAILABLE_ORDER_BY,
-  CARE_RECORD_MEDIA_DEFAULT_AVAILABLE_SEARCH,
+  CareRecordMediaDefaultAvailableOrderBy,
+  CareRecordMediaDefaultAvailableSearch,
 } from '../constants/care-record-media.list.constant';
 import {
   CareRecordMediaAdminCreateDoc,
@@ -88,8 +88,8 @@ export class CareRecordMediaAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: CARE_RECORD_MEDIA_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_RECORD_MEDIA_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareRecordMediaDefaultAvailableSearch,
+      availableOrderBy: CareRecordMediaDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('careRecord', RequestOptionalParseObjectIdPipe)

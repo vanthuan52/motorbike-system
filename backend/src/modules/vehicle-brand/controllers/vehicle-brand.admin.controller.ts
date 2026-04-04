@@ -50,9 +50,9 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
-  VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
-  VEHICLE_BRAND_DEFAULT_STATUS,
+  VehicleBrandDefaultAvailableOrderBy,
+  VehicleBrandDefaultAvailableSearch,
+  VehicleBrandDefaultStatus,
 } from '../constants/vehicle-brand.list.constant';
 import { RoleProtected } from '@/modules/role/decorators/role.decorator';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -95,14 +95,14 @@ export class VehicleBrandAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: VehicleBrandDefaultAvailableSearch,
+      availableOrderBy: VehicleBrandDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.VehicleBrandSelect,
       Prisma.VehicleBrandWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', VEHICLE_BRAND_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', VehicleBrandDefaultStatus)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<VehicleBrandListResponseDto>> {
     const result = await this.vehicleBrandService.getListOffset(pagination, {

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_VEHICLE_SERVICE_STATUS } from '../enums/vehicle-service.enum';
+import { EnumVehicleServiceStatus } from '../enums/vehicle-service.enum';
 
 interface DocField {
   name: string;
@@ -36,7 +36,7 @@ export const VehicleServiceDocQueryStatus: DocField[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_VEHICLE_SERVICE_STATUS).join(','),
+    example: Object.values(EnumVehicleServiceStatus).join(','),
     description: "value with ',' delimiter",
   },
 ];

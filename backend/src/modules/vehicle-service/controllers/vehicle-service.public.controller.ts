@@ -20,16 +20,16 @@ import {
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import { VehicleServiceListResponseDto } from '../dtos/response/vehicle-service.list.response.dto';
 import {
-  VEHICLE_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
-  VEHICLE_SERVICE_DEFAULT_AVAILABLE_SEARCH,
-  VEHICLE_SERVICE_DEFAULT_STATUS,
+  VehicleServiceDefaultAvailableOrderBy,
+  VehicleServiceDefaultAvailableSearch,
+  VehicleServiceDefaultStatus,
 } from '../constants/vehicle-service.list.constant';
-import { OptionalParseUUIDPipe } from '@/app/pipes/optional-parse-uuid.pipe';
 import { VehicleServiceDto } from '../dtos/vehicle-service.dto';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { Prisma } from '@/generated/prisma-client';
 import { VehicleServiceUtil } from '../utils/vehicle-service.util';
 import { IVehicleServiceListFilters } from '../interfaces/vehicle-service.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
+import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 
 @ApiTags('modules.public.vehicle-service')
 @Controller({
@@ -58,16 +58,16 @@ export class VehicleServicePublicController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: VEHICLE_SERVICE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: VEHICLE_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: VehicleServiceDefaultAvailableSearch,
+      availableOrderBy: VehicleServiceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', VEHICLE_SERVICE_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', VehicleServiceDefaultStatus)
     status: Record<string, any>,
-    @Query('serviceCategory', OptionalParseUUIDPipe)
+    @Query('serviceCategory', RequestOptionalParseObjectIdPipe)
     serviceCategoryId?: string
   ): Promise<IResponsePagingReturn<VehicleServiceListResponseDto>> {
     const filters: IVehicleServiceListFilters = {

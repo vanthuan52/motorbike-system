@@ -47,8 +47,8 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
-  CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
+  CareAreaDefaultAvailableOrderBy,
+  CareAreaDefaultAvailableSearch,
 } from '../constants/care-area.list.constant';
 import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { CareAreaWithServiceChecklistResponseDto } from '../dtos/response/care-area.with-service-checklist.response.dto';
@@ -92,8 +92,8 @@ export class CareAreaAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareAreaDefaultAvailableSearch,
+      availableOrderBy: CareAreaDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams
   ): Promise<IResponsePagingReturn<CareAreaListResponseDto>> {
@@ -164,8 +164,8 @@ export class CareAreaAdminController {
   @Get('/list/checklists')
   async listWithServiceChecklists(
     @PaginationOffsetQuery({
-      availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareAreaDefaultAvailableSearch,
+      availableOrderBy: CareAreaDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams,
     @Query('vehicleType') vehicleType?: EnumVehicleModelType
@@ -263,8 +263,8 @@ export class CareAreaAdminController {
   @Get('/trash')
   async trashList(
     @PaginationOffsetQuery({
-      availableSearch: CARE_AREA_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: CARE_AREA_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: CareAreaDefaultAvailableSearch,
+      availableOrderBy: CareAreaDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams
   ): Promise<IResponsePagingReturn<CareAreaListResponseDto>> {

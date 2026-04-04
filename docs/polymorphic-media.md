@@ -1,6 +1,7 @@
 # 📸 Hướng Dẫn Sử Dụng Kiến Trúc Polymorphic Media (Media Attachment)
 
 ## 1. Giới thiệu
+
 Trong các hệ thống lớn, việc upload và lưu trữ hình ảnh/media là một bài toán cốt lõi. Tài liệu này giải thích cách hoạt động của hệ thống Media tại dự án, tại sao lại chọn quy chuẩn thiết kế này, và cung cấp các đoạn code mẫu dễ hiểu để team dễ dàng áp dụng ở mọi dự án.
 
 Hệ thống Media của chúng ta được thiết kế theo chuẩn **Many-to-Many Polymorphic (Quan hệ đa hình N-N thông qua bảng trung gian)**.
@@ -12,8 +13,8 @@ Hệ thống Media của chúng ta được thiết kế theo chuẩn **Many-to-
 Nhiều người thắc mắc: "Tại sao không lưu Polymorphic thẳng vào 1 bảng Media duy nhất mà lại tách ra làm Media và MediaAttachment?". Sự tách biệt này đem lại lợi thế khổng lồ để scale hệ thống (Enterprise-level):
 
 1. **Phân tách trách nhiệm (Separation of Concerns):**
-   * **Bảng `Media`**: Là đối chiếu vật lý của File trên ổ cứng/AWS S3 (chứa dung lượng, mimeType, S3 URL, hash bảo mật).
-   * **Bảng `MediaAttachment`**: Là Logic Nghiệp vụ (File này được attach vào đâu `VehicleBrand` hay `User`, làm `avatar` hay `logo`, đứng ở vị trí thứ mấy trong slide `orderBy`).
+   - **Bảng `Media`**: Là đối chiếu vật lý của File trên ổ cứng/AWS S3 (chứa dung lượng, mimeType, S3 URL, hash bảo mật).
+   - **Bảng `MediaAttachment`**: Là Logic Nghiệp vụ (File này được attach vào đâu `VehicleBrand` hay `User`, làm `avatar` hay `logo`, đứng ở vị trí thứ mấy trong slide `orderBy`).
 
 2. **Tái sử dụng (Reusability):**
    Một tấm ảnh có thể được attach vào hàng trăm đối tượng khác nhau (VD: Ảnh Khuyến mãi dùng chung cho 20 dòng xe). Do có bảng trung gian, chúng ta không bị lặp ("duplicate") dòng file vật lý tốn tiền S3, mà chỉ sinh ra các liên kết nhẹ nhàng ở bảng Attachment.
@@ -41,7 +42,7 @@ model Media {
 // Bảng MediaAttachment (Kết nối Media với bất cứ Model nghiệp vụ nào)
 model MediaAttachment {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  
+
   // POLYMORPHIC FIELDS
   attachableType String    // Phân loại Model: "VehicleBrand", "User", "Store", etc.
   attachableId   String    @db.ObjectId // ID của Object thuộc Model tương ứng
@@ -60,16 +61,19 @@ model MediaAttachment {
 ## 4. Cách thao tác với Media Attachment bằng TypeScript
 
 ### 4.1. Cách Query một đối tượng đơn lẻ (Detail Query)
+
 Khi truy vấn 1 bản ghi qua ID hay Slug (như xem chi tiết xe), hãy thực hiện thêm 1 hàm lấy mảng Media độc lập.
 
 ```typescript
-const brand = await prisma.vehicleBrand.findUnique({ where: { slug: 'honda' } });
+const brand = await prisma.vehicleBrand.findUnique({
+  where: { slug: "honda" },
+});
 if (!brand) return null;
 
 // Lọc media bằng polymorphic field
 const mediaAttachments = await prisma.mediaAttachment.findMany({
-  where: { attachableType: 'VehicleBrand', attachableId: brand.id },
-  include: { media: true } // cực quan trọng để lấy Data URL thật của ảnh
+  where: { attachableType: "VehicleBrand", attachableId: brand.id },
+  include: { media: true }, // cực quan trọng để lấy Data URL thật của ảnh
 });
 
 // Mapper Domain tự kết nối lại thành Entity thống nhất
@@ -77,6 +81,7 @@ return VehicleBrandMapper.toDomain({ ...brand, mediaAttachments });
 ```
 
 ### 4.2. Cách Query hàng loạt (List Query) & Chống N+1 Cực Mạnh
+
 Nếu bạn có danh sách đang phân trang (Paginate) 20 Brand trên giao diện, và dùng vòng lặp FOR để gửi 20 yêu cầu (như ví dụ trên) cho DB, hệ thống sẽ sụp đổ khi bị Request cường độ cao (N+1 Query Problem).
 
 **Giải pháp bắt buộc:** Sử dụng kiểu truy vấn Batching In-Array (`{ in: ... }`).
@@ -87,21 +92,24 @@ const brands = await prisma.vehicleBrand.findMany({ take: 20 });
 if (!brands.length) return [];
 
 // Bước bản lề: Gom tất cả ID vào mảng tĩnh
-const brandIds = brands.map(b => b.id); 
+const brandIds = brands.map((b) => b.id);
 
 // 2. Load gộp toàn bộ MediaAttachment của TẤT CẢ brands trên (Chỉ mất 1 Network DB Query)
 const allMedias = await prisma.mediaAttachment.findMany({
   where: {
-    attachableType: 'VehicleBrand',
+    attachableType: "VehicleBrand",
     attachableId: { in: brandIds },
   },
-  include: { media: true } // Lấy kèm lõi S3 URL & metadata
+  include: { media: true }, // Lấy kèm lõi S3 URL & metadata
 });
 
 // 3. Phân bổ rải lại dữ liệu (Mapping về bộ nhớ RAM NodeJS Cache)
-const result = brands.map(brand => {
-  const brandMedias = allMedias.filter(m => m.attachableId === brand.id);
-  return VehicleBrandMapper.toDomain({ ...brand, mediaAttachments: brandMedias });
+const result = brands.map((brand) => {
+  const brandMedias = allMedias.filter((m) => m.attachableId === brand.id);
+  return VehicleBrandMapper.toDomain({
+    ...brand,
+    mediaAttachments: brandMedias,
+  });
 });
 ```
 
@@ -124,7 +132,8 @@ model VehicleBrand {
 ```
 
 **Workflow sau khi tinh gọn:**
-* **Lấy Danh sách (List):** API trả về trực tiếp `brand.photoCdnUrl` (siêu nhanh, tiết kiệm Server Node resource do không cần filter arrays).
-* **Sync Dữ liệu:** Viết Trigger/Logic: Cứ mỗi khi Admin upload `MediaAttachment` cho Vehicle Brand (CUD operations) -> Lấy Field `completedUrl` nhét Update ngược vào `photoCdnUrl` luôn.
+
+- **Lấy Danh sách (List):** API trả về trực tiếp `brand.photoCdnUrl` (siêu nhanh, tiết kiệm Server Node resource do không cần filter arrays).
+- **Sync Dữ liệu:** Viết Trigger/Logic: Cứ mỗi khi Admin upload `MediaAttachment` cho Vehicle Brand (CUD operations) -> Lấy Field `completedUrl` nhét Update ngược vào `photoCdnUrl` luôn.
 
 Bằng việc kết hợp kiến trúc **Many-to-Many Polymorphic** độc lập, cộng với tư duy lấy luồng phân trang **Denormalization**, Team Tech sẽ làm chủ mọi module scale to millions traffic mà không gặp trở ngại nào về quản lý File!

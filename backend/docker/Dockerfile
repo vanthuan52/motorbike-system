@@ -1,47 +1,44 @@
-# Build stage for compiling the application
-FROM node:lts-alpine AS builder
-
+# Build stage base
+FROM node:24-alpine AS base
+LABEL maintainer="charlesdang.252@gmail.com"
 WORKDIR /app
 
-# Copy package files for dependency installation
-COPY package*.json ./
+# Stage to install all dependencies and build the app
+FROM base AS builder
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
-# Install dependencies with clear logging and no user interaction
-RUN npm ci
+COPY package.json package-lock.json ./
+# No --ignore-scripts here so native modules (bcrypt, etc.) are compiled correctly
+RUN set -x && npm ci
 
-# Install only for building nestjs, nextjs
-RUN npm install -D @swc/cli @swc/core
-
-# Copy application source code
 COPY . .
 
-# Build the application
-RUN npm run build
+RUN npm run db:generate && npm run build
 
-# Production stage with minimal footprint
-FROM node:lts-alpine AS main
+# Main Stage — lean production image
+FROM base AS main
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
-LABEL maintainer="charlesdang.252@gmail.com"
+COPY package.json package-lock.json ./
+RUN set -x && npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# Create non-root user for security
-RUN addgroup -S ec2-user && adduser -S ec2-user -G ec2-user
-
-ENV NODE_ENV=production
-
-# Set working directory and expose API port
-WORKDIR /app
-EXPOSE 5300
-
-# Copy only necessary files from builder stage
-COPY --from=builder /app/package*.json ./
+# Copy only necessary artifacts from builder
+COPY --from=builder /app/generated/prisma-client ./generated/prisma-client
 COPY --from=builder /app/dist ./dist
 
-# Install only production dependencies
-RUN npm install --omit=dev
-
-# Set ownership to non-root user
-RUN chown -R ec2-user:ec2-user /app
+# Create non-root user for security
+RUN addgroup -S ec2-user && adduser -S ec2-user -G ec2-user && \
+    chown -R ec2-user:ec2-user /app
 USER ec2-user
 
-# Start the application in production mode
-CMD ["npm", "run", "start:prod"]
+RUN touch .env
+EXPOSE 5300
+
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:5300/api/hello
+
+# Use node directly — avoids npm overhead and handles signals correctly
+CMD ["node", "dist/main"]

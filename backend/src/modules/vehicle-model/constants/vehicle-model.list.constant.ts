@@ -4,19 +4,20 @@ import {
   EnumVehicleModelType,
 } from '../enums/vehicle-model.enum';
 
-export const VEHICLE_MODEL_DEFAULT_AVAILABLE_SEARCH = ['name'];
-export const VEHICLE_MODEL_DEFAULT_AVAILABLE_ORDER_BY = [
+export const VehicleModelDefaultAvailableSearch = ['name'];
+export const VehicleModelDefaultAvailableOrderBy = [
   'orderBy',
   'createdAt',
   'updatedAt',
 ];
-export const VEHICLE_MODEL_DEFAULT_STATUS = Object.values(
+export const VehicleModelDefaultStatus = Object.values(
   EnumVehicleModelStatus,
 );
-export const VEHICLE_MODEL_DEFAULT_TYPE = Object.values(
+export const VehicleModelDefaultType = Object.values(
   EnumVehicleModelType,
 );
 
-export const VEHICLE_MODEL_DEFAULT_FUEL_TYPE = Object.values(
+export const VehicleModelDefaultFuelType = Object.values(
   EnumVehicleModelFuelType,
 );
+

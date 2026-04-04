@@ -52,9 +52,9 @@ import {
   EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import {
-  VEHICLE_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
-  VEHICLE_SERVICE_DEFAULT_AVAILABLE_SEARCH,
-  VEHICLE_SERVICE_DEFAULT_STATUS,
+  VehicleServiceDefaultAvailableOrderBy,
+  VehicleServiceDefaultAvailableSearch,
+  VehicleServiceDefaultStatus,
 } from '../constants/vehicle-service.list.constant';
 import { VehicleServiceService } from '../services/vehicle-service.service';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
@@ -97,14 +97,14 @@ export class VehicleServiceAdminController {
   @Get('/list')
   async list(
     @PaginationOffsetQuery({
-      availableSearch: VEHICLE_SERVICE_DEFAULT_AVAILABLE_SEARCH,
-      availableOrderBy: VEHICLE_SERVICE_DEFAULT_AVAILABLE_ORDER_BY,
+      availableSearch: VehicleServiceDefaultAvailableSearch,
+      availableOrderBy: VehicleServiceDefaultAvailableOrderBy,
     })
     pagination: IPaginationQueryOffsetParams<
       Prisma.VehicleServiceSelect,
       Prisma.VehicleServiceWhereInput
     >,
-    @PaginationQueryFilterInEnum('status', VEHICLE_SERVICE_DEFAULT_STATUS)
+    @PaginationQueryFilterInEnum('status', VehicleServiceDefaultStatus)
     status?: Record<string, IPaginationIn>,
     @Query('serviceCategory')
     serviceCategoryId?: string

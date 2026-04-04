@@ -1,11 +1,12 @@
 import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
 
-export const VEHICLE_BRAND_DEFAULT_AVAILABLE_SEARCH = ['name'];
-export const VEHICLE_BRAND_DEFAULT_AVAILABLE_ORDER_BY = [
+export const VehicleBrandDefaultAvailableSearch = ['name'];
+export const VehicleBrandDefaultAvailableOrderBy = [
   'orderBy',
   'createdAt',
   'updatedAt',
 ];
-export const VEHICLE_BRAND_DEFAULT_STATUS = Object.values(
+export const VehicleBrandDefaultStatus = Object.values(
   EnumVehicleBrandStatus,
 );
+
