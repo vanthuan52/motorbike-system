@@ -43,7 +43,7 @@ export default registerAs<AppConfig>('app', (): AppConfig => {
 
     http: {
       host: process.env.HTTP_HOST ?? 'localhost',
-      port: process.env.HTTP_PORT ? +process.env.HTTP_PORT : 3000,
+      port: process.env.HTTP_PORT ? +process.env.HTTP_PORT : 3500,
     },
     urlVersion: {
       enable: process.env.URL_VERSIONING_ENABLE === 'true',

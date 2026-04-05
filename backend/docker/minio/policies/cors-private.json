@@ -1,0 +1,23 @@
+{
+  "CORSRules": [
+    {
+      "ID": "app-full",
+      "AllowedOrigins": ["*"],
+      "AllowedMethods": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+      "AllowedHeaders": ["*"],
+      "ExposeHeaders": [
+        "ETag",
+        "Content-Length",
+        "Content-Type",
+        "Content-Range",
+        "Accept-Ranges",
+        "Last-Modified",
+        "x-amz-server-side-encryption",
+        "x-amz-request-id",
+        "x-amz-version-id",
+        "x-amz-delete-marker"
+      ],
+      "MaxAgeSeconds": 3600
+    }
+  ]
+}

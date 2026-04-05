@@ -1,13 +1,12 @@
 import { HttpAdapterHost, NestApplication, NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NextFunction } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { useContainer, validate } from 'class-validator';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import compression from 'compression';
 import { AppModule } from './app/app.module';
-import swaggerInit from '@/swagger';
+import swaggerInit from './swagger';
 import { MessageService } from './common/message/services/message.service';
 import { AppEnvDto } from './app/dtos/app.env.dto';
 import { RequestValidationException } from './common/request/exceptions/request.validation.exception';

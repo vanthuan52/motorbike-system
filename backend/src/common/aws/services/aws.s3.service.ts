@@ -121,6 +121,11 @@ export class AwsS3Service implements IAwsS3Service, OnModuleInit {
   private readonly maxAttempts: number;
   private readonly timeoutInMs: number;
 
+  /** Custom endpoint for MinIO / S3-compatible providers. Undefined = real AWS S3. */
+  private readonly endpoint: string | undefined;
+  /** Must be true for MinIO (path-style URLs). False for real AWS S3. */
+  private readonly forcePathStyle: boolean;
+
   private readonly presignExpired: number;
   private readonly multipartExpiredInDay: number;
 
@@ -141,6 +146,8 @@ export class AwsS3Service implements IAwsS3Service, OnModuleInit {
     this.region = this.configService.get<string>('aws.s3.region');
     this.maxAttempts = this.configService.get<number>('aws.s3.maxAttempts');
     this.timeoutInMs = this.configService.get<number>('aws.s3.timeoutInMs');
+    this.endpoint = this.configService.get<string>('aws.s3.endpoint');
+    this.forcePathStyle = this.configService.get<boolean>('aws.s3.forcePathStyle') ?? false;
 
     this.config.set(EnumAwsS3Accessibility.public, {
       ...this.configService.get<IAwsS3ConfigBucket>('aws.s3.config.public'),
@@ -166,16 +173,30 @@ export class AwsS3Service implements IAwsS3Service, OnModuleInit {
   }
 
   /**
-   * Initializes the S3 client using configured IAM credentials, region, and timeout settings.
-   * If any required credential is missing, the client will not be created
-   * and the service will operate in a no-op mode.
+   * Initializes the S3 client using configured credentials and endpoint settings.
+   *
+   * Supports two modes:
+   * - **MinIO / S3-compatible**: set `STORAGE_ENDPOINT` (e.g. `http://minio:9000`).
+   *   `region` is optional; `forcePathStyle` is automatically enabled.
+   * - **Real AWS S3**: leave `STORAGE_ENDPOINT` unset. `region` is required.
+   *
+   * If credentials are missing, the service operates in no-op mode (all methods
+   * return null/empty without throwing).
    */
   onModuleInit(): void {
-    if (!this.accessKeyId || !this.secretAccessKey || !this.region) {
+    if (!this.accessKeyId || !this.secretAccessKey) {
       this.logger.warn(
-        'AWS S3 credentials not configured. S3 functionalities will be disabled.'
+        'Storage credentials (key/secret) not configured. S3 functionalities will be disabled.'
       );
+      return;
+    }
 
+    // MinIO requires endpoint + forcePathStyle.
+    // Real AWS S3 requires region and uses virtual-hosted style.
+    if (!this.endpoint && !this.region) {
+      this.logger.warn(
+        'Neither STORAGE_ENDPOINT nor AWS_S3_REGION is configured. S3 functionalities will be disabled.'
+      );
       return;
     }
 
@@ -184,12 +205,20 @@ export class AwsS3Service implements IAwsS3Service, OnModuleInit {
         accessKeyId: this.accessKeyId,
         secretAccessKey: this.secretAccessKey,
       },
-      region: this.region,
+      region: this.region ?? 'us-east-1', // MinIO ignores region; use dummy value
+      ...(this.endpoint ? { endpoint: this.endpoint } : {}),
+      forcePathStyle: this.forcePathStyle,
       maxAttempts: this.maxAttempts,
       requestHandler: {
         requestTimeout: this.timeoutInMs,
       },
     });
+
+    this.logger.log(
+      this.endpoint
+        ? `S3 client initialized — MinIO endpoint: ${this.endpoint}`
+        : `S3 client initialized — AWS S3 region: ${this.region}`
+    );
   }
 
   /**

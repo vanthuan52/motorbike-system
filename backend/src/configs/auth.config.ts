@@ -132,7 +132,7 @@ export default registerAs(
     twoFactor: {
       strategy: 'totp',
       algorithm: 'sha1',
-      issuer: process.env.AUTH_TWO_FACTOR_ISSUER ?? 'ACKNestJsTwoFactor',
+      issuer: process.env.AUTH_TWO_FACTOR_ISSUER ?? 'MotorbikeSystemTwoFactor',
       digits: 6,
       periodInSeconds: 30,
       window: 1,

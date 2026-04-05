@@ -427,7 +427,7 @@ class JwtKeysGenerator {
    * @param updateEnv - Whether to automatically update .env file with generated keys (default: false)
    * @throws {Error} When key generation or file operations fail
    */
-  generateKeys(updateEnv: boolean = false): void {
+  generateKeys(updateEnv: boolean = false, envFiles: string[] = ['.env']): void {
     try {
       this.ensureDir(this.keyDir);
 
@@ -457,17 +457,17 @@ class JwtKeysGenerator {
       // 1. Print to console
       this.printKeysToConsole(accessKeys, refreshKeys, accessKid, refreshKid);
 
-      // 2. Update .env file (conditional)
+      // 2. Update env files (conditional)
       if (updateEnv) {
-        this.updateEnvWithKeys(accessKid, refreshKid, accessKeys, refreshKeys);
+        this.updateMultipleEnvFiles(envFiles, accessKid, refreshKid, accessKeys, refreshKeys);
       }
 
       console.log('✅ JWT keys and JWKS generated successfully!');
-      console.log('� Algorithm Configuration:');
+      console.log('🔧 Algorithm Configuration:');
       console.log('   • Access Token:  ES256 (ECDSA with P-256 curve)');
       console.log('   • Refresh Token: ES512 (ECDSA with P-521 curve)');
       console.log('');
-      console.log('�📝 Keys have been:');
+      console.log('📝 Keys have been:');
       console.log(
         '   1. ✅ Printed to console (raw format for easy copy-paste)',
       );
@@ -482,14 +482,14 @@ class JwtKeysGenerator {
       if (updateEnv) {
         console.log('');
         console.log(
-          '   4. ✅ Updated in .env file (--direct-insert mode enabled)',
+          '   4. ✅ Updated env files (--direct-insert mode enabled)',
         );
         console.log('   💡 Keys are ready for application use');
       } else {
         console.log('');
         console.log('   4. ⏭️  .env file update skipped (default behavior)');
         console.log(
-          '   💡 Use --direct-insert flag to auto-update .env, or copy-paste manually',
+          '   💡 Use --direct-insert flag to auto-update env files, or copy-paste manually',
         );
       }
     } catch (err) {
@@ -501,43 +501,40 @@ class JwtKeysGenerator {
   }
 
   /**
-   * Updates .env file with new key identifiers and key strings.
+   * Updates a single env file with new key identifiers and key strings.
    * Converts PEM formatted keys to base64 strings suitable for environment variables.
-   * Creates .env file from .env.example if it doesn't exist.
-   * @param accessKid - Access token key identifier (16-byte hex string)
-   * @param refreshKid - Refresh token key identifier (16-byte hex string)
-   * @param accessKeys - Access token key pair object
-   * @param accessKeys.privateKey - Access token private key in PEM format
-   * @param accessKeys.publicKey - Access token public key in PEM format
-   * @param refreshKeys - Refresh token key pair object
-   * @param refreshKeys.privateKey - Refresh token private key in PEM format
-   * @param refreshKeys.publicKey - Refresh token public key in PEM format
-   * @throws {Error} When .env.example is missing and .env doesn't exist
+   * Creates the env file from .env.example if it doesn't exist.
+   * @param envFile - Target env file name (e.g. '.env', '.env.development')
+   * @param accessKid - Access token key identifier
+   * @param refreshKid - Refresh token key identifier
+   * @param accessKeys - Access token key pair
+   * @param refreshKeys - Refresh token key pair
    */
   updateEnvWithKeys(
     accessKid: string,
     refreshKid: string,
     accessKeys: { privateKey: string; publicKey: string },
     refreshKeys: { privateKey: string; publicKey: string },
+    envFile: string = '.env',
   ): void {
-    const envPath = path.join(process.cwd(), '.env');
+    const envPath = path.join(process.cwd(), envFile);
     const envExamplePath = path.join(process.cwd(), '.env.example');
 
-    // Ensure .env exists
+    // Ensure env file exists
     if (!fs.existsSync(envPath)) {
       if (fs.existsSync(envExamplePath)) {
         fs.copyFileSync(envExamplePath, envPath);
-        console.log('📄 .env file created from .env.example');
+        console.log(`📄 ${envFile} created from .env.example`);
       } else {
-        console.error('.env.example not found. Cannot create .env');
-        process.exit(1);
+        console.warn(`⚠️  ${envFile} not found and .env.example missing — skipping`);
+        return;
       }
     }
 
-    // Read current .env content
+    // Read current content
     let envContent = fs.readFileSync(envPath, 'utf8');
 
-    // Prepare key strings for env (remove PEM headers/footers and all newlines)
+    // Prepare key strings (strip PEM headers/footers and newlines)
     const accessPrivateKeyForEnv = accessKeys.privateKey
       .replace(/-----BEGIN PRIVATE KEY-----/g, '')
       .replace(/-----END PRIVATE KEY-----/g, '')
@@ -559,29 +556,15 @@ class JwtKeysGenerator {
       .replace(/\n/g, '')
       .trim();
 
-    // Define env variables to update
     const envUpdates = [
       { key: 'AUTH_JWT_ACCESS_TOKEN_KID', value: accessKid },
       { key: 'AUTH_JWT_REFRESH_TOKEN_KID', value: refreshKid },
-      {
-        key: 'AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY',
-        value: accessPrivateKeyForEnv,
-      },
-      {
-        key: 'AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY',
-        value: accessPublicKeyForEnv,
-      },
-      {
-        key: 'AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY',
-        value: refreshPrivateKeyForEnv,
-      },
-      {
-        key: 'AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY',
-        value: refreshPublicKeyForEnv,
-      },
+      { key: 'AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY', value: accessPrivateKeyForEnv },
+      { key: 'AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY', value: accessPublicKeyForEnv },
+      { key: 'AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY', value: refreshPrivateKeyForEnv },
+      { key: 'AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY', value: refreshPublicKeyForEnv },
     ];
 
-    // Update or add each environment variable
     for (const { key, value } of envUpdates) {
       const regex = new RegExp(`^${key}=.*$`, 'm');
       if (regex.test(envContent)) {
@@ -591,18 +574,57 @@ class JwtKeysGenerator {
       }
     }
 
-    // Write updated content back to .env
     fs.writeFileSync(envPath, envContent);
-    console.log('📝 .env file updated with new keys and KIDs');
+    console.log(`📝 ${envFile} updated with new keys and KIDs`);
+  }
+
+  /**
+   * Updates multiple env files with the same generated keys.
+   * Useful for syncing keys across .env, .env.development, .env.staging, .env.production.
+   * @param envFiles - Array of env file names to update
+   * @param accessKid - Access token key identifier
+   * @param refreshKid - Refresh token key identifier
+   * @param accessKeys - Access token key pair
+   * @param refreshKeys - Refresh token key pair
+   */
+  updateMultipleEnvFiles(
+    envFiles: string[],
+    accessKid: string,
+    refreshKid: string,
+    accessKeys: { privateKey: string; publicKey: string },
+    refreshKeys: { privateKey: string; publicKey: string },
+  ): void {
+    console.log(`\n🔄 Updating ${envFiles.length} env file(s): ${envFiles.join(', ')}`);
+    for (const envFile of envFiles) {
+      this.updateEnvWithKeys(accessKid, refreshKid, accessKeys, refreshKeys, envFile);
+    }
+    console.log('✅ All env files updated.');
   }
 }
 
 function main() {
   const argv = process.argv.slice(2);
 
-  // Check for --direct-insert option
+  // Check for --direct-insert flag
   const directInsertIndex = argv.indexOf('--direct-insert');
   const useDirectInsert = directInsertIndex !== -1;
+
+  // Parse --env=file1,file2 or --env file1,file2 flag
+  // Default: update all common env files when --direct-insert is used
+  const defaultEnvFiles = ['.env', '.env.development', '.env.staging', '.env.production'];
+  let envFiles: string[] = defaultEnvFiles;
+
+  const envFlagIndex = argv.findIndex((arg) => arg.startsWith('--env'));
+  if (envFlagIndex !== -1) {
+    const envFlag = argv[envFlagIndex];
+    // Support both --env=.env.development,.env.production and --env .env.development
+    const envValue = envFlag.includes('=')
+      ? envFlag.split('=')[1]
+      : argv[envFlagIndex + 1];
+    if (envValue && !envValue.startsWith('--')) {
+      envFiles = envValue.split(',').map((f) => f.trim());
+    }
+  }
 
   // Get command (filter out flags)
   const command = argv.find((arg) => !arg.startsWith('--')) || 'generate';
@@ -613,11 +635,7 @@ function main() {
   const generator = new JwtKeysGenerator(keyDir);
 
   if (command === 'generate') {
-    generator.generateKeys(useDirectInsert); // Pass true if --direct-insert is used
-    // Note: generateKeys() now handles outputs based on options:
-    // 1. Console printing (always)
-    // 2. File creation (always)
-    // 3. .env update (only when --direct-insert flag is used)
+    generator.generateKeys(useDirectInsert, envFiles);
   } else {
     console.log(`
 Usage: node generate-keys.js [command] [options]
@@ -626,22 +644,28 @@ Commands:
   generate    Generate JWT keys (ES256 for access tokens, ES512 for refresh tokens) and JWKS with outputs:
               1. Print keys to console (always)
               2. Save keys to ./keys directory (always)
-              3. Update .env with keys and KIDs (only with --direct-insert flag)
+              3. Update env files with keys and KIDs (only with --direct-insert flag)
 
 Options:
-  --direct-insert   [OPTIONAL] Enable automatic .env file update
-                    By default, .env is NOT updated automatically for safety
-                    Use this flag when you want keys inserted directly into .env
+  --direct-insert        [OPTIONAL] Enable automatic env file update.
+                         By default, env files are NOT updated automatically for safety.
+  --env=<files>          [OPTIONAL] Comma-separated list of env files to update.
+                         Defaults to: .env,.env.development,.env.staging,.env.production
+                         Only used when --direct-insert is set.
 
 Examples:
-  # Default behavior - NO .env update (manual copy-paste required)
-  pnpm generate:keys
-  node generate-keys.js generate
+  # Default — print to console only, no env file update
+  npm run generate:keys
 
-  # Auto-update .env file - keys inserted automatically
-  pnpm generate:keys --direct-insert
-  node generate-keys.js generate --direct-insert
-        `);
+  # Auto-update ALL default env files
+  npm run generate:keys -- --direct-insert
+
+  # Auto-update specific env files only
+  npm run generate:keys -- --direct-insert --env=.env,.env.development
+
+  # Update only production env
+  npm run generate:keys -- --direct-insert --env=.env.production
+    `);
   }
 }
 

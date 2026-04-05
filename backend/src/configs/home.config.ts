@@ -9,6 +9,6 @@ export default registerAs(
   'home',
   (): IConfigHome => ({
     name: process.env.HOME_NAME ?? 'NestJs Motorbike System',
-    url: process.env.HOME_URL ?? 'https://example.com',
+    url: process.env.HOME_URL ?? 'https://antmotor.vn',
   })
 );
