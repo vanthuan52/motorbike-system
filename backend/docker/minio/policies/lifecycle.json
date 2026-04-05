@@ -1,0 +1,20 @@
+{
+  "Rules": [
+    {
+      "ID": "abort-incomplete-multipart",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "" },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 3
+      }
+    },
+    {
+      "ID": "expire-delete-markers",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "" },
+      "Expiration": {
+        "ExpiredObjectDeleteMarker": true
+      }
+    }
+  ]
+}

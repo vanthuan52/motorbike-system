@@ -1,204 +1,78 @@
-# Overview
+# MinIO — Object Storage Setup
 
-This document covers the steps to start with Minio
+MinIO cung cấp S3-compatible object storage cho môi trường development và staging/production. Toàn bộ cấu hình được tự động hoá qua `minio-init` container trong docker-compose — **không cần thao tác thủ công**.
 
-# Table of Contents
-
-- [Overview](#overview)
-- [Table of Contents](#table-of-contents)
-  - [Steps](#steps)
-
-## Steps
-
-1. Set an alias to connect to Minio
-
-```bash
-mc alias set <ALIAS_NAME> <MINIO_ENDPOINT> <ACCESS_KEY> <SECRET_KEY>
-```
-
-Example
-
-```bash
-mc alias set motorbike-minio http://localhost:9000 MINIO_ROOT_USER MINIO_ROOT_PASSWORD
-```
-
-- Replace `http://localhost:9000` with your minio server endpoint.
-- Replace `MINIO_ROOT_USER MINIO_ROOT_PASSWORD` with your root minio account
-- For example: `mc alias set motorbike-minio http://localhost:9000 miniomotorbike changeme`
-
-2. Create buckets (if not exist)
-
-```bash
-mc mb <ALIAS_NAME>/<bucket-name>
-```
-
-Example
-
-```bash
-mc mb motorbike-minio/motorbike-system-public-files
-mc mb motorbike-minio/motorbike-system-private-files
-```
-
-3. Create user for each buckets (For securtiy purposes)
-
-```bash
-mc admin user add <ALIAS_NAME> <ACCESS_KEY> <SECRET_KEY>
-```
-
-You should save or remember the secret, you cannot see that when user is added. Example
-
-```bash
-mc admin user add motorbike-minio motorbike-public-user YOUR_PUBLIC_SECRET_KEY_HERE
-mc admin user add motorbike-minio motorbike-private-user YOUR_PRIVATE_SECRET_KEY_HERE
-```
-
-4. Create policy files
-
-You need to create a JSON file that contains the policy (in your project or a specified folder)
-
-File: motorbike-public-app-policy.json
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket",
-        "s3:GetBucketLocation",
-        "s3:AbortMultipartUpload"
-      ],
-      "Resource": [
-        "arn:aws:s3:::motorbike-system-public-files",
-        "arn:aws:s3:::motorbike-system-public-files/*"
-      ]
-    }
-  ]
-}
-```
-
-File: motorbike-private-app-policy.json
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:DeleteObject",
-        "s3:ListBucket",
-        "s3:GetBucketLocation",
-        "s3:AbortMultipartUpload"
-      ],
-      "Resource": [
-        "arn:aws:s3:::motorbike-system-private-files",
-        "arn:aws:s3:::motorbike-system-private-files/*"
-      ]
-    }
-  ]
-}
-```
-
-5. Add policies into MINIO and assign it to users
-
-Use `mc admin policy create` to add policy from JSON file to MINIO, then use `mc admin policy attach` to assign that policy to the new user created.
-
-```bash
-mc admin policy create <ALIAS_NAME> <POLICY_NAME> <PATH_TO_POLICY_FILE.json>
-mc admin policy attach <ALIAS> <POLICY_NAME> --user <USERNAME>
-```
-
-Example
-
-```bash
-# Public
-mc admin policy create motorbike-minio motorbike-public-policy ./motorbike-public-app-policy.json
-
-mc admin policy attach motorbike-minio motorbike-public-policy --user motorbike-public-user
-
-# Private:
-mc admin policy create motorbike-minio motorbike-private-policy ./motorbike-private-app-policy.json
-
-mc admin policy attach motorbike-minio motorbike-private-policy --user motorbike-private-user
-```
-
-Example in the project
-
-```bash
-mc admin policy create motorbike-minio motorbike-public-policy ./minio/motorbike-public-app-policy.json
-```
-
-6. Update your .env file
-
-```bash
-# Environment setting
-NODE_ENV=development
-
-# MinIO Public (for Development/Staging)
-MINIO_PUBLIC_CREDENTIAL_KEY=motorbike-public-user
-MINIO_PUBLIC_CREDENTIAL_SECRET=YOUR_PUBLIC_SECRET_KEY_HERE
-MINIO_PUBLIC_BUCKET=motorbike-system-public-files
-MINIO_PUBLIC_ENDPOINT=http://localhost:9000
-
-# MinIO Private (for Development/Staging)
-MINIO_PRIVATE_CREDENTIAL_KEY=motorbike-private-user
-MINIO_PRIVATE_CREDENTIAL_SECRET=YOUR_PRIVATE_SECRET_KEY_HERE
-MINIO_PRIVATE_BUCKET=motorbike-system-private-files
-MINIO_PRIVATE_ENDPOINT=http://localhost:9000
-```
-
-## Additional
-
-1. Unasign user from policy
-
-For user
-
-```bash
-mc admin policy detach <ALIAS> <POLICY_NAME> --user <USERNAME>
-```
-
-For Group
-
-```bash
-mc admin policy detach <ALIAS> <POLICY_NAME> --group <GROUPNAME>
-```
-
-2. Remove policy definition
-
-```bash
-mc admin policy remove <ALIAS> <POLICY_NAME>
-```
-
-3. Remove bucket policy
-
-```bash
-mc policy set-none <ALIAS>/<BUCKET_NAME>
-```
-
-## Command history
-
-This is for authenticated users
-
-```bash
-mc admin policy create motorbike-minio motorbike-public-user-full-access-policy ./minio/public-user-full-access-policy.json
-
-mc admin policy create motorbike-minio motorbike-private-user-full-access-policy ./minio/private-user-full-access-policy.json
-
-mc admin policy attach motorbike-minio motorbike-public-user-full-access-policy --user motorbike-public-user
-
-mc admin policy attach motorbike-minio motorbike-private-user-full-access-policy --user motorbike-private-user
+## Cấu trúc thư mục
 
 ```
-
-This is for anonymous users
-
-```bash
-mc anonymous set-json ./minio/public-bucket-read-only-policy.json motorbike-minio/motorbike-system-public-files
+docker/minio/
+├── policies/
+│   ├── app-policy.json      ← IAM policy: quyền CRUD cho app user
+│   ├── cors-public.json     ← CORS rules cho public bucket
+│   ├── cors-private.json    ← CORS rules cho private bucket
+│   └── lifecycle.json       ← Lifecycle rules (abort incomplete multipart, delete markers)
+└── docs/
+    └── doc.md               ← Tài liệu này
 ```
+
+## Cách hoạt động
+
+Khi chạy `docker compose up`, `minio-init` container tự động thực hiện **6 bước**:
+
+| Bước | Việc làm |
+|------|----------|
+| 1 | Tạo `public bucket` và `private bucket` (nếu chưa có) |
+| 2 | Tạo app user với credentials từ env |
+| 3 | Tạo IAM policy từ `app-policy.json` và gán cho app user |
+| 4 | Bật anonymous public read trên public bucket |
+| 5 | Áp CORS rules (`cors-public.json` / `cors-private.json`) |
+| 6 | Áp Lifecycle rules (`lifecycle.json`) cho cả 2 bucket |
+
+Sau khi hoàn tất, `minio-init` tự thoát. Toàn bộ quá trình là **idempotent** — chạy lại bao nhiêu lần cũng không bị lỗi.
+
+## Cấu hình qua Environment Variables
+
+Tất cả tham số được inject từ file `.env` — không có giá trị hardcode trong compose hay policy files.
+
+| Variable | Ý nghĩa | Ví dụ |
+|---|---|---|
+| `MINIO_ROOT_USER` | Admin root user | `minioadmin` |
+| `MINIO_ROOT_PASSWORD` | Admin root password | `changeme` |
+| `AWS_S3_IAM_CREDENTIAL_KEY` | App user access key | `app-backend-user` |
+| `AWS_S3_IAM_CREDENTIAL_SECRET` | App user secret key | `changeme` |
+| `AWS_S3_PUBLIC_BUCKET` | Tên public bucket | `app-public-files` |
+| `AWS_S3_PRIVATE_BUCKET` | Tên private bucket | `app-private-files` |
+| `STORAGE_ENDPOINT` | MinIO endpoint cho app | `http://minio:9000` |
+| `STORAGE_FORCE_PATH_STYLE` | Luôn `true` với MinIO | `true` |
+
+## Ports (staging docker-compose)
+
+| Port | Service |
+|---|---|
+| `5305` | MinIO API (S3-compatible endpoint) |
+| `5306` | MinIO Console (Web UI) |
+
+Truy cập Console tại: `http://localhost:5306` — đăng nhập bằng `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`.
+
+## Bucket access model
+
+| Bucket | Anonymous | App user |
+|---|---|---|
+| `app-public-files` | GET (read-only) | Full CRUD |
+| `app-private-files` | ❌ Không có | Full CRUD |
+
+## Chuyển sang AWS S3 thật
+
+Chỉ cần thay đổi env vars — **không sửa code**:
+
+```env
+# Để trống STORAGE_ENDPOINT → tự động chuyển sang AWS S3 mode
+STORAGE_ENDPOINT=
+STORAGE_FORCE_PATH_STYLE=false
+
+AWS_S3_IAM_CREDENTIAL_KEY=<aws-iam-access-key>
+AWS_S3_IAM_CREDENTIAL_SECRET=<aws-iam-secret-key>
+AWS_S3_REGION=ap-southeast-3
+```
+
+Khi dùng AWS S3, việc setup bucket/policy/CORS được thực hiện qua `AwsS3Service.setting*()` methods hoặc Terraform/CDK.

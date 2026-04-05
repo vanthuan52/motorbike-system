@@ -7,7 +7,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
 import { SessionModule } from '@/modules/session/session.module';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
 import { AwsModule } from '@/common/aws/aws.module';
-import { JobApplicationPublicController } from '@/modules/job/controllers/jobApplication.public.controller';
+import { JobApplicationPublicController } from '@/modules/job/controllers/job-application.public.controller';
 import { JobModule } from '@/modules/job/job.module';
 import { JobPublicController } from '@/modules/job/controllers/job.public.controller';
 import { StorePublicController } from '@/modules/store/controllers/store.public.controller';

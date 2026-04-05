@@ -11,13 +11,17 @@
         "s3:GetBucketLocation",
         "s3:AbortMultipartUpload",
         "s3:ListBucketMultipartUploads",
-        "s3:DeleteObjectVersion",
+        "s3:ListMultipartUploadParts",
         "s3:GetBucketPolicy",
-        "s3:PutBucketPolicy"
+        "s3:PutBucketPolicy",
+        "s3:GetBucketCORS",
+        "s3:PutBucketCORS",
+        "s3:GetLifecycleConfiguration",
+        "s3:PutLifecycleConfiguration"
       ],
       "Resource": [
-        "arn:aws:s3:::motorbike-system-private-files",
-        "arn:aws:s3:::motorbike-system-private-files/*"
+        "arn:aws:s3:::*",
+        "arn:aws:s3:::*/*"
       ]
     }
   ]
