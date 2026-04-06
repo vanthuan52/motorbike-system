@@ -1,11 +1,11 @@
-import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CareRecordMediaDto } from '../care-record-media.dto';
 import { CareRecordDto } from '@/modules/care-record/dtos/care-record.dto';
 
 export class CareRecordMediaGetFullResponseDto extends OmitType(
   CareRecordMediaDto,
-  ['careRecord'] as const,
+  ['careRecord'] as const
 ) {
   @ApiProperty({
     required: false,

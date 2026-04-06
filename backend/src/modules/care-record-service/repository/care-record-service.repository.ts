@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareRecordServiceModel } from '../models/care-record-service.model';
 import { CareRecordServiceMapper } from '../mappers/care-record-service.mapper';
 import {
-  CareRecordService as PrismaCareRecordService,
   Prisma,
+  CareRecordService as PrismaCareRecordService,
 } from '@/generated/prisma-client';
 
 import { ICareRecordServiceListFilters } from '../interfaces/care-record-service.filter.interface';
@@ -219,7 +219,48 @@ export class CareRecordServiceRepository {
     return CareRecordServiceMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecordServiceModel> {
+  async softDelete(
+    id: string,
+    deletedBy?: string
+  ): Promise<CareRecordServiceModel> {
+    const result = await this.databaseService.careRecordService.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+        deletedBy,
+      },
+      include: {
+        careRecord: true,
+        vehicleService: true,
+        careRecordChecklists: true,
+      },
+    });
+
+    return CareRecordServiceMapper.toDomain(result);
+  }
+
+  async restore(
+    id: string,
+    updatedBy?: string
+  ): Promise<CareRecordServiceModel> {
+    const result = await this.databaseService.careRecordService.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy,
+      },
+      include: {
+        careRecord: true,
+        vehicleService: true,
+        careRecordChecklists: true,
+      },
+    });
+
+    return CareRecordServiceMapper.toDomain(result);
+  }
+
+  async forceDelete(id: string): Promise<CareRecordServiceModel> {
     const result = await this.databaseService.careRecordService.delete({
       where: { id },
       include: {

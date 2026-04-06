@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionDto } from '../dtos/care-record-condition.dto';
@@ -30,7 +30,7 @@ export function CareRecordConditionAdminCreateDoc(): MethodDecorator {
     DocResponse<CareRecordConditionDto>('care-record-condition.create', {
       dto: CareRecordConditionDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -48,7 +48,7 @@ export function CareRecordConditionAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-condition.update'),
+    DocResponse('care-record-condition.update')
   );
 }
 
@@ -64,7 +64,7 @@ export function CareRecordConditionAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-condition.delete'),
+    DocResponse('care-record-condition.delete')
   );
 }
 
@@ -82,7 +82,7 @@ export function CareRecordConditionAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordConditionDto>('care-record-condition.getById', {
       dto: CareRecordConditionDto,
-    }),
+    })
   );
 }
 
@@ -102,7 +102,7 @@ export function CareRecordConditionAdminGetDoc(): MethodDecorator {
       'care-record-condition.get',
       {
         dto: CareRecordConditionGetFullResponseDto,
-      },
-    ),
+      }
+    )
   );
 }

@@ -1,4 +1,4 @@
-import { EnumJobType, EnumJobStatus } from '../enums/job.enum';
+import { EnumJobStatus, EnumJobType } from '../enums/job.enum';
 import { JobApplicationModel } from './job-application.model';
 
 /**

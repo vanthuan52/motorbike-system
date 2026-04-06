@@ -13,7 +13,7 @@ import {
   INotificationWorkerBulkPayload,
   INotificationWorkerPayload,
 } from '@/modules/notification/interfaces/notification.interface';
-import { IQueueResponse } from '@/queues/interfaces/queue.interface';
+import { IQueueResponse } from 'src/queues/interfaces/queue.interface';
 
 export interface INotificationProcessorService {
   processWelcomeByAdmin({
@@ -97,20 +97,6 @@ export interface INotificationProcessorService {
     data: { userId, data },
   }: Job<
     INotificationWorkerPayload<INotificationNewDeviceLoginPayload>,
-    unknown,
-    EnumNotificationProcess
-  >): Promise<IQueueResponse>;
-  processPublishTermPolicy({
-    data: { data, proceedBy },
-  }: Job<
-    INotificationWorkerBulkPayload<INotificationPublishTermPolicyPayload>,
-    unknown,
-    EnumNotificationProcess
-  >): Promise<IQueueResponse>;
-  processUserAcceptTermPolicy({
-    data: { userId, data },
-  }: Job<
-    INotificationWorkerPayload<INotificationAcceptTermPolicyPayload>,
     unknown,
     EnumNotificationProcess
   >): Promise<IQueueResponse>;

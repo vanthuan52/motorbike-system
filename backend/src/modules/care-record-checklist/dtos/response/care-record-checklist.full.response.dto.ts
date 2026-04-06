@@ -1,4 +1,4 @@
-import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ServiceChecklistDto } from '@/modules/service-checklist/dtos/service-checklist.dto';
 import { CareRecordServiceDto } from '@/modules/care-record-service/dtos/care-record-service.dto';
@@ -7,7 +7,7 @@ import { CareRecordChecklistDto } from '../care-record-checklist.dto';
 
 export class CareRecordChecklistGetFullResponseDto extends OmitType(
   CareRecordChecklistDto,
-  ['careRecordService', 'serviceChecklist', 'parts'] as const,
+  ['careRecordService', 'serviceChecklist', 'parts'] as const
 ) {
   @ApiProperty({
     required: false,

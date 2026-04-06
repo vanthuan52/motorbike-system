@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { VehicleModelModel } from '../models/vehicle-model.model';
 import { VehicleModelMapper } from '../mappers/vehicle-model.mapper';
 import {
-  VehicleModel as PrismaVehicleModel,
   Prisma,
+  VehicleModel as PrismaVehicleModel,
 } from '@/generated/prisma-client';
 import { IVehicleModelListFilters } from '../interfaces/vehicle-model.filter.interface';
 

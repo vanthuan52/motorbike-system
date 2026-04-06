@@ -25,7 +25,7 @@ export function VehicleServicePublicGetOneDoc(): MethodDecorator {
     }),
     DocResponse<VehicleServiceGetFullResponseDto>('vehicle-service.get', {
       dto: VehicleServiceGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -44,6 +44,6 @@ export function VehicleServicePublicListDoc(): MethodDecorator {
     }),
     DocResponsePaging<VehicleServiceListResponseDto>('vehicle-service.list', {
       dto: VehicleServiceListResponseDto,
-    }),
+    })
   );
 }

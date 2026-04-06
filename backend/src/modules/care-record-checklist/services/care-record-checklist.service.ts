@@ -12,15 +12,16 @@ import { CareRecordChecklistUpdateNoteRequestDto } from '../dtos/request/care-re
 import { CareRecordChecklistUpdateWearPercentageRequestDto } from '../dtos/request/care-record-checklist.update-wear-percentage.request.dto';
 import { CareRecordChecklistUpdateResultRequestDto } from '../dtos/request/care-record-checklist.update-result.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumCareRecordChecklistStatusCodeError } from '../enums/care-record-checklist.status-code.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { CareRecordChecklist, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
+import { CareRecordChecklistModel } from '../models/care-record-checklist.model';
 
 import { ICareRecordChecklistListFilters } from '../interfaces/care-record-checklist.filter.interface';
 
@@ -36,7 +37,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: ICareRecordChecklistListFilters
-  ): Promise<IPaginationOffsetReturn<CareRecordChecklist>> {
+  ): Promise<IPaginationOffsetReturn<CareRecordChecklistModel>> {
     const { data, ...others } =
       await this.careRecordChecklistRepository.findWithPaginationOffset({
         ...pagination,
@@ -55,7 +56,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
       Prisma.CareRecordChecklistWhereInput
     >,
     filters?: ICareRecordChecklistListFilters
-  ): Promise<IPaginationCursorReturn<CareRecordChecklist>> {
+  ): Promise<IPaginationCursorReturn<CareRecordChecklistModel>> {
     const { data, ...others } =
       await this.careRecordChecklistRepository.findWithPaginationCursor({
         ...pagination,
@@ -68,7 +69,7 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<CareRecordChecklist> {
+  async findOneById(id: string): Promise<CareRecordChecklistModel> {
     return this.findOneByIdOrFail(id);
   }
 
@@ -141,11 +142,18 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     const record = await this.findOneByIdOrFail(id);
 
     const updateData: any = {};
-    if (status !== undefined) updateData.status = status;
-    if (result !== undefined) updateData.result = result;
-    if (note !== undefined) updateData.note = note;
-    if (wearPercentage !== undefined)
+    if (status !== undefined) {
+      updateData.status = status;
+    }
+    if (result !== undefined) {
+      updateData.result = result;
+    }
+    if (note !== undefined) {
+      updateData.note = note;
+    }
+    if (wearPercentage !== undefined) {
       updateData.wearPercentage = wearPercentage;
+    }
 
     if (Object.keys(updateData).length > 0) {
       await this.careRecordChecklistRepository.update(id, updateData);
@@ -198,7 +206,25 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordChecklistRepository.delete(id);
+    await this.careRecordChecklistRepository.softDelete(id);
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.restore(id);
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
+    await this.findOneByIdOrFail(id);
+    await this.careRecordChecklistRepository.forceDelete(id);
   }
 
   async deleteMany(
@@ -210,7 +236,9 @@ export class CareRecordChecklistService implements ICareRecordChecklistService {
     return true;
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareRecordChecklist> {
+  private async findOneByIdOrFail(
+    id: string
+  ): Promise<CareRecordChecklistModel> {
     const careRecordChecklist =
       await this.careRecordChecklistRepository.findOneById(id);
 

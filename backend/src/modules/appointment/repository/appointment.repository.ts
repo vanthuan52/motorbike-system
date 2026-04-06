@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
+  IPaginationCursorReturn,
   IPaginationIn,
   IPaginationOffsetReturn,
-  IPaginationCursorReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { AppointmentModel } from '../models/appointment.model';
 import { AppointmentMapper } from '../mappers/appointment.mapper';
 import {
-  Appointment as PrismaAppointment,
   Prisma,
+  Appointment as PrismaAppointment,
 } from '@/generated/prisma-client';
 import { IAppointmentListFilters } from '../interfaces/appointment.filter.interface';
 

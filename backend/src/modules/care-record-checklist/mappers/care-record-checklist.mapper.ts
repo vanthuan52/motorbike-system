@@ -5,11 +5,20 @@ import {
 } from '../enums/care-record-checklist.enum';
 import { CareRecordServiceMapper } from '@/modules/care-record-service/mappers/care-record-service.mapper';
 import { ServiceChecklistMapper } from '@/modules/service-checklist/mappers/service-checklist.mapper';
-import { CareRecordChecklist as PrismaCareRecordChecklist } from '@/generated/prisma-client';
+import {
+  CareRecordChecklist as PrismaCareRecordChecklist,
+  CareRecordService as PrismaCareRecordService,
+  ServiceChecklist as PrismaServiceChecklist,
+} from '@/generated/prisma-client';
+
+type CareRecordChecklistWithRelations = PrismaCareRecordChecklist & {
+  careRecordService?: PrismaCareRecordService | null;
+  serviceChecklist?: PrismaServiceChecklist | null;
+};
 
 export class CareRecordChecklistMapper {
   static toDomain(
-    prismaChecklist: PrismaCareRecordChecklist
+    prismaChecklist: CareRecordChecklistWithRelations
   ): CareRecordChecklistModel {
     const model = new CareRecordChecklistModel();
     model.id = prismaChecklist.id;

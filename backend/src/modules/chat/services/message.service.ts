@@ -12,10 +12,10 @@ import { MessageModel } from '../models/message.model';
 import { ConversationModel } from '../models/conversation.model';
 import { ConversationService } from './conversation.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumChatStatusCodeError } from '../enums/message-status-code.enum';
 import { Prisma } from '@/generated/prisma-client';

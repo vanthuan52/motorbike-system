@@ -1,8 +1,8 @@
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IStoreListFilters } from './store.filter.interface';
 import { StoreCreateRequestDto } from '../dtos/request/store.create.request.dto';

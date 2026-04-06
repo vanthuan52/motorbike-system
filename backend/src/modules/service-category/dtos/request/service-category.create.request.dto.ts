@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
-  IsIn,
 } from 'class-validator';
 import { EnumServiceCategoryStatus } from '../../enums/service-category.enum';
 

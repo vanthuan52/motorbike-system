@@ -1,5 +1,5 @@
 import { JobModel } from '../models/job.model';
-import { EnumJobType, EnumJobStatus } from '../enums/job.enum';
+import { EnumJobStatus, EnumJobType } from '../enums/job.enum';
 import { JobApplicationMapper } from './job-application.mapper';
 import { Job as PrismaJob } from '@/generated/prisma-client';
 

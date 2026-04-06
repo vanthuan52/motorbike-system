@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import {
   VehicleBrandDocParamsId,
@@ -39,7 +39,7 @@ export function VehicleAdminBrandListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<VehicleBrandListResponseDto>('vehicle-brand.list', {
       dto: VehicleBrandListResponseDto,
-    }),
+    })
   );
 }
 
@@ -59,7 +59,7 @@ export function VehicleAdminBrandCreateDoc(): MethodDecorator {
     DocResponse<VehicleBrandDto>('vehicle-brand.create', {
       dto: VehicleBrandDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -77,7 +77,7 @@ export function VehicleAdminBrandUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-brand.update'),
+    DocResponse('vehicle-brand.update')
   );
 }
 
@@ -93,7 +93,7 @@ export function VehicleAdminBrandDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-brand.delete'),
+    DocResponse('vehicle-brand.delete')
   );
 }
 
@@ -111,7 +111,7 @@ export function VehicleAdminBrandUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-brand.updateStatus'),
+    DocResponse('vehicle-brand.updateStatus')
   );
 }
 
@@ -129,6 +129,6 @@ export function VehicleAdminBrandParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<VehicleBrandDto>('vehicle-brand.getById', {
       dto: VehicleBrandDto,
-    }),
+    })
   );
 }

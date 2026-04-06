@@ -1,9 +1,9 @@
 import { MediaModel } from '../models/media.model';
 import {
-  EnumMediaType,
-  EnumMediaPurpose,
   EnumMediaAccessibility,
+  EnumMediaPurpose,
   EnumMediaStatus,
+  EnumMediaType,
 } from '../enums/media.enum';
 import { Media as PrismaMedia } from '@/generated/prisma-client';
 

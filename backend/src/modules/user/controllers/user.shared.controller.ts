@@ -114,7 +114,10 @@ export class UserSharedController {
     userId: string,
     @Body() body: UserGeneratePhotoProfileRequestDto
   ): Promise<IResponseReturn<AwsS3PresignDto>> {
-    const data = await this.userService.generatePhotoProfilePresign(userId, body);
+    const data = await this.userService.generatePhotoProfilePresign(
+      userId,
+      body
+    );
     return { data };
   }
 

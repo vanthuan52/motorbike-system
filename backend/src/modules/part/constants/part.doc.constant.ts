@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
-import { ENUM_PART_STATUS } from '../enums/part.enum';
+import { EnumPartStatus } from '../enums/part.enum';
 
 export const PartDocParamsId: ApiParamOptions[] = [
   {
@@ -28,7 +28,7 @@ export const PartDocQueryStatus: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_PART_STATUS).join(','),
+    example: Object.values(EnumPartStatus).join(','),
     description: 'one value',
   },
 ];
@@ -83,7 +83,7 @@ export const PartDocQueryList: ApiQueryOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_PART_STATUS).join(','),
+    example: Object.values(EnumPartStatus).join(','),
     description: "value with ',' delimiter",
   },
   {

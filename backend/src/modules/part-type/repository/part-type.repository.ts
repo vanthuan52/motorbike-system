@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IPartTypeListFilters } from '../interfaces/part-type.filter.interface';
 import { PartTypeModel } from '../models/part-type.model';
 import { PartTypeMapper } from '../mappers/part-type.mapper';
-import { PartType as PrismaPartType, Prisma } from '@/generated/prisma-client';
+import { Prisma, PartType as PrismaPartType } from '@/generated/prisma-client';
 
 @Injectable()
 export class PartTypeRepository {

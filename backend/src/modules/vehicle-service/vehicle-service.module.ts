@@ -6,7 +6,15 @@ import { VehicleServiceUtil } from './utils/vehicle-service.util';
 @Module({
   imports: [],
   controllers: [],
-  providers: [VehicleServiceRepository, VehicleServiceService, VehicleServiceUtil],
-  exports: [VehicleServiceRepository, VehicleServiceService, VehicleServiceUtil],
+  providers: [
+    VehicleServiceRepository,
+    VehicleServiceService,
+    VehicleServiceUtil,
+  ],
+  exports: [
+    VehicleServiceRepository,
+    VehicleServiceService,
+    VehicleServiceUtil,
+  ],
 })
 export class VehicleServiceModule {}

@@ -1,6 +1,6 @@
 import {
-  IPaginationQueryOffsetParams,
   IPaginationOffsetReturn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IAppointmentListFilters } from './appointment.filter.interface';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';

@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { StoreModel } from '../models/store.model';
 import { StoreMapper } from '../mappers/store.mapper';
 import { IStoreListFilters } from '../interfaces/store.filter.interface';
-import { Store as PrismaStore, Prisma } from '@/generated/prisma-client';
+import { Prisma, Store as PrismaStore } from '@/generated/prisma-client';
 
 @Injectable()
 export class StoreRepository {
@@ -202,7 +202,9 @@ export class StoreRepository {
     };
   }
 
-  async deleteMany(where: Prisma.StoreWhereInput = {}): Promise<{ count: number }> {
+  async deleteMany(
+    where: Prisma.StoreWhereInput = {}
+  ): Promise<{ count: number }> {
     return this.databaseService.store.deleteMany({ where });
   }
 }

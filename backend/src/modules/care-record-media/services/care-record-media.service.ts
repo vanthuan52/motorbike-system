@@ -4,10 +4,10 @@ import { CareRecordMediaRepository } from '../respository/care-record-media.repo
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
 import { CareRecordMediaUpdateRequestDto } from '../dtos/request/care-record-media.update.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -104,12 +104,21 @@ export class CareRecordMediaService implements ICareRecordMediaService {
     const updateData: any = {
       updatedBy: actionBy,
     };
-    if (careRecord !== undefined)
+    if (careRecord !== undefined) {
       updateData.careRecord = { connect: { id: careRecord } };
-    if (stage !== undefined) updateData.stage = stage;
-    if (type !== undefined) updateData.type = type;
-    if (url !== undefined) updateData.url = url;
-    if (description !== undefined) updateData.description = description;
+    }
+    if (stage !== undefined) {
+      updateData.stage = stage;
+    }
+    if (type !== undefined) {
+      updateData.type = type;
+    }
+    if (url !== undefined) {
+      updateData.url = url;
+    }
+    if (description !== undefined) {
+      updateData.description = description;
+    }
 
     await this.careRecordMediaRepository.update(id, updateData);
   }

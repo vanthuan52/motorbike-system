@@ -1,7 +1,7 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { VehicleModelRepository } from '../repository/vehicle-model.repository';
@@ -19,11 +19,11 @@ import { HelperService } from '@/common/helper/services/helper.service';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { VehicleModelUtil } from '../utils/vehicle-model.util';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
+  IPaginationCursorReturn,
   IPaginationIn,
   IPaginationOffsetReturn,
-  IPaginationCursorReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumVehicleModelStatusCodeError } from '../enums/vehicle-model.status-code.enum';
 import { VehicleBrandRepository } from '@/modules/vehicle-brand/repository/vehicle-brand.repository';

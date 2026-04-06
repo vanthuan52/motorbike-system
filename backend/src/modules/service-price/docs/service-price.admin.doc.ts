@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceDto } from '../dtos/service-price.dto';
@@ -48,7 +48,7 @@ export function ServicePriceAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<ServicePriceListResponseDto>('service-price.list', {
       dto: ServicePriceListResponseDto,
-    }),
+    })
   );
 }
 
@@ -68,7 +68,7 @@ export function ServicePriceAdminCreateDoc(): MethodDecorator {
     DocResponse<ServicePriceDto>('service-price.create', {
       dto: ServicePriceDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -86,7 +86,7 @@ export function ServicePriceAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-price.update'),
+    DocResponse('service-price.update')
   );
 }
 
@@ -102,7 +102,7 @@ export function ServicePriceAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-price.delete'),
+    DocResponse('service-price.delete')
   );
 }
 
@@ -120,7 +120,7 @@ export function ServicePriceAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<ServicePriceDto>('service-price.getById', {
       dto: ServicePriceDto,
-    }),
+    })
   );
 }
 
@@ -138,7 +138,7 @@ export function ServicePriceAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<ServicePriceGetFullResponseDto>('service-price.get', {
       dto: ServicePriceGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -163,8 +163,8 @@ export function ServicePriceAdminListCombinedDoc(): MethodDecorator {
       'service-price.listByService',
       {
         dto: ModelServicePriceListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -188,8 +188,8 @@ export function ServicePriceAdminListCombinedByServiceDoc(): MethodDecorator {
       'service-price.listByService',
       {
         dto: ModelServicePriceListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -213,7 +213,7 @@ export function ServicePriceAdminListHistoryDoc(): MethodDecorator {
       'service-price.listHistory',
       {
         dto: ServicePriceListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }

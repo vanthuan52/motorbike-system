@@ -13,10 +13,10 @@ import { EnumPartTypeStatus } from '../enums/part-type.enum';
 import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
 import { IPartTypeMigrationUpsert } from '../interfaces/part-type.migration.interface';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IPartTypeListFilters } from '../interfaces/part-type.filter.interface';
 import { EnumPartTypeStatusCodeError } from '../enums/part-type.status-code.enum';
@@ -247,11 +247,11 @@ export class PartTypeService implements IPartTypeService {
    * Upsert a part type by slug — skips if already exists.
    * Intended for use in migration seeds only; does not require requestLog or createdBy.
    */
-  async upsertForMigration(
-    payload: IPartTypeMigrationUpsert
-  ): Promise<void> {
+  async upsertForMigration(payload: IPartTypeMigrationUpsert): Promise<void> {
     const existing = await this.partTypeRepository.findOneBySlug(payload.slug);
-    if (existing) return;
+    if (existing) {
+      return;
+    }
 
     await this.partTypeRepository.create({
       name: payload.name,

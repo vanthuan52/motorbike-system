@@ -1,7 +1,7 @@
 import {
   EnumNotificationChannel,
   EnumNotificationType,
-} from '@/generated/prisma-client';
+} from '@/modules/notification/enums/notification.enum';
 
 /**
  * Defines allowed notification type and channel combinations for user preferences.

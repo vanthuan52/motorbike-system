@@ -8,7 +8,9 @@ import { IActivityLogMetadata } from '@/modules/activity-log/interfaces/activity
 @Injectable()
 export class UserVehicleUtil {
   mapList(userVehicles: UserVehicleModel[]): UserVehicleListResponseDto[] {
-    return userVehicles.map(c => this.mapGet(c) as any as UserVehicleListResponseDto);
+    return userVehicles.map(
+      c => this.mapGet(c) as any as UserVehicleListResponseDto
+    );
   }
 
   mapGet(userVehicle: UserVehicleModel): UserVehicleDto {
@@ -22,9 +24,7 @@ export class UserVehicleUtil {
     return obj;
   }
 
-  mapActivityLogMetadata(
-    userVehicle: UserVehicleModel
-  ): IActivityLogMetadata {
+  mapActivityLogMetadata(userVehicle: UserVehicleModel): IActivityLogMetadata {
     return {
       _id: userVehicle.id,
       licensePlateNumber: userVehicle.licensePlateNumber,

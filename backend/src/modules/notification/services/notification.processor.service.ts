@@ -5,24 +5,17 @@ import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 
 import { DeviceOwnershipRepository } from '@/modules/device/repositories/device.ownership.repository';
+import { EnumNotificationProcess } from '@/modules/notification/enums/notification.enum';
 import {
-  EnumNotificationChannel,
-  EnumNotificationProcess,
-  EnumNotificationType,
-} from '@/modules/notification/enums/notification.enum';
-import {
-  INotificationAcceptTermPolicyPayload,
   INotificationEmailSendPayload,
   INotificationForgotPasswordPayload,
   INotificationNewDeviceLoginPayload,
-  INotificationPublishTermPolicyPayload,
   INotificationSendPushPayload,
   INotificationTemporaryPasswordPayload,
   INotificationVerificationEmailPayload,
   INotificationVerifiedEmailPayload,
   INotificationVerifiedMobileNumberPayload,
   INotificationWelcomeByAdminPayload,
-  INotificationWorkerBulkPayload,
   INotificationWorkerPayload,
 } from '@/modules/notification/interfaces/notification.interface';
 import { INotificationProcessorService } from '@/modules/notification/interfaces/notification.processor.service.interface';
@@ -323,7 +316,9 @@ export class NotificationProcessorService implements INotificationProcessorServi
       const pushPayload: INotificationSendPushPayload = {
         userId,
         notificationId,
-        notificationTokens: devices.map(d => d.device.notificationToken),
+        notificationTokens: devices
+          .map(d => d.device?.notificationToken)
+          .filter((t): t is string => !!t),
         username: user.username,
       };
 
@@ -452,7 +447,9 @@ export class NotificationProcessorService implements INotificationProcessorServi
       const pushPayload: INotificationSendPushPayload = {
         userId,
         notificationId,
-        notificationTokens: devices.map(d => d.device.notificationToken),
+        notificationTokens: devices
+          .map(d => d.device?.notificationToken)
+          .filter((t): t is string => !!t),
         username: user.username,
       };
 
@@ -505,7 +502,9 @@ export class NotificationProcessorService implements INotificationProcessorServi
       const pushPayload: INotificationSendPushPayload = {
         userId,
         notificationId,
-        notificationTokens: devices.map(d => d.device.notificationToken),
+        notificationTokens: devices
+          .map(d => d.device?.notificationToken)
+          .filter((t): t is string => !!t),
         username: user.username,
       };
 
@@ -568,7 +567,9 @@ export class NotificationProcessorService implements INotificationProcessorServi
       const pushPayload: INotificationSendPushPayload = {
         userId,
         notificationId,
-        notificationTokens: devices.map(d => d.device.notificationToken),
+        notificationTokens: devices
+          .map(d => d.device?.notificationToken)
+          .filter((t): t is string => !!t),
         username: user.username,
       };
 

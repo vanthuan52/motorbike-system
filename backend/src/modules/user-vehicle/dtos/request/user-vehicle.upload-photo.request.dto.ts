@@ -5,7 +5,7 @@ import { AwsS3PresignRequestDto } from '@/common/aws/dtos/request/aws.s3-presign
 
 export class UserVehicleUploadPhotoRequestDto extends PickType(
   AwsS3PresignRequestDto,
-  ['size'],
+  ['size']
 ) {
   @ApiProperty({
     type: 'string',

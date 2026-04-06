@@ -3,10 +3,10 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ISessionListFilters } from '@/modules/session/interfaces/session.filter.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';

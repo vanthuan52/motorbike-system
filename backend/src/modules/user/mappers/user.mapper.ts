@@ -1,12 +1,12 @@
 import { UserModel } from '../models/user.model';
 import { RoleMapper } from '@/modules/role/mappers/role.mapper';
 import {
-  EnumUserStatus,
   EnumUserGender,
-  EnumUserSignUpFrom,
-  EnumUserSignUpWith,
   EnumUserLoginFrom,
   EnumUserLoginWith,
+  EnumUserSignUpFrom,
+  EnumUserSignUpWith,
+  EnumUserStatus,
 } from '../enums/user.enum';
 
 export class UserMapper {

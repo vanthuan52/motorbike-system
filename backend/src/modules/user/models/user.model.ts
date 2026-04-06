@@ -1,12 +1,12 @@
 import { RoleModel } from '@/modules/role/models/role.model';
 import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 import {
-  EnumUserStatus,
   EnumUserGender,
-  EnumUserSignUpFrom,
-  EnumUserSignUpWith,
   EnumUserLoginFrom,
   EnumUserLoginWith,
+  EnumUserSignUpFrom,
+  EnumUserSignUpWith,
+  EnumUserStatus,
 } from '../enums/user.enum';
 
 /**

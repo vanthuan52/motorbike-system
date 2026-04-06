@@ -24,7 +24,7 @@ export function ServiceCategoryPublicGetOneDoc(): MethodDecorator {
     }),
     DocResponse<ServiceCategoryDto>('service-category.get', {
       dto: ServiceCategoryDto,
-    }),
+    })
   );
 }
 
@@ -42,6 +42,6 @@ export function ServiceCategoryPublicListDoc(): MethodDecorator {
     }),
     DocResponsePaging<ServiceCategoryListResponseDto>('service-category.list', {
       dto: ServiceCategoryListResponseDto,
-    }),
+    })
   );
 }

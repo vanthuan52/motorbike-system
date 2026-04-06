@@ -3,8 +3,8 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
-  IPaginationQueryCursorParams,
   IPaginationCursorReturn,
+  IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -34,9 +34,9 @@ import {
 } from '@/modules/user/enums/user.enum';
 
 import {
+  Prisma,
   Notification as PrismaNotification,
   NotificationUserSetting as PrismaNotificationUserSetting,
-  Prisma,
 } from '@/generated/prisma-client';
 
 @Injectable()

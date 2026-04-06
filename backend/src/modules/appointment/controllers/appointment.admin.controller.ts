@@ -37,13 +37,13 @@ import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
   AppointmentAdminCreateDoc,
   AppointmentAdminDeleteDoc,
-  AppointmentAdminParamsIdDoc,
+  AppointmentAdminForceDeleteDoc,
   AppointmentAdminListDoc,
+  AppointmentAdminParamsIdDoc,
+  AppointmentAdminRestoreDoc,
+  AppointmentAdminTrashListDoc,
   AppointmentAdminUpdateDoc,
   AppointmentAdminUpdateStatusDoc,
-  AppointmentAdminTrashListDoc,
-  AppointmentAdminRestoreDoc,
-  AppointmentAdminForceDeleteDoc,
 } from '../docs/appointment.admin.doc';
 import { AppointmentService } from '../services/appointment.service';
 import { AppointmentCreateRequestDto } from '../dtos/request/appointment.create.request.dto';

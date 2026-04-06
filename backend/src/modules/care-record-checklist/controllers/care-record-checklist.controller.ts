@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Put,
-  Patch,
-  Delete,
-  Param,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,8 +18,8 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { CareRecordChecklistListResponseDto } from '../dtos/response/care-record-checklist.list.response.dto';
 import {
@@ -27,8 +27,8 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   CareRecordChecklistCreateDoc,
@@ -36,8 +36,8 @@ import {
   CareRecordChecklistListDoc,
   CareRecordChecklistParamsIdDoc,
   CareRecordChecklistUpdateDoc,
-  CareRecordChecklistUpdateStatusDoc,
   CareRecordChecklistUpdateResultDoc,
+  CareRecordChecklistUpdateStatusDoc,
 } from '../docs/care-record-checklist.doc';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
@@ -277,6 +277,58 @@ export class CareRecordChecklistController {
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
     await this.careRecordChecklistService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
+    return;
+  }
+
+  @CareRecordChecklistDeleteDoc()
+  @Response('care-record-checklist.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistUpdate)
+  @Patch('/restore/:id')
+  async restore(
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.careRecordChecklistService.restore(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      userId
+    );
+    return;
+  }
+
+  @CareRecordChecklistDeleteDoc()
+  @Response('care-record-checklist.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordChecklistDelete)
+  @Delete('/force-delete/:id')
+  async forceDelete(
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') userId: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.careRecordChecklistService.forceDelete(
       id,
       { ipAddress, userAgent, geoLocation },
       userId

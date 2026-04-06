@@ -10,10 +10,10 @@ import { StoreRepository } from '../repository/store.repository';
 import { IStoreService } from '../interfaces/store.service.interface';
 import { IStoreMigrationUpsert } from '../interfaces/store.migration.interface';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumStoreStatusCodeError } from '../enums/store.status-code.enum';
 import { StoreUtil } from '../utils/store.util';
@@ -241,8 +241,7 @@ export class StoreService implements IStoreService {
     requestLog: IRequestLog,
     restoredBy: string
   ): Promise<void> {
-    const store =
-      await this.storeRepository.findOneByIdIncludeDeleted(storeId);
+    const store = await this.storeRepository.findOneByIdIncludeDeleted(storeId);
 
     if (!store) {
       throw new NotFoundException({
@@ -271,8 +270,7 @@ export class StoreService implements IStoreService {
     requestLog: IRequestLog,
     deletedBy: string
   ): Promise<void> {
-    const store =
-      await this.storeRepository.findOneByIdIncludeDeleted(storeId);
+    const store = await this.storeRepository.findOneByIdIncludeDeleted(storeId);
 
     if (!store) {
       throw new NotFoundException({
@@ -297,11 +295,11 @@ export class StoreService implements IStoreService {
    * Upsert a store by slug — skips if already exists.
    * Intended for use in migration seeds only; does not require requestLog or createdBy.
    */
-  async upsertForMigration(
-    payload: IStoreMigrationUpsert
-  ): Promise<void> {
+  async upsertForMigration(payload: IStoreMigrationUpsert): Promise<void> {
     const existing = await this.storeRepository.findOneBySlug(payload.slug);
-    if (existing) return;
+    if (existing) {
+      return;
+    }
 
     await this.storeRepository.create({
       name: payload.name,

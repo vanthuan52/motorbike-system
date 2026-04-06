@@ -3,7 +3,7 @@ import { IsBoolean, IsEnum, IsNotEmpty } from 'class-validator';
 import {
   EnumNotificationChannel,
   EnumNotificationType,
-} from '@/generated/prisma-client';
+} from '@/modules/notification/enums/notification.enum';
 
 export class NotificationUserSettingRequestDto {
   @ApiProperty({

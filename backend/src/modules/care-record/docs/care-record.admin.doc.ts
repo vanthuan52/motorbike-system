@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { CareRecordCreateRequestDto } from '../dtos/request/care-record.create.request.dto';
 import { CareRecordDto } from '../dtos/care-record.dto';
@@ -6,13 +6,13 @@ import { CareRecordListResponseDto } from '../dtos/response/care-record.list.res
 import { CareRecordUpdateRequestDto } from '../dtos/request/care-record.update.request.dto';
 import {
   CareRecordDocParamsId,
+  CareRecordDocQueryAppointment,
   CareRecordDocQueryOrderBy,
   CareRecordDocQueryOrderDirection,
-  CareRecordDocQueryStatus,
   CareRecordDocQueryPaymentStatus,
+  CareRecordDocQueryStatus,
   CareRecordDocQueryTechnician,
   CareRecordDocQueryUserVehicle,
-  CareRecordDocQueryAppointment,
 } from '../constants/care-record.doc.constant';
 import {
   Doc,
@@ -52,7 +52,7 @@ export function CareRecordAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<CareRecordListResponseDto>('care-record.list', {
       dto: CareRecordListResponseDto,
-    }),
+    })
   );
 }
 
@@ -72,7 +72,7 @@ export function CareRecordAdminCreateDoc(): MethodDecorator {
     DocResponse<CareRecordDto>('care-record.create', {
       dto: CareRecordDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -90,7 +90,7 @@ export function CareRecordAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.update'),
+    DocResponse('care-record.update')
   );
 }
 
@@ -106,7 +106,7 @@ export function CareRecordAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.delete'),
+    DocResponse('care-record.delete')
   );
 }
 
@@ -124,7 +124,7 @@ export function CareRecordAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordDto>('care-record.getById', {
       dto: CareRecordDto,
-    }),
+    })
   );
 }
 
@@ -142,7 +142,7 @@ export function CareRecordAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordGetFullResponseDto>('care-record.get', {
       dto: CareRecordGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -160,7 +160,7 @@ export function CareRecordAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.updateStatus'),
+    DocResponse('care-record.updateStatus')
   );
 }
 
@@ -178,7 +178,7 @@ export function CareRecordAdminUpdatePaymentStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.updatePaymentStatus'),
+    DocResponse('care-record.updatePaymentStatus')
   );
 }
 
@@ -196,7 +196,7 @@ export function CareRecordAdminUpdateTechnicianDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.updateTechnician'),
+    DocResponse('care-record.updateTechnician')
   );
 }
 
@@ -216,7 +216,7 @@ export function CareRecordAdminCreateChecklistDoc(): MethodDecorator {
     DocResponse<CareRecordDto>('care-record.createChecklist', {
       dto: CareRecordDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -231,7 +231,7 @@ export function CareRecordAdminTrashListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<CareRecordListResponseDto>('care-record.trashList', {
       dto: CareRecordListResponseDto,
-    }),
+    })
   );
 }
 
@@ -247,7 +247,7 @@ export function CareRecordAdminRestoreDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.restore'),
+    DocResponse('care-record.restore')
   );
 }
 
@@ -263,6 +263,6 @@ export function CareRecordAdminForceDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.forceDelete'),
+    DocResponse('care-record.forceDelete')
   );
 }

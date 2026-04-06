@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { ServiceChecklist as PrismaServiceChecklist, Prisma } from '@/generated/prisma-client';
+import {
+  Prisma,
+  ServiceChecklist as PrismaServiceChecklist,
+} from '@/generated/prisma-client';
 import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
 import { ServiceChecklistModel } from '../models/service-checklist.model';
 import { ServiceChecklistMapper } from '../mappers/service-checklist.mapper';
@@ -85,15 +88,13 @@ export class ServiceChecklistRepository {
     };
   }
 
-  async findWithPaginationCursor(
-    {
-      where,
-      ...params
-    }: IPaginationQueryCursorParams<
-      Prisma.ServiceChecklistSelect,
-      Prisma.ServiceChecklistWhereInput
-    >
-  ): Promise<IPaginationCursorReturn<ServiceChecklistModel>> {
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.ServiceChecklistSelect,
+    Prisma.ServiceChecklistWhereInput
+  >): Promise<IPaginationCursorReturn<ServiceChecklistModel>> {
     const paginatedResult =
       await this.paginationService.cursor<PrismaServiceChecklist>(
         this.databaseService.serviceChecklist,

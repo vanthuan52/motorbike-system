@@ -173,4 +173,5 @@ export enum EnumActivityLogAction {
 
   // Notification
   userNotificationUpdateSetting = 'userNotificationUpdateSetting',
+  userUpdateNotificationSetting = 'userUpdateNotificationSetting',
 }

@@ -1,14 +1,15 @@
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
+import { CareRecordConditionModel } from '../models/care-record-condition.model';
 import { ICareRecordConditionListFilters } from './care-record-condition.filter.interface';
 
 export interface ICareRecordConditionService {
@@ -18,7 +19,7 @@ export interface ICareRecordConditionService {
       Prisma.CareRecordConditionWhereInput
     >,
     filters?: ICareRecordConditionListFilters
-  ): Promise<IPaginationOffsetReturn<CareRecordCondition>>;
+  ): Promise<IPaginationOffsetReturn<CareRecordConditionModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -26,9 +27,9 @@ export interface ICareRecordConditionService {
       Prisma.CareRecordConditionWhereInput
     >,
     filters?: ICareRecordConditionListFilters
-  ): Promise<IPaginationCursorReturn<CareRecordCondition>>;
+  ): Promise<IPaginationCursorReturn<CareRecordConditionModel>>;
 
-  findOneById(id: string): Promise<CareRecordCondition>;
+  findOneById(id: string): Promise<CareRecordConditionModel>;
 
   create(
     payload: CareRecordConditionCreateRequestDto,
@@ -44,6 +45,14 @@ export interface ICareRecordConditionService {
   ): Promise<void>;
 
   delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
+
+  restore(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   deleteMany(find?: Record<string, any>): Promise<boolean>;
 }

@@ -30,6 +30,6 @@ export function ServicePricePublicListDoc(): MethodDecorator {
     }),
     DocResponsePaging<ServicePriceListResponseDto>('ServicePrice.list', {
       dto: ServicePriceListResponseDto,
-    }),
+    })
   );
 }

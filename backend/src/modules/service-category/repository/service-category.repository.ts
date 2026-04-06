@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { ServiceCategoryModel } from '../models/service-category.model';
 import { ServiceCategoryMapper } from '../mappers/service-category.mapper';
 import {
-  ServiceCategory as PrismaServiceCategory,
   Prisma,
+  ServiceCategory as PrismaServiceCategory,
 } from '@/generated/prisma-client';
 import { IServiceCategoryListFilters } from '../interfaces/service-category.filter.interface';
 
@@ -52,14 +52,15 @@ export class ServiceCategoryRepository {
     );
   }
 
-  async findWithPaginationOffset({
-    where,
-    ...params
-  }: IPaginationQueryOffsetParams<
-    Prisma.ServiceCategorySelect,
-    Prisma.ServiceCategoryWhereInput
-  >,
-  filters?: IServiceCategoryListFilters
+  async findWithPaginationOffset(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: IServiceCategoryListFilters
   ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaServiceCategory,
@@ -110,14 +111,15 @@ export class ServiceCategoryRepository {
     };
   }
 
-  async findWithPaginationOffsetTrashed({
-    where,
-    ...params
-  }: IPaginationQueryOffsetParams<
-    Prisma.ServiceCategorySelect,
-    Prisma.ServiceCategoryWhereInput
-  >,
-  filters?: IServiceCategoryListFilters
+  async findWithPaginationOffsetTrashed(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: IServiceCategoryListFilters
   ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
     const paginatedResult = await this.paginationService.offset<
       PrismaServiceCategory,
@@ -204,10 +206,7 @@ export class ServiceCategoryRepository {
     return ServiceCategoryMapper.toDomain(result);
   }
 
-  async restore(
-    id: string,
-    restoredBy: string
-  ): Promise<ServiceCategoryModel> {
+  async restore(id: string, restoredBy: string): Promise<ServiceCategoryModel> {
     const result = await this.databaseService.serviceCategory.update({
       where: { id },
       data: {

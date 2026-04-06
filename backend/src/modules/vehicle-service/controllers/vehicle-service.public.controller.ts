@@ -2,12 +2,12 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VehicleServiceService } from '../services/vehicle-service.service';
 import {
-  VehicleServicePublicListDoc,
   VehicleServicePublicGetOneDoc,
+  VehicleServicePublicListDoc,
 } from '../docs/vehicle-service.public.doc';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import {
   Response,

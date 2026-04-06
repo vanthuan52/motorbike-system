@@ -1,9 +1,9 @@
 import {
-  EnumOilLevel,
-  EnumMirrorCondition,
-  EnumSeatCondition,
   EnumBodyCondition,
   EnumExhaustCoverCondition,
+  EnumMirrorCondition,
+  EnumOilLevel,
+  EnumSeatCondition,
 } from '../enums/care-record-condition.enum';
 import { CareRecordModel } from '@/modules/care-record/models/care-record.model';
 

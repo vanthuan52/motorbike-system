@@ -29,12 +29,12 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { JobApplicationResponseDto } from '../dtos/job-application.response.dto';
 import { JobApplicationService } from '../services/job-application.service';

@@ -7,7 +7,7 @@ import { ServiceChecklistItem } from '@/modules/service-checklist/constants/serv
 @Injectable()
 export class MigrationServiceChecklistSeed {
   constructor(
-    private readonly serviceChecklistService: ServiceChecklistService,
+    private readonly serviceChecklistService: ServiceChecklistService
   ) {}
 
   @Command({

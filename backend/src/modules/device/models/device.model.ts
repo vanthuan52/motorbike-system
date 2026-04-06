@@ -1,6 +1,6 @@
 import {
-  EnumDevicePlatform,
   EnumDeviceNotificationProvider,
+  EnumDevicePlatform,
 } from '../enums/device.enum';
 
 /**
@@ -46,8 +46,7 @@ export class DeviceOwnershipModel {
 
   createdBy?: string;
   updatedBy?: string;
-
-  devices?: DeviceModel[];
+  device?: DeviceModel;
 
   constructor(data?: Partial<DeviceOwnershipModel>) {
     Object.assign(this, data);

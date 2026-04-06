@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { PartTypeService } from '../services/part-type.services';
 import { PartTypeUtil } from '../utils/part-type.util';
 import {
-  PartTypePublicListDoc,
   PartTypePublicGetOneDoc,
+  PartTypePublicListDoc,
 } from '../docs/part-type.public.doc';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { PartTypeDto } from '../dtos/part-type.dto';
 import {
@@ -20,8 +20,8 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
 import {

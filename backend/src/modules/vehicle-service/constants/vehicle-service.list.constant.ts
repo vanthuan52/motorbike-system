@@ -7,6 +7,5 @@ export const VehicleServiceDefaultAvailableOrderBy = [
   'updatedAt',
 ];
 export const VehicleServiceDefaultStatus = Object.values(
-  EnumVehicleServiceStatus,
+  EnumVehicleServiceStatus
 );
-

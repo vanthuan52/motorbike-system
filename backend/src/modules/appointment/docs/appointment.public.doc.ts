@@ -7,7 +7,7 @@ import {
   DocResponse,
 } from '@/common/doc/decorators/doc.decorator';
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { AppointmentListResponseDto } from '../dtos/response/appointment.list.response.dto';
 import { AppointmentBookRequestDto } from '../dtos/request/appointment.book.request.dto';
 

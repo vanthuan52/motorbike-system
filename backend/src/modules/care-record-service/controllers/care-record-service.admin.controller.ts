@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Put,
-  Patch,
-  Delete,
-  Param,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,8 +18,8 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { CareRecordServiceListResponseDto } from '../dtos/response/care-record-service.list.response.dto';
 import { CareRecordServiceGetFullResponseDto } from '../dtos/response/care-record-service.full.response.dto';
@@ -28,8 +28,8 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   CareRecordServiceAdminCreateDoc,
@@ -299,6 +299,58 @@ export class CareRecordServiceAdminController {
     @RequestGeoLocation() geoLocation: GeoLocation | null
   ): Promise<IResponseReturn<void>> {
     await this.careRecordServiceService.delete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
+    return {};
+  }
+
+  @CareRecordServiceAdminDeleteDoc()
+  @Response('care-record-service.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordServiceUpdate)
+  @Patch('/restore/:id')
+  async restore(
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') restoredBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.careRecordServiceService.restore(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      restoredBy
+    );
+    return {};
+  }
+
+  @CareRecordServiceAdminDeleteDoc()
+  @Response('care-record-service.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.careRecord,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminCareRecordServiceDelete)
+  @Delete('/force-delete/:id')
+  async forceDelete(
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    await this.careRecordServiceService.forceDelete(
       id,
       { ipAddress, userAgent, geoLocation },
       deletedBy

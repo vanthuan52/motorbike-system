@@ -1,6 +1,5 @@
 import { Prisma } from '@/generated/prisma-client';
 
-export type IApplicationReviewListFilters = Partial<Pick<
-    Prisma.ApplicationReviewWhereInput,
-    'jobApplicationId'
->>;
+export type IApplicationReviewListFilters = Partial<
+  Pick<Prisma.ApplicationReviewWhereInput, 'jobApplicationId'>
+>;

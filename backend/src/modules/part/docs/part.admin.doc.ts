@@ -1,8 +1,8 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { PartCreateRequestDto } from '../dtos/request/part.create.request.dto';
 import { PartDto } from '../dtos/part.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
 import { PartUpdateRequestDto } from '../dtos/request/part.update.request.dto';
 import { PartUpdateStatusRequestDto } from '../dtos/request/part.update-status.request.dto';
@@ -45,7 +45,7 @@ export function PartAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<PartListResponseDto>('part.list', {
       dto: PartListResponseDto,
-    }),
+    })
   );
 }
 
@@ -65,7 +65,7 @@ export function PartAdminCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('part.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -83,7 +83,7 @@ export function PartAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('part.update'),
+    DocResponse('part.update')
   );
 }
 
@@ -99,7 +99,7 @@ export function PartAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('part.delete'),
+    DocResponse('part.delete')
   );
 }
 
@@ -117,7 +117,7 @@ export function PartAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('part.updateStatus'),
+    DocResponse('part.updateStatus')
   );
 }
 
@@ -135,7 +135,7 @@ export function PartAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<PartDto>('part.getById', {
       dto: PartDto,
-    }),
+    })
   );
 }
 
@@ -153,6 +153,6 @@ export function PartAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<PartGetFullResponseDto>('part.get', {
       dto: PartGetFullResponseDto,
-    }),
+    })
   );
 }

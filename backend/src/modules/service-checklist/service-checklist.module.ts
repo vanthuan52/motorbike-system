@@ -7,7 +7,15 @@ import { ServiceChecklistUtil } from './utils/service-checklist.util';
 @Module({
   imports: [],
   controllers: [ServiceChecklistAdminController],
-  providers: [ServiceChecklistService, ServiceChecklistRepository, ServiceChecklistUtil],
-  exports: [ServiceChecklistService, ServiceChecklistRepository, ServiceChecklistUtil],
+  providers: [
+    ServiceChecklistService,
+    ServiceChecklistRepository,
+    ServiceChecklistUtil,
+  ],
+  exports: [
+    ServiceChecklistService,
+    ServiceChecklistRepository,
+    ServiceChecklistUtil,
+  ],
 })
 export class ServiceChecklistModule {}

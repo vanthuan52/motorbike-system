@@ -4,12 +4,16 @@ import {
   ServiceCategoryEntity,
 } from '../entities/service-category.entity';
 
-export interface IServiceCategoryEntity
-  extends Omit<ServiceCategoryEntity, 'createdBy'> {
+export interface IServiceCategoryEntity extends Omit<
+  ServiceCategoryEntity,
+  'createdBy'
+> {
   createdBy: UserEntity;
 }
 
-export interface IServiceCategoryDoc
-  extends Omit<ServiceCategoryDoc, 'createdBy'> {
+export interface IServiceCategoryDoc extends Omit<
+  ServiceCategoryDoc,
+  'createdBy'
+> {
   createdBy: UserDoc;
 }

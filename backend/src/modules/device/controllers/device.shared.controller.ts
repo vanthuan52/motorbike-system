@@ -42,8 +42,8 @@ import { DeviceService } from '@/modules/device/services/device.service';
 import { DeviceUtil } from '@/modules/device/utils/device.util';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
-  UserAgent,
   GeoLocation,
+  UserAgent,
 } from '@/modules/user/interfaces/user.interface';
 import { Prisma } from '@/generated/prisma-client';
 

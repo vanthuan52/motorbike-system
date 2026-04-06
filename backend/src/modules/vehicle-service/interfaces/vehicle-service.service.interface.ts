@@ -5,10 +5,10 @@ import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-se
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { VehicleServiceUploadPhotoRequestDto } from '../dtos/request/vehicle-service.upload-photo.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IVehicleServiceListFilters } from './vehicle-service.filter.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
@@ -58,7 +58,11 @@ export interface IVehicleServiceService {
     updatedBy: string
   ): Promise<VehicleServiceModel>;
 
-  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<VehicleServiceModel>;
+  delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<VehicleServiceModel>;
 
   findBySlug(slug: string): Promise<VehicleServiceModel>;
 

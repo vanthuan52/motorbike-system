@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import {
   ServiceCategoryDocParamsId,
@@ -39,7 +39,7 @@ export function ServiceCategoryAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<ServiceCategoryListResponseDto>('service-category.list', {
       dto: ServiceCategoryListResponseDto,
-    }),
+    })
   );
 }
 
@@ -59,7 +59,7 @@ export function ServiceCategoryAdminCreateDoc(): MethodDecorator {
     DocResponse<ServiceCategoryDto>('service-category.create', {
       dto: ServiceCategoryDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -77,7 +77,7 @@ export function ServiceCategoryAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-category.update'),
+    DocResponse('service-category.update')
   );
 }
 
@@ -93,7 +93,7 @@ export function ServiceCategoryAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-category.delete'),
+    DocResponse('service-category.delete')
   );
 }
 
@@ -111,7 +111,7 @@ export function ServiceCategoryAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-category.updateStatus'),
+    DocResponse('service-category.updateStatus')
   );
 }
 
@@ -129,6 +129,6 @@ export function ServiceCategoryAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<ServiceCategoryDto>('service-category.getById', {
       dto: ServiceCategoryDto,
-    }),
+    })
   );
 }

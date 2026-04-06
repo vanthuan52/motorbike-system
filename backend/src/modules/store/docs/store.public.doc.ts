@@ -28,7 +28,7 @@ export function StorePublicGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<StoreDto>('store.getById', {
       dto: StoreDto,
-    }),
+    })
   );
 }
 
@@ -46,6 +46,6 @@ export function StorePublicListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<StoreListResponseDto>('store.list', {
       dto: StoreListResponseDto,
-    }),
+    })
   );
 }

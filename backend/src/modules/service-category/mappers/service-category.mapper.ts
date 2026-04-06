@@ -3,9 +3,7 @@ import { EnumServiceCategoryStatus } from '../enums/service-category.enum';
 import { ServiceCategory as PrismaServiceCategory } from '@/generated/prisma-client';
 
 export class ServiceCategoryMapper {
-  static toDomain(
-    prismaCategory: PrismaServiceCategory
-  ): ServiceCategoryModel {
+  static toDomain(prismaCategory: PrismaServiceCategory): ServiceCategoryModel {
     const model = new ServiceCategoryModel();
     model.id = prismaCategory.id;
     model.name = prismaCategory.name;

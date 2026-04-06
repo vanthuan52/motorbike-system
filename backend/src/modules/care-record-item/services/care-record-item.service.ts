@@ -5,10 +5,10 @@ import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { EnumCareRecordItemStatusCodeError } from '../enums/care-record-item.status-code.enum';
@@ -129,27 +129,43 @@ export class CareRecordItemService implements ICareRecordItemService {
     const updateData: any = {
       updatedBy: actionBy,
     };
-    if (vehicleService !== undefined)
+    if (vehicleService !== undefined) {
       updateData.vehicleService = { connect: { id: vehicleService } };
-    if (source !== undefined) updateData.source = source;
-    if (itemType !== undefined) updateData.itemType = itemType;
-    if (name !== undefined) updateData.name = name;
-    if (part !== undefined)
+    }
+    if (source !== undefined) {
+      updateData.source = source;
+    }
+    if (itemType !== undefined) {
+      updateData.itemType = itemType;
+    }
+    if (name !== undefined) {
+      updateData.name = name;
+    }
+    if (part !== undefined) {
       updateData.part = part ? { connect: { id: part } } : { disconnect: true };
-    if (quantity !== undefined) updateData.quantity = quantity;
-    if (unitPrice !== undefined) updateData.unitPrice = unitPrice;
+    }
+    if (quantity !== undefined) {
+      updateData.quantity = quantity;
+    }
+    if (unitPrice !== undefined) {
+      updateData.unitPrice = unitPrice;
+    }
     if (quantity !== undefined || unitPrice !== undefined) {
       const qty = quantity ?? record.quantity;
       const price = unitPrice ?? record.unitPrice;
       updateData.totalPrice = qty * price;
     }
-    if (technician !== undefined)
+    if (technician !== undefined) {
       updateData.technician = technician
         ? { connect: { id: technician } }
         : { disconnect: true };
-    if (approvedByOwner !== undefined)
+    }
+    if (approvedByOwner !== undefined) {
       updateData.approvedByOwner = approvedByOwner;
-    if (note !== undefined) updateData.note = note;
+    }
+    if (note !== undefined) {
+      updateData.note = note;
+    }
 
     await this.careRecordItemRepository.update(id, updateData);
   }

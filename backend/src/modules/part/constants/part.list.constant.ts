@@ -10,4 +10,3 @@ export const PartDefaultStatus = [
   EnumPartStatus.active,
   EnumPartStatus.inactive,
 ];
-

@@ -4,7 +4,7 @@ import { AppointmentCreateRequestDto } from './appointment.create.request.dto';
 
 export class AppointmentBookRequestDto extends OmitType(
   AppointmentCreateRequestDto,
-  ['licensePlateNumber', 'customerRequests', 'status'] as const,
+  ['licensePlateNumber', 'customerRequests', 'status'] as const
 ) {
   @ApiProperty({
     example: '59A1-12345',

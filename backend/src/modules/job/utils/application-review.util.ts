@@ -11,7 +11,9 @@ export class ApplicationReviewUtil {
     return plainToInstance(ApplicationReviewResponseDto, applicationReviews);
   }
 
-  mapOne(applicationReview: ApplicationReviewModel): ApplicationReviewResponseDto {
+  mapOne(
+    applicationReview: ApplicationReviewModel
+  ): ApplicationReviewResponseDto {
     return plainToInstance(ApplicationReviewResponseDto, applicationReview);
   }
 }

@@ -3,11 +3,11 @@ import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { UserVehicleUploadPhotoRequestDto } from '../dtos/request/user-vehicle.upload-photo.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
+  IPaginationCursorReturn,
   IPaginationIn,
   IPaginationOffsetReturn,
-  IPaginationCursorReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { UserVehicleModel } from '../models/user-vehicle.model';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';

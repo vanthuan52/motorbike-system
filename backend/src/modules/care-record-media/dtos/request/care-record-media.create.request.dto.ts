@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
+  IsIn,
   IsNotEmpty,
   IsOptional,
-  IsUUID,
-  IsIn,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { ENUM_CARE_RECORD_MEDIA_STAGE } from '../../enums/care-record-media.enum';
 import { EnumFileExtension } from '@/common/file/enums/file.enum';

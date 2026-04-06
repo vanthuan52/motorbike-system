@@ -1,7 +1,7 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { VehicleBrandRepository } from '../repository/vehicle-brand.repository';
 import { IVehicleBrandService } from '../interfaces/vehicle-brand.service.interface';
@@ -14,10 +14,10 @@ import { IVehicleBrandMigrationUpsert } from '../interfaces/vehicle-brand.migrat
 
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IVehicleBrandListFilters } from '../interfaces/vehicle-brand.filter.interface';
 import { EnumVehicleBrandStatusCodeError } from '../enums/vehicle-brand.status-code.enum';
@@ -192,7 +192,9 @@ export class VehicleBrandService implements IVehicleBrandService {
     const existing = await this.vehicleBrandRepository.findOne({
       slug: payload.slug,
     });
-    if (existing) return;
+    if (existing) {
+      return;
+    }
 
     await this.vehicleBrandRepository.create({
       name: payload.name,

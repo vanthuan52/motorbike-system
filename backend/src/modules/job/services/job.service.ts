@@ -11,10 +11,10 @@ import { JobUpdateStatusRequestDto } from '../dtos/request/job.update-status.req
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IJobMigrationCreate } from '../interfaces/job.migration.interface';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumJobStatusCodeError } from '../enums/job.status-code.enum';
 import { EnumJobStatus } from '../enums/job.enum';
@@ -136,19 +136,33 @@ export class JobService implements IJobService {
     }
 
     const data: Prisma.JobUpdateInput = {};
-    if (payload.title !== undefined) data.title = payload.title;
-    if (payload.slug !== undefined) data.slug = payload.slug;
-    if (payload.description !== undefined)
+    if (payload.title !== undefined) {
+      data.title = payload.title;
+    }
+    if (payload.slug !== undefined) {
+      data.slug = payload.slug;
+    }
+    if (payload.description !== undefined) {
       data.description = payload.description;
-    if (payload.requirements !== undefined)
+    }
+    if (payload.requirements !== undefined) {
       data.requirements = payload.requirements;
-    if (payload.location !== undefined) data.location = payload.location;
-    if (payload.salaryRange !== undefined)
+    }
+    if (payload.location !== undefined) {
+      data.location = payload.location;
+    }
+    if (payload.salaryRange !== undefined) {
       data.salaryRange = payload.salaryRange;
-    if (payload.applicationDeadline !== undefined)
+    }
+    if (payload.applicationDeadline !== undefined) {
       data.applicationDeadline = new Date(payload.applicationDeadline);
-    if (payload.category !== undefined) data.category = payload.category;
-    if (payload.jobType !== undefined) data.jobType = payload.jobType;
+    }
+    if (payload.category !== undefined) {
+      data.category = payload.category;
+    }
+    if (payload.jobType !== undefined) {
+      data.jobType = payload.jobType;
+    }
 
     if (Object.keys(data).length > 0) {
       await this.jobRepository.update(jobId, data);

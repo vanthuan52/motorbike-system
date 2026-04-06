@@ -1,9 +1,9 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   UserVehicleDocParamsId,
-  UserVehicleDocQueryVehicleModel,
   UserVehicleDocQueryOrderBy,
   UserVehicleDocQueryOrderDirection,
+  UserVehicleDocQueryVehicleModel,
 } from '../constants/user-vehicle.doc.constant';
 import { UserVehicleDto } from '../dtos/user-vehicle.dto';
 import { UserVehicleListResponseDto } from '../dtos/response/user-vehicle.list.response.dto';
@@ -39,7 +39,7 @@ export function UserVehicleAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<UserVehicleListResponseDto>('user-vehicle.list', {
       dto: UserVehicleListResponseDto,
-    }),
+    })
   );
 }
 
@@ -59,7 +59,7 @@ export function UserVehicleAdminCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('user-vehicle.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -77,7 +77,7 @@ export function UserVehicleAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('user-vehicle.update'),
+    DocResponse('user-vehicle.update')
   );
 }
 
@@ -93,7 +93,7 @@ export function UserVehicleAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('user-vehicle.delete'),
+    DocResponse('user-vehicle.delete')
   );
 }
 
@@ -111,7 +111,7 @@ export function UserVehicleAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<UserVehicleDto>('user-vehicle.getById', {
       dto: UserVehicleDto,
-    }),
+    })
   );
 }
 
@@ -129,7 +129,7 @@ export function UserVehicleAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<UserVehicleGetFullResponseDto>('user-vehicle.get', {
       dto: UserVehicleGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -152,6 +152,6 @@ export function UserVehicleAdminListByUserDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<UserVehicleGetFullResponseDto>('user-vehicle.get', {
       dto: UserVehicleGetFullResponseDto,
-    }),
+    })
   );
 }

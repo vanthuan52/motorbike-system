@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayUnique,
+  IsArray,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
-  MaxLength,
-  IsIn,
   IsUUID,
-  IsArray,
-  ArrayUnique,
+  MaxLength,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
 import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';

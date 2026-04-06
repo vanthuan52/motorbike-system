@@ -1,13 +1,17 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ServicePriceRepository } from '../repository/service-price.repository';
 import { IServicePriceService } from '../interfaces/service-price.service.interface';
 import { ServicePriceCreateRequestDto } from '../dtos/request/service-price.create.request.dto';
 import { ServicePriceUpdateRequestDto } from '../dtos/request/service-price.update.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumServicePriceStatusCodeError } from '../enums/service-price.status-code.enum';
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
@@ -241,7 +245,9 @@ export class ServicePriceService implements IServicePriceService {
     >
   ): Promise<IPaginationOffsetReturn<ServicePriceModel>> {
     const { data, ...others } =
-      await this.servicePriceRepository.findWithPaginationOffsetTrashed(pagination);
+      await this.servicePriceRepository.findWithPaginationOffsetTrashed(
+        pagination
+      );
 
     return {
       data,

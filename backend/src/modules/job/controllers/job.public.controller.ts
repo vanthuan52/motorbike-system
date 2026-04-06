@@ -5,18 +5,18 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { JobService } from '../services/job.service';
-import { JobPublicParamsIdDoc, JobPublicListDoc } from '../docs/job.public.doc';
+import { JobPublicListDoc, JobPublicParamsIdDoc } from '../docs/job.public.doc';
 import {
   PaginationOffsetQuery,
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { JobUtil } from '../utils/job.util';
 import { JobResponseDto } from '../dtos/job.response.dto';

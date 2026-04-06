@@ -14,10 +14,10 @@ import { IApiKeyService } from '@/modules/api-key/interfaces/api-key.service.int
 import { EnumHelperDateDayOf } from '@/common/helper/enums/helper.enum';
 import { EnumApiKeyStatusCodeError } from '@/modules/api-key/enums/api-key.status-code.enum';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IApiKeyListFilters } from '@/modules/api-key/interfaces/api-key.filter.interface';
 import {
@@ -47,10 +47,7 @@ export class ApiKeyService implements IApiKeyService {
     filters?: IApiKeyListFilters
   ): Promise<IPaginationOffsetReturn<ApiKeyModel>> {
     const { data, ...others } =
-      await this.apiKeyRepository.findWithPaginationOffset(
-        pagination,
-        filters
-      );
+      await this.apiKeyRepository.findWithPaginationOffset(pagination, filters);
 
     return {
       data,
@@ -66,10 +63,7 @@ export class ApiKeyService implements IApiKeyService {
     filters?: IApiKeyListFilters
   ): Promise<IPaginationCursorReturn<ApiKeyModel>> {
     const { data, ...others } =
-      await this.apiKeyRepository.findWithPaginationCursor(
-        pagination,
-        filters
-      );
+      await this.apiKeyRepository.findWithPaginationCursor(pagination, filters);
 
     return {
       data,

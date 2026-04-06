@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareRecordChecklistModel } from '../models/care-record-checklist.model';
 import { CareRecordChecklistMapper } from '../mappers/care-record-checklist.mapper';
 import {
-  CareRecordChecklist as PrismaCareRecordChecklist,
   Prisma,
+  CareRecordChecklist as PrismaCareRecordChecklist,
 } from '@/generated/prisma-client';
 
 import { ICareRecordChecklistListFilters } from '../interfaces/care-record-checklist.filter.interface';
@@ -194,7 +194,37 @@ export class CareRecordChecklistRepository {
     return CareRecordChecklistMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecordChecklistModel> {
+  async softDelete(id: string): Promise<CareRecordChecklistModel> {
+    const result = await this.databaseService.careRecordChecklist.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+      },
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
+      },
+    });
+
+    return CareRecordChecklistMapper.toDomain(result);
+  }
+
+  async restore(id: string): Promise<CareRecordChecklistModel> {
+    const result = await this.databaseService.careRecordChecklist.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+      },
+      include: {
+        careRecordService: true,
+        serviceChecklist: true,
+      },
+    });
+
+    return CareRecordChecklistMapper.toDomain(result);
+  }
+
+  async forceDelete(id: string): Promise<CareRecordChecklistModel> {
     const result = await this.databaseService.careRecordChecklist.delete({
       where: { id },
       include: {

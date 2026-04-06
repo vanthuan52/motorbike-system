@@ -4,7 +4,7 @@ import { ServiceCategoryDto } from '../service-category.dto';
 
 export class ServiceCategoryShortResponseDto extends OmitType(
   ServiceCategoryDto,
-  ['createdAt', 'updatedAt'],
+  ['createdAt', 'updatedAt']
 ) {
   @ApiHideProperty()
   @Exclude()

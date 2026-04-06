@@ -6,7 +6,10 @@ import { DatabaseService } from '@/common/database/services/database.service';
 import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { MigrationSeedBase } from '@/migration/bases/migration.seed.base';
 import { IMigrationSeed } from '@/migration/interfaces/migration.seed.interface';
-import { IMigrationRoleData, migrationRoleData } from '@/migration/data/migration.role.data';
+import {
+  IMigrationRoleData,
+  migrationRoleData,
+} from '@/migration/data/migration.role.data';
 
 @Command({
   name: 'role',

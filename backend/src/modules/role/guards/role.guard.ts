@@ -18,17 +18,15 @@ export class RoleGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles =
-      this.reflector.get<string[]>(
-        RoleRequiredMetaKey,
-        context.getHandler()
-      ) ?? [];
+      this.reflector.get<string[]>(RoleRequiredMetaKey, context.getHandler()) ??
+      [];
 
     const request = context.switchToHttp().getRequest<IRequestApp>();
     const permissions: PermissionModel[] =
       await this.roleService.validateRoleGuard(request, requiredRoles);
 
     // Convert permissions to abilities format for PolicyAbilityGuard
-    request.__abilities = permissions.map((p) => ({
+    request.__abilities = permissions.map(p => ({
       subject: p.subject,
       action: [p.action],
     }));

@@ -1,13 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Logger,
+  Param,
   Post,
   Put,
-  Delete,
-  Param,
   Query,
-  Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ServicePriceService } from '../services/service-price.services';
@@ -19,8 +19,8 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { ServicePriceDto } from '../dtos/service-price.dto';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';

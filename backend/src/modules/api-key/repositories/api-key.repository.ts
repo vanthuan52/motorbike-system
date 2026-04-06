@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IApiKeyListFilters } from '@/modules/api-key/interfaces/api-key.filter.interface';
 import { ApiKeyCreateRequestDto } from '@/modules/api-key/dtos/request/api-key.create.request.dto';
@@ -14,7 +14,7 @@ import { PaginationService } from '@/common/pagination/services/pagination.servi
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import { ApiKeyModel } from '@/modules/api-key/models/api-key.model';
 import { ApiKeyMapper } from '@/modules/api-key/mappers/api-key.mapper';
-import { ApiKey as PrismaApiKey, Prisma } from '@/generated/prisma-client';
+import { Prisma, ApiKey as PrismaApiKey } from '@/generated/prisma-client';
 
 @Injectable()
 export class ApiKeyRepository {

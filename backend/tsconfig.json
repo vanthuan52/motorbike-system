@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -30,6 +31,7 @@
       "@/routes/*": ["src/router/routes/*"],
       "@/router": ["src/router/router.module.ts"],
       "@/migration/*": ["src/migration/*"],
+      "@/queues/*": ["src/queues/*"],
       "@/test/*": ["test/*"],
       "@/generated/*": ["generated/*"],
       "@/prisma/client": ["generated/prisma-client"]

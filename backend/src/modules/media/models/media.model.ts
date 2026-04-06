@@ -1,8 +1,8 @@
 import {
-  EnumMediaType,
-  EnumMediaPurpose,
   EnumMediaAccessibility,
+  EnumMediaPurpose,
   EnumMediaStatus,
+  EnumMediaType,
 } from '../enums/media.enum';
 
 /**

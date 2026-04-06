@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
+  IsIn,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
-  MaxLength,
-  IsIn,
   IsUUID,
+  MaxLength,
 } from 'class-validator';
 import { EnumPartStatus } from '../../enums/part.enum';
 

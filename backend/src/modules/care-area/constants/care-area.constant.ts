@@ -4,19 +4,22 @@ import { EnumCareArea } from '../enums/care-area.enum';
 // Care Area constants with predefined UUIDs for seeding
 export const CARE_AREA_IDS = {
   [EnumCareArea.lightElectricStarter]: '550e8400-e29b-41d4-a716-446655440001',
-  [EnumCareArea.steeringSuspension]: '550e8400-e29b-41d4-a716-446655440002', 
+  [EnumCareArea.steeringSuspension]: '550e8400-e29b-41d4-a716-446655440002',
   [EnumCareArea.brakeFrontRear]: '550e8400-e29b-41d4-a716-446655440003',
   [EnumCareArea.fuelIgnition]: '550e8400-e29b-41d4-a716-446655440004',
   [EnumCareArea.pot]: '550e8400-e29b-41d4-a716-446655440005',
   [EnumCareArea.pulyClutchShaft]: '550e8400-e29b-41d4-a716-446655440006',
-  [EnumCareArea.oilEngineCoolingScooter]: '550e8400-e29b-41d4-a716-446655440007',
+  [EnumCareArea.oilEngineCoolingScooter]:
+    '550e8400-e29b-41d4-a716-446655440007',
   [EnumCareArea.oilEngineCooling]: '550e8400-e29b-41d4-a716-446655440008',
   [EnumCareArea.steeringFrontWheel]: '550e8400-e29b-41d4-a716-446655440009',
   [EnumCareArea.transmissionRearWheel]: '550e8400-e29b-41d4-a716-44665544000a',
   [EnumCareArea.other]: '550e8400-e29b-41d4-a716-44665544000b',
 };
 
-export const CareAreaListWithIds: (CareAreaCreateRequestDto & { _id: string })[] = [
+export const CareAreaListWithIds: (CareAreaCreateRequestDto & {
+  _id: string;
+})[] = [
   {
     _id: CARE_AREA_IDS[EnumCareArea.lightElectricStarter],
     name: 'Bộ phận Đèn - Điện - Đề',

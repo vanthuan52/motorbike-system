@@ -2,12 +2,12 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VehicleBrandService } from '../services/vehicle-brand.service';
 import {
-  VehicleBrandPublicListDoc,
   VehicleBrandPublicGetOneDoc,
+  VehicleBrandPublicListDoc,
 } from '../docs/vehicle-brand.public.doc';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
 import {
@@ -19,8 +19,8 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
 import {

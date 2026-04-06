@@ -4,10 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IPermissionListFilters } from '@/modules/permission/interfaces/permission.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
@@ -21,9 +21,7 @@ import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class PermissionService implements IPermissionService {
-  constructor(
-    private readonly permissionRepository: PermissionRepository
-  ) {}
+  constructor(private readonly permissionRepository: PermissionRepository) {}
 
   async getListOffsetByAdmin(
     pagination: IPaginationQueryOffsetParams<

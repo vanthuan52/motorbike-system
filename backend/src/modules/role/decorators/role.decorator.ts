@@ -7,9 +7,7 @@ import { RoleGuard } from '@/modules/role/guards/role.guard';
  * @param {...string[]} requiredRoles - List of role names required for access
  * @returns {MethodDecorator} Combined decorators for role validation
  */
-export function RoleProtected(
-  ...requiredRoles: string[]
-): MethodDecorator {
+export function RoleProtected(...requiredRoles: string[]): MethodDecorator {
   return applyDecorators(
     UseGuards(RoleGuard),
     SetMetadata(RoleRequiredMetaKey, requiredRoles)

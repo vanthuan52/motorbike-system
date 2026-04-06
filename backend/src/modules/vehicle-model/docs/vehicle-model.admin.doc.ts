@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   VehicleModelDocParamsId,
   VehicleModelDocQueryEngineDisplacement,
@@ -50,7 +50,7 @@ export function VehicleModelAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<VehicleModelListResponseDto>('vehicle-model.list', {
       dto: VehicleModelListResponseDto,
-    }),
+    })
   );
 }
 
@@ -70,7 +70,7 @@ export function VehicleModelAdminCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('vehicle-model.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -88,7 +88,7 @@ export function VehicleModelAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-model.update'),
+    DocResponse('vehicle-model.update')
   );
 }
 
@@ -104,7 +104,7 @@ export function VehicleModelAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-model.delete'),
+    DocResponse('vehicle-model.delete')
   );
 }
 
@@ -122,7 +122,7 @@ export function VehicleModelAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-model.updateStatus'),
+    DocResponse('vehicle-model.updateStatus')
   );
 }
 
@@ -140,7 +140,7 @@ export function VehicleModelAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<VehicleModelDto>('vehicle-model.getById', {
       dto: VehicleModelDto,
-    }),
+    })
   );
 }
 
@@ -158,6 +158,6 @@ export function VehicleModelAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<VehicleModelGetFullResponseDto>('vehicle-model.get', {
       dto: VehicleModelGetFullResponseDto,
-    }),
+    })
   );
 }

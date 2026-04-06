@@ -1,4 +1,4 @@
-import { EnumMessageType, EnumMessageStatus } from '../enums/message.enum';
+import { EnumMessageStatus, EnumMessageType } from '../enums/message.enum';
 import { IMessageAttachment } from '../interfaces/message-attachment.interface';
 import { ConversationModel } from './conversation.model';
 import { UserModel } from '@/modules/user/models/user.model';

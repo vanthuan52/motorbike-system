@@ -1,7 +1,7 @@
 import { DeviceModel, DeviceOwnershipModel } from '../models/device.model';
 import {
-  EnumDevicePlatform,
   EnumDeviceNotificationProvider,
+  EnumDevicePlatform,
 } from '../enums/device.enum';
 import {
   Device as PrismaDevice,

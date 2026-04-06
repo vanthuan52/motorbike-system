@@ -1,11 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Param,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -17,23 +17,23 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { CareAreaListResponseDto } from '../dtos/response/care-area.list.response.dto';
 import { CareAreaDto } from '../dtos/care-area.dto';
 import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
 import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
-  CareAreaAdminListDoc,
-  CareAreaWithServiceChecklistDoc,
-  CareAreaAdminParamsIdDoc,
   CareAreaAdminCreateDoc,
-  CareAreaAdminUpdateDoc,
   CareAreaAdminDeleteDoc,
-  CareAreaAdminTrashListDoc,
-  CareAreaAdminRestoreDoc,
   CareAreaAdminForceDeleteDoc,
+  CareAreaAdminListDoc,
+  CareAreaAdminParamsIdDoc,
+  CareAreaAdminRestoreDoc,
+  CareAreaAdminTrashListDoc,
+  CareAreaAdminUpdateDoc,
+  CareAreaWithServiceChecklistDoc,
 } from '../docs/care-area.admin.doc';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {

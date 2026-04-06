@@ -4,9 +4,7 @@ import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-br
 
 @Injectable()
 export class MigrationVehicleBrandSeed {
-  constructor(
-    private readonly vehicleBrandService: VehicleBrandService
-  ) {}
+  constructor(private readonly vehicleBrandService: VehicleBrandService) {}
 
   @Command({
     command: 'seed:vehicle-brand',
