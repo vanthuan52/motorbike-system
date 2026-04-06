@@ -7,6 +7,7 @@ import { CareAreaRepository } from '../repository/care-area.repository';
 import { ICareAreaService } from '../interfaces/care-area.service.interface';
 import { CareAreaCreateRequestDto } from '../dtos/request/care-area.create.request.dto';
 import { CareAreaUpdateRequestDto } from '../dtos/request/care-area.update.request.dto';
+import { ICareAreaMigrationCreate } from '../interfaces/care-area.migration.interface';
 import { ServiceChecklistService } from '@/modules/service-checklist/services/service-checklist.service';
 import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
 import { EnumCareAreaStatusCodeError } from '../enums/care-area.status-code.enum';
@@ -279,5 +280,39 @@ export class CareAreaService implements ICareAreaService {
       },
     });
     return !!careArea;
+  }
+
+  // === Migration helpers ===
+
+  /**
+   * Bulk-create care areas for migration seeds.
+   * Skips entries that already exist by name.
+   * Does not require requestLog or actionBy.
+   */
+  async createManyForMigration(
+    data: ICareAreaMigrationCreate[]
+  ): Promise<void> {
+    await Promise.all(
+      data.map(async item => {
+        const exists = await this.careAreaRepository.findOne({
+          name: { equals: item.name, mode: 'insensitive' },
+        });
+        if (!exists) {
+          await this.careAreaRepository.create({
+            name: item.name,
+            description: item.description,
+            orderBy: item.orderBy,
+          });
+        }
+      })
+    );
+  }
+
+  /**
+   * Hard-delete all care area records.
+   * Intended for use in migration seeds only.
+   */
+  async deleteMany(): Promise<void> {
+    await this.careAreaRepository.deleteMany({});
   }
 }

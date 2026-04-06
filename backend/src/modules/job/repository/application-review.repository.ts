@@ -151,4 +151,8 @@ export class ApplicationReviewRepository {
     });
     return ApplicationReviewMapper.toDomain(result);
   }
+
+  async deleteMany(where: Prisma.ApplicationReviewWhereInput = {}): Promise<{ count: number }> {
+    return this.databaseService.applicationReview.deleteMany({ where });
+  }
 }

@@ -35,6 +35,8 @@ export enum EnumActivityLogAction {
   adminServiceChecklistCreate = 'adminServiceChecklistCreate',
   adminServiceChecklistUpdate = 'adminServiceChecklistUpdate',
   adminServiceChecklistDelete = 'adminServiceChecklistDelete',
+  adminServiceChecklistRestore = 'adminServiceChecklistRestore',
+  adminServiceChecklistForceDelete = 'adminServiceChecklistForceDelete',
   adminApiKeyCreate = 'adminApiKeyCreate',
   adminApiKeyReset = 'adminApiKeyReset',
   adminApiKeyUpdate = 'adminApiKeyUpdate',
@@ -139,6 +141,8 @@ export enum EnumActivityLogAction {
   adminPartTypeUpdate = 'adminPartTypeUpdate',
   adminPartTypeUpdateStatus = 'adminPartTypeUpdateStatus',
   adminPartTypeDelete = 'adminPartTypeDelete',
+  adminPartTypeRestore = 'adminPartTypeRestore',
+  adminPartTypeForceDelete = 'adminPartTypeForceDelete',
 
   // Store
   adminStoreCreate = 'adminStoreCreate',

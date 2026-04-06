@@ -12,7 +12,7 @@ import {
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordMediaModel } from '../models/care-record-media.model';
-import { Prisma } from '@generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 
 import { ICareRecordMediaListFilters } from '../interfaces/care-record-media.filter.interface';
 
@@ -79,7 +79,7 @@ export class CareRecordMediaService implements ICareRecordMediaService {
       careRecord: { connect: { id: careRecord } },
       stage,
       type,
-      url: url ?? undefined,
+      cdnUrl: url ?? undefined,
       description: description ?? undefined,
       createdBy: actionBy,
     });
@@ -120,13 +120,11 @@ export class CareRecordMediaService implements ICareRecordMediaService {
     actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordMediaRepository.update(id, {
-      deletedBy: actionBy,
-      deletedAt: new Date(),
-    });
+    await this.careRecordMediaRepository.softDelete(id, actionBy);
   }
 
   async deleteMany(find?: Record<string, any>): Promise<boolean> {
+    await this.careRecordMediaRepository.deleteMany(find ?? {});
     return true;
   }
 

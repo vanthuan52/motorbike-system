@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
-import { PartTypeService } from '@/modules/part-type/services/part-type.services';
 import { MessageService } from '@/common/message/services/message.service';
-import { EnumPartTypeStatus } from '@/modules/part-type/enums/part-type.enum';
+import { PartTypeService } from '@/modules/part-type/services/part-type.services';
 
 @Injectable()
 export class MigrationPartTypeSeed {
   constructor(
     private readonly partTypeService: PartTypeService,
-    private readonly messageService: MessageService,
+    private readonly messageService: MessageService
   ) {}
 
   @Command({
@@ -38,13 +37,7 @@ export class MigrationPartTypeSeed {
     ];
 
     for (const partType of partTypes) {
-      const exist = await this.partTypeService.existBySlug(partType.slug);
-      if (!exist) {
-        await this.partTypeService.create({
-          ...partType,
-          status: EnumPartTypeStatus.active,
-        });
-      }
+      await this.partTypeService.upsertForMigration(partType);
     }
   }
   async seeds(): Promise<void> {

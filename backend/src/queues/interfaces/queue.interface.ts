@@ -1,4 +1,4 @@
 export interface IQueueResponse {
-    message: string;
-    [key: string]: unknown;
+  message: string;
+  [key: string]: unknown;
 }

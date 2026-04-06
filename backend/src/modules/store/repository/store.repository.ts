@@ -201,4 +201,8 @@ export class StoreRepository {
       data: paginatedResult.data.map(item => StoreMapper.toDomain(item)),
     };
   }
+
+  async deleteMany(where: Prisma.StoreWhereInput = {}): Promise<{ count: number }> {
+    return this.databaseService.store.deleteMany({ where });
+  }
 }

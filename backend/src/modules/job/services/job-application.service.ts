@@ -101,4 +101,12 @@ export class JobApplicationService implements IJobApplicationService {
 
     return jobApplication;
   }
+
+  /**
+   * Hard-delete all job application records.
+   * Intended for use in migration seeds only.
+   */
+  async deleteMany(): Promise<void> {
+    await this.jobApplicationRepository.deleteMany();
+  }
 }

@@ -250,4 +250,8 @@ export class CareAreaRepository {
       data: paginatedResult.data.map(item => CareAreaMapper.toDomain(item)),
     };
   }
+
+  async deleteMany(where: Prisma.CareAreaWhereInput = {}): Promise<{ count: number }> {
+    return this.databaseService.careArea.deleteMany({ where });
+  }
 }

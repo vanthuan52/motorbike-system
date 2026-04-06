@@ -1,4 +1,4 @@
-import { Prisma, ServiceCategory } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
@@ -10,6 +10,7 @@ import { ServiceCategoryCreateRequestDto } from '../dtos/request/service-categor
 import { ServiceCategoryUpdateRequestDto } from '../dtos/request/service-category.update.request.dto';
 import { ServiceCategoryUpdateStatusRequestDto } from '../dtos/request/service-category.update-status.request.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
+import { ServiceCategoryModel } from '../models/service-category.model';
 
 export interface IServiceCategoryService {
   getListOffset(
@@ -18,7 +19,7 @@ export interface IServiceCategoryService {
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: IServiceCategoryListFilters
-  ): Promise<IPaginationOffsetReturn<ServiceCategory>>;
+  ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>>;
 
   getListCursor(
     pagination: IPaginationQueryCursorParams<
@@ -26,37 +27,63 @@ export interface IServiceCategoryService {
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: IServiceCategoryListFilters
-  ): Promise<IPaginationCursorReturn<ServiceCategory>>;
+  ): Promise<IPaginationCursorReturn<ServiceCategoryModel>>;
 
-  findOneById(id: string): Promise<ServiceCategory>;
+  findOneById(id: string): Promise<ServiceCategoryModel>;
 
-  findOne(find: Record<string, any>): Promise<ServiceCategory | null>;
+  findOne(find: Record<string, any>): Promise<ServiceCategoryModel | null>;
 
-  findBySlug(slug: string): Promise<ServiceCategory | null>;
+  findBySlug(slug: string): Promise<ServiceCategoryModel>;
 
   create(
     payload: ServiceCategoryCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<{ id: string }>;
- 
+  ): Promise<ServiceCategoryModel>;
+
   update(
     id: string,
     payload: ServiceCategoryUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
- 
+  ): Promise<ServiceCategoryModel>;
+
   updateStatus(
     id: string,
     payload: ServiceCategoryUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
- 
-  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<void>;
+  ): Promise<ServiceCategoryModel>;
+
+  delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<ServiceCategoryModel>;
 
   existByName(name: string): Promise<boolean>;
 
   existBySlug(slug: string): Promise<boolean>;
+
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: IServiceCategoryListFilters
+  ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>>;
+
+  restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<ServiceCategoryModel>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<ServiceCategoryModel>;
 }

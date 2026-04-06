@@ -3,7 +3,6 @@ import {
   IPaginationQueryCursorParams,
   IPaginationOffsetReturn,
   IPaginationCursorReturn,
-  IPaginationIn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
@@ -51,6 +50,28 @@ export interface IServiceChecklistService {
   ): Promise<ServiceChecklistModel>;
 
   delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<ServiceChecklistModel>;
+
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
+    filters?: IServiceChecklistListFilters
+  ): Promise<IPaginationOffsetReturn<ServiceChecklistModel>>;
+
+  restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<ServiceChecklistModel>;
+
+  forceDelete(
     id: string,
     requestLog: IRequestLog,
     deletedBy: string

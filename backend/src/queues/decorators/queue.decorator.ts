@@ -14,18 +14,18 @@ import { EnumQueue } from 'src/queues/enums/queue.enum';
  * @returns ClassDecorator for processor class
  */
 export function QueueProcessor(
-    name: EnumQueue,
-    options?: Omit<NestWorkerOptions, 'name'>
+  name: EnumQueue,
+  options?: Omit<NestWorkerOptions, 'name'>
 ): ClassDecorator {
-    // @note: currently there is no way to inject ConfigService into decorators
-    return Processor(
-        {
-            name,
-            configKey: QueueProcessorConfigKey,
-        },
-        {
-            name: `${process.env.APP_NAME}-${process.env.APP_ENV}:${name}:consumer`,
-            ...options,
-        }
-    );
+  // @note: currently there is no way to inject ConfigService into decorators
+  return Processor(
+    {
+      name,
+      configKey: QueueProcessorConfigKey,
+    },
+    {
+      name: `${process.env.APP_NAME}-${process.env.NODE_ENV}:${name}:consumer`,
+      ...options,
+    }
+  );
 }

@@ -13,7 +13,7 @@ export class MigrationCareAreaSeed {
   })
   async seeds(): Promise<void> {
     try {
-      await this.careAreaService.createMany(CareAreaListWithIds);
+      await this.careAreaService.createManyForMigration(CareAreaListWithIds);
     } catch (err: any) {
       throw new Error(err);
     }

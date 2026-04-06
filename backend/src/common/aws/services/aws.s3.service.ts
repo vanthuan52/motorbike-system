@@ -230,6 +230,23 @@ export class AwsS3Service implements IAwsS3Service, OnModuleInit {
   }
 
   /**
+   * Returns whether the service is running against a MinIO (or S3-compatible) provider
+   * instead of real AWS S3.
+   *
+   * MinIO does not support some AWS-specific APIs such as:
+   * - `PutPublicAccessBlock` (Block Public Access configuration)
+   * - `PutBucketOwnershipControls` (ACL ownership enforcement)
+   *
+   * Use this guard before calling any AWS-only bucket configuration methods.
+   * Those configurations are handled by the `minio-init` Docker service at startup.
+   *
+   * @returns {boolean} `true` if a custom endpoint is set (MinIO / S3-compatible), `false` for real AWS S3
+   */
+  isMinio(): boolean {
+    return !!this.endpoint;
+  }
+
+  /**
    * Extracts file information (path, filename, extension, mime) from an S3 key.
    * @param {string} key - The S3 object key
    * @returns {IAwsS3FileInfo} File info object

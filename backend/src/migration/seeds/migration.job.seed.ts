@@ -4,11 +4,8 @@ import { faker } from '@faker-js/faker';
 import { JobService } from '@/modules/job/services/job.service';
 import { JobApplicationService } from '@/modules/job/services/job-application.service';
 import { ApplicationReviewService } from '@/modules/job/services/application-review.service';
-import {
-  EnumJobStatus,
-  EnumJobType,
-  EnumJobApplicationStatus,
-} from '@/modules/job/enums/job.enum';
+import { EnumJobStatus, EnumJobType } from '@/modules/job/enums/job.enum';
+import { EnumJobApplicationStatus } from '@/modules/job/enums/job-application.enum';
 @Injectable()
 export class MigrationJobSeed {
   constructor(
@@ -62,11 +59,11 @@ export class MigrationJobSeed {
     ];
 
     for (const jobData of jobList) {
-      const job = await this.jobService.create(jobData);
+      const job = await this.jobService.createForMigration(jobData);
 
       for (let i = 0; i < 2; i++) {
         const jobApplication = await this.jobApplicationService.create({
-          job: job._id,
+          job: job.id,
           name: faker.person.fullName(),
           email: faker.internet.email(),
           phone: `09${faker.string.numeric(8)}`,
@@ -78,7 +75,7 @@ export class MigrationJobSeed {
 
         for (let j = 0; j < 2; j++) {
           await this.applicationReviewService.create({
-            jobApplication: jobApplication._id,
+            jobApplication: jobApplication.id,
             user: 'c48738de-3ad5-4860-ba65-c96c97db4950',
             feedback: faker.lorem.sentences(2),
           });

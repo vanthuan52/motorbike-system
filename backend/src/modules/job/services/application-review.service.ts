@@ -91,4 +91,12 @@ export class ApplicationReviewService implements IApplicationReviewService {
 
     return review;
   }
+
+  /**
+   * Hard-delete all application review records.
+   * Intended for use in migration seeds only.
+   */
+  async deleteMany(): Promise<void> {
+    await this.applicationReviewRepository.deleteMany();
+  }
 }

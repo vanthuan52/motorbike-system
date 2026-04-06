@@ -31,7 +31,8 @@ export default registerAs<AppConfig>('app', (): AppConfig => {
   return {
     name: process.env.APP_NAME ?? 'nestjs-motorbike-system',
     env:
-      EnumAppEnvironment[process.env.APP_ENV] ?? EnumAppEnvironment.development,
+      EnumAppEnvironment[process.env.NODE_ENV] ??
+      EnumAppEnvironment.development,
     timezone: process.env.APP_TIMEZONE || EnumRequestTimezone.asiaHoChiMinh,
     version,
     encryptionSecretKey: process.env.APP_ENCRYPTION_SECRET_KEY,

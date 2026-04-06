@@ -9,6 +9,7 @@ import { JobCreateRequestDto } from '../dtos/request/job.create.request.dto';
 import { JobUpdateRequestDto } from '../dtos/request/job.update.request.dto';
 import { JobUpdateStatusRequestDto } from '../dtos/request/job.update-status.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { IJobMigrationCreate } from '../interfaces/job.migration.interface';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
@@ -271,5 +272,41 @@ export class JobService implements IJobService {
     }
 
     await this.jobRepository.forceDelete(jobId);
+  }
+
+  // === Migration helpers ===
+
+  /**
+   * Create a job record for migration seeds.
+   * Does not require requestLog or createdBy.
+   */
+  async createForMigration(
+    payload: IJobMigrationCreate
+  ): Promise<DatabaseIdDto> {
+    const slug = this.jobUtil.createSlug(payload.title);
+
+    const data: Prisma.JobCreateInput = {
+      title: payload.title,
+      slug: slug,
+      description: payload.description,
+      requirements: payload.requirements,
+      location: payload.location,
+      salaryRange: payload.salaryRange,
+      applicationDeadline: payload.applicationDeadline,
+      category: payload.category,
+      jobType: payload.jobType,
+      status: payload.status ?? EnumJobStatus.draft,
+    };
+
+    const created = await this.jobRepository.create(data);
+    return { id: created.id };
+  }
+
+  /**
+   * Hard-delete all job records.
+   * Intended for use in migration seeds only.
+   */
+  async deleteMany(): Promise<void> {
+    await this.jobRepository.deleteMany({});
   }
 }

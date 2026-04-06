@@ -1,6 +1,3 @@
-import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
-import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
-import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
@@ -8,9 +5,12 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IPartTypeListFilters } from './part-type.filter.interface';
-import { Prisma } from '@/generated/prisma-client';
+import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';
+import { PartTypeUpdateRequestDto } from '../dtos/request/part-type.update.request.dto';
+import { PartTypeUpdateStatusRequestDto } from '../dtos/request/part-type.update-status.request.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { PartTypeModel } from '../models/part-type.model';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface IPartTypeService {
   getListOffset(
@@ -29,7 +29,7 @@ export interface IPartTypeService {
     filters?: IPartTypeListFilters
   ): Promise<IPaginationCursorReturn<PartTypeModel>>;
 
-  findOneById(partTypeId: string): Promise<PartTypeModel>;
+  findOneById(id: string): Promise<PartTypeModel>;
 
   findOneBySlug(slug: string): Promise<PartTypeModel>;
 
@@ -37,25 +37,47 @@ export interface IPartTypeService {
     payload: PartTypeCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<{ id: string }>;
+  ): Promise<PartTypeModel>;
 
   update(
-    partTypeId: string,
+    id: string,
     payload: PartTypeUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
+  ): Promise<PartTypeModel>;
 
   updateStatus(
-    partTypeId: string,
+    id: string,
     payload: PartTypeUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void>;
+  ): Promise<PartTypeModel>;
 
   delete(
-    partTypeId: string,
+    id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<void>;
+  ): Promise<PartTypeModel>;
+
+  // === Trash/Restore ===
+
+  getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.PartTypeSelect,
+      Prisma.PartTypeWhereInput
+    >,
+    filters?: IPartTypeListFilters
+  ): Promise<IPaginationOffsetReturn<PartTypeModel>>;
+
+  restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<PartTypeModel>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<PartTypeModel>;
 }

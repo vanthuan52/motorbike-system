@@ -7,9 +7,15 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
-import { ServiceChecklist, Prisma } from '@/generated/prisma-client';
-
+import { ServiceChecklist as PrismaServiceChecklist, Prisma } from '@/generated/prisma-client';
 import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
+import { ServiceChecklistModel } from '../models/service-checklist.model';
+import { ServiceChecklistMapper } from '../mappers/service-checklist.mapper';
+
+const CHECKLIST_INCLUDE = {
+  careArea: true,
+  vehicleService: true,
+} as const;
 
 @Injectable()
 export class ServiceChecklistRepository {
@@ -24,157 +30,225 @@ export class ServiceChecklistRepository {
       skip,
       limit,
       orderBy,
-      ...rest
     }: IPaginationQueryOffsetParams<
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
     filters?: IServiceChecklistListFilters
-  ): Promise<ServiceChecklist[]> {
+  ): Promise<ServiceChecklistModel[]> {
     const mergedWhere: Prisma.ServiceChecklistWhereInput = {
       ...baseWhere,
       ...filters,
+      deletedAt: null,
     };
 
-    return this.databaseService.serviceChecklist.findMany({
+    const results = await this.databaseService.serviceChecklist.findMany({
       where: mergedWhere,
       skip,
       take: limit,
       orderBy: orderBy || { createdAt: 'desc' },
-      include: {
-        careArea: true,
-      },
-      ...rest,
+      include: CHECKLIST_INCLUDE,
     });
+
+    return results.map(item => ServiceChecklistMapper.toDomain(item));
   }
 
-  async getTotal(
+  async findWithPaginationOffset(
     {
-      where: baseWhere,
+      where,
+      ...params
     }: IPaginationQueryOffsetParams<
       Prisma.ServiceChecklistSelect,
       Prisma.ServiceChecklistWhereInput
     >,
     filters?: IServiceChecklistListFilters
-  ): Promise<number> {
-    const mergedWhere: Prisma.ServiceChecklistWhereInput = {
-      ...baseWhere,
-      ...filters,
+  ): Promise<IPaginationOffsetReturn<ServiceChecklistModel>> {
+    const paginatedResult =
+      await this.paginationService.offset<PrismaServiceChecklist>(
+        this.databaseService.serviceChecklist,
+        {
+          ...params,
+          where: {
+            ...where,
+            ...filters,
+            deletedAt: null,
+          },
+          include: CHECKLIST_INCLUDE,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        ServiceChecklistMapper.toDomain(item)
+      ),
     };
+  }
 
-    return this.databaseService.serviceChecklist.count({
-      where: mergedWhere,
+  async findWithPaginationCursor(
+    {
+      where,
+      ...params
+    }: IPaginationQueryCursorParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >
+  ): Promise<IPaginationCursorReturn<ServiceChecklistModel>> {
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaServiceChecklist>(
+        this.databaseService.serviceChecklist,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: CHECKLIST_INCLUDE,
+          includeCount: true,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        ServiceChecklistMapper.toDomain(item)
+      ),
+    };
+  }
+
+  async findWithPaginationOffsetTrashed(
+    {
+      where,
+      ...params
+    }: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >,
+    filters?: IServiceChecklistListFilters
+  ): Promise<IPaginationOffsetReturn<ServiceChecklistModel>> {
+    const paginatedResult =
+      await this.paginationService.offset<PrismaServiceChecklist>(
+        this.databaseService.serviceChecklist,
+        {
+          ...params,
+          where: {
+            ...where,
+            ...filters,
+            deletedAt: { not: null },
+          },
+          include: CHECKLIST_INCLUDE,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        ServiceChecklistMapper.toDomain(item)
+      ),
+    };
+  }
+
+  async findOneById(id: string): Promise<ServiceChecklistModel | null> {
+    const result = await this.databaseService.serviceChecklist.findFirst({
+      where: { id, deletedAt: null },
+      include: CHECKLIST_INCLUDE,
     });
+    return result ? ServiceChecklistMapper.toDomain(result) : null;
   }
 
-  async findWithPaginationOffset({
-    where,
-    ...params
-  }: IPaginationQueryOffsetParams<
-    Prisma.ServiceChecklistSelect,
-    Prisma.ServiceChecklistWhereInput
-  ): Promise<IPaginationOffsetReturn<ServiceChecklist>> {
-    return this.paginationService.offset<
-      ServiceChecklist,
-      Prisma.ServiceChecklistSelect,
-      Prisma.ServiceChecklistWhereInput
-    >(
-      this.databaseService.serviceChecklist,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          careArea: true,
-        },
-      }
-    );
-  }
-
-  async findWithPaginationCursor({
-    where,
-    ...params
-  }: IPaginationQueryCursorParams<
-    Prisma.ServiceChecklistSelect,
-    Prisma.ServiceChecklistWhereInput
-  ): Promise<IPaginationCursorReturn<ServiceChecklist>> {
-    return this.paginationService.cursor<
-      ServiceChecklist,
-      Prisma.ServiceChecklistSelect,
-      Prisma.ServiceChecklistWhereInput
-    >(
-      this.databaseService.serviceChecklist,
-      {
-        ...params,
-        where: {
-          ...where,
-        },
-        include: {
-          careArea: true,
-        },
-        includeCount: true,
-      }
-    );
-  }
-
-  async findOneById(id: string): Promise<ServiceChecklist | null> {
-    return this.databaseService.serviceChecklist.findUnique({
+  async findOneByIdIncludeDeleted(
+    id: string
+  ): Promise<ServiceChecklistModel | null> {
+    const result = await this.databaseService.serviceChecklist.findUnique({
       where: { id },
-      include: {
-        careArea: true,
-      },
+      include: CHECKLIST_INCLUDE,
     });
+    return result ? ServiceChecklistMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.ServiceChecklistWhereInput
-  ): Promise<ServiceChecklist | null> {
-    return this.databaseService.serviceChecklist.findFirst({
-      where,
-      include: {
-        careArea: true,
-      },
+  ): Promise<ServiceChecklistModel | null> {
+    const result = await this.databaseService.serviceChecklist.findFirst({
+      where: { ...where, deletedAt: null },
+      include: CHECKLIST_INCLUDE,
     });
+    return result ? ServiceChecklistMapper.toDomain(result) : null;
   }
 
-  async create(data: Prisma.ServiceChecklistCreateInput): Promise<ServiceChecklist> {
-    return this.databaseService.serviceChecklist.create({
+  async create(
+    data: Prisma.ServiceChecklistCreateInput
+  ): Promise<ServiceChecklistModel> {
+    const result = await this.databaseService.serviceChecklist.create({
       data,
-      include: {
-        careArea: true,
-      },
+      include: CHECKLIST_INCLUDE,
     });
+    return ServiceChecklistMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.ServiceChecklistUpdateInput
-  ): Promise<ServiceChecklist> {
-    return this.databaseService.serviceChecklist.update({
+  ): Promise<ServiceChecklistModel> {
+    const result = await this.databaseService.serviceChecklist.update({
       where: { id },
       data,
-      include: {
-        careArea: true,
-      },
+      include: CHECKLIST_INCLUDE,
     });
+    return ServiceChecklistMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<ServiceChecklist> {
-    return this.databaseService.serviceChecklist.delete({
-      where: { id },
-      include: {
-        careArea: true,
+  async softDelete(
+    id: string,
+    deletedBy: string
+  ): Promise<ServiceChecklistModel> {
+    const result = await this.databaseService.serviceChecklist.update({
+      where: { id, deletedAt: null },
+      data: {
+        deletedAt: new Date(),
+        deletedBy,
       },
+      include: CHECKLIST_INCLUDE,
     });
+    return ServiceChecklistMapper.toDomain(result);
+  }
+
+  async restore(
+    id: string,
+    restoredBy: string
+  ): Promise<ServiceChecklistModel> {
+    const result = await this.databaseService.serviceChecklist.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+        deletedBy: null,
+        updatedBy: restoredBy,
+      },
+      include: CHECKLIST_INCLUDE,
+    });
+    return ServiceChecklistMapper.toDomain(result);
+  }
+
+  async forceDelete(id: string): Promise<ServiceChecklistModel> {
+    const result = await this.databaseService.serviceChecklist.delete({
+      where: { id },
+      include: CHECKLIST_INCLUDE,
+    });
+    return ServiceChecklistMapper.toDomain(result);
   }
 
   async createMany(
-    data: Prisma.ServiceChecklistCreateInput[]
+    data: Prisma.ServiceChecklistCreateManyInput[]
   ): Promise<number> {
     const result = await this.databaseService.serviceChecklist.createMany({
       data,
     });
     return result.count;
+  }
+
+  async deleteMany(
+    where: Prisma.ServiceChecklistWhereInput = {}
+  ): Promise<{ count: number }> {
+    return this.databaseService.serviceChecklist.deleteMany({ where });
   }
 }

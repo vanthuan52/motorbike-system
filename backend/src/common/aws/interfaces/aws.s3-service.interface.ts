@@ -26,6 +26,8 @@ import {
 } from '@/common/aws/interfaces/aws.interface';
 
 export interface IAwsS3Service {
+  isInitialized(): boolean;
+  isMinio(): boolean;
   checkConnection(): Promise<boolean>;
   checkBucket(options?: IAwsS3Options): Promise<boolean>;
   checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto | null>;
