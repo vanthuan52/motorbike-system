@@ -5,4 +5,5 @@ export enum EnumServiceChecklistStatusCodeError {
   used = 5903,
   inactiveForbidden = 5904,
   nameExisted = 5906,
+  notInTrash = 5907,
 }

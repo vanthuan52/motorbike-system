@@ -6,4 +6,5 @@ export enum EnumServiceCategoryStatusCodeError {
   inactiveForbidden = 5404,
   slugExisted = 5405,
   nameExisted = 5406,
+  notInTrash = 5407,
 }

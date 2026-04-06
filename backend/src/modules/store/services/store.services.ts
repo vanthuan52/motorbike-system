@@ -8,6 +8,7 @@ import { StoreUpdateRequestDto } from '../dtos/request/store.update.request.dto'
 import { StoreUpdateStatusRequestDto } from '../dtos/request/store.update-status.request.dto';
 import { StoreRepository } from '../repository/store.repository';
 import { IStoreService } from '../interfaces/store.service.interface';
+import { IStoreMigrationUpsert } from '../interfaces/store.migration.interface';
 import {
   IPaginationQueryOffsetParams,
   IPaginationQueryCursorParams,
@@ -288,5 +289,35 @@ export class StoreService implements IStoreService {
     }
 
     await this.storeRepository.forceDelete(storeId);
+  }
+
+  // === Migration helpers ===
+
+  /**
+   * Upsert a store by slug — skips if already exists.
+   * Intended for use in migration seeds only; does not require requestLog or createdBy.
+   */
+  async upsertForMigration(
+    payload: IStoreMigrationUpsert
+  ): Promise<void> {
+    const existing = await this.storeRepository.findOneBySlug(payload.slug);
+    if (existing) return;
+
+    await this.storeRepository.create({
+      name: payload.name,
+      address: payload.address,
+      workHours: payload.workHours,
+      description: payload.description ?? null,
+      slug: payload.slug.toLowerCase(),
+      status: EnumStoreStatus.active,
+    });
+  }
+
+  /**
+   * Hard-delete all store records.
+   * Intended for use in migration seeds only.
+   */
+  async deleteMany(): Promise<void> {
+    await this.storeRepository.deleteMany({});
   }
 }

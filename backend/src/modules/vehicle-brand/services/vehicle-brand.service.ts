@@ -10,6 +10,8 @@ import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.crea
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
 import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
+import { IVehicleBrandMigrationUpsert } from '../interfaces/vehicle-brand.migration.interface';
+
 import { VehicleBrandUtil } from '../utils/vehicle-brand.util';
 import {
   IPaginationQueryOffsetParams,
@@ -176,5 +178,37 @@ export class VehicleBrandService implements IVehicleBrandService {
       });
     }
     return vehicleBrand;
+  }
+
+  // === Migration helpers ===
+
+  /**
+   * Upsert a vehicle brand by slug — skips if already exists.
+   * Intended for use in migration seeds only; does not require requestLog or createdBy.
+   */
+  async upsertForMigration(
+    payload: IVehicleBrandMigrationUpsert
+  ): Promise<void> {
+    const existing = await this.vehicleBrandRepository.findOne({
+      slug: payload.slug,
+    });
+    if (existing) return;
+
+    await this.vehicleBrandRepository.create({
+      name: payload.name,
+      slug: payload.slug.toLowerCase(),
+      country: payload.country ?? null,
+      description: payload.description ?? null,
+      orderBy: payload.orderBy ?? 0,
+      status: EnumVehicleBrandStatus.active,
+    });
+  }
+
+  /**
+   * Hard-delete all vehicle brand records.
+   * Intended for use in migration seeds only.
+   */
+  async deleteMany(): Promise<void> {
+    await this.vehicleBrandRepository.deleteMany({});
   }
 }

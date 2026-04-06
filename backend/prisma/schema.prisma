@@ -64,12 +64,14 @@ model User {
   deletedBy String? @db.ObjectId
 
   userRoles               UserRole[]
-  messages                Message[]         @relation("UserMessages")
-  receivedMessages        Message[]         @relation("UserReceivedMessages")
-  sessions                Session[]         @relation("UserSessions")
-  sessionsRevoked         Session[]         @relation("UserRevokedSessions")
-  deviceOwnerships        DeviceOwnership[] @relation("UserDeviceOwnerships")
-  deviceOwnershipsRevoked DeviceOwnership[] @relation("UserDeviceOwnershipRevoked")
+  messages                Message[]                 @relation("UserMessages")
+  receivedMessages        Message[]                 @relation("UserReceivedMessages")
+  sessions                Session[]                 @relation("UserSessions")
+  sessionsRevoked         Session[]                 @relation("UserRevokedSessions")
+  deviceOwnerships        DeviceOwnership[]         @relation("UserDeviceOwnerships")
+  deviceOwnershipsRevoked DeviceOwnership[]         @relation("UserDeviceOwnershipRevoked")
+  notifications           Notification[]            @relation("UserNotifications")
+  notificationSettings    NotificationUserSetting[] @relation("UserNotificationSettings")
   verifications           Verification[]
   appointments            Appointment[]
   careRecords             CareRecord[]
@@ -77,6 +79,7 @@ model User {
   activityLogs            ActivityLog[]
   applicationReviews      ApplicationReview[]
   userVehicles            UserVehicle[]
+  forgotPasswords         ForgotPassword[]
 
   @@index([status])
   @@index(fields: [id, deletedAt])
@@ -209,6 +212,92 @@ model ActivityLog {
   @@map("activity_logs")
 }
 
+model ForgotPassword {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  to        String
+  token     String
+  expiredAt DateTime
+  resetAt   DateTime?
+  isUsed    Boolean   @default(false)
+  reference String
+
+  // timestamps fields
+  createdAt DateTime @default(now())
+  createdBy String?  @db.ObjectId
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@unique(fields: [reference])
+  @@index(fields: [token, expiredAt, isUsed])
+  @@map("forgot_passwords")
+}
+
+model Notification {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String    @db.ObjectId
+  type     String
+  priority String    @default("normal")
+  title    String
+  body     String
+  metadata Json?
+  isRead   Boolean   @default(false)
+  readAt   DateTime?
+
+  user       User?                  @relation("UserNotifications", fields: [userId], references: [id])
+  deliveries NotificationDelivery[] @relation("NotificationDeliveries")
+
+  // timestamps fields
+  createdAt DateTime @default(now())
+  createdBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  updatedBy String?  @db.ObjectId
+
+  @@index(fields: [userId, isRead, createdAt(sort: Desc)])
+  @@index(fields: [userId, type, createdAt(sort: Desc)])
+  @@index(fields: [userId, priority, isRead, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model NotificationDelivery {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  notificationId String    @db.ObjectId
+  channel        String
+  sentAt         DateTime?
+  processedAt    DateTime?
+  failureTokens  String[]  @default([])
+
+  notification Notification @relation("NotificationDeliveries", fields: [notificationId], references: [id])
+
+  // timestamps fields
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique(fields: [notificationId, channel])
+  @@index(fields: [channel, createdAt(sort: Desc)])
+  @@map("notification_deliveries")
+}
+
+model NotificationUserSetting {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String  @db.ObjectId
+  channel  String
+  type     String
+  isActive Boolean @default(true)
+
+  user User? @relation("UserNotificationSettings", fields: [userId], references: [id])
+
+  // timestamps fields
+  createdAt DateTime @default(now())
+  createdBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  updatedBy String?  @db.ObjectId
+
+  @@unique(fields: [userId, channel, type])
+  @@index(fields: [userId, isActive])
+  @@map("notification_user_settings")
+}
+
 // ================================
 // DOMAIN: API MANAGEMENT
 // ================================
@@ -273,7 +362,7 @@ model MediaAttachment {
   media          Media     @relation(fields: [mediaId], references: [id])
   purpose        String    @default("default")
   caption        String?
-  orderBy        Int    @default(0)
+  orderBy        Int       @default(0)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
@@ -324,7 +413,7 @@ model VehicleBrand {
   name        String
   slug        String    @unique
   description String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   country     String?
   status      String    @default("active")
   photoCdnUrl String?
@@ -354,7 +443,7 @@ model VehicleModel {
   type               String    @default("unknown")
   fuelType           String    @default("unknown")
   status             String    @default("active")
-  orderBy            Int    @default(0)
+  orderBy            Int       @default(0)
   yearStart          Int?
   yearEnd            Int?
   photoCdnUrl        String?
@@ -385,7 +474,7 @@ model VehicleService {
   name        String
   slug        String    @unique
   description String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   basePrice   Int       @default(0)
   status      String    @default("active")
   photoCdnUrl String?
@@ -417,7 +506,7 @@ model ServiceCategory {
   name        String
   slug        String    @unique
   description String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   status      String    @default("active")
   photoCdnUrl String?
   createdAt   DateTime  @default(now())
@@ -464,7 +553,7 @@ model ServiceChecklist {
   name        String
   code        String    @unique
   description String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   vehicleType String[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -489,7 +578,7 @@ model CareArea {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -512,7 +601,7 @@ model PartType {
   name        String
   slug        String    @unique
   description String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   status      String    @default("active")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -535,7 +624,7 @@ model Part {
   description String?
   status      String    @default("active")
   photoCdnUrl String?
-  orderBy     Int    @default(0)
+  orderBy     Int       @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -739,17 +828,17 @@ model CareRecordService {
 }
 
 model CareRecordChecklist {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  name           String?
-  result         String    @default("unchecked")
-  status         String    @default("pending")
-  note           String?
-  wearPercentage Int?      @default(100)
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  name              String?
+  result            String    @default("unchecked")
+  status            String    @default("pending")
+  note              String?
+  wearPercentage    Int?      @default(100)
   imageBeforeCdnUrl String?
   imageAfterCdnUrl  String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
 
   createdBy String? @db.ObjectId
   updatedBy String? @db.ObjectId
@@ -913,7 +1002,7 @@ model JobApplication {
   deletedBy String? @db.ObjectId
 
   jobId String @db.ObjectId
-  job   Job @relation(fields: [jobId], references: [id])
+  job   Job    @relation(fields: [jobId], references: [id])
 
   reviews ApplicationReview[]
 

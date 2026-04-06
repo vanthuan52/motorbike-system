@@ -17,7 +17,6 @@ import {
   EnumNotificationChannel,
   EnumNotificationType,
 } from '@/modules/notification/enums/notification.enum';
-import { EnumPasswordHistoryType } from '@/modules/password-history/enums/password-history.enum';
 import {
   EnumUserSignUpFrom,
   EnumUserSignUpWith,
@@ -38,7 +37,6 @@ export class MigrationUserSeed
 
   private readonly env: EnumAppEnvironment;
   private readonly users: {
-    country: string;
     email: string;
     name: string;
     role: string;
@@ -83,44 +81,6 @@ export class MigrationUserSeed
       return;
     }
 
-    const uniqueCountries = this.helperService.arrayUnique(
-      this.users.map(user => user.country)
-    );
-    const countries = await this.databaseService.country.findMany({
-      where: {
-        alpha2Code: {
-          in: uniqueCountries,
-        },
-      },
-      select: {
-        id: true,
-        alpha2Code: true,
-      },
-    });
-
-    if (countries.length !== uniqueCountries.length) {
-      this.logger.error('Countries not found for users, cannot seed.');
-      return;
-    }
-
-    const termPolicies = await this.databaseService.termPolicy.findMany({
-      where: {
-        type: {
-          in: [EnumTermPolicyType.termsOfService, EnumTermPolicyType.privacy],
-        },
-        status: EnumTermPolicyStatus.published,
-      },
-      select: {
-        id: true,
-        type: true,
-      },
-    });
-
-    if (termPolicies.length !== 2) {
-      this.logger.error('TermPolicies not found for users, cannot seed.');
-      return;
-    }
-
     try {
       const today = this.helperService.dateCreate();
 
@@ -146,36 +106,35 @@ export class MigrationUserSeed
               id: userId,
               email: user.email.toLowerCase(),
               name: user.name,
-              countryId: countries.find(
-                country => country.alpha2Code === user.country
-              ).id,
-              roleId: roles.find(role => role.name === user.role).id,
+              userRoles: {
+                create: {
+                  role: {
+                     connect: { 
+                        id: roles.find(role => role.name === user.role).id 
+                     }
+                  }
+                }
+              },
               password: passwordHash,
               passwordCreated,
               passwordExpired,
               passwordAttempt: 0,
-              signUpAt: today,
+              signUpDate: today,
               isVerified: true,
               signUpWith: EnumUserSignUpWith.credential,
               signUpFrom: EnumUserSignUpFrom.system,
               status: EnumUserStatus.active,
               username: this.userUtil.createRandomUsername(),
               deletedAt: null,
-              passwordHistories: {
-                create: {
-                  password: passwordHash,
-                  type: EnumPasswordHistoryType.admin,
-                  expiredAt: passwordExpired,
-                  createdAt: passwordCreated,
-                  createdBy: userId,
-                },
-              },
               verifications: {
                 create: {
                   expiredAt: this.helperService.dateCreate(),
                   verifiedAt: this.helperService.dateCreate(),
                   reference,
                   token: hashedToken,
+                  hashedToken,
+                  expiredInMinutes: 30,
+                  resendInMinutes: 1,
                   type,
                   createdBy: userId,
                   to: user.email,
@@ -197,27 +156,10 @@ export class MigrationUserSeed
                       userAgent: this.databaseUtil.toPlainObject(userAgent),
                       createdBy: userId,
                     },
-                    ...termPolicies.map(termPolicy => ({
-                      action: EnumActivityLogAction.userAcceptTermPolicy,
-                      metadata: {
-                        termPolicyType: termPolicy.type,
-                        termPolicyId: termPolicy.id,
-                      },
-                      ipAddress: ip,
-                      userAgent: this.databaseUtil.toPlainObject(userAgent),
-                      createdBy: userId,
-                    })),
                   ],
                 },
               },
-              acceptances: {
-                createMany: {
-                  data: termPolicies.map(termPolicy => ({
-                    termPolicyId: termPolicy.id,
-                    createdBy: userId,
-                  })),
-                },
-              },
+
               notificationSettings: {
                 createMany: {
                   data: Object.values(EnumNotificationChannel)
@@ -229,11 +171,6 @@ export class MigrationUserSeed
                       }))
                     )
                     .flat(),
-                },
-              },
-              twoFactor: {
-                create: {
-                  enabled: false,
                 },
               },
             },
@@ -258,7 +195,6 @@ export class MigrationUserSeed
       await this.databaseService.$transaction([
         this.databaseService.session.deleteMany({}),
         this.databaseService.verification.deleteMany({}),
-        this.databaseService.passwordHistory.deleteMany({}),
         this.databaseService.forgotPassword.deleteMany({}),
         this.databaseService.activityLog.deleteMany({}),
         this.databaseService.notificationUserSetting.deleteMany({}),

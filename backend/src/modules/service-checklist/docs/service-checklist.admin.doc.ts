@@ -4,6 +4,7 @@ import { ServiceChecklistDocParamsId } from '../constants/service-checklist.doc.
 import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
 import { ServiceChecklistListResponseDto } from '../dtos/response/service-checklist.list.response.dto';
 import { ServiceChecklistDto } from '../dtos/service-checklist.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   Doc,
   DocAuth,
@@ -27,12 +28,12 @@ export function ServiceChecklistAdminListDoc(): MethodDecorator {
       'service-checklist.list',
       {
         dto: ServiceChecklistListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
-export function ServiceChecklistAdminParamsIdDoc(): MethodDecorator {
+export function ServiceChecklistAdminGetDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
       summary: 'get service checklist by id',
@@ -46,7 +47,7 @@ export function ServiceChecklistAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<ServiceChecklistDto>('service-checklist.get', {
       dto: ServiceChecklistDto,
-    }),
+    })
   );
 }
 
@@ -63,10 +64,10 @@ export function ServiceChecklistAdminCreateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<ServiceChecklistDto>('service-checklist.create', {
-      dto: ServiceChecklistDto,
+    DocResponse<DatabaseIdDto>('service-checklist.create', {
+      dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -84,14 +85,14 @@ export function ServiceChecklistAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-checklist.update'),
+    DocResponse('service-checklist.update')
   );
 }
 
 export function ServiceChecklistAdminDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'delete a service checklist',
+      summary: 'soft-delete a service checklist',
     }),
     DocRequest({
       params: ServiceChecklistDocParamsId,
@@ -100,6 +101,56 @@ export function ServiceChecklistAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('service-checklist.delete'),
+    DocResponse('service-checklist.delete')
+  );
+}
+
+export function ServiceChecklistAdminTrashListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all trashed service checklists',
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<ServiceChecklistListResponseDto>(
+      'service-checklist.trashList',
+      {
+        dto: ServiceChecklistListResponseDto,
+      }
+    )
+  );
+}
+
+export function ServiceChecklistAdminRestoreDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'restore a soft-deleted service checklist from trash',
+    }),
+    DocRequest({
+      params: ServiceChecklistDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('service-checklist.restore')
+  );
+}
+
+export function ServiceChecklistAdminForceDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'permanently delete a service checklist (irreversible)',
+    }),
+    DocRequest({
+      params: ServiceChecklistDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('service-checklist.forceDelete')
   );
 }

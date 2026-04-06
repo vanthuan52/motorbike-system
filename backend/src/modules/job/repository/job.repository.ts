@@ -210,4 +210,8 @@ export class JobRepository {
       },
     });
   }
+
+  async deleteMany(where: Prisma.JobWhereInput = {}): Promise<{ count: number }> {
+    return this.databaseService.job.deleteMany({ where });
+  }
 }

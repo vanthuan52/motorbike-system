@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
-import { StoreService } from '@/modules/store/services/store.services';
 import { MessageService } from '@/common/message/services/message.service';
-import { EnumStoreStatus } from '@/modules/store/enums/store.enum';
+import { StoreService } from '@/modules/store/services/store.services';
 
 @Injectable()
 export class MigrationStoreSeed {
   constructor(
     private readonly storeService: StoreService,
-    private readonly messageService: MessageService,
+    private readonly messageService: MessageService
   ) {}
 
   @Command({
@@ -44,13 +43,7 @@ export class MigrationStoreSeed {
     ];
 
     for (const store of stores) {
-      const exist = await this.storeService.existBySlug(store.slug);
-      if (!exist) {
-        await this.storeService.create({
-          ...store,
-          status: EnumStoreStatus.active,
-        });
-      }
+      await this.storeService.upsertForMigration(store);
     }
   }
 

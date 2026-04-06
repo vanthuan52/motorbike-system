@@ -1,4 +1,4 @@
-import { HttpAdapterHost, NestApplication, NestFactory } from '@nestjs/core';
+import { NestApplication, NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
@@ -45,13 +45,9 @@ async function bootstrap() {
   process.env.NODE_ENV = env;
   process.env.TZ = timezone;
 
-  // Compression
+  // Setting
   app.use(compression());
-
-  // Global
   app.setGlobalPrefix(globalPrefix);
-
-  // For Custom Validation
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   // Versioning

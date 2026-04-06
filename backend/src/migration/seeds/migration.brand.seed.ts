@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Command } from 'nestjs-command';
 import { VehicleBrandService } from '@/modules/vehicle-brand/services/vehicle-brand.service';
-import { MessageService } from '@/common/message/services/message.service';
-import { ENUM_VEHICLE_BRAND_STATUS } from '@/modules/vehicle-brand/enums/vehicle-brand.enum';
 
 @Injectable()
 export class MigrationVehicleBrandSeed {
   constructor(
-    private readonly vehicleBrandService: VehicleBrandService,
-    private readonly messageService: MessageService,
+    private readonly vehicleBrandService: VehicleBrandService
   ) {}
 
   @Command({
@@ -21,33 +18,27 @@ export class MigrationVehicleBrandSeed {
         name: 'Honda',
         slug: 'honda',
         description: 'Thương hiệu xe máy đến từ Nhật Bản',
-        order: '1',
+        orderBy: 1,
         country: 'Nhật Bản',
       },
       {
         name: 'Yamaha',
         slug: 'yamaha',
         description: 'Thương hiệu xe máy phổ biến tại Việt Nam',
-        order: '2',
+        orderBy: 2,
         country: 'Nhật Bản',
       },
       {
         name: 'Suzuki',
         slug: 'suzuki',
         description: 'Xe máy chất lượng đến từ Nhật Bản',
-        order: '3',
+        orderBy: 3,
         country: 'Nhật Bản',
       },
     ];
 
     for (const brand of vehicleBrands) {
-      const exist = await this.vehicleBrandService.existBySlug(brand.slug);
-      if (!exist) {
-        await this.vehicleBrandService.create({
-          ...brand,
-          status: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
-        });
-      }
+      await this.vehicleBrandService.upsertForMigration(brand);
     }
   }
 

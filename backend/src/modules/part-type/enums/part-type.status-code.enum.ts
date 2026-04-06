@@ -6,4 +6,5 @@ export enum EnumPartTypeStatusCodeError {
   inactiveForbidden = 5204,
   slugExisted = 5205,
   nameExisted = 5206,
+  notInTrash = 5207,
 }

@@ -6,7 +6,7 @@ import {
 } from '../constants/part-type.doc.constant';
 import { PartTypeGetResponseDto } from '../dtos/response/part-type.get.response.dto';
 import { PartTypeListResponseDto } from '../dtos/response/part-type.list.response.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
   Doc,
   DocAuth,
@@ -34,6 +34,24 @@ export function PartTypeAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<PartTypeListResponseDto>('part-type.list', {
       dto: PartTypeListResponseDto,
+    }),
+  );
+}
+
+export function PartTypeAdminGetDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get part type by id',
+    }),
+    DocRequest({
+      params: PartTypeDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse<PartTypeGetResponseDto>('part-type.getById', {
+      dto: PartTypeGetResponseDto,
     }),
   );
 }
@@ -76,26 +94,10 @@ export function PartTypeAdminUpdateDoc(): MethodDecorator {
   );
 }
 
-export function PartTypeAdminDeleteDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'delete a part type',
-    }),
-    DocRequest({
-      params: PartTypeDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('part-type.delete'),
-  );
-}
-
 export function PartTypeAdminUpdateStatusDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'update status of part type',
+      summary: 'update status of a part type',
     }),
     DocRequest({
       params: PartTypeDocParamsId,
@@ -110,10 +112,10 @@ export function PartTypeAdminUpdateStatusDoc(): MethodDecorator {
   );
 }
 
-export function PartTypeAdminGetDoc(): MethodDecorator {
+export function PartTypeAdminDeleteDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
-      summary: 'get part type by id',
+      summary: 'soft-delete a part type',
     }),
     DocRequest({
       params: PartTypeDocParamsId,
@@ -122,8 +124,53 @@ export function PartTypeAdminGetDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse<PartTypeGetResponseDto>('part-type.getById', {
-      dto: PartTypeGetResponseDto,
+    DocResponse('part-type.delete'),
+  );
+}
+
+export function PartTypeAdminTrashListDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'get all trashed part types',
     }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponsePaging<PartTypeListResponseDto>('part-type.trashList', {
+      dto: PartTypeListResponseDto,
+    }),
+  );
+}
+
+export function PartTypeAdminRestoreDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'restore a soft-deleted part type from trash',
+    }),
+    DocRequest({
+      params: PartTypeDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('part-type.restore'),
+  );
+}
+
+export function PartTypeAdminForceDeleteDoc(): MethodDecorator {
+  return applyDecorators(
+    Doc({
+      summary: 'permanently delete a part type (irreversible)',
+    }),
+    DocRequest({
+      params: PartTypeDocParamsId,
+    }),
+    DocAuth({
+      jwtAccessToken: true,
+    }),
+    DocGuard({ role: true, policy: true }),
+    DocResponse('part-type.forceDelete'),
   );
 }

@@ -40,7 +40,7 @@ export class AppEnvDto {
   @IsString()
   @IsNotEmpty()
   @IsEnum(EnumAppEnvironment)
-  APP_ENV: EnumAppEnvironment;
+  NODE_ENV: EnumAppEnvironment;
 
   /**
    * The default language for the application

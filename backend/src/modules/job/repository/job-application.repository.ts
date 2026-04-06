@@ -155,4 +155,8 @@ export class JobApplicationRepository {
       },
     });
   }
+
+  async deleteMany(where: Prisma.JobApplicationWhereInput = {}): Promise<{ count: number }> {
+    return this.databaseService.jobApplication.deleteMany({ where });
+  }
 }

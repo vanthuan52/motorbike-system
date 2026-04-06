@@ -64,3 +64,25 @@ export class NotificationUserSettingModel {
     return !!this.deletedAt;
   }
 }
+
+/**
+ * Domain model representing the delivery status of a notification across a specific channel.
+ * Maps from Prisma NotificationDelivery to application domain layer.
+ */
+export class NotificationDeliveryModel {
+  id: string;
+  notificationId: string;
+  channel: EnumNotificationChannel;
+  sentAt?: Date;
+  processedAt?: Date;
+  failureTokens: string[];
+
+  notification?: NotificationModel;
+
+  createdAt: Date;
+  updatedAt: Date;
+
+  constructor(data?: Partial<NotificationDeliveryModel>) {
+    Object.assign(this, data);
+  }
+}

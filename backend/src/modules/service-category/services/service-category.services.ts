@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   ConflictException,
@@ -28,57 +29,30 @@ export class ServiceCategoryService implements IServiceCategoryService {
   ) {}
 
   async getListOffset(
-    {
-      limit,
-      skip,
-      where,
-      orderBy,
-    }: IPaginationQueryOffsetParams<
+    pagination: IPaginationQueryOffsetParams<
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: IServiceCategoryListFilters
   ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
-    const mergedWhere: Prisma.ServiceCategoryWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    return this.serviceCategoryRepository.findWithPaginationOffset({
-      limit,
-      skip,
-      where: mergedWhere,
-      orderBy,
-    });
+    const { data, ...others } =
+      await this.serviceCategoryRepository.findWithPaginationOffset(
+        pagination,
+        filters
+      );
+    return { data, ...others };
   }
 
   async getListCursor(
-    {
-      limit,
-      where,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    }: IPaginationQueryCursorParams<
+    pagination: IPaginationQueryCursorParams<
       Prisma.ServiceCategorySelect,
       Prisma.ServiceCategoryWhereInput
     >,
     filters?: IServiceCategoryListFilters
   ): Promise<IPaginationCursorReturn<ServiceCategoryModel>> {
-    const mergedWhere: Prisma.ServiceCategoryWhereInput = {
-      ...where,
-      ...filters,
-    };
-
-    return this.serviceCategoryRepository.findWithPaginationCursor({
-      limit,
-      where: mergedWhere,
-      orderBy,
-      cursor,
-      cursorField,
-      includeCount,
-    });
+    const { data, ...others } =
+      await this.serviceCategoryRepository.findWithPaginationCursor(pagination);
+    return { data, ...others };
   }
 
   async findOneById(id: string): Promise<ServiceCategoryModel> {
@@ -96,8 +70,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
   async findOne(
     find: Record<string, any>
   ): Promise<ServiceCategoryModel | null> {
-    const serviceCategory = await this.serviceCategoryRepository.findOne(find);
-    return serviceCategory;
+    return this.serviceCategoryRepository.findOne(find);
   }
 
   async findBySlug(slug: string): Promise<ServiceCategoryModel> {
@@ -116,7 +89,7 @@ export class ServiceCategoryService implements IServiceCategoryService {
     payload: ServiceCategoryCreateRequestDto,
     requestLog: IRequestLog,
     createdBy: string
-  ): Promise<{ id: string }> {
+  ): Promise<ServiceCategoryModel> {
     const { name, slug, description, orderBy } = payload;
     const existingSlug =
       await this.serviceCategoryRepository.findOneBySlug(slug);
@@ -133,12 +106,10 @@ export class ServiceCategoryService implements IServiceCategoryService {
       description: description ?? null,
       orderBy: orderBy ?? 0,
       status: EnumServiceCategoryStatus.active,
-      createdBy: createdBy,
+      createdBy,
     };
 
-    const created = await this.serviceCategoryRepository.create(data);
-
-    return { id: created.id };
+    return this.serviceCategoryRepository.create(data);
   }
 
   async update(
@@ -146,18 +117,10 @@ export class ServiceCategoryService implements IServiceCategoryService {
     payload: ServiceCategoryUpdateRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
+  ): Promise<ServiceCategoryModel> {
     const { name, slug, description, orderBy } = payload;
-    const serviceCategory =
-      await this.serviceCategoryRepository.findOneById(id);
-    if (!serviceCategory) {
-      throw new NotFoundException({
-        statusCode: EnumServiceCategoryStatusCodeError.notFound,
-        message: 'service-category.error.notFound',
-      });
-    }
+    const serviceCategory = await this.findOneById(id);
 
-    // Check slug conflict if slug is being updated
     if (slug && slug !== serviceCategory.slug) {
       const existingSlug =
         await this.serviceCategoryRepository.findOneBySlug(slug);
@@ -174,10 +137,10 @@ export class ServiceCategoryService implements IServiceCategoryService {
       slug: slug ? slug.toLowerCase() : undefined,
       description: description ?? undefined,
       orderBy: orderBy ?? undefined,
-      updatedBy: updatedBy,
+      updatedBy,
     };
 
-    await this.serviceCategoryRepository.update(id, data);
+    return this.serviceCategoryRepository.update(id, data);
   }
 
   async updateStatus(
@@ -185,20 +148,11 @@ export class ServiceCategoryService implements IServiceCategoryService {
     payload: ServiceCategoryUpdateStatusRequestDto,
     requestLog: IRequestLog,
     updatedBy: string
-  ): Promise<void> {
-    const { status } = payload;
-    const serviceCategory =
-      await this.serviceCategoryRepository.findOneById(id);
-    if (!serviceCategory) {
-      throw new NotFoundException({
-        statusCode: EnumServiceCategoryStatusCodeError.notFound,
-        message: 'service-category.error.notFound',
-      });
-    }
-
-    await this.serviceCategoryRepository.update(id, {
-      status,
-      updatedBy: updatedBy,
+  ): Promise<ServiceCategoryModel> {
+    await this.findOneById(id);
+    return this.serviceCategoryRepository.update(id, {
+      status: payload.status,
+      updatedBy,
     });
   }
 
@@ -206,20 +160,9 @@ export class ServiceCategoryService implements IServiceCategoryService {
     id: string,
     requestLog: IRequestLog,
     deletedBy: string
-  ): Promise<void> {
-    const serviceCategory =
-      await this.serviceCategoryRepository.findOneById(id);
-    if (!serviceCategory) {
-      throw new NotFoundException({
-        statusCode: EnumServiceCategoryStatusCodeError.notFound,
-        message: 'service-category.error.notFound',
-      });
-    }
-
-    await this.serviceCategoryRepository.update(id, {
-      deletedAt: new Date(),
-      deletedBy: deletedBy,
-    });
+  ): Promise<ServiceCategoryModel> {
+    await this.findOneById(id);
+    return this.serviceCategoryRepository.softDelete(id, deletedBy);
   }
 
   async existByName(name: string): Promise<boolean> {
@@ -233,5 +176,66 @@ export class ServiceCategoryService implements IServiceCategoryService {
     const serviceCategory =
       await this.serviceCategoryRepository.findOneBySlug(slug);
     return !!serviceCategory;
+  }
+
+  // === Trash/Restore ===
+
+  async getTrashList(
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceCategorySelect,
+      Prisma.ServiceCategoryWhereInput
+    >,
+    filters?: IServiceCategoryListFilters
+  ): Promise<IPaginationOffsetReturn<ServiceCategoryModel>> {
+    const { data, ...others } =
+      await this.serviceCategoryRepository.findWithPaginationOffsetTrashed(
+        pagination,
+        filters
+      );
+    return { data, ...others };
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    restoredBy: string
+  ): Promise<ServiceCategoryModel> {
+    const category =
+      await this.serviceCategoryRepository.findOneByIdIncludeDeleted(id);
+    if (!category) {
+      throw new NotFoundException({
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
+        message: 'service-category.error.notFound',
+      });
+    }
+    if (!category.deletedAt) {
+      throw new BadRequestException({
+        statusCode: EnumServiceCategoryStatusCodeError.notInTrash,
+        message: 'service-category.error.notInTrash',
+      });
+    }
+    return this.serviceCategoryRepository.restore(id, restoredBy);
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<ServiceCategoryModel> {
+    const category =
+      await this.serviceCategoryRepository.findOneByIdIncludeDeleted(id);
+    if (!category) {
+      throw new NotFoundException({
+        statusCode: EnumServiceCategoryStatusCodeError.notFound,
+        message: 'service-category.error.notFound',
+      });
+    }
+    if (!category.deletedAt) {
+      throw new BadRequestException({
+        statusCode: EnumServiceCategoryStatusCodeError.notInTrash,
+        message: 'service-category.error.notInTrash',
+      });
+    }
+    return this.serviceCategoryRepository.forceDelete(id);
   }
 }

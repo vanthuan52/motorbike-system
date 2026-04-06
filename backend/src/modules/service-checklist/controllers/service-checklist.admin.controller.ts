@@ -1,17 +1,17 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Param,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ServiceChecklistService } from '../services/service-checklist.service';
-import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
-import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
+import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
+import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
 import {
   Response,
   ResponsePaging,
@@ -20,19 +20,35 @@ import {
   IResponseReturn,
   IResponsePagingReturn,
 } from '@/common/response/interfaces/response.interface';
-import { ServiceChecklistListResponseDto } from '../dtos/response/service-checklist.list.response.dto';
-import { ServiceChecklistDto } from '../dtos/service-checklist.dto';
-import { PaginationOffsetQuery } from '@/common/pagination/decorators/pagination.decorator';
-import { IPaginationQueryOffsetParams } from '@/common/pagination/interfaces/pagination.interface';
+import {
+  AuthJwtAccessProtected,
+  AuthJwtPayload,
+} from '@/modules/auth/decorators/auth.jwt.decorator';
+import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
+import {
+  EnumPolicyAction,
+  EnumPolicySubject,
+} from '@/modules/policy/enums/policy.enum';
+import { RoleProtected } from '@/modules/role/decorators/role.decorator';
+import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import {
   ServiceChecklistAdminCreateDoc,
   ServiceChecklistAdminDeleteDoc,
+  ServiceChecklistAdminForceDeleteDoc,
+  ServiceChecklistAdminGetDoc,
   ServiceChecklistAdminListDoc,
-  ServiceChecklistAdminParamsIdDoc,
+  ServiceChecklistAdminRestoreDoc,
+  ServiceChecklistAdminTrashListDoc,
   ServiceChecklistAdminUpdateDoc,
 } from '../docs/service-checklist.admin.doc';
-import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { UserProtected } from '@/modules/user/decorators/user.decorator';
+import { ServiceChecklistService } from '../services/service-checklist.service';
+import { ServiceChecklistCreateRequestDto } from '../dtos/request/service-checklist.create.request.dto';
+import { ServiceChecklistUpdateRequestDto } from '../dtos/request/service-checklist.update.request.dto';
+import { ServiceChecklistUtil } from '../utils/service-checklist.util';
+import { ServiceChecklistListResponseDto } from '../dtos/response/service-checklist.list.response.dto';
+import { ServiceChecklistDto } from '../dtos/service-checklist.dto';
+import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import {
   RequestGeoLocation,
   RequestIPAddress,
@@ -42,24 +58,14 @@ import {
   GeoLocation,
   UserAgent,
 } from '@/modules/user/interfaces/user.interface';
-import { AuthJwtPayload } from '@/modules/auth/decorators/auth.jwt.decorator';
-import { ActivityLog } from '@/modules/activity-log/decorators/activity-log.decorator';
+import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
+import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
+import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
+import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
 import {
   ServiceChecklistDefaultAvailableOrderBy,
   ServiceChecklistDefaultAvailableSearch,
 } from '../constants/service-checklist.list.constant';
-import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-model.enum';
-import { RoleProtected } from '@/modules/role/decorators/role.decorator';
-import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { ServiceChecklistUtil } from '../utils/service-checklist.util';
-import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { RequestIsValidObjectIdPipe } from '@/common/request/pipes/request.is-valid-object-id.pipe';
-import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
-import {
-  EnumPolicyAction,
-  EnumPolicySubject,
-} from '@/modules/policy/enums/policy.enum';
-import { IServiceChecklistListFilters } from '../interfaces/service-checklist.filter.interface';
 import { Prisma } from '@/generated/prisma-client';
 
 @ApiTags('modules.admin.service-checklist')
@@ -101,7 +107,6 @@ export class ServiceChecklistAdminController {
     if (careAreaId) {
       filters.careAreaId = careAreaId;
     }
-
     if (vehicleType) {
       filters.vehicleType = { has: vehicleType };
     }
@@ -117,7 +122,7 @@ export class ServiceChecklistAdminController {
     };
   }
 
-  @ServiceChecklistAdminParamsIdDoc()
+  @ServiceChecklistAdminGetDoc()
   @Response('service-checklist.get')
   @PolicyAbilityProtected({
     subject: EnumPolicySubject.serviceChecklist,
@@ -130,7 +135,8 @@ export class ServiceChecklistAdminController {
   async get(
     @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string
   ): Promise<IResponseReturn<ServiceChecklistDto>> {
-    const serviceChecklist = await this.serviceChecklistService.findOneById(id);
+    const serviceChecklist =
+      await this.serviceChecklistService.findOneById(id);
     return {
       data: this.serviceChecklistUtil.mapGet(serviceChecklist),
     };
@@ -153,14 +159,10 @@ export class ServiceChecklistAdminController {
     @RequestIPAddress() ipAddress: string,
     @RequestUserAgent() userAgent: UserAgent,
     @RequestGeoLocation() geoLocation: GeoLocation | null
-  ): Promise<IResponseReturn<{ id: string }>> {
+  ): Promise<IResponseReturn<DatabaseIdDto>> {
     const created = await this.serviceChecklistService.create(
       body,
-      {
-        ipAddress,
-        userAgent,
-        geoLocation,
-      },
+      { ipAddress, userAgent, geoLocation },
       createdBy
     );
     return {
@@ -192,11 +194,7 @@ export class ServiceChecklistAdminController {
     const updated = await this.serviceChecklistService.update(
       id,
       body,
-      {
-        ipAddress,
-        userAgent,
-        geoLocation,
-      },
+      { ipAddress, userAgent, geoLocation },
       updatedBy
     );
     return {
@@ -225,16 +223,99 @@ export class ServiceChecklistAdminController {
   ): Promise<IResponseReturn<void>> {
     const deleted = await this.serviceChecklistService.delete(
       id,
-      {
-        ipAddress,
-        userAgent,
-        geoLocation,
-      },
+      { ipAddress, userAgent, geoLocation },
       deletedBy
     );
     return {
       metadataActivityLog:
         this.serviceChecklistUtil.mapActivityLogMetadata(deleted),
+    };
+  }
+
+  // === Trash/Restore ===
+
+  @ServiceChecklistAdminTrashListDoc()
+  @ResponsePaging('service-checklist.trashList')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.read],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @Get('/trash')
+  async trashList(
+    @PaginationOffsetQuery({
+      availableSearch: ServiceChecklistDefaultAvailableSearch,
+    })
+    pagination: IPaginationQueryOffsetParams<
+      Prisma.ServiceChecklistSelect,
+      Prisma.ServiceChecklistWhereInput
+    >
+  ): Promise<IResponsePagingReturn<ServiceChecklistListResponseDto>> {
+    const result = await this.serviceChecklistService.getTrashList(pagination);
+    const mapped = this.serviceChecklistUtil.mapList(result.data);
+    return {
+      ...result,
+      data: mapped,
+    };
+  }
+
+  @ServiceChecklistAdminRestoreDoc()
+  @Response('service-checklist.restore')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.update],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceChecklistRestore)
+  @Post('/restore/:id')
+  async restore(
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') restoredBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.serviceChecklistService.restore(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      restoredBy
+    );
+    return {
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(data),
+    };
+  }
+
+  @ServiceChecklistAdminForceDeleteDoc()
+  @Response('service-checklist.forceDelete')
+  @PolicyAbilityProtected({
+    subject: EnumPolicySubject.serviceChecklist,
+    action: [EnumPolicyAction.delete],
+  })
+  @RoleProtected('admin')
+  @UserProtected()
+  @AuthJwtAccessProtected()
+  @ActivityLog(EnumActivityLogAction.adminServiceChecklistForceDelete)
+  @Delete('/force-delete/:id')
+  async forceDelete(
+    @Param('id', RequestRequiredPipe, RequestIsValidObjectIdPipe) id: string,
+    @AuthJwtPayload('userId') deletedBy: string,
+    @RequestIPAddress() ipAddress: string,
+    @RequestUserAgent() userAgent: UserAgent,
+    @RequestGeoLocation() geoLocation: GeoLocation | null
+  ): Promise<IResponseReturn<void>> {
+    const data = await this.serviceChecklistService.forceDelete(
+      id,
+      { ipAddress, userAgent, geoLocation },
+      deletedBy
+    );
+    return {
+      metadataActivityLog:
+        this.serviceChecklistUtil.mapActivityLogMetadata(data),
     };
   }
 }

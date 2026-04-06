@@ -1,4 +1,4 @@
 export interface IMigrationSeed {
-    seed(): Promise<void>;
-    remove(): Promise<void>;
+  seed(): Promise<void>;
+  remove(): Promise<void>;
 }

@@ -7,10 +7,14 @@ import {
   IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
+import { CareRecordMedia as PrismaCareRecordMedia, Prisma } from '@/generated/prisma-client';
 import { CareRecordMediaModel } from '../models/care-record-media.model';
-import { Prisma } from '@generated/prisma-client';
-
+import { CareRecordMediaMapper } from '../mappers/care-record-media.mapper';
 import { ICareRecordMediaListFilters } from '../interfaces/care-record-media.filter.interface';
+
+const MEDIA_INCLUDE = {
+  careRecord: true,
+} as const;
 
 @Injectable()
 export class CareRecordMediaRepository {
@@ -25,7 +29,6 @@ export class CareRecordMediaRepository {
       skip,
       limit,
       orderBy,
-      ...rest
     }: IPaginationQueryOffsetParams<
       Prisma.CareRecordMediaSelect,
       Prisma.CareRecordMediaWhereInput
@@ -38,36 +41,15 @@ export class CareRecordMediaRepository {
       deletedAt: null,
     };
 
-    return this.databaseService.careRecordMedia.findMany({
+    const results = await this.databaseService.careRecordMedia.findMany({
       where: mergedWhere,
       skip,
       take: limit,
       orderBy: orderBy || { createdAt: 'desc' },
-      include: {
-        careRecord: true,
-      },
-      ...rest,
+      include: MEDIA_INCLUDE,
     });
-  }
 
-  async getTotal(
-    {
-      where: baseWhere,
-    }: IPaginationQueryOffsetParams<
-      Prisma.CareRecordMediaSelect,
-      Prisma.CareRecordMediaWhereInput
-    >,
-    filters?: ICareRecordMediaListFilters
-  ): Promise<number> {
-    const mergedWhere: Prisma.CareRecordMediaWhereInput = {
-      ...baseWhere,
-      ...filters,
-      deletedAt: null,
-    };
-
-    return this.databaseService.careRecordMedia.count({
-      where: mergedWhere,
-    });
+    return results.map(item => CareRecordMediaMapper.toDomain(item));
   }
 
   async findWithPaginationOffset({
@@ -77,19 +59,25 @@ export class CareRecordMediaRepository {
     Prisma.CareRecordMediaSelect,
     Prisma.CareRecordMediaWhereInput
   >): Promise<IPaginationOffsetReturn<CareRecordMediaModel>> {
-    return this.paginationService.offset<CareRecordMediaModel>(
-      this.databaseService.careRecordMedia,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: {
-          careRecord: true,
-        },
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.offset<PrismaCareRecordMedia>(
+        this.databaseService.careRecordMedia,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: MEDIA_INCLUDE,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordMediaMapper.toDomain(item)
+      ),
+    };
   }
 
   async findWithPaginationCursor({
@@ -99,78 +87,104 @@ export class CareRecordMediaRepository {
     Prisma.CareRecordMediaSelect,
     Prisma.CareRecordMediaWhereInput
   >): Promise<IPaginationCursorReturn<CareRecordMediaModel>> {
-    return this.paginationService.cursor<CareRecordMediaModel>(
-      this.databaseService.careRecordMedia,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: {
-          careRecord: true,
-        },
-        includeCount: true,
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaCareRecordMedia>(
+        this.databaseService.careRecordMedia,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: MEDIA_INCLUDE,
+          includeCount: true,
+        }
+      );
+
+    return {
+      ...paginatedResult,
+      data: paginatedResult.data.map(item =>
+        CareRecordMediaMapper.toDomain(item)
+      ),
+    };
   }
 
   async findOneById(id: string): Promise<CareRecordMediaModel | null> {
-    return this.databaseService.careRecordMedia.findFirst({
-      where: {
-        id,
-        deletedAt: null,
-      },
-      include: {
-        careRecord: true,
-      },
+    const result = await this.databaseService.careRecordMedia.findFirst({
+      where: { id, deletedAt: null },
+      include: MEDIA_INCLUDE,
     });
+    return result ? CareRecordMediaMapper.toDomain(result) : null;
+  }
+
+  async findOneByIdIncludeDeleted(
+    id: string
+  ): Promise<CareRecordMediaModel | null> {
+    const result = await this.databaseService.careRecordMedia.findUnique({
+      where: { id },
+      include: MEDIA_INCLUDE,
+    });
+    return result ? CareRecordMediaMapper.toDomain(result) : null;
   }
 
   async findOne(
     where: Prisma.CareRecordMediaWhereInput
   ): Promise<CareRecordMediaModel | null> {
-    return this.databaseService.careRecordMedia.findFirst({
-      where: {
-        ...where,
-        deletedAt: null,
-      },
-      include: {
-        careRecord: true,
-      },
+    const result = await this.databaseService.careRecordMedia.findFirst({
+      where: { ...where, deletedAt: null },
+      include: MEDIA_INCLUDE,
     });
+    return result ? CareRecordMediaMapper.toDomain(result) : null;
   }
 
   async create(
     data: Prisma.CareRecordMediaCreateInput
   ): Promise<CareRecordMediaModel> {
-    return this.databaseService.careRecordMedia.create({
+    const result = await this.databaseService.careRecordMedia.create({
       data,
-      include: {
-        careRecord: true,
-      },
+      include: MEDIA_INCLUDE,
     });
+    return CareRecordMediaMapper.toDomain(result);
   }
 
   async update(
     id: string,
     data: Prisma.CareRecordMediaUpdateInput
   ): Promise<CareRecordMediaModel> {
-    return this.databaseService.careRecordMedia.update({
+    const result = await this.databaseService.careRecordMedia.update({
       where: { id },
       data,
-      include: {
-        careRecord: true,
-      },
+      include: MEDIA_INCLUDE,
     });
+    return CareRecordMediaMapper.toDomain(result);
   }
 
-  async delete(id: string): Promise<CareRecordMediaModel> {
-    return this.databaseService.careRecordMedia.delete({
-      where: { id },
-      include: {
-        careRecord: true,
+  async softDelete(
+    id: string,
+    deletedBy: string
+  ): Promise<CareRecordMediaModel> {
+    const result = await this.databaseService.careRecordMedia.update({
+      where: { id, deletedAt: null },
+      data: {
+        deletedAt: new Date(),
+        deletedBy,
       },
+      include: MEDIA_INCLUDE,
     });
+    return CareRecordMediaMapper.toDomain(result);
+  }
+
+  async forceDelete(id: string): Promise<CareRecordMediaModel> {
+    const result = await this.databaseService.careRecordMedia.delete({
+      where: { id },
+      include: MEDIA_INCLUDE,
+    });
+    return CareRecordMediaMapper.toDomain(result);
+  }
+
+  async deleteMany(
+    where: Prisma.CareRecordMediaWhereInput = {}
+  ): Promise<{ count: number }> {
+    return this.databaseService.careRecordMedia.deleteMany({ where });
   }
 }
