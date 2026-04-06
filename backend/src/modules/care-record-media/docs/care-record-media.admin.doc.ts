@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { CareRecordMediaCreateRequestDto } from '../dtos/request/care-record-media.create.request.dto';
 import { CareRecordMediaDto } from '../dtos/care-record-media.dto';
@@ -35,8 +35,8 @@ export function CareRecordMediaAdminListDoc(): MethodDecorator {
       'care-record-media.list',
       {
         dto: CareRecordMediaListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -56,7 +56,7 @@ export function CareRecordMediaAdminCreateDoc(): MethodDecorator {
     DocResponse<CareRecordMediaDto>('care-record-media.create', {
       dto: CareRecordMediaDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -74,7 +74,7 @@ export function CareRecordMediaAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-media.update'),
+    DocResponse('care-record-media.update')
   );
 }
 
@@ -90,7 +90,7 @@ export function CareRecordMediaAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.delete'),
+    DocResponse('care-record.delete')
   );
 }
 
@@ -108,7 +108,7 @@ export function CareRecordMediaAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordMediaDto>('care-record-media.getById', {
       dto: CareRecordMediaDto,
-    }),
+    })
   );
 }
 
@@ -126,6 +126,6 @@ export function CareRecordMediaAdminGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordMediaGetFullResponseDto>('care-record-media.get', {
       dto: CareRecordMediaGetFullResponseDto,
-    }),
+    })
   );
 }

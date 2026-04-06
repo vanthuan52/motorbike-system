@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { CareRecordChecklistCreateRequestDto } from '../dtos/request/care-record-checklist.create.request.dto';
 import { CareRecordChecklistDto } from '../dtos/care-record-checklist.dto';
@@ -43,8 +43,8 @@ export function CareRecordChecklistListDoc(): MethodDecorator {
       'care-record-checklist.list',
       {
         dto: CareRecordChecklistListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -64,7 +64,7 @@ export function CareRecordChecklistCreateDoc(): MethodDecorator {
     DocResponse<CareRecordChecklistDto>('care-record-checklist.create', {
       dto: CareRecordChecklistDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -82,7 +82,7 @@ export function CareRecordChecklistUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-checklist.update'),
+    DocResponse('care-record-checklist.update')
   );
 }
 
@@ -98,7 +98,7 @@ export function CareRecordChecklistDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-checklist.delete'),
+    DocResponse('care-record-checklist.delete')
   );
 }
 
@@ -116,7 +116,7 @@ export function CareRecordChecklistParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordChecklistDto>('care-record-checklist.getById', {
       dto: CareRecordChecklistDto,
-    }),
+    })
   );
 }
 
@@ -136,8 +136,8 @@ export function CareRecordChecklistGetDoc(): MethodDecorator {
       'care-record-checklist.get',
       {
         dto: CareRecordChecklistGetFullResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -155,7 +155,7 @@ export function CareRecordChecklistUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-checklist.updateStatus'),
+    DocResponse('care-record-checklist.updateStatus')
   );
 }
 
@@ -173,7 +173,7 @@ export function CareRecordChecklistUpdateResultDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-checklist.updateResultStatus'),
+    DocResponse('care-record-checklist.updateResultStatus')
   );
 }
 
@@ -191,7 +191,7 @@ export function CareRecordChecklistUpdateNoteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.updateNote'),
+    DocResponse('care-record.updateNote')
   );
 }
 
@@ -209,6 +209,6 @@ export function CareRecordChecklistUpdateWearPercentageDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record.updateWearPercentage'),
+    DocResponse('care-record.updateWearPercentage')
   );
 }

@@ -7,4 +7,3 @@ export const PartTypeDefaultAvailableOrderBy = [
   'updatedAt',
 ];
 export const PartTypeDefaultStatus = Object.values(EnumPartTypeStatus);
-

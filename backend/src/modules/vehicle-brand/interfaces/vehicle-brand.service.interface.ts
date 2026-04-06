@@ -3,10 +3,10 @@ import { VehicleBrandCreateRequestDto } from '../dtos/request/vehicle-brand.crea
 import { VehicleBrandUpdateRequestDto } from '../dtos/request/vehicle-brand.update.request.dto';
 import { VehicleBrandUpdateStatusRequestDto } from '../dtos/request/vehicle-brand.update-status.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IVehicleBrandListFilters } from './vehicle-brand.filter.interface';
 import { VehicleBrandModel } from '../models/vehicle-brand.model';
@@ -56,7 +56,11 @@ export interface IVehicleBrandService {
     updatedBy: string
   ): Promise<VehicleBrandModel>;
 
-  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<VehicleBrandModel>;
+  delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<VehicleBrandModel>;
 
   findBySlug(slug: string): Promise<VehicleBrandModel>;
 

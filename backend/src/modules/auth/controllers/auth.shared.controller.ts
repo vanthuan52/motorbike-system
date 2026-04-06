@@ -15,14 +15,14 @@ import {
 } from '@/modules/user/decorators/user.decorator';
 import {
   AuthJwtAccessProtected,
+  AuthJwtPayload,
   AuthJwtRefreshProtected,
   AuthJwtToken,
-  AuthJwtPayload,
 } from '../decorators/auth.jwt.decorator';
 import {
   AuthSharedChangePasswordDoc,
-  AuthSharedRefreshDoc,
   AuthSharedLogoutDoc,
+  AuthSharedRefreshDoc,
 } from '../docs/auth.shared.doc';
 import { AuthChangePasswordRequestDto } from '../dtos/request/auth.change-password.request.dto';
 import {

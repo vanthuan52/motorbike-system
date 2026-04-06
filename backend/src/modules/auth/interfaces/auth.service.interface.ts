@@ -3,10 +3,10 @@ import {
   IRequestLog,
 } from '@/common/request/interfaces/request.interface';
 import {
+  IAuthAccessTokenGenerate,
   IAuthJwtAccessTokenPayload,
   IAuthJwtRefreshTokenPayload,
   IAuthSocialPayload,
-  IAuthAccessTokenGenerate,
 } from '@/modules/auth/interfaces/auth.interface';
 import {
   EnumUserLoginFrom,
@@ -82,4 +82,3 @@ export interface IAuthService {
     requestLog: IRequestLog
   ): Promise<void>;
 }
-

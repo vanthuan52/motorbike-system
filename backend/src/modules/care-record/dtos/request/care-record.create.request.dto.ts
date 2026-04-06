@@ -1,14 +1,14 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
-  IsNotEmpty,
-  IsOptional,
-  IsUUID,
-  IsNumber,
-  IsDate,
   IsBoolean,
+  IsDate,
   IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ENUM_PAYMENT_STATUS } from '../../enums/care-record.enum';

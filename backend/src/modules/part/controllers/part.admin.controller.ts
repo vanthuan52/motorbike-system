@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Put,
-  Patch,
-  Delete,
-  Param,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -19,8 +19,8 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { PartListResponseDto } from '../dtos/response/part.list.response.dto';
 import { PartDto } from '../dtos/part.dto';
@@ -30,17 +30,17 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   PartAdminCreateDoc,
   PartAdminDeleteDoc,
+  PartAdminGetDoc,
   PartAdminListDoc,
   PartAdminParamsIdDoc,
   PartAdminUpdateDoc,
   PartAdminUpdateStatusDoc,
-  PartAdminGetDoc,
 } from '../docs/part.admin.doc';
 import { PartUtil } from '../utils/part.util';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
@@ -108,8 +108,12 @@ export class PartAdminController {
     const filters: IPartListFilters = {
       ...status,
     };
-    if (partTypeId) filters['partTypeId'] = partTypeId;
-    if (vehicleBrandId) filters['vehicleBrandId'] = vehicleBrandId;
+    if (partTypeId) {
+      filters['partTypeId'] = partTypeId;
+    }
+    if (vehicleBrandId) {
+      filters['vehicleBrandId'] = vehicleBrandId;
+    }
 
     const result = await this.partService.getListOffset(pagination, filters);
     const mapped = this.partUtil.mapList(result.data);

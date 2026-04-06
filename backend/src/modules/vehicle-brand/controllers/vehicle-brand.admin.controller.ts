@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Put,
-  Patch,
-  Delete,
-  Param,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { VehicleBrandService } from '../services/vehicle-brand.service';
@@ -18,8 +18,8 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { VehicleBrandListResponseDto } from '../dtos/response/vehicle-brand.list.response.dto';
 import { VehicleBrandDto } from '../dtos/vehicle-brand.dto';
@@ -28,8 +28,8 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   VehicleAdminBrandCreateDoc,

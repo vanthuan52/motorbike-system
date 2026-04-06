@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { IPasswordHistoryService } from '../interfaces/password-history.service.interface';
 import { PasswordHistoryRepository } from '../repositories/password-history.repository';
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PasswordHistoryModel } from '../models/password-history.model';
 import { Prisma } from '@/generated/prisma-client';

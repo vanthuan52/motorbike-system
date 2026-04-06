@@ -143,9 +143,7 @@ export class MediaAttachmentRepository {
   /**
    * Batch update orderBy for reordering attachments.
    */
-  async reorder(
-    orderedIds: { id: string; orderBy: number }[]
-  ): Promise<void> {
+  async reorder(orderedIds: { id: string; orderBy: number }[]): Promise<void> {
     const operations = orderedIds.map(({ id, orderBy }) =>
       this.databaseService.mediaAttachment.update({
         where: { id },

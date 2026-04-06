@@ -5,10 +5,10 @@ import { MediaUpdateStatusRequestDto } from '../dtos/request/media.update-status
 import { EnumMediaPurpose, EnumMediaType } from '../enums/media.enum';
 import { MediaModel } from '../models/media.model';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { MediaEmbeddedResponseDto } from '../dtos/response/media.embedded.response.dto';

@@ -7,6 +7,5 @@ export const ServiceCategoryDefaultAvailableOrderBy = [
   'updatedAt',
 ];
 export const ServiceCategoryDefaultStatus = Object.values(
-  EnumServiceCategoryStatus,
+  EnumServiceCategoryStatus
 );
-

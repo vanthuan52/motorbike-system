@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { JobModel } from '../models/job.model';
 import { JobMapper } from '../mappers/job.mapper';
-import { Job as PrismaJob, Prisma } from '@/generated/prisma-client';
+import { Prisma, Job as PrismaJob } from '@/generated/prisma-client';
 import { IJobListFilters } from '../interfaces/job.filter.interface';
 
 @Injectable()
@@ -211,7 +211,9 @@ export class JobRepository {
     });
   }
 
-  async deleteMany(where: Prisma.JobWhereInput = {}): Promise<{ count: number }> {
+  async deleteMany(
+    where: Prisma.JobWhereInput = {}
+  ): Promise<{ count: number }> {
     return this.databaseService.job.deleteMany({ where });
   }
 }

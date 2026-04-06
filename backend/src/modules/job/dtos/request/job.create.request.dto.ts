@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
+  IsEnum,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
-  MaxLength,
-  IsIn,
   Matches,
-  IsEnum,
-  IsArray,
+  MaxLength,
 } from 'class-validator';
 import { EnumJobStatus, EnumJobType } from '../../enums/job.enum';
 

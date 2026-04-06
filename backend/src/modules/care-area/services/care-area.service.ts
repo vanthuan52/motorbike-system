@@ -13,10 +13,10 @@ import { EnumVehicleModelType } from '@/modules/vehicle-model/enums/vehicle-mode
 import { EnumCareAreaStatusCodeError } from '../enums/care-area.status-code.enum';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareAreaUtil } from '../utils/care-area.util';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';

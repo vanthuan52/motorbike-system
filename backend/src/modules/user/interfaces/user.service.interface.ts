@@ -4,10 +4,10 @@ import { IDatabaseOptions } from '@/common/database/interfaces/database.interfac
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
 import { IFile } from '@/common/file/interfaces/file.interface';
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IUserListFilters } from './user.filter.interface';
 import {
@@ -33,10 +33,10 @@ import {
 } from '@/modules/user/dtos/response/user.check.response.dto';
 import {
   IUser,
-  IUserLogin,
-  IUserLoginResult,
   IUserForgotPasswordCreate,
+  IUserLogin,
   IUserLoginMetadataUpdate,
+  IUserLoginResult,
 } from '@/modules/user/interfaces/user.interface';
 import { UserImportRequestDto } from '@/modules/user/dtos/request/user.import.request.dto';
 import { IAuthPassword } from '@/modules/auth/interfaces/auth.interface';
@@ -121,9 +121,7 @@ export interface IUserService {
     createdBy: string,
     requestLog: IRequestLog
   ): Promise<void>;
-  exportByAdmin(
-    filters?: IUserListFilters
-  ): Promise<IResponseFileReturn>;
+  exportByAdmin(filters?: IUserListFilters): Promise<IResponseFileReturn>;
   // =========================== Service to Service calll ==============================
   createRandomUsername(): string;
   findOneWithRoleByEmail(email: string): Promise<IUser | null>;

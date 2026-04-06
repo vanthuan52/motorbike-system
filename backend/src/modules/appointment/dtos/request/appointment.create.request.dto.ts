@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayNotEmpty,
+  IsArray,
+  IsDateString,
   IsNotEmpty,
   IsOptional,
   IsString,
-  MaxLength,
-  IsDateString,
-  ArrayNotEmpty,
-  IsArray,
   IsUUID,
+  MaxLength,
 } from 'class-validator';
 import { EnumAppointmentStatus } from '../../enums/appointment.enum';
 

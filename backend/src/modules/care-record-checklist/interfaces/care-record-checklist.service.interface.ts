@@ -1,8 +1,8 @@
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
@@ -85,6 +85,14 @@ export interface ICareRecordChecklistService {
   ): Promise<void>;
 
   delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
+
+  restore(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   deleteMany(
     find: Record<string, any>,

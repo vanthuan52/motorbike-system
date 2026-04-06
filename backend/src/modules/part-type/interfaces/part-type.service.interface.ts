@@ -1,8 +1,8 @@
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IPartTypeListFilters } from './part-type.filter.interface';
 import { PartTypeCreateRequestDto } from '../dtos/request/part-type.create.request.dto';

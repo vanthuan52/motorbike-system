@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { ApplicationReviewModel } from '../models/application-review.model';
@@ -152,7 +152,9 @@ export class ApplicationReviewRepository {
     return ApplicationReviewMapper.toDomain(result);
   }
 
-  async deleteMany(where: Prisma.ApplicationReviewWhereInput = {}): Promise<{ count: number }> {
+  async deleteMany(
+    where: Prisma.ApplicationReviewWhereInput = {}
+  ): Promise<{ count: number }> {
     return this.databaseService.applicationReview.deleteMany({ where });
   }
 }

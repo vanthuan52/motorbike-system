@@ -6,7 +6,7 @@ import {
   DocResponse,
 } from '@/common/doc/decorators/doc.decorator';
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { JobApplicationUserCreateRequestDto } from '../dtos/request/job-application.create.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 

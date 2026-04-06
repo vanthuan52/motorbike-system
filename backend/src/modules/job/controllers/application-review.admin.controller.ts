@@ -7,8 +7,8 @@ import {
 } from '../docs/application-review.admin.doc';
 import { PolicyAbilityProtected } from '@/modules/policy/decorators/policy.decorator';
 import {
-  EnumPolicySubject,
   EnumPolicyAction,
+  EnumPolicySubject,
 } from '@/modules/policy/enums/policy.enum';
 import { UserProtected } from '@/modules/user/decorators/user.decorator';
 import { AuthJwtAccessProtected } from '@/modules/auth/decorators/auth.jwt.decorator';
@@ -21,8 +21,8 @@ import {
   Query,
 } from '@nestjs/common';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { ApplicationReviewCreateRequestDto } from '../dtos/request/application-review.create.request.dto';
 import { UserService } from '@/modules/user/services/user.service';
@@ -122,11 +122,14 @@ export class ApplicationReviewAdminController {
     const isJobApplicationExist = await this.jobApplicationService.findOneById(
       payload.jobApplication
     );
-    if (!isJobApplicationExist)
+    if (!isJobApplicationExist) {
       throw new NotFoundException('job.error.notFoundJobApplication');
+    }
 
     const isUserExist = await this.userService.findOneById(payload.user);
-    if (!isUserExist) throw new NotFoundException('user.error.notFound');
+    if (!isUserExist) {
+      throw new NotFoundException('user.error.notFound');
+    }
 
     const created = await this.applicationReviewService.create(payload);
 

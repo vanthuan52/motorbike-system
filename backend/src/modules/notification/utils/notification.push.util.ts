@@ -10,7 +10,7 @@ import {
   INotificationSendPushPayload,
   INotificationTemporaryPasswordPayload,
 } from '@/modules/notification/interfaces/notification.interface';
-import { EnumQueue, EnumQueuePriority } from '@/queues/enums/queue.enum';
+import { EnumQueue, EnumQueuePriority } from 'src/queues/enums/queue.enum';
 
 /**
  * Utility for queueing push notification jobs to Firebase Cloud Messaging.

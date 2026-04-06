@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
+  IsDate,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsUUID,
-  IsNumber,
-  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 

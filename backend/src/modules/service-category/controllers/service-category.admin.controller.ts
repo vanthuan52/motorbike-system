@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
   Post,
   Put,
-  Patch,
-  Delete,
-  Param,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ServiceCategoryService } from '../services/service-category.services';
@@ -18,8 +18,8 @@ import {
   ResponsePaging,
 } from '@/common/response/decorators/response.decorator';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import { ServiceCategoryListResponseDto } from '../dtos/response/service-category.list.response.dto';
 import { ServiceCategoryDto } from '../dtos/service-category.dto';
@@ -29,8 +29,8 @@ import {
   PaginationQueryFilterInEnum,
 } from '@/common/pagination/decorators/pagination.decorator';
 import {
-  IPaginationQueryOffsetParams,
   IPaginationIn,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import {
   ServiceCategoryAdminCreateDoc,
@@ -103,10 +103,9 @@ export class ServiceCategoryAdminController {
     @PaginationQueryFilterInEnum('status', ServiceCategoryDefaultStatus)
     status: Record<string, IPaginationIn>
   ): Promise<IResponsePagingReturn<ServiceCategoryListResponseDto>> {
-    const result = await this.serviceCategoryService.getListOffset(
-      pagination,
-      { ...status }
-    );
+    const result = await this.serviceCategoryService.getListOffset(pagination, {
+      ...status,
+    });
     const mapped = this.serviceCategoryUtil.mapList(result.data);
     return {
       ...result,

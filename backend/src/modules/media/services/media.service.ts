@@ -6,25 +6,25 @@ import { MediaCreateRequestDto } from '../dtos/request/media.create.request.dto'
 import { MediaUpdateRequestDto } from '../dtos/request/media.update.request.dto';
 import { MediaUpdateStatusRequestDto } from '../dtos/request/media.update-status.request.dto';
 import {
+  EnumMediaPurpose,
   EnumMediaStatus,
   EnumMediaType,
-  EnumMediaPurpose,
 } from '../enums/media.enum';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 import {
+  MediaAllowedAudioTypes,
+  MediaAllowedDocumentTypes,
   MediaAllowedImageTypes,
   MediaAllowedVideoTypes,
-  MediaAllowedDocumentTypes,
-  MediaAllowedAudioTypes,
 } from '../constants/media.constant';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { MediaModel } from '../models/media.model';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { Prisma } from '@/generated/prisma-client';
 
@@ -132,8 +132,12 @@ export class MediaService implements IMediaService {
     const media = await this.findOneByIdOrFail(id);
 
     const updateData: any = {};
-    if (dto.filename !== undefined) updateData.filename = dto.filename;
-    if (dto.purpose !== undefined) updateData.purpose = dto.purpose;
+    if (dto.filename !== undefined) {
+      updateData.filename = dto.filename;
+    }
+    if (dto.purpose !== undefined) {
+      updateData.purpose = dto.purpose;
+    }
 
     if (Object.keys(updateData).length > 0) {
       await this.mediaRepository.update(id, updateData);

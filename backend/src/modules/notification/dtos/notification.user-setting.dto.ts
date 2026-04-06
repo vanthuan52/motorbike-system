@@ -4,7 +4,7 @@ import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import {
   EnumNotificationChannel,
   EnumNotificationType,
-} from '@/generated/prisma-client';
+} from '@/modules/notification/enums/notification.enum';
 
 export class NotificationUserSettingDto extends DatabaseDto {
   @ApiProperty({

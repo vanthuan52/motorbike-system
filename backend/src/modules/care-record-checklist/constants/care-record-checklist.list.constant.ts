@@ -7,10 +7,9 @@ export const CareRecordChecklistDefaultAvailableSearch = ['name'];
 export const CareRecordChecklistDefaultAvailableOrderBy = ['createdAt'];
 
 export const CareRecordChecklistDefaultStatus = Object.values(
-  EnumCareRecordChecklistStatus,
+  EnumCareRecordChecklistStatus
 );
 
 export const CareRecordChecklistDefaultResult = Object.values(
-  EnumCareRecordChecklistResult,
+  EnumCareRecordChecklistResult
 );
-

@@ -1,8 +1,8 @@
 import { VehicleBrandModel } from '@/modules/vehicle-brand/models/vehicle-brand.model';
 import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 import {
-  EnumVehicleModelType,
   EnumVehicleModelFuelType,
+  EnumVehicleModelType,
 } from '../enums/vehicle-model.enum';
 import { EnumStatus } from '@/common/enums/common.enum';
 

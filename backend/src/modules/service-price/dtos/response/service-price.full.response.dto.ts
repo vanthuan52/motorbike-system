@@ -1,4 +1,4 @@
-import { ApiProperty, getSchemaPath, OmitType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, getSchemaPath } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ServicePriceDto } from '../service-price.dto';
 import { VehicleModelDto } from '@/modules/vehicle-model/dtos/vehicle-model.dto';

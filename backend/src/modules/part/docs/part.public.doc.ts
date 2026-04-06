@@ -33,7 +33,7 @@ export function PartPublicListDoc(): MethodDecorator {
     }),
     DocResponsePaging<PartListResponseDto>('part.list', {
       dto: PartListResponseDto,
-    }),
+    })
   );
 }
 
@@ -47,6 +47,6 @@ export function PartPublicGetOneDoc(): MethodDecorator {
     }),
     DocResponse<PartGetFullResponseDto>('part.getBySlug', {
       dto: PartGetFullResponseDto,
-    }),
+    })
   );
 }

@@ -6,7 +6,4 @@ export const UserVehicleDefaultAvailableOrderBy = [
   'createdAt',
   'updatedAt',
 ];
-export const UserVehicleDefaultStatus = Object.values(
-  EnumUserVehicleStatus,
-);
-
+export const UserVehicleDefaultStatus = Object.values(EnumUserVehicleStatus);

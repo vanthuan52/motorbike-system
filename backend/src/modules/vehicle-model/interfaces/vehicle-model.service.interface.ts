@@ -5,11 +5,11 @@ import { VehicleModelUpdateStatusRequestDto } from '../dtos/request/vehicle-mode
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { VehicleModelUploadPhotoRequestDto } from '../dtos/request/vehicle-model.upload-photo.request.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
+  IPaginationCursorReturn,
   IPaginationIn,
   IPaginationOffsetReturn,
-  IPaginationCursorReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { Prisma } from '@/generated/prisma-client';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
@@ -59,7 +59,11 @@ export interface IVehicleModelService {
     updatedBy: string
   ): Promise<VehicleModelModel>;
 
-  delete(id: string, requestLog: IRequestLog, deletedBy: string): Promise<VehicleModelModel>;
+  delete(
+    id: string,
+    requestLog: IRequestLog,
+    deletedBy: string
+  ): Promise<VehicleModelModel>;
 
   findBySlug(slug: string): Promise<VehicleModelModel>;
 

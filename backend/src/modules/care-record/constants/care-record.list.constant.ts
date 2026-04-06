@@ -10,10 +10,6 @@ export const CareRecordDefaultAvailableOrderBy = [
   'createdAt',
 ];
 
-export const CareRecordDefaultStatus = Object.values(
-  EnumCareRecordStatus,
-);
+export const CareRecordDefaultStatus = Object.values(EnumCareRecordStatus);
 
-export const CareRecordDefaultPaymentStatus =
-  Object.values(EnumPaymentStatus);
-
+export const CareRecordDefaultPaymentStatus = Object.values(EnumPaymentStatus);

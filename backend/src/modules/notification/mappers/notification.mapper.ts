@@ -1,4 +1,5 @@
 import {
+  NotificationDeliveryModel,
   NotificationModel,
   NotificationUserSettingModel,
 } from '../models/notification.model';
@@ -9,6 +10,7 @@ import {
 } from '../enums/notification.enum';
 import {
   Notification as PrismaNotification,
+  NotificationDelivery as PrismaNotificationDelivery,
   NotificationUserSetting as PrismaNotificationUserSetting,
 } from '@/generated/prisma-client';
 
@@ -28,10 +30,8 @@ export class NotificationMapper {
 
       createdAt: prismaNotification.createdAt,
       updatedAt: prismaNotification.updatedAt,
-      deletedAt: prismaNotification.deletedAt || undefined,
       createdBy: prismaNotification.createdBy || undefined,
       updatedBy: prismaNotification.updatedBy || undefined,
-      deletedBy: prismaNotification.deletedBy || undefined,
     });
   }
 }
@@ -43,17 +43,32 @@ export class NotificationUserSettingMapper {
     return new NotificationUserSettingModel({
       id: prismaUserSetting.id,
       type: prismaUserSetting.type as unknown as EnumNotificationType,
-      channel:
-        prismaUserSetting.channel as unknown as EnumNotificationChannel,
+      channel: prismaUserSetting.channel as unknown as EnumNotificationChannel,
       isActive: prismaUserSetting.isActive,
       userId: prismaUserSetting.userId,
 
       createdAt: prismaUserSetting.createdAt,
       updatedAt: prismaUserSetting.updatedAt,
-      deletedAt: prismaUserSetting.deletedAt || undefined,
       createdBy: prismaUserSetting.createdBy || undefined,
       updatedBy: prismaUserSetting.updatedBy || undefined,
-      deletedBy: prismaUserSetting.deletedBy || undefined,
+    });
+  }
+}
+
+export class NotificationDeliveryMapper {
+  static toDomain(
+    prismaDelivery: PrismaNotificationDelivery
+  ): NotificationDeliveryModel {
+    return new NotificationDeliveryModel({
+      id: prismaDelivery.id,
+      notificationId: prismaDelivery.notificationId,
+      channel: prismaDelivery.channel as unknown as EnumNotificationChannel,
+      sentAt: prismaDelivery.sentAt || undefined,
+      processedAt: prismaDelivery.processedAt || undefined,
+      failureTokens: prismaDelivery.failureTokens,
+
+      createdAt: prismaDelivery.createdAt,
+      updatedAt: prismaDelivery.updatedAt,
     });
   }
 }

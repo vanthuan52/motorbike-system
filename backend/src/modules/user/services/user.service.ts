@@ -23,10 +23,10 @@ import { IFile } from '@/common/file/interfaces/file.interface';
 import { FileService } from '@/common/file/services/file.service';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IUserListFilters } from '@/modules/user/interfaces/user.filter.interface';
 import {
@@ -154,10 +154,7 @@ export class UserService implements IUserService {
     >,
     filters?: IUserListFilters
   ): Promise<IPaginationOffsetReturn<UserModel>> {
-    return this.userRepository.findWithPaginationOffset(
-      pagination,
-      filters
-    );
+    return this.userRepository.findWithPaginationOffset(pagination, filters);
   }
 
   async getListCursor(
@@ -167,10 +164,7 @@ export class UserService implements IUserService {
     >,
     filters?: IUserListFilters
   ): Promise<IPaginationCursorReturn<UserModel>> {
-    return this.userRepository.findWithPaginationCursor(
-      pagination,
-      filters
-    );
+    return this.userRepository.findWithPaginationCursor(pagination, filters);
   }
 
   async getOne(id: string): Promise<IUser> {
@@ -743,7 +737,9 @@ export class UserService implements IUserService {
 
   async findOneWithRoleByEmail(email: string): Promise<IUser | null> {
     const userModel = await this.userRepository.findOneWithRoleByEmail(email);
-    if (!userModel) return null;
+    if (!userModel) {
+      return null;
+    }
 
     return userModel as IUser;
   }
@@ -818,7 +814,9 @@ export class UserService implements IUserService {
   ): Promise<ForgotPasswordModel | null> {
     const forgotPassword =
       await this.userRepository.findOneLatestByForgotPassword(userId);
-    if (!forgotPassword) return null;
+    if (!forgotPassword) {
+      return null;
+    }
     return forgotPassword;
   }
 

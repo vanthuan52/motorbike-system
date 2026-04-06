@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
 import { CareRecordItemDto } from '../dtos/care-record-item.dto';
@@ -35,7 +35,7 @@ export function CareRecordItemAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<CareRecordItemListResponseDto>('care-record-item.list', {
       dto: CareRecordItemListResponseDto,
-    }),
+    })
   );
 }
 
@@ -55,7 +55,7 @@ export function CareRecordItemCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('care-record-item.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -73,7 +73,7 @@ export function CareRecordItemUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-item.update'),
+    DocResponse('care-record-item.update')
   );
 }
 
@@ -89,7 +89,7 @@ export function CareRecordItemDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-item.delete'),
+    DocResponse('care-record-item.delete')
   );
 }
 
@@ -107,7 +107,7 @@ export function CareRecordItemParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordItemDto>('care-record-item.getById', {
       dto: CareRecordItemDto,
-    }),
+    })
   );
 }
 
@@ -125,7 +125,7 @@ export function CareRecordItemGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordItemGetFullResponseDto>('care-record-checklist.get', {
       dto: CareRecordItemGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -143,6 +143,6 @@ export function CareRecordItemUpdateApprovalDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-item.updateApproval'),
+    DocResponse('care-record-item.updateApproval')
   );
 }

@@ -49,7 +49,9 @@ export class JobApplicationPublicController {
 
       return { data: { id: jobApplication.id } };
     } catch (err) {
-      if (err instanceof HttpException) throw err;
+      if (err instanceof HttpException) {
+        throw err;
+      }
 
       throw new InternalServerErrorException({
         message: 'jobApplication.error.createFailed',

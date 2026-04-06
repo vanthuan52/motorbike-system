@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   VehicleServiceDocParamsId,
   VehicleServiceDocQueryCategory,
@@ -44,7 +44,7 @@ export function VehicleAdminServiceListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<VehicleServiceListResponseDto>('vehicle-service.list', {
       dto: VehicleServiceListResponseDto,
-    }),
+    })
   );
 }
 
@@ -64,7 +64,7 @@ export function VehicleAdminServiceCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('vehicle-service.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -82,7 +82,7 @@ export function VehicleAdminServiceUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-service.update'),
+    DocResponse('vehicle-service.update')
   );
 }
 
@@ -98,7 +98,7 @@ export function VehicleAdminServiceDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-service.delete'),
+    DocResponse('vehicle-service.delete')
   );
 }
 
@@ -116,7 +116,7 @@ export function VehicleAdminServiceUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('vehicle-service.updateStatus'),
+    DocResponse('vehicle-service.updateStatus')
   );
 }
 
@@ -134,7 +134,7 @@ export function VehicleAdminServiceParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<VehicleServiceDto>('vehicle-service.getById', {
       dto: VehicleServiceDto,
-    }),
+    })
   );
 }
 
@@ -152,7 +152,7 @@ export function VehicleAdminServiceGetDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<VehicleServiceGetFullResponseDto>('vehicle-service.get', {
       dto: VehicleServiceGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -166,7 +166,7 @@ export function VehicleAdminServiceUploadPhotoDoc(): MethodDecorator {
     }),
     DocResponse<AwsS3Dto>('vehicle-service.uploadPhoto', {
       dto: AwsS3Dto,
-    }),
+    })
   );
 }
 
@@ -182,6 +182,6 @@ export function VehicleAdminServiceUpdatePhotoDoc(): MethodDecorator {
       bodyType: EnumDocRequestBodyType.json,
       dto: AwsS3PresignRequestDto,
     }),
-    DocResponse('vehicle-service.updatePhoto'),
+    DocResponse('vehicle-service.updatePhoto')
   );
 }

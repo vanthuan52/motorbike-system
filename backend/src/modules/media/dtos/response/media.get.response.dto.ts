@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import {
+  EnumMediaPurpose,
   EnumMediaStatus,
   EnumMediaType,
-  EnumMediaPurpose,
 } from '../../enums/media.enum';
 import { EnumAwsS3Accessibility } from '@/common/aws/enums/aws.enum';
 

@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
+  IsEnum,
   IsNotEmpty,
   IsOptional,
-  IsUUID,
   IsString,
-  IsEnum,
+  IsUUID,
 } from 'class-validator';
 import { EnumCareRecordServiceType } from '../../enums/care-record-service.enum';
 

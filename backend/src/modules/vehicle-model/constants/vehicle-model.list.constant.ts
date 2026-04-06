@@ -10,14 +10,9 @@ export const VehicleModelDefaultAvailableOrderBy = [
   'createdAt',
   'updatedAt',
 ];
-export const VehicleModelDefaultStatus = Object.values(
-  EnumVehicleModelStatus,
-);
-export const VehicleModelDefaultType = Object.values(
-  EnumVehicleModelType,
-);
+export const VehicleModelDefaultStatus = Object.values(EnumVehicleModelStatus);
+export const VehicleModelDefaultType = Object.values(EnumVehicleModelType);
 
 export const VehicleModelDefaultFuelType = Object.values(
-  EnumVehicleModelFuelType,
+  EnumVehicleModelFuelType
 );
-

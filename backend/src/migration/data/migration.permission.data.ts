@@ -91,11 +91,7 @@ const permissionData: IMigrationPermissionData[] = [
   ),
 
   // Media permissions
-  ...generatePermissionsForSubject(
-    EnumPolicySubject.media,
-    'media',
-    'Media'
-  ),
+  ...generatePermissionsForSubject(EnumPolicySubject.media, 'media', 'Media'),
 
   // Notification permissions
   ...generatePermissionsForSubject(
@@ -161,11 +157,7 @@ const permissionData: IMigrationPermissionData[] = [
   ),
 
   // Part permissions
-  ...generatePermissionsForSubject(
-    EnumPolicySubject.part,
-    'part',
-    'Parts'
-  ),
+  ...generatePermissionsForSubject(EnumPolicySubject.part, 'part', 'Parts'),
 
   // Part Type permissions
   ...generatePermissionsForSubject(
@@ -182,11 +174,7 @@ const permissionData: IMigrationPermissionData[] = [
   ),
 
   // Store permissions
-  ...generatePermissionsForSubject(
-    EnumPolicySubject.store,
-    'store',
-    'Stores'
-  ),
+  ...generatePermissionsForSubject(EnumPolicySubject.store, 'store', 'Stores'),
 
   // Care Area permissions
   ...generatePermissionsForSubject(
@@ -238,11 +226,7 @@ const permissionData: IMigrationPermissionData[] = [
   ),
 
   // Job permissions
-  ...generatePermissionsForSubject(
-    EnumPolicySubject.job,
-    'job',
-    'Jobs'
-  ),
+  ...generatePermissionsForSubject(EnumPolicySubject.job, 'job', 'Jobs'),
 
   // Job Application permissions
   ...generatePermissionsForSubject(

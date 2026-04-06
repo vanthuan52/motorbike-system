@@ -4,6 +4,5 @@ export const CareRecordServiceDefaultAvailableSearch = ['name'];
 export const CareRecordServiceDefaultAvailableOrderBy = ['createdAt'];
 
 export const CareRecordServiceDefaultStatus = Object.values(
-  EnumCareRecordServiceStatus,
+  EnumCareRecordServiceStatus
 );
-

@@ -5,7 +5,7 @@ import { UserVehicleGetFullResponseDto } from './user-vehicle.full.response.dto'
 
 export class UserVehicleShortResponseDto extends OmitType(
   UserVehicleGetFullResponseDto,
-  ['vehicleModel', 'user', 'photo', 'createdAt', 'updatedAt'],
+  ['vehicleModel', 'user', 'photo', 'createdAt', 'updatedAt']
 ) {
   @ApiHideProperty()
   @Exclude()

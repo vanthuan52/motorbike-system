@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { PartService } from '../services/part.services';
 import { PartUtil } from '../utils/part.util';
 import {
-  PartPublicListDoc,
   PartPublicGetOneDoc,
+  PartPublicListDoc,
 } from '../docs/part.public.doc';
 import {
-  IResponseReturn,
   IResponsePagingReturn,
+  IResponseReturn,
 } from '@/common/response/interfaces/response.interface';
 import {
   Response,
@@ -73,8 +73,12 @@ export class PartPublicController {
     const filters: IPartListFilters = {
       ...status,
     };
-    if (partTypeId) filters['partTypeId'] = partTypeId;
-    if (vehicleBrandId) filters['vehicleBrandId'] = vehicleBrandId;
+    if (partTypeId) {
+      filters['partTypeId'] = partTypeId;
+    }
+    if (vehicleBrandId) {
+      filters['vehicleBrandId'] = vehicleBrandId;
+    }
 
     const result = await this.partService.getListCursor(pagination, filters);
     const mapped = this.partUtil.mapList(result.data);

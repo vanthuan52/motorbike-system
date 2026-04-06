@@ -3,27 +3,27 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CareRecordConditionRepository } from '../repository/care-record-condition.repository';
 import { CareRecordConditionCreateRequestDto } from '../dtos/request/care-record-condition.create.request.dto';
 import { CareRecordConditionUpdateRequestDto } from '../dtos/request/care-record-condition.update.request.dto';
-import { CareRecordRepository } from '@/modules/care-record/respository/care-record.repository';
+import { CareRecordRepository } from '@/modules/care-record/repository/care-record.repository';
 import {
   EnumBodyCondition,
   EnumExhaustCoverCondition,
-  EnumOilLevel,
   EnumMirrorCondition,
+  EnumOilLevel,
   EnumSeatCondition,
 } from '../enums/care-record-condition.enum';
 import { ICareRecordConditionService } from '../interfaces/care-record-condition.service.interface';
 import { EnumCareRecordConditionStatusCodeError } from '../enums/care-record-condition.status-code.enum';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
-import { CareRecordCondition, Prisma } from '@/generated/prisma-client';
+import { CareRecordConditionModel } from '../models/care-record-condition.model';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-
 import { ICareRecordConditionListFilters } from '../interfaces/care-record-condition.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordConditionService implements ICareRecordConditionService {
@@ -38,7 +38,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       Prisma.CareRecordConditionWhereInput
     >,
     filters?: ICareRecordConditionListFilters
-  ): Promise<IPaginationOffsetReturn<CareRecordCondition>> {
+  ): Promise<IPaginationOffsetReturn<CareRecordConditionModel>> {
     const { data, ...others } =
       await this.careRecordConditionRepository.findWithPaginationOffset({
         ...pagination,
@@ -60,7 +60,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
       Prisma.CareRecordConditionWhereInput
     >,
     filters?: ICareRecordConditionListFilters
-  ): Promise<IPaginationCursorReturn<CareRecordCondition>> {
+  ): Promise<IPaginationCursorReturn<CareRecordConditionModel>> {
     const { data, ...others } =
       await this.careRecordConditionRepository.findWithPaginationCursor({
         ...pagination,
@@ -72,7 +72,7 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     return { data, ...others };
   }
 
-  async findOneById(id: string): Promise<CareRecordCondition> {
+  async findOneById(id: string): Promise<CareRecordConditionModel> {
     const careRecordCondition = await this.findOneByIdOrFail(id);
     return careRecordCondition;
   }
@@ -117,13 +117,6 @@ export class CareRecordConditionService implements ICareRecordConditionService {
           exhaustCoverCondition ?? EnumExhaustCoverCondition.present,
         hasLuggageRack: hasLuggageRack ?? false,
         hasFootMat: hasFootMat ?? false,
-        hasFootPegRubber: hasFootPegRubber ?? false,
-        hasRaincoat: hasRaincoat ?? false,
-        hasHelmet: hasHelmet ?? false,
-        accessoriesAndInoxNotes,
-        currentConditionNotes,
-        videoUrl,
-        imageUrls,
         careRecord: {
           connect: { id: careRecord },
         },
@@ -175,33 +168,39 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     const updateData: any = {
       updatedBy: actionBy,
     };
-    if (odoKm !== undefined) updateData.odoKm = odoKm;
-    if (odoKmFaulty !== undefined) updateData.odoKmFaulty = odoKmFaulty;
-    if (fuelLevelPercent !== undefined)
+    if (odoKm !== undefined) {
+      updateData.odoKm = odoKm;
+    }
+    if (odoKmFaulty !== undefined) {
+      updateData.odoKmFaulty = odoKmFaulty;
+    }
+    if (fuelLevelPercent !== undefined) {
       updateData.fuelLevelPercent = fuelLevelPercent;
-    if (fuelLevelFaulty !== undefined)
+    }
+    if (fuelLevelFaulty !== undefined) {
       updateData.fuelLevelFaulty = fuelLevelFaulty;
-    if (engineOilLevel !== undefined)
+    }
+    if (engineOilLevel !== undefined) {
       updateData.engineOilLevel = engineOilLevel;
-    if (rearviewMirrorCondition !== undefined)
+    }
+    if (rearviewMirrorCondition !== undefined) {
       updateData.rearviewMirrorCondition = rearviewMirrorCondition;
-    if (seatCondition !== undefined) updateData.seatCondition = seatCondition;
-    if (bodyCondition !== undefined) updateData.bodyCondition = bodyCondition;
-    if (exhaustCoverCondition !== undefined)
+    }
+    if (seatCondition !== undefined) {
+      updateData.seatCondition = seatCondition;
+    }
+    if (bodyCondition !== undefined) {
+      updateData.bodyCondition = bodyCondition;
+    }
+    if (exhaustCoverCondition !== undefined) {
       updateData.exhaustCoverCondition = exhaustCoverCondition;
-    if (hasLuggageRack !== undefined)
+    }
+    if (hasLuggageRack !== undefined) {
       updateData.hasLuggageRack = hasLuggageRack;
-    if (hasFootMat !== undefined) updateData.hasFootMat = hasFootMat;
-    if (hasFootPegRubber !== undefined)
-      updateData.hasFootPegRubber = hasFootPegRubber;
-    if (hasRaincoat !== undefined) updateData.hasRaincoat = hasRaincoat;
-    if (hasHelmet !== undefined) updateData.hasHelmet = hasHelmet;
-    if (accessoriesAndInoxNotes !== undefined)
-      updateData.accessoriesAndInoxNotes = accessoriesAndInoxNotes;
-    if (currentConditionNotes !== undefined)
-      updateData.currentConditionNotes = currentConditionNotes;
-    if (videoUrl !== undefined) updateData.videoUrl = videoUrl;
-    if (imageUrls !== undefined) updateData.imageUrls = imageUrls;
+    }
+    if (hasFootMat !== undefined) {
+      updateData.hasFootMat = hasFootMat;
+    }
 
     await this.careRecordConditionRepository.update(id, updateData);
   }
@@ -212,10 +211,23 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordConditionRepository.update(id, {
-      deletedBy: actionBy,
-      deletedAt: new Date(),
-    });
+    await this.careRecordConditionRepository.softDelete(id, actionBy);
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
+    await this.careRecordConditionRepository.restore(id, actionBy);
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
+    await this.careRecordConditionRepository.forceDelete(id);
   }
 
   async deleteMany(find?: Record<string, any>): Promise<boolean> {
@@ -224,11 +236,11 @@ export class CareRecordConditionService implements ICareRecordConditionService {
     return true;
   }
 
-  private async findOneByIdOrFail(id: string): Promise<CareRecordCondition> {
+  private async findOneByIdOrFail(
+    id: string
+  ): Promise<CareRecordConditionModel> {
     const careRecordCondition =
-      await this.careRecordConditionRepository.findOneById<CareRecordCondition>(
-        id
-      );
+      await this.careRecordConditionRepository.findOneById(id);
     if (!careRecordCondition) {
       throw new NotFoundException({
         statusCode: EnumCareRecordConditionStatusCodeError.notFound,

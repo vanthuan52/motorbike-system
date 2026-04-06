@@ -6,9 +6,9 @@ import {
 import { Injectable } from '@nestjs/common';
 import { EnumPolicyAction } from '@/modules/policy/enums/policy.enum';
 import {
+  IPolicyAbilityInput,
   IPolicyAbilityRule,
   IPolicyAbilitySubject,
-  IPolicyAbilityInput,
 } from '@/modules/policy/interfaces/policy.interface';
 import { IPolicyAbility } from '@/modules/policy/interfaces/policy.interface';
 

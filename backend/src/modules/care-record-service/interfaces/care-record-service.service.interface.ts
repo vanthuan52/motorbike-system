@@ -1,8 +1,8 @@
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
 import { CareRecordServiceUpdateRequestDto } from '../dtos/request/care-record-service.update.request.dto';
@@ -10,8 +10,8 @@ import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-re
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordServiceModel } from '../models/care-record-service.model';
-import { Prisma } from '@generated/prisma-client';
 import { ICareRecordServiceListFilters } from './care-record-service.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 export interface ICareRecordServiceService {
   getListOffset(
@@ -66,6 +66,14 @@ export interface ICareRecordServiceService {
   ): Promise<void>;
 
   delete(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
+
+  restore(id: string, requestLog: IRequestLog, actionBy: string): Promise<void>;
+
+  forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void>;
 
   createMany(
     dtos: CareRecordServiceCreateRequestDto[],

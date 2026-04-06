@@ -6,7 +6,10 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { EnumMediaAttachableType, EnumMediaAttachmentPurpose } from '../../enums/media-attachment.enum';
+import {
+  EnumMediaAttachableType,
+  EnumMediaAttachmentPurpose,
+} from '../../enums/media-attachment.enum';
 
 /**
  * DTO for attaching a media file to an entity.

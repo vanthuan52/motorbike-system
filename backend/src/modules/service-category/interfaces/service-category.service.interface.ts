@@ -1,9 +1,9 @@
 import { Prisma } from '@/generated/prisma-client';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IServiceCategoryListFilters } from './service-category.filter.interface';
 import { ServiceCategoryCreateRequestDto } from '../dtos/request/service-category.create.request.dto';

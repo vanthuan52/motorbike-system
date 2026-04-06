@@ -24,7 +24,7 @@ export function VehicleBrandPublicGetOneDoc(): MethodDecorator {
     }),
     DocResponse<VehicleBrandDto>('vehicle-brand.get', {
       dto: VehicleBrandDto,
-    }),
+    })
   );
 }
 
@@ -42,6 +42,6 @@ export function VehicleBrandPublicListDoc(): MethodDecorator {
     }),
     DocResponsePaging<VehicleBrandListResponseDto>('vehicle-brand.list', {
       dto: VehicleBrandListResponseDto,
-    }),
+    })
   );
 }

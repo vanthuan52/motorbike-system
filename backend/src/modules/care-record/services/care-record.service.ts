@@ -18,10 +18,10 @@ import {
 import { CareRecordUpdateTechnicianRequestDto } from '../dtos/request/care-record.update-technician.request.dto';
 import { CareRecordUtil } from '../utils/care-record.util';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumCareRecordStatusCodeError } from '../enums/care-record.status-code.enum';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';

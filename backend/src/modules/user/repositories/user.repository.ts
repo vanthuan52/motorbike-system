@@ -154,9 +154,7 @@ export class UserRepository {
     return results.map((item: PrismaUser) => UserMapper.toDomain(item));
   }
 
-  async findExport(
-    filters?: IUserListFilters
-  ): Promise<UserModel[]> {
+  async findExport(filters?: IUserListFilters): Promise<UserModel[]> {
     const results = await this.databaseService.user.findMany({
       where: {
         ...filters,

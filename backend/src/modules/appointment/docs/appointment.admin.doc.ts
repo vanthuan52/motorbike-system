@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
   Doc,
   DocAuth,
@@ -38,7 +38,7 @@ export function AppointmentAdminListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<AppointmentListResponseDto>('appointment.list', {
       dto: AppointmentListResponseDto,
-    }),
+    })
   );
 }
 
@@ -56,7 +56,7 @@ export function AppointmentAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<AppointmentGetFullResponseDto>('appointment.getById', {
       dto: AppointmentGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -76,7 +76,7 @@ export function AppointmentAdminCreateDoc(): MethodDecorator {
     DocResponse<DatabaseIdDto>('appointment.create', {
       dto: DatabaseIdDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -94,7 +94,7 @@ export function AppointmentAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('appointment.update'),
+    DocResponse('appointment.update')
   );
 }
 
@@ -110,7 +110,7 @@ export function AppointmentAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('appointment.delete'),
+    DocResponse('appointment.delete')
   );
 }
 
@@ -126,7 +126,7 @@ export function AppointmentAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('appointment.updateStatus'),
+    DocResponse('appointment.updateStatus')
   );
 }
 
@@ -141,7 +141,7 @@ export function AppointmentAdminTrashListDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponsePaging<AppointmentListResponseDto>('appointment.trashList', {
       dto: AppointmentListResponseDto,
-    }),
+    })
   );
 }
 
@@ -157,7 +157,7 @@ export function AppointmentAdminRestoreDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('appointment.restore'),
+    DocResponse('appointment.restore')
   );
 }
 
@@ -173,6 +173,6 @@ export function AppointmentAdminForceDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('appointment.forceDelete'),
+    DocResponse('appointment.forceDelete')
   );
 }

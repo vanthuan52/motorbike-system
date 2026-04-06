@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { MessageModel } from '../models/message.model';
 import { MessageMapper } from '../mappers/message.mapper';
-import { Message as PrismaMessage, Prisma } from '@/generated/prisma-client';
+import { Prisma, Message as PrismaMessage } from '@/generated/prisma-client';
 
 @Injectable()
 export class MessageRepository {

@@ -1,11 +1,11 @@
 import {
-  WebSocketGateway,
-  SubscribeMessage,
-  MessageBody,
   ConnectedSocket,
-  WebSocketServer,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { UseGuards } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
@@ -79,15 +79,21 @@ export class MessageGateway
     );
 
     if (!conversation) {
-      this.emitError(client, EnumChatStatusCodeError.invalidConversation,
-        'conversation.error.invalidConversation');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.invalidConversation,
+        'conversation.error.invalidConversation'
+      );
       return;
     }
 
     // Verify user is a participant
     if (!conversation.participantIds.includes(userId)) {
-      this.emitError(client, EnumChatStatusCodeError.invalidConversation,
-        'conversation.error.notParticipant');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.invalidConversation,
+        'conversation.error.notParticipant'
+      );
       return;
     }
 
@@ -122,15 +128,21 @@ export class MessageGateway
     );
 
     if (!conversation) {
-      this.emitError(client, EnumChatStatusCodeError.invalidConversation,
-        'conversation.error.invalidConversation');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.invalidConversation,
+        'conversation.error.invalidConversation'
+      );
       return;
     }
 
     // Verify sender is participant
     if (!conversation.participantIds.includes(userId)) {
-      this.emitError(client, EnumChatStatusCodeError.invalidConversation,
-        'conversation.error.notParticipant');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.invalidConversation,
+        'conversation.error.notParticipant'
+      );
       return;
     }
 
@@ -146,8 +158,9 @@ export class MessageGateway
 
     // Auto-deliver if receiver is online
     if (await this.presenceService.isOnline(payload.receiver)) {
-      const delivered =
-        await this.messageService.markMessageDelivered(savedMessage.id);
+      const delivered = await this.messageService.markMessageDelivered(
+        savedMessage.id
+      );
       this.server
         .to(payload.conversation)
         .emit(EnumMessageGwEvents.messageDelivered, {
@@ -168,15 +181,21 @@ export class MessageGateway
   ) {
     const readerId = client.data?.userId;
     if (!readerId) {
-      this.emitError(client, EnumChatStatusCodeError.missingUserId,
-        'User ID missing');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.missingUserId,
+        'User ID missing'
+      );
       return;
     }
 
     const message = await this.messageService.findOneById(payload.messageId);
     if (!message) {
-      this.emitError(client, EnumChatStatusCodeError.messageNotFound,
-        'Message not found');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.messageNotFound,
+        'Message not found'
+      );
       return;
     }
 
@@ -232,8 +251,11 @@ export class MessageGateway
         scope: 'sender',
       });
     } catch (err: any) {
-      this.emitError(client, EnumChatStatusCodeError.messageNotFound,
-        err.message || 'message.error.deleteFailed');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.messageNotFound,
+        err.message || 'message.error.deleteFailed'
+      );
     }
   }
 
@@ -255,8 +277,11 @@ export class MessageGateway
           unsentBy: userId,
         });
     } catch (err: any) {
-      this.emitError(client, EnumChatStatusCodeError.messageNotFound,
-        err.message || 'message.error.unsendFailed');
+      this.emitError(
+        client,
+        EnumChatStatusCodeError.messageNotFound,
+        err.message || 'message.error.unsendFailed'
+      );
     }
   }
 

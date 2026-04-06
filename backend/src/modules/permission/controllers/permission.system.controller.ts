@@ -8,20 +8,14 @@ import {
   IPaginationIn,
   IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
-import {
-  ResponsePaging,
-} from '@/common/response/decorators/response.decorator';
-import {
-  IResponsePagingReturn,
-} from '@/common/response/interfaces/response.interface';
+import { ResponsePaging } from '@/common/response/decorators/response.decorator';
+import { IResponsePagingReturn } from '@/common/response/interfaces/response.interface';
 import { ApiKeySystemProtected } from '@/modules/api-key/decorators/api-key.decorator';
 import {
   RoleDefaultAvailableSearch,
   RoleDefaultType,
 } from '@/modules/role/constants/role.list.constant';
-import {
-  RoleSystemListDoc,
-} from '@/modules/role/docs/role.system.doc';
+import { RoleSystemListDoc } from '@/modules/role/docs/role.system.doc';
 import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import { PermissionService } from '../services/permission.service';
 import { PermissionUtil } from '../utils/permission.util';

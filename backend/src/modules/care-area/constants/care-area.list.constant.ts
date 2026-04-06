@@ -4,4 +4,3 @@ export const CareAreaDefaultAvailableOrderBy = [
   'createdAt',
   'updatedAt',
 ];
-

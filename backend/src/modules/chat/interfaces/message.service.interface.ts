@@ -1,9 +1,9 @@
 import { SendMessageDto } from '../dtos/request/send-message.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ConversationModel } from '../models/conversation.model';
 import { MessageModel } from '../models/message.model';
@@ -25,15 +25,9 @@ export interface IMessageService {
     readerId: string
   ): Promise<MessageModel>;
 
-  softDeleteMessage(
-    messageId: string,
-    userId: string
-  ): Promise<MessageModel>;
+  softDeleteMessage(messageId: string, userId: string): Promise<MessageModel>;
 
-  unsendMessage(
-    messageId: string,
-    senderId: string
-  ): Promise<MessageModel>;
+  unsendMessage(messageId: string, senderId: string): Promise<MessageModel>;
 
   findOneById(id: string): Promise<MessageModel | null>;
 

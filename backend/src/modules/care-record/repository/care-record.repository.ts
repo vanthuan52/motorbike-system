@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  CareRecord as PrismaCareRecord,
   Prisma,
+  CareRecord as PrismaCareRecord,
 } from '@/generated/prisma-client';
 import { CareRecordModel } from '../models/care-record.model';
 import { CareRecordMapper } from '../mappers/care-record.mapper';
@@ -89,17 +89,18 @@ export class CareRecordRepository {
     Prisma.CareRecordSelect,
     Prisma.CareRecordWhereInput
   >): Promise<IPaginationOffsetReturn<CareRecordModel>> {
-    const paginatedResult = await this.paginationService.offset<PrismaCareRecord>(
-      this.databaseService.careRecord,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: this.standardInclude,
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.offset<PrismaCareRecord>(
+        this.databaseService.careRecord,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: this.standardInclude,
+        }
+      );
 
     return {
       ...paginatedResult,
@@ -114,18 +115,19 @@ export class CareRecordRepository {
     Prisma.CareRecordSelect,
     Prisma.CareRecordWhereInput
   >): Promise<IPaginationCursorReturn<CareRecordModel>> {
-    const paginatedResult = await this.paginationService.cursor<PrismaCareRecord>(
-      this.databaseService.careRecord,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: null,
-        },
-        include: this.standardInclude,
-        includeCount: true,
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.cursor<PrismaCareRecord>(
+        this.databaseService.careRecord,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: null,
+          },
+          include: this.standardInclude,
+          includeCount: true,
+        }
+      );
 
     return {
       ...paginatedResult,
@@ -256,17 +258,18 @@ export class CareRecordRepository {
     Prisma.CareRecordSelect,
     Prisma.CareRecordWhereInput
   >): Promise<IPaginationOffsetReturn<CareRecordModel>> {
-    const paginatedResult = await this.paginationService.offset<PrismaCareRecord>(
-      this.databaseService.careRecord,
-      {
-        ...params,
-        where: {
-          ...where,
-          deletedAt: { not: null },
-        },
-        include: this.standardInclude,
-      }
-    );
+    const paginatedResult =
+      await this.paginationService.offset<PrismaCareRecord>(
+        this.databaseService.careRecord,
+        {
+          ...params,
+          where: {
+            ...where,
+            deletedAt: { not: null },
+          },
+          include: this.standardInclude,
+        }
+      );
 
     return {
       ...paginatedResult,

@@ -22,10 +22,10 @@ import {
 } from '@/modules/auth/decorators/auth.social.decorator';
 import { IAuthSocialPayload } from '@/modules/auth/interfaces/auth.interface';
 import {
-  AuthPublicLoginSocialAppleDoc,
-  AuthPublicLoginSocialGoogleDoc,
   AuthPublicForgotPasswordDoc,
   AuthPublicLoginCredentialDoc,
+  AuthPublicLoginSocialAppleDoc,
+  AuthPublicLoginSocialGoogleDoc,
   AuthPublicResetPasswordDoc,
   AuthPublicSendEmailVerificationDoc,
   AuthPublicSignUpDoc,

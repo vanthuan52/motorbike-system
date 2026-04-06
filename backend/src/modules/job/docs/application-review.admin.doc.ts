@@ -6,7 +6,7 @@ import {
   DocResponse,
   DocResponsePaging,
 } from '@/common/doc/decorators/doc.decorator';
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { JobApplicationDocQueryJobApplicationId } from '../constants/application-review.doc.constants';
 import { ApplicationReviewCreateRequestDto } from '../dtos/request/application-review.create.request.dto';

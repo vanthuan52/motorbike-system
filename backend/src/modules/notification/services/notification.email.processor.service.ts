@@ -19,7 +19,7 @@ import {
   INotificationWelcomeByAdminPayload,
 } from '@/modules/notification/interfaces/notification.interface';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
-import { IQueueResponse } from '@/queues/interfaces/queue.interface';
+import { IQueueResponse } from 'src/queues/interfaces/queue.interface';
 import { VerificationUtil } from '@/modules/verification/utils/verification.util';
 import { AuthUtil } from '@/modules/auth/utils/auth.util';
 

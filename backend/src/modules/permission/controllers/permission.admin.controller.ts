@@ -51,10 +51,10 @@ import {
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PermissionListResponseDto } from '@/modules/permission/dtos/response/permission.list.response.dto';
 import {
+  PermissionAdminDeleteDoc,
   PermissionAdminGetDoc,
   PermissionAdminListDoc,
   PermissionAdminUpdateDoc,
-  PermissionAdminDeleteDoc,
 } from '../docs/permission.admin.doc';
 import { PermissionUtil } from '../utils/permission.util';
 import { PermissionDto } from '../dtos/permission.dto';

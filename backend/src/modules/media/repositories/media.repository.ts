@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { MediaModel } from '../models/media.model';
 import { MediaMapper } from '../mappers/media.mapper';
-import { Media as PrismaMedia, Prisma } from '@/generated/prisma-client';
+import { Prisma, Media as PrismaMedia } from '@/generated/prisma-client';
 
 @Injectable()
 export class MediaRepository {
@@ -18,15 +18,13 @@ export class MediaRepository {
     private readonly paginationService: PaginationService
   ) {}
 
-  async findWithPaginationOffset(
-    {
-      where,
-      ...params
-    }: IPaginationQueryOffsetParams<
-      Prisma.MediaSelect,
-      Prisma.MediaWhereInput
-    >
-  ): Promise<IPaginationOffsetReturn<MediaModel>> {
+  async findWithPaginationOffset({
+    where,
+    ...params
+  }: IPaginationQueryOffsetParams<
+    Prisma.MediaSelect,
+    Prisma.MediaWhereInput
+  >): Promise<IPaginationOffsetReturn<MediaModel>> {
     const paginatedResult = await this.paginationService.offset<PrismaMedia>(
       this.databaseService.media,
       {
@@ -43,15 +41,13 @@ export class MediaRepository {
     };
   }
 
-  async findWithPaginationCursor(
-    {
-      where,
-      ...params
-    }: IPaginationQueryCursorParams<
-      Prisma.MediaSelect,
-      Prisma.MediaWhereInput
-    >
-  ): Promise<IPaginationCursorReturn<MediaModel>> {
+  async findWithPaginationCursor({
+    where,
+    ...params
+  }: IPaginationQueryCursorParams<
+    Prisma.MediaSelect,
+    Prisma.MediaWhereInput
+  >): Promise<IPaginationCursorReturn<MediaModel>> {
     const paginatedResult = await this.paginationService.cursor<PrismaMedia>(
       this.databaseService.media,
       {
@@ -77,9 +73,7 @@ export class MediaRepository {
     return result ? MediaMapper.toDomain(result) : null;
   }
 
-  async findOne(
-    where: Prisma.MediaWhereInput
-  ): Promise<MediaModel | null> {
+  async findOne(where: Prisma.MediaWhereInput): Promise<MediaModel | null> {
     const result = await this.databaseService.media.findFirst({
       where,
     });
@@ -103,10 +97,7 @@ export class MediaRepository {
     return MediaMapper.toDomain(result);
   }
 
-  async update(
-    id: string,
-    data: Prisma.MediaUpdateInput
-  ): Promise<MediaModel> {
+  async update(id: string, data: Prisma.MediaUpdateInput): Promise<MediaModel> {
     const result = await this.databaseService.media.update({
       where: { id },
       data,

@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  IPaginationQueryCursorParams,
   IPaginationCursorReturn,
+  IPaginationQueryCursorParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IResponseReturn } from '@/common/response/interfaces/response.interface';
@@ -18,6 +18,7 @@ import { NotificationRepository } from '@/modules/notification/repositories/noti
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
 import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
 import { Prisma } from '@/generated/prisma-client';
+import { NotificationModel } from '../models/notification.model';
 
 @Injectable()
 export class NotificationService implements INotificationService {
@@ -32,7 +33,7 @@ export class NotificationService implements INotificationService {
       Prisma.NotificationSelect,
       Prisma.NotificationWhereInput
     >
-  ): Promise<IPaginationCursorReturn<Prisma.NotificationGetPayload<{}>>> {
+  ): Promise<IPaginationCursorReturn<NotificationModel>> {
     return this.notificationRepository.findWithPaginationCursor(
       userId,
       pagination

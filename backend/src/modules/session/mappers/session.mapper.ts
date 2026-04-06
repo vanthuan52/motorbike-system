@@ -1,6 +1,9 @@
 import { SessionModel } from '../models/session.model';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
-import { UserAgent, GeoLocation } from '@/modules/user/interfaces/user.interface';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 export class SessionMapper {
   static toDomain(prismaSession: any): SessionModel {
@@ -9,11 +12,11 @@ export class SessionMapper {
     model.deviceOwnershipId = prismaSession.deviceOwnershipId;
     model.jti = prismaSession.jti;
     model.ipAddress = prismaSession.ipAddress;
-    
+
     // Convert Json to Domain types
     model.userAgent = prismaSession.userAgent as UserAgent;
     model.geoLocation = prismaSession.geoLocation as GeoLocation | undefined;
-    
+
     model.expiredAt = prismaSession.expiredAt;
     model.revokedAt = prismaSession.revokedAt;
     model.isRevoked = prismaSession.isRevoked;

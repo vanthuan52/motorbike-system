@@ -1,6 +1,6 @@
 import { RoleModel } from '../models/role.model';
 import { PermissionMapper } from '@/modules/permission/mappers/permission.mapper';
-import { Role as PrismaRole, Prisma } from '@/generated/prisma-client';
+import { Prisma, Role as PrismaRole } from '@/generated/prisma-client';
 
 export type PrismaRoleWithRelations = Prisma.RoleGetPayload<{
   include: {

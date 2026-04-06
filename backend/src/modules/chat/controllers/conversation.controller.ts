@@ -48,10 +48,11 @@ export class ConversationController {
   async get(
     @AuthJwtPayload() payload: IAuthJwtAccessTokenPayload
   ): Promise<IResponseReturn<ConversationGetResponseDto[]>> {
-    const conversations =
-      await this.conversationService.getConversationsByUser(payload.userId);
+    const conversations = await this.conversationService.getConversationsByUser(
+      payload.userId
+    );
 
-    const mapped: ConversationGetResponseDto[] = conversations.map((c) => ({
+    const mapped: ConversationGetResponseDto[] = conversations.map(c => ({
       id: c.id,
       participants: c.participants,
       lastMessage: c.lastMessage,
@@ -105,8 +106,7 @@ export class ConversationController {
         return { data: { id: existingConversation.id } };
       }
 
-      const created =
-        await this.conversationService.create(participantsSorted);
+      const created = await this.conversationService.create(participantsSorted);
 
       return { data: { id: created.id } };
     } catch (err) {

@@ -6,7 +6,15 @@ import { CareRecordMediaUtil } from './utils/care-record-media.util';
 @Module({
   imports: [],
   controllers: [],
-  providers: [CareRecordMediaService, CareRecordMediaRepository, CareRecordMediaUtil],
-  exports: [CareRecordMediaService, CareRecordMediaRepository, CareRecordMediaUtil],
+  providers: [
+    CareRecordMediaService,
+    CareRecordMediaRepository,
+    CareRecordMediaUtil,
+  ],
+  exports: [
+    CareRecordMediaService,
+    CareRecordMediaRepository,
+    CareRecordMediaUtil,
+  ],
 })
 export class CareRecordMediaModule {}

@@ -1,9 +1,9 @@
 import {
-  IPaginationQueryCursorParams,
-  IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ActivityLogModel } from '../models/activity-log.model';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';

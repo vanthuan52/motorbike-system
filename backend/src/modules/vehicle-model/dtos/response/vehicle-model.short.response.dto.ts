@@ -18,7 +18,7 @@ export class VehicleModelShortResponseDto extends OmitType(
     'photo',
     'createdAt',
     'updatedAt',
-  ],
+  ]
 ) {
   @ApiHideProperty()
   @Exclude()

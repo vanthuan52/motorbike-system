@@ -1,11 +1,11 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
-  ConflictException,
 } from '@nestjs/common';
 import { TokenPayload } from 'google-auth-library';
 import { Duration } from 'luxon';
@@ -612,7 +612,7 @@ export class AuthService implements IAuthService {
       await this.databaseService.$transaction(
         async (tx: Prisma.TransactionClient) => {
           await this.userService.changeUserPassword(user.id, password, { tx });
-          
+
           await this.sessionService.revokeAllActive(
             user.id,
             password.passwordCreated,
@@ -651,7 +651,6 @@ export class AuthService implements IAuthService {
   ): Promise<void> {
     await this.sessionService.revoke(userId, sessionId, requestLog);
   }
-
 
   async verifyEmail(
     { token }: AuthVerifyEmailRequestDto,

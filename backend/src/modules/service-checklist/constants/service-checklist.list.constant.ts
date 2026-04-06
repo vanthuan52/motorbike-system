@@ -4,4 +4,3 @@ export const ServiceChecklistDefaultAvailableOrderBy = [
   'createdAt',
   'updatedAt',
 ];
-

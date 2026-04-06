@@ -5,10 +5,10 @@ import { JobApplicationUserCreateRequestDto } from '../dtos/request/job-applicat
 import { JobApplicationUpdateStatusRequestDto } from '../dtos/request/job-application.update-status.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumJobStatusCodeError } from '../enums/job.status-code.enum';
 import { JobApplicationModel } from '../models/job-application.model';

@@ -3,9 +3,9 @@ import { EnumVehicleBrandStatus } from '../enums/vehicle-brand.enum';
 import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-model.mapper';
 import { PartMapper } from '@/modules/part/mappers/part.mapper';
 import {
+  Part as PrismaPart,
   VehicleBrand as PrismaVehicleBrand,
   VehicleModel as PrismaVehicleModel,
-  Part as PrismaPart,
 } from '@/generated/prisma-client';
 
 type PrismaVehicleBrandWithRelations = PrismaVehicleBrand & {

@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { CareAreaModel } from '../models/care-area.model';
 import { CareAreaMapper } from '../mappers/care-area.mapper';
 import { ICareAreaListFilters } from '../interfaces/care-area.filter.interface';
-import { CareArea as PrismaCareArea, Prisma } from '@/generated/prisma-client';
+import { Prisma, CareArea as PrismaCareArea } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareAreaRepository {
@@ -251,7 +251,9 @@ export class CareAreaRepository {
     };
   }
 
-  async deleteMany(where: Prisma.CareAreaWhereInput = {}): Promise<{ count: number }> {
+  async deleteMany(
+    where: Prisma.CareAreaWhereInput = {}
+  ): Promise<{ count: number }> {
     return this.databaseService.careArea.deleteMany({ where });
   }
 }

@@ -1,13 +1,13 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
-  IsNotEmpty,
-  IsOptional,
-  IsUUID,
-  IsNumber,
   IsBoolean,
   IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
   IsString,
+  IsUUID,
 } from 'class-validator';
 import {
   ENUM_CARE_RECORD_ITEM_ITEM_TYPE,

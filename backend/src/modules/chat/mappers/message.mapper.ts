@@ -1,5 +1,5 @@
 import { MessageModel } from '../models/message.model';
-import { EnumMessageType, EnumMessageStatus } from '../enums/message.enum';
+import { EnumMessageStatus, EnumMessageType } from '../enums/message.enum';
 import { ConversationMapper } from './conversation.mapper';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { Message as PrismaMessage } from '@/generated/prisma-client';

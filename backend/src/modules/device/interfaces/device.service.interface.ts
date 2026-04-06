@@ -1,14 +1,14 @@
 import {
+  IPaginationCursorReturn,
   IPaginationEqual,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
 import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/device.ownership.response';
-import { Prisma, DeviceOwnership } from '@generated/prisma-client';
+import { DeviceOwnership, Prisma } from '@generated/prisma-client';
 
 export interface IDeviceService {
   getListOffsetByAdmin(

@@ -147,7 +147,8 @@ export class AwsS3Service implements IAwsS3Service, OnModuleInit {
     this.maxAttempts = this.configService.get<number>('aws.s3.maxAttempts');
     this.timeoutInMs = this.configService.get<number>('aws.s3.timeoutInMs');
     this.endpoint = this.configService.get<string>('aws.s3.endpoint');
-    this.forcePathStyle = this.configService.get<boolean>('aws.s3.forcePathStyle') ?? false;
+    this.forcePathStyle =
+      this.configService.get<boolean>('aws.s3.forcePathStyle') ?? false;
 
     this.config.set(EnumAwsS3Accessibility.public, {
       ...this.configService.get<IAwsS3ConfigBucket>('aws.s3.config.public'),

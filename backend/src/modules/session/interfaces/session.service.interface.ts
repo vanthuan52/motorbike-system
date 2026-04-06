@@ -1,8 +1,8 @@
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ISessionListFilters } from './session.filter.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';

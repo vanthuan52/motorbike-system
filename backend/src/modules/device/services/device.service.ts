@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { EnumAppStatusCodeError } from '@/app/enums/app.status-code.enum';
 import {
+  IPaginationCursorReturn,
   IPaginationEqual,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
@@ -24,7 +24,7 @@ import { SessionRepository } from '@/modules/session/repositories/session.reposi
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { Prisma, DeviceOwnership } from '@/generated/prisma-client';
+import { DeviceOwnership, Prisma } from '@/generated/prisma-client';
 import { IDeviceCheckingResult } from '../interfaces/device.interface';
 
 @Injectable()

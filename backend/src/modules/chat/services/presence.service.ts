@@ -1,9 +1,9 @@
 import { Cache } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import {
-  PresenceCacheProvider,
   PRESENCE_KEY_PREFIX,
   PRESENCE_TTL_MS,
+  PresenceCacheProvider,
 } from '../constants/presence.constant';
 
 export interface IPresenceEntry {
@@ -96,12 +96,12 @@ export class PresenceService {
    */
   async getOnlineUsers(userIds: string[]): Promise<string[]> {
     const results = await Promise.all(
-      userIds.map(async (id) => ({
+      userIds.map(async id => ({
         id,
         online: await this.isOnline(id),
       }))
     );
 
-    return results.filter((r) => r.online).map((r) => r.id);
+    return results.filter(r => r.online).map(r => r.id);
   }
 }

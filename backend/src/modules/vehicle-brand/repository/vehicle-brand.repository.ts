@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@/common/database/services/database.service';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IVehicleBrandListFilters } from '../interfaces/vehicle-brand.filter.interface';
 import {
-  VehicleBrand as PrismaVehicleBrand,
   Prisma,
+  VehicleBrand as PrismaVehicleBrand,
 } from '@/generated/prisma-client';
 import { VehicleBrandModel } from '../models/vehicle-brand.model';
 import { VehicleBrandMapper } from '../mappers/vehicle-brand.mapper';

@@ -1,8 +1,8 @@
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { ApplicationReviewCreateRequestDto } from '../dtos/request/application-review.create.request.dto';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';

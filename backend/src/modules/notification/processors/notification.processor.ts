@@ -95,14 +95,6 @@ export class NotificationProcessor extends QueueProcessorBase {
               EnumNotificationProcess
             >
           );
-        case EnumNotificationProcess.publishTermPolicy:
-          return this.notificationProcessorService.processPublishTermPolicy(
-            job as Job<
-              INotificationWorkerPayload<INotificationPublishTermPolicyPayload>,
-              IQueueResponse,
-              EnumNotificationProcess
-            >
-          );
         case EnumNotificationProcess.welcome:
           return this.notificationProcessorService.processWelcome(
             job as Job<
@@ -147,14 +139,6 @@ export class NotificationProcessor extends QueueProcessorBase {
           return this.notificationProcessorService.processChangePassword(
             job as Job<
               INotificationWorkerPayload,
-              IQueueResponse,
-              EnumNotificationProcess
-            >
-          );
-        case EnumNotificationProcess.userAcceptTermPolicy:
-          return this.notificationProcessorService.processUserAcceptTermPolicy(
-            job as Job<
-              INotificationWorkerPayload<INotificationAcceptTermPolicyPayload>,
               IQueueResponse,
               EnumNotificationProcess
             >

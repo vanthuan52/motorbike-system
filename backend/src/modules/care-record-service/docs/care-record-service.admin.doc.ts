@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 import { CareRecordServiceCreateRequestDto } from '../dtos/request/care-record-service.create.request.dto';
 import { CareRecordServiceDto } from '../dtos/care-record-service.dto';
@@ -41,8 +41,8 @@ export function CareRecordServiceAdminListDoc(): MethodDecorator {
       'care-record-service.list',
       {
         dto: CareRecordServiceListResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -62,7 +62,7 @@ export function CareRecordServiceAdminCreateDoc(): MethodDecorator {
     DocResponse<CareRecordServiceDto>('care-record-service.create', {
       dto: CareRecordServiceDto,
       statusCode: HttpStatus.CREATED,
-    }),
+    })
   );
 }
 
@@ -80,7 +80,7 @@ export function CareRecordServiceAdminUpdateDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-service.update'),
+    DocResponse('care-record-service.update')
   );
 }
 
@@ -96,7 +96,7 @@ export function CareRecordServiceAdminDeleteDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-service.delete'),
+    DocResponse('care-record-service.delete')
   );
 }
 
@@ -114,7 +114,7 @@ export function CareRecordServiceAdminParamsIdDoc(): MethodDecorator {
     DocGuard({ role: true, policy: true }),
     DocResponse<CareRecordServiceDto>('care-record-service.getById', {
       dto: CareRecordServiceDto,
-    }),
+    })
   );
 }
 
@@ -134,8 +134,8 @@ export function CareRecordServiceAdminGetDoc(): MethodDecorator {
       'care-record-service.get',
       {
         dto: CareRecordServiceGetFullResponseDto,
-      },
-    ),
+      }
+    )
   );
 }
 
@@ -153,7 +153,7 @@ export function CareRecordServiceAdminUpdateStatusDoc(): MethodDecorator {
       jwtAccessToken: true,
     }),
     DocGuard({ role: true, policy: true }),
-    DocResponse('care-record-service.updateStatus'),
+    DocResponse('care-record-service.updateStatus')
   );
 }
 
@@ -176,7 +176,7 @@ export function CareRecordServiceAdminListWithChecklistsDoc(): MethodDecorator {
       'care-record-service.listWithChecklists',
       {
         dto: CareRecordServiceWithChecklistsResponseDto,
-      },
-    ),
+      }
+    )
   );
 }

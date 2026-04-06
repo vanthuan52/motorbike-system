@@ -1,9 +1,9 @@
 import {
-  IPaginationQueryCursorParams,
-  IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { JobApplicationUserCreateRequestDto } from '../dtos/request/job-application.create.request.dto';
 import { JobApplicationUpdateStatusRequestDto } from '../dtos/request/job-application.update-status.request.dto';

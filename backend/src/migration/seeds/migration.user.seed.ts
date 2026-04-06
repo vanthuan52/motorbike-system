@@ -109,11 +109,11 @@ export class MigrationUserSeed
               userRoles: {
                 create: {
                   role: {
-                     connect: { 
-                        id: roles.find(role => role.name === user.role).id 
-                     }
-                  }
-                }
+                    connect: {
+                      id: roles.find(role => role.name === user.role).id,
+                    },
+                  },
+                },
               },
               password: passwordHash,
               passwordCreated,

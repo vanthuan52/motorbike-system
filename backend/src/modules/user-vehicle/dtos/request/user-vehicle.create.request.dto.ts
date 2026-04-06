@@ -1,12 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  IsUUID,
   IsEmpty,
-  IsOptional,
+  IsNotEmpty,
   IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
 } from 'class-validator';
 import { faker } from '@faker-js/faker';
 

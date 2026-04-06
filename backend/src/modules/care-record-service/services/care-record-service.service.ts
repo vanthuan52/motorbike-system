@@ -8,19 +8,18 @@ import { CareRecordServiceUpdateStatusRequestDto } from '../dtos/request/care-re
 import { CareRecordChecklistService } from '@/modules/care-record-checklist/services/care-record-checklist.service';
 import { CareRecordServiceUtil } from '../utils/care-record-service.util';
 import {
-  IPaginationQueryOffsetParams,
-  IPaginationQueryCursorParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { EnumPaginationOrderDirectionType } from '@/common/pagination/enums/pagination.enum';
 import { EnumCareRecordServiceStatusCodeError } from '../enums/care-record-service.status-code.enum';
 import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordServiceModel } from '../models/care-record-service.model';
-import { Prisma } from '@generated/prisma-client';
-
 import { ICareRecordServiceListFilters } from '../interfaces/care-record-service.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class CareRecordServiceService implements ICareRecordServiceService {
@@ -104,7 +103,9 @@ export class CareRecordServiceService implements ICareRecordServiceService {
           limit: 100,
           skip: 0,
           where: checklistFind,
-          orderBy: { createdAt: EnumPaginationOrderDirectionType.desc },
+          orderBy: [
+            { createdAt: EnumPaginationOrderDirectionType.desc } as any,
+          ],
         });
 
       result.push({
@@ -206,15 +207,30 @@ export class CareRecordServiceService implements ICareRecordServiceService {
     actionBy: string
   ): Promise<void> {
     await this.findOneByIdOrFail(id);
-    await this.careRecordServiceRepository.update(id, {
-      deletedBy: actionBy,
-      deletedAt: new Date(),
-    });
+    await this.careRecordServiceRepository.softDelete(id, actionBy);
+    return;
+  }
+
+  async restore(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
+    await this.careRecordServiceRepository.restore(id, actionBy);
+    return;
+  }
+
+  async forceDelete(
+    id: string,
+    requestLog: IRequestLog,
+    actionBy: string
+  ): Promise<void> {
+    await this.careRecordServiceRepository.forceDelete(id);
     return;
   }
 
   async deleteMany(find?: Record<string, any>): Promise<boolean> {
-    return true;
+    return true; // Skipping complex bulk deletes unless implemented in repo
   }
 
   private async findOneByIdOrFail(id: string): Promise<CareRecordServiceModel> {

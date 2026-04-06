@@ -1,8 +1,8 @@
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PasswordHistoryModel } from '../models/password-history.model';
 import { Prisma } from '@/generated/prisma-client';

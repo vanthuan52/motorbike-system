@@ -5,8 +5,7 @@ export const CareRecordMediaDefaultAvailableSearch: string[] = [];
 export const CareRecordMediaDefaultAvailableOrderBy = ['createdAt'];
 
 export const CareRecordMediaDefaultStage = Object.values(
-  EnumCareRecordMediaStage,
+  EnumCareRecordMediaStage
 );
 
 export const CareRecordMediaDefaultType = Object.values(EnumFileExtension);
-

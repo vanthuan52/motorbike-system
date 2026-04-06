@@ -6,10 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  IPaginationCursorReturn,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IRoleListFilters } from '@/modules/role/interfaces/role.filter.interface';
 import {

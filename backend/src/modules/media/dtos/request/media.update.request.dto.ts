@@ -11,5 +11,5 @@ export class MediaUpdateRequestDto extends PartialType(
     'purpose',
     'ownerId',
     'ownerType',
-  ] as const),
+  ] as const)
 ) {}

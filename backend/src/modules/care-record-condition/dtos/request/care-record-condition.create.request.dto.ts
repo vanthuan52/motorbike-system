@@ -1,23 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import {
-  IsOptional,
-  IsUUID,
-  IsNumber,
+  IsArray,
   IsBoolean,
-  IsString,
   IsEnum,
-  Min,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
   Max,
   MaxLength,
-  IsArray,
+  Min,
 } from 'class-validator';
 import {
+  ENUM_BODY_CONDITION,
+  ENUM_EXHAUST_COVER_CONDITION,
   ENUM_OIL_LEVEL,
   ENUM_REARVIEW_MIRROR_CONDITION,
   ENUM_SEAT_CONDITION,
-  ENUM_BODY_CONDITION,
-  ENUM_EXHAUST_COVER_CONDITION,
 } from '../../enums/care-record-condition.enum';
 
 export class CareRecordConditionCreateRequestDto {

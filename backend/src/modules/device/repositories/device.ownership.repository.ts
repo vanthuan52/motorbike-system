@@ -5,11 +5,11 @@ import { DatabaseUtil } from '@/common/database/utils/database.util';
 import { FirebaseStaleTokenThresholdInDays } from '@/common/firebase/constants/firebase.constant';
 import { HelperService } from '@/common/helper/services/helper.service';
 import {
+  IPaginationCursorReturn,
   IPaginationEqual,
+  IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
-  IPaginationCursorReturn,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { PaginationService } from '@/common/pagination/services/pagination.service';
 import { IDatabaseOptions } from '@/common/database/interfaces/database.interface';
@@ -22,8 +22,8 @@ import {
   EnumDevicePlatform,
 } from '../enums/device.enum';
 import {
-  DeviceOwnership as PrismaDeviceOwnership,
   Prisma,
+  DeviceOwnership as PrismaDeviceOwnership,
 } from '@/generated/prisma-client';
 import { IDeviceCheckingResult } from '../interfaces/device.interface';
 

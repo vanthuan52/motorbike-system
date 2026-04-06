@@ -1,10 +1,10 @@
 import { CareRecordConditionModel } from '../models/care-record-condition.model';
 import {
-  EnumOilLevel,
-  EnumMirrorCondition,
-  EnumSeatCondition,
   EnumBodyCondition,
   EnumExhaustCoverCondition,
+  EnumMirrorCondition,
+  EnumOilLevel,
+  EnumSeatCondition,
 } from '../enums/care-record-condition.enum';
 import { CareRecordMapper } from '@/modules/care-record/mappers/care-record.mapper';
 import { CareRecordCondition as PrismaCareRecordCondition } from '@/generated/prisma-client';

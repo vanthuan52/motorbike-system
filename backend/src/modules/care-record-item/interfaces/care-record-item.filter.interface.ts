@@ -1,6 +1,5 @@
 import { Prisma } from '@/generated/prisma-client';
 
-export type ICareRecordItemListFilters = Partial<Pick<
-    Prisma.CareRecordItemWhereInput,
-    'careRecordId'
->>;
+export type ICareRecordItemListFilters = Partial<
+  Pick<Prisma.CareRecordItemWhereInput, 'careRecordId'>
+>;

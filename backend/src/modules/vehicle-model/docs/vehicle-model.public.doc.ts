@@ -29,7 +29,7 @@ export function VehicleModelPublicGetOneDoc(): MethodDecorator {
     }),
     DocResponse<VehicleModelGetFullResponseDto>('vehicle-model.get', {
       dto: VehicleModelGetFullResponseDto,
-    }),
+    })
   );
 }
 
@@ -52,6 +52,6 @@ export function VehicleModelPublicListDoc(): MethodDecorator {
     }),
     DocResponsePaging<VehicleModelListResponseDto>('vehicle-model.list', {
       dto: VehicleModelListResponseDto,
-    }),
+    })
   );
 }

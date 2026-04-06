@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
-  IPaginationQueryCursorParams,
-  IPaginationQueryOffsetParams,
-  IPaginationOffsetReturn,
   IPaginationCursorReturn,
   IPaginationIn,
+  IPaginationOffsetReturn,
+  IPaginationQueryCursorParams,
+  IPaginationQueryOffsetParams,
 } from '@/common/pagination/interfaces/pagination.interface';
 import { IActivityLogService } from '@/modules/activity-log/interfaces/activity-log.service.interface';
 import { ActivityLogRepository } from '@/modules/activity-log/repository/activity-log.repository';
