@@ -107,15 +107,17 @@ export default registerAs(
             bucket: publicBucket,
             baseUrl: resolveBaseUrl(publicBucket, region, endpoint),
             arn: `arn:aws:s3:::${publicBucket}`,
-            cdnUrl: process.env.AWS_S3_CDN
-              ? `https://${process.env.AWS_S3_CDN}`
+            cdnUrl: process.env.AWS_S3_PUBLIC_CDN
+              ? `https://${process.env.AWS_S3_PUBLIC_CDN}`
               : undefined,
           },
           private: {
             bucket: privateBucket,
             baseUrl: resolveBaseUrl(privateBucket, region, endpoint),
             arn: `arn:aws:s3:::${privateBucket}`,
-            cdnUrl: undefined,
+            cdnUrl: process.env.AWS_S3_PRIVATE_CDN
+              ? `https://${process.env.AWS_S3_PRIVATE_CDN}`
+              : undefined,
           },
           temp: {
             bucket: tempBucket,
@@ -126,8 +128,8 @@ export default registerAs(
       },
       ses: {
         iam: {
-          key: process.env.AWS_SES_CREDENTIAL_KEY,
-          secret: process.env.AWS_SES_CREDENTIAL_SECRET,
+          key: process.env.AWS_SES_IAM_CREDENTIAL_KEY,
+          secret: process.env.AWS_SES_IAM_CREDENTIAL_SECRET,
           arn: process.env.AWS_SES_IAM_ARN,
         },
         region: process.env.AWS_SES_REGION,

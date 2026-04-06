@@ -17,6 +17,7 @@
     "prepare": "husky",
     "clean": "rimraf dist && rimraf node_modules && npm cache clean --force",
     "generate:keys": "npx ts-node scripts/generate-keys.ts",
+    "generate:mongo-key": "npx ts-node scripts/generate-mongo-key.ts",
     "format": "prettier --write '{src,test}/**/*.{ts,json,yml,yaml}' && prettier --write '*.{ts,json,yml,yaml,mjs}'",
     "deadcode": "ts-prune --project tsconfig.json --skip *.json --skip generated/* | grep -v 'used in module'",
     "spell": "cspell lint --config cspell.json '{src,test}/**/*.ts' --color --gitignore --no-must-find-files --no-summary --no-progress || true",

@@ -1,6 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { author, repository, version } from 'package.json';
 import { EnumAppEnvironment } from '@/app/enums/app.enum';
+import { EnumRequestTimezone } from '@/common/request/enums/request.enum';
 
 export type AppConfig = {
   name: string;
@@ -31,7 +32,7 @@ export default registerAs<AppConfig>('app', (): AppConfig => {
     name: process.env.APP_NAME ?? 'nestjs-motorbike-system',
     env:
       EnumAppEnvironment[process.env.APP_ENV] ?? EnumAppEnvironment.development,
-    timezone: process.env.APP_TIMEZONE || 'Asia/Ho_Chi_Minh',
+    timezone: process.env.APP_TIMEZONE || EnumRequestTimezone.asiaHoChiMinh,
     version,
     encryptionSecretKey: process.env.APP_ENCRYPTION_SECRET_KEY,
     author: author as {

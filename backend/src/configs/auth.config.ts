@@ -50,26 +50,6 @@ export interface IConfigAuth {
     header: string;
     cachePrefixKey: string;
   };
-  twoFactor: {
-    strategy: OTPStrategy;
-    algorithm: HashAlgorithm;
-    issuer: string;
-    digits: number;
-    periodInSeconds: number;
-    window: number;
-    secretLength: number;
-    challengeTtlInMs: number;
-    cachePrefixKey: string;
-    maxAttempt: number;
-    lockAttemptDuration: number;
-    backupCodes: {
-      count: number;
-      length: number;
-    };
-    encryption: {
-      key: string;
-    };
-  };
 }
 
 export default registerAs(
@@ -128,26 +108,6 @@ export default registerAs(
     xApiKey: {
       header: 'x-api-key',
       cachePrefixKey: 'ApiKey',
-    },
-    twoFactor: {
-      strategy: 'totp',
-      algorithm: 'sha1',
-      issuer: process.env.AUTH_TWO_FACTOR_ISSUER ?? 'MotorbikeSystemTwoFactor',
-      digits: 6,
-      periodInSeconds: 30,
-      window: 1,
-      secretLength: 32,
-      challengeTtlInMs: ms('5m'),
-      cachePrefixKey: 'TwoFactor',
-      backupCodes: {
-        count: 8,
-        length: 10,
-      },
-      maxAttempt: 5,
-      lockAttemptDuration: ms('2m'),
-      encryption: {
-        key: process.env.AUTH_TWO_FACTOR_ENCRYPTION_KEY,
-      },
     },
   })
 );

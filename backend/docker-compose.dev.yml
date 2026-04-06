@@ -1,60 +1,59 @@
-name: motorbike-system
+name: motorbike-system-dev
 
 services:
-  # Main API service
-  apis:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-      args:
-        NODE_ENV: staging
-    container_name: motorbike-apis
-    hostname: apis
+  # MongoDB with Replica Set — required by Prisma for transactions
+  mongo:
+    image: mongo:8.0
+    container_name: motorbike-dev-mongo
+    hostname: mongo
     ports:
-      - 5300:5300
-    env_file:
-      - .env
+      - '27017:27017'
     environment:
-      - NODE_ENV=staging
-    restart: on-failure:5
+      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - mongo_dev_data:/data/db
+      - ./docker/mongo/mongo.key:/etc/mongo/mongo.key:ro
+    command: >-
+      bash -c
+      "cp /etc/mongo/mongo.key /tmp/mongo.key &&
+      chmod 400 /tmp/mongo.key &&
+      chown mongodb:mongodb /tmp/mongo.key &&
+      mongod --replSet rs0 --bind_ip_all --keyFile /tmp/mongo.key --auth"
     networks:
-      - app-network
+      - dev-network
+    healthcheck:
+      test: mongosh --eval "db.adminCommand('ping')" --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # MongoDB Replica Set Initialization — runs once then exits
+  mongo-init:
+    image: mongo:8.0
+    container_name: motorbike-dev-mongo-init
     depends_on:
-      redis:
-        condition: service_healthy
       mongo:
         condition: service_healthy
-      jwks-server:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-      minio-init:
-        condition: service_completed_successfully
-    healthcheck:
-      test:
-        [
-          'CMD',
-          'wget',
-          '--no-verbose',
-          '--tries=1',
-          '--spider',
-          'http://localhost:5300/api/hello',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    profiles: ['apis']
+    networks:
+      - dev-network
+    command: >-
+      bash -c
+      "echo 'Initializing MongoDB replica set...' &&
+      mongosh --host mongo:27017 -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'try { rs.status(); print(\"Replica set already initialized.\"); } catch(e) { rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"127.0.0.1:27017\" }] }); print(\"Replica set initialized.\"); }' &&
+      echo 'Done.'"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
     deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 2G
+      restart_policy:
+        condition: none
 
-  # JWKS Server for token validation
+  # JWKS Server — serves public keys for JWT verification
   jwks-server:
     image: nginx:alpine
-    container_name: motorbike-jwks-server
+    container_name: motorbike-dev-jwks-server
     hostname: jwks-server
     ports:
       - '5301:80'
@@ -63,12 +62,7 @@ services:
       - ./keys/refresh-jwks.json:/usr/share/nginx/html/.well-known/refresh-jwks.json
       - ./docker/jwks-server/jwks.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - app-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 128M
+      - dev-network
     healthcheck:
       test:
         [
@@ -84,37 +78,32 @@ services:
       retries: 3
       start_period: 10s
 
-  # Redis for caching and queues — internal only, not exposed to host
+  # Redis — for caching and queues
   redis:
     image: redis:8.0-alpine
-    container_name: motorbike-redis
+    container_name: motorbike-dev-redis
     hostname: redis
     ports:
-      - '5302:6379'
+      - '6379:6379'
     volumes:
-      - redis_data:/data
+      - redis_dev_data:/data
     networks:
-      - app-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
+      - dev-network
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
-      timeout: 30s
+      timeout: 5s
       retries: 5
 
-  # Bull dashboard for queue monitoring
+  # Bull Board — queue monitoring dashboard
   redis-bullboard:
     image: venatum/bull-board:latest
-    container_name: motorbike-bullboard
+    container_name: motorbike-dev-bullboard
     hostname: redis-bullboard
     ports:
-      - 5303:3000
+      - '5303:3000'
     networks:
-      - app-network
+      - dev-network
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -125,88 +114,23 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 128M
-
-  # MongoDB Replica Set - Primary Node — internal only, not exposed to host
-  mongo:
-    image: mongo:8.0
-    container_name: motorbike-mongo
-    hostname: mongo
-    ports:
-      - '5304:27017'
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
-    networks:
-      - app-network
-    volumes:
-      - mongo_data:/data/db
-      - ./docker/mongo/mongo.key:/etc/mongo/mongo.key:ro
-    command: >-
-      bash -c
-      "cp /etc/mongo/mongo.key /tmp/mongo.key &&
-      chmod 400 /tmp/mongo.key &&
-      chown mongodb:mongodb /tmp/mongo.key &&
-      mongod --bind_ip_all --replSet rs0 --port 27017 --keyFile /tmp/mongo.key --auth"
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1GB
-    healthcheck:
-      test: mongosh --eval "db.adminCommand('ping')" --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-  # MongoDB Replica Set Initialization — runs once then exits
-  mongo-init:
-    image: mongo:8.0
-    container_name: motorbike-mongo-init
-    restart: 'no'
-    depends_on:
-      mongo:
-        condition: service_healthy
-    networks:
-      - app-network
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
-    command: >-
-      bash -c
-      "echo 'Initializing MongoDB replica set...' &&
-      mongosh --host mongo:27017 -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'try { rs.status(); print(\"Replica set already initialized.\"); } catch(e) { rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"mongo:27017\", priority: 1 }] }); print(\"Replica set initialized.\"); }' &&
-      echo 'Done.'"
-    deploy:
-      restart_policy:
-        condition: none
 
   # MinIO — S3-compatible object storage
   minio:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: motorbike-minio
+    container_name: motorbike-dev-minio
     hostname: minio
     ports:
-      - '5305:9000'
-      - '5306:9001'
+      - '39000:9000' # API  — matches STORAGE_ENDPOINT=http://localhost:39000
+      - '39001:9001' # Console UI
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
     volumes:
-      - minio_data:/data
+      - minio_dev_data:/data
     command: server --console-address ":9001" /data
     networks:
-      - app-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+      - dev-network
     healthcheck:
       test:
         [
@@ -224,12 +148,12 @@ services:
   # MinIO Initialization — creates buckets, users, policies then exits
   minio-init:
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
-    container_name: motorbike-minio-init
+    container_name: motorbike-dev-minio-init
     depends_on:
       minio:
         condition: service_healthy
     networks:
-      - app-network
+      - dev-network
     volumes:
       - ./docker/minio/policies:/policies
     environment:
@@ -275,10 +199,10 @@ services:
         condition: none
 
 volumes:
-  mongo_data:
-  redis_data:
-  minio_data:
+  mongo_dev_data:
+  redis_dev_data:
+  minio_dev_data:
 
 networks:
-  app-network:
+  dev-network:
     driver: bridge
