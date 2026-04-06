@@ -1,404 +1,309 @@
-[![Contributors][ack-contributors-shield]][ref-ack-contributors]
-[![Forks][ack-forks-shield]][ref-ack-forks]
-[![Stargazers][ack-stars-shield]][ref-ack-stars]
-[![Issues][ack-issues-shield]][ref-ack-issues]
-[![MIT License][ack-license-shield]][ref-ack-license]
+# Motorbike System — Backend 🏍️ 🔥
 
-[![NestJs][nestjs-shield]][ref-nestjs]
-[![NodeJs][nodejs-shield]][ref-nodejs]
-[![Typescript][typescript-shield]][ref-typescript]
-[![MongoDB][mongodb-shield]][ref-mongodb]
-[![JWT][jwt-shield]][ref-jwt]
-[![Jest][jest-shield]][ref-jest]
-[![PNPM][pnpm-shield]][ref-pnpm]
-[![Docker][docker-shield]][ref-docker]
+Production-ready NestJS backend for a **motorbike service and care management platform**. Built with enterprise-grade authentication, RBAC authorization, S3-compatible file storage (MinIO/AWS), real-time chat, appointment management, and full vehicle care record tracking.
 
-# ACK NestJs Boilerplate 🔥 🚀
-
-[ACK NestJs][ref-ack] is a [NestJs v11.x][ref-nestjs] boilerplate designed for backend services. Production-ready NestJS boilerplate with authentication, authorization, and enterprise features
-
-_You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with following this link_
-
-### Ideal For
-
-This boilerplate is perfect for:
-
-- 🏢 **Enterprise Applications** - Full-featured auth system with RBAC and audit logging
-- 🔐 **Authentication Services** - Ready-to-use JWT, OAuth, and 2FA implementation
-- 📱 **Mobile App Backends** - RESTful API with social login support
-- 🌐 **Multi-tenant SaaS** - Role-based access control and policy management
-- 🚀 **Microservices** - Stateful sessions with Redis and async job processing
-- 💼 **Startup MVPs** - Production-ready foundation to ship faster
+> Built on top of [ACK NestJS Boilerplate][ref-ack] — a battle-tested NestJS foundation.
 
 ## Table of Contents
 
 - [Important](#important)
-- [TODO](#todo)
-- [Prerequisites](#prerequisites)
-- [Build with](#build-with)
-- [Objective](#objective)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
 - [Features](#features)
-  - [🎯 Architecture Highlights](#-architecture-highlights)
-  - [🔐 Authentication & Security](#-authentication--security)
-  - [📊 Database & Storage](#-database--storage)
-  - [⚡ Performance & Optimization](#-performance--optimization)
-  - [🛠 Development Experience](#-development-experience)
-  - [📡 Integrations & Monitoring](#-integrations--monitoring)
-  - [📝 Testing & Documentation](#-testing--documentation)
+- [Domain Modules](#domain-modules)
 - [Quick Start](#quick-start)
-- [Change DB with Minimal Effort](#change-db-with-minimal-effort)
 - [Installation](#installation)
 - [License](#license)
-- [Contribute](#contribute)
 - [Contact](#contact)
+
+---
 
 ## Important
 
-- Stateful Authorization, using `redis-session` and `JWT`.
-- Must run MongoDB as a `replication set` for `database transactions`.
-- If you change the environment value of `APP_ENV` to `production`, it will disable Documentation.
-- When using multiple protection decorators, they must be applied in the correct order:
+- **Stateful Authorization** using `Redis` sessions and `JWT` (ES256 Access + ES512 Refresh).
+- **MongoDB Replica Set** is required by Prisma for transaction support.
+- Set `NODE_ENV=production` to disable Swagger documentation.
+- **Decorator order matters** when combining multiple guards on an endpoint:
+
   ```typescript
   @ExampleDoc()
   @ActivityLog(...)
-  @TermPolicyAcceptanceProtected(...)
   @PolicyAbilityProtected({...})
   @RoleProtected(...)
   @UserProtected()
   @AuthJwtAccessProtected()
-  @FeatureFlagProtected(...)
   @ApiKeyProtected()
   @HttpCode(HttpStatus.OK)
   @Get('/some-endpoint')
   ```
-- Since version `8.0.0`, the project uses the `ES256` algorithm for Access Token, and `ES512` for Refresh Token.
-- Since version `8.0.0`, the project uses prisma `6.19` for handle database.
-- Since version `8.0.0`, the project uses pnpm for package manager.
 
-## TODO
+- Storage is **MinIO by default** (S3-compatible). Switch to AWS S3 by clearing `STORAGE_ENDPOINT` — no code changes needed.
+- Package manager: **npm** (do not use pnpm or yarn).
 
-- [x] Change enum name to use PascalCase
-- [x] 2FA with TOTP Authentication (eg: Google Authenticator)
-- [x] Recovery Codes Method
-- [x] Add TOTP Authentication Protected to reset password, change password, and regenerate backup codes endpoints
-- [x] Add import and export endpoint with presign upload
-- [x] Add migration script to migrate AWS S3 Policy for public and private, include config for presign expiration
-- [x] Device awareness, Geo Location with `geoip-lite`
-- [x] Notification System includes silent, inApp, push, and email.
+---
 
-### Next Features
+## Tech Stack
 
-- [ ] Activity Log support bidirectional logging
-- [ ] Login with biometrics (fingerprint or face detection)
-- [ ] Login with passkey
-- [ ] Login with Github SSO
-- [ ] Analytics Dashboard (Docs is provided at [docs/analytics.md][ref-doc-analytics])
-- [ ] Multi-Tenant Architecture
-- [ ] Verification Mobile Number, whatsapp or/and sms
-- [ ] Versioning System (Force frontend to update, especially mobile)
+| Technology     | Version       |
+| -------------- | ------------- |
+| NestJs         | v11.x         |
+| Node.js        | v22.x+        |
+| TypeScript     | v6.x          |
+| Prisma         | v7.x          |
+| MongoDB        | v8.0.x        |
+| Redis          | v8.0.x        |
+| MinIO          | RELEASE.2025+ |
+| Docker         | v24.x+        |
+| Docker Compose | v2.x+         |
 
-### Drop Features
+---
 
-- Sliding session (Example: 7d expires for a refresh token, can be extends until x day. if not action in 7d then need to re-login)
+## Architecture
 
-### Test
+```
+src/
+├── app/                  # Application bootstrap, guards, interceptors
+├── configs/              # Environment configuration (JWT, AWS, Redis, DB...)
+├── common/               # Shared infrastructure
+│   ├── aws/             # S3 service (MinIO/AWS)
+│   ├── cache/           # Redis cache service
+│   ├── database/        # Prisma client + database service
+│   ├── file/            # File utilities (MIME, extension)
+│   ├── firebase/        # Firebase Admin SDK
+│   ├── pagination/      # Cursor & offset pagination
+│   ├── redis/           # Redis client
+│   ├── request/         # Request helpers, CORS, helpers
+│   └── response/        # Standardized API response format
+├── modules/             # Feature modules (domain logic)
+├── queues/              # BullMQ background job processors
+├── router/              # Route registration
+├── migration/           # Database seeders
+├── languages/           # i18n translation files
+├── main.ts              # App entry point
+└── swagger.ts           # OpenAPI configuration
+```
 
-- [ ] Unit test
-- [ ] Integration Test
-- [ ] E2E Test
-- [ ] Stress Test For Benchmark/Performance
-- [ ] Load Test For Benchmark/Performance
+**Design Patterns:**
 
-## Prerequisites
+- **Repository Pattern** — data access layer separated from business logic
+- **SOLID Principles** — maintainable and testable codebase
+- **12-Factor App** — environment-based configuration, stateless processes
+- **Modular Structure** — each domain is a self-contained NestJS module
 
-I assume that everyone who comes here is a **`programmer with intermediate knowledge`**. To get the most out of this project, here's what you should understand:
-
-1. **[NestJs Fundamentals][ref-nestjs]** - Main framework with decorators, modules, services, and dependency injection
-2. **[TypeScript][ref-typescript]** - Strong typing, interfaces, generics, and advanced TypeScript features
-3. **[Prisma ORM][ref-prisma]** - Modern database toolkit for schema design, migrations, and type-safe queries
-4. **[MongoDB][ref-mongodb]** - NoSQL database concepts, especially **replication sets** for transactions
-5. **[Redis][ref-redis]** - Caching strategies, session storage, and queue management
-6. **Repository Design Pattern** - Data access layer abstraction for maintainable code
-7. **SOLID Principles** - Clean code architecture and dependency management
-8. **Queue Systems** - Background job processing with [BullMQ][ref-bullmq]
-9. **Optional. [Docker][ref-docker]** - Containerization for running the project
-10. **Optional. Microservice Architecture** - Understanding distributed systems concepts
-
-## Build with
-
-The project is built using the following technologies and versions. We always strive to use the latest stable versions to ensure security, performance, and access to modern features:
-
-| Name           | Version  |
-| -------------- | -------- |
-| NestJs         | v11.x    |
-| NodeJs         | v24.11.x |
-| TypeScript     | v5.9.x   |
-| Prisma         | v6.19.x  |
-| MongoDB        | v8.0.x   |
-| Redis          | v8.0.x   |
-| Docker         | v28.5.x  |
-| Docker Compose | v2.40.x  |
-
-For more information see [package.json][ref-package-json]
-
-## Objective
-
-- Easy to maintain
-- NestJs Habit
-- Component based / modular folder structure
-- Stateful authentication and authorization
-- Repository Design Pattern
-- Follow Community Guidelines
-- Follow The Twelve-Factor App
+---
 
 ## Features
 
-### 🎯 Architecture Highlights
-
-- **Repository Pattern** - Clean data access abstraction
-- **SOLID Principles** - Maintainable and testable codebase
-- **Modular Structure** - Component-based folder organization
-- **12-Factor App** - Cloud-native best practices
-- **Production Ready** - Enterprise-grade security and scalability
-
 ### 🔐 Authentication & Security
 
-Production-ready authentication system with multiple strategies and security layers.
-
-- **JWT Authentication** - ES256 for Access Token, ES512 for Refresh Token with automatic rotation
-- **Stateful Sessions** - Redis-backed sessions with token revocation support
-- **Social Login** - Google OAuth and Apple Sign In integration
-- **Two-Factor Authentication** - TOTP-based 2FA with backup recovery codes
-- **RBAC & Policies** - Fine-grained role and permission system
-- **API Key Protection** - Secure external API access control
-- **Rate Limiting** - DDoS protection with configurable throttling
-- **Security Headers** - Helmet integration for HTTP security
+- **JWT with JWKS** — ES256 Access Token, ES512 Refresh Token served via nginx JWKS server
+- **Stateful Sessions** — Redis-backed sessions with per-device token revocation
+- **Social Login** — Google OAuth 2.0, Apple Sign In
+- **RBAC & Policies** — Role + permission system with CASL ability checks
+- **API Key Protection** — Secure external API access
+- **Rate Limiting** — Configurable throttling per route
+- **Security Headers** — Helmet middleware
 
 ### 📊 Database & Storage
 
-Modern ORM with NoSQL database and file storage capabilities.
+- **Prisma ORM** — Type-safe MongoDB queries, schema-first approach
+- **MongoDB Replica Set** — Required for Prisma transaction support
+- **MinIO / AWS S3** — S3-compatible file storage; switch providers via `.env` only
+- **Presigned URLs** — Direct client-to-storage upload/download
+- **Multipart Upload** — Large file chunked upload support
 
-- **Prisma ORM** - Type-safe database toolkit with migrations
-- **MongoDB** - NoSQL database with transaction support (replica set required)
-- **Redis Caching** - Multi-level caching strategies for performance
-- **AWS S3 Integration** - File storage with presigned URLs
-- **Repository Pattern** - Clean separation of data access layer
+### ⚡ Performance
 
-### ⚡ Performance & Optimization
+- **SWC Compiler** — ~20x faster TypeScript compilation
+- **BullMQ Queues** — Async background job processing (email, push, sync)
+- **Redis Caching** — Multi-level caching with TTL management
+- **Response Compression** — gzip/deflate for all responses
+- **Feature Flags** — Dynamic feature rollout without redeployment
 
-Built for speed and scalability from day one.
+### 📡 Integrations
 
-- **Background Jobs** - BullMQ queue system for async processing
-- **Response Compression** - Automatic gzip/deflate compression
-- **SWC Compiler** - 20x faster than TypeScript compiler
-- **Pagination** - Server-side pagination with cursor support
-- **Feature Flags** - Dynamic feature rollout with A/B testing
+- **AWS SES** — Transactional email with Handlebars templates
+- **Firebase FCM** — Push notifications with multicast + token cleanup
+- **Sentry** — Error tracking and performance monitoring
+- **GeoIP** — Device geolocation with `geoip-lite`
+- **WebSockets** — Real-time chat via Socket.IO
 
-### 🛠 Development Experience
+### 🛠 Developer Experience
 
-Developer-friendly tooling and best practices.
+- **Swagger / OpenAPI 3** — Interactive API docs at `/api/docs`
+- **URL Versioning** — Default v1 (`/api/v1/...`)
+- **i18n** — Multi-language via `x-custom-lang` header
+- **Husky + lint-staged** — Pre-commit code quality gates
+- **Commander-based seeder** — Role, user, feature flags, API key seeders
 
-- **NestJS 11.x** - Latest framework version with full TypeScript support
-- **Swagger/OpenAPI 3** - Interactive API documentation
-- **API Versioning** - URL-based versioning (default v1)
-- **Request Validation** - Automatic validation with class-validator
-- **Error Handling** - Standardized error responses with i18n
-- **Hot Reload** - Fast development with SWC
-- **Code Quality** - ESLint, Prettier, Husky pre-commit hooks
-- **Database Seeding** - Commander-based data population
+---
 
-### 📡 Integrations & Monitoring
+## Domain Modules
 
-Enterprise-grade integrations for production readiness.
+### 🔑 Identity & Access
 
-- **Sentry** - Error tracking and performance monitoring
-- **AWS SES** - Transactional email delivery
-- **Activity Logging** - Comprehensive audit trail
-- **Health Checks** - System monitoring endpoints
-- **Multi-language Support** - i18n with `x-custom-lang` header
+| Module         | Description                                               |
+| -------------- | --------------------------------------------------------- |
+| `auth`         | Login, register, refresh token, logout, social login, 2FA |
+| `user`         | User CRUD, profile, password management                   |
+| `role`         | Role definitions and assignment                           |
+| `permission`   | Fine-grained action/subject permissions                   |
+| `policy`       | CASL policy management                                    |
+| `api-key`      | External API key issuance and validation                  |
+| `session`      | Active session listing and revocation                     |
+| `device`       | Device ownership and tracking                             |
+| `verification` | Email OTP verification flow                               |
 
-### 🔔 Notifications
+### 🏍️ Vehicle & Service Domain
 
-Multi-channel notification system for user engagement.
+| Module              | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `vehicle-brand`     | Motorbike brands (Honda, Yamaha...)           |
+| `vehicle-model`     | Specific models per brand with specs          |
+| `user-vehicle`      | Vehicle ownership registration                |
+| `vehicle-service`   | Service types offered (oil change, brakes...) |
+| `service-category`  | Service groupings                             |
+| `service-price`     | Model-specific pricing per service            |
+| `service-checklist` | Inspection checklist items per service        |
+| `care-area`         | Inspection zones (engine, chassis, brakes...) |
+| `part`              | Spare part catalog                            |
+| `part-type`         | Part categorization                           |
 
-- **Multi-Channel Delivery** - Email, push, in-app, and silent notifications
-- **User Preferences** - Per-type and per-channel opt-in/out settings
-- **AWS SES Email Templates** - Handlebars-based email templates synced to SES
-- **Firebase FCM Push** - Push notifications with multicast support and token cleanup
-- **Queue-Based Processing** - Reliable async delivery with BullMQ
+### 🔧 Care Records
 
-📖 See [Notification Documentation][ref-doc-notification] for detailed setup and usage.
+| Module                  | Description                            |
+| ----------------------- | -------------------------------------- |
+| `appointment`           | Customer booking and scheduling        |
+| `store`                 | Service center / shop management       |
+| `care-record`           | Main service record per vehicle visit  |
+| `care-record-item`      | Labor and parts used in each record    |
+| `care-record-service`   | Services performed during the visit    |
+| `care-record-checklist` | Inspection results per checklist item  |
+| `care-record-condition` | Initial vehicle condition on arrival   |
+| `care-record-media`     | Before/after photos linked to a record |
 
-### 📝 Testing & Documentation
+### 🔔 Communication
 
-Comprehensive testing framework and documentation.
+| Module         | Description                                |
+| -------------- | ------------------------------------------ |
+| `notification` | Multi-channel: email, push, in-app, silent |
+| `chat`         | Real-time WebSocket chat                   |
 
-- **Jest Testing** - Unit, integration, and e2e test setup
-- **Swagger UI** - Auto-generated API documentation
-- **Detailed Docs** - 20+ documentation files covering all features
-- **Docker Support** - Complete containerization with docker-compose
+### 🛠 Platform
+
+| Module         | Description                                    |
+| -------------- | ---------------------------------------------- |
+| `media`        | File metadata tracking (S3 key, CDN URL, MIME) |
+| `activity-log` | Audit trail for user actions                   |
+| `health`       | System health check endpoint                   |
+| `job`          | Background job management                      |
+
+---
 
 ## Quick Start
 
 ```bash
-# Clone repository
-git clone https://github.com/andrechristikan/ack-nestjs-boilerplate
+# 1. Clone
+git clone https://github.com/vanthuan52/motorbike_system.git
+cd motorbike_system/backend
 
-# Install dependencies
-pnpm install
+# 2. Install dependencies
+npm install
 
-# Setup environment
-cp .env.example .env
+# 3. Configure environment
+cp .env.example .env.development
+# Edit .env.development and fill in required values
 
-# Run with Docker
-docker-compose up -d
+# 4. Generate JWT keys
+npm run generate:keys
 
-# Access API
-open http://localhost:3000/docs
+# 5. Start all supporting services (MongoDB, Redis, MinIO, JWKS)
+docker compose -f docker-compose.dev.yml --env-file .env.development up -d
+
+# 6. Setup database
+npm run db:generate
+npm run db:migrate
+npm run migration:seed
+
+# 7. Start the app
+npm run start:dev
 ```
 
-## Change DB with Minimal Effort
+**API:** `http://localhost:5300`
+**Swagger:** `http://localhost:5300/api/docs`
+**MinIO Console:** `http://localhost:39001`
+**Bull Board:** `http://localhost:5303`
 
-Thanks to **Repository Pattern** and **Prisma ORM**, switching databases requires minimal code changes. The abstraction layer isolates database logic from business logic.
+> See [setup.md](./setup.md) for the full step-by-step installation guide.
 
-### Supported Databases
-
-| Database       | Best For                         | Transaction Support  |
-| -------------- | -------------------------------- | -------------------- |
-| **MongoDB**    | Document-based, flexible schema  | ✅ Yes (replica set) |
-| **PostgreSQL** | Relational Database, reliability | ✅ Yes               |
-
-**Other supported databases:** MySQL, SQLite, SQL Server, CockroachDB
-
-**Migration typically requires:**
-
-- Updating `prisma/schema.prisma` provider
-- Adjusting ID strategy (ObjectId → UUID). Update DatabaseService Code.
-- Running `npx prisma migrate dev`
-- Running `pnpm migration:seed`
-
-**Business logic stays unchanged** - services, controllers, and authentication work as-is.
-
-For detailed migration guides, see [Database Documentation][ref-doc-database].
+---
 
 ## Installation
 
-For detailed installation instructions (both default and Docker-based), please refer to the [Installation][ref-doc-installation].
+| Environment | Command                                              | Notes                       |
+| ----------- | ---------------------------------------------------- | --------------------------- |
+| Development | `npm run start:dev`                                  | Hot-reload, Swagger enabled |
+| Staging     | `docker compose -f docker-compose.staging.yml up -d` | Full stack in Docker        |
+| Production  | `npm run build && npm run start:prod`                | Swagger disabled            |
+
+### Key npm Scripts
+
+| Command                   | Description               |
+| ------------------------- | ------------------------- |
+| `npm run start:dev`       | Start with hot-reload     |
+| `npm run db:generate`     | Regenerate Prisma client  |
+| `npm run db:migrate`      | Push schema to MongoDB    |
+| `npm run db:studio`       | Open Prisma Studio        |
+| `npm run migration:seed`  | Seed initial data         |
+| `npm run migration:fresh` | Reset DB and re-seed      |
+| `npm run generate:keys`   | Generate new JWT key pair |
+| `npm run test`            | Run unit tests            |
+| `npm run lint`            | Run ESLint                |
+| `npm run format`          | Run Prettier              |
+| `npm run typecheck`       | Run TypeScript type check |
+
+---
+
+## Storage — MinIO / AWS S3
+
+Storage is config-driven. **No code change needed** to switch providers:
+
+```env
+# MinIO (default for local/staging)
+STORAGE_ENDPOINT=http://minio:9000
+STORAGE_FORCE_PATH_STYLE=true
+
+# AWS S3 (clear STORAGE_ENDPOINT)
+STORAGE_ENDPOINT=
+STORAGE_FORCE_PATH_STYLE=false
+AWS_S3_REGION=ap-southeast-3
+```
+
+MinIO is auto-configured on startup via `minio-init` container (buckets, IAM user, CORS, lifecycle rules).
+
+---
 
 ## License
 
-This project is licensed under the [MIT License][ref-ack-license].
+Licensed under the [MIT License][ref-license].
 
-## Contribute
-
-Welcome contributions! Please read [CONTRIBUTING.md][ref-doc-contributing] for guidelines on how to get started.
+---
 
 ## Contact
 
-**Andre Christi Kan**  
-📧 [andrechristikan@gmail.com][ref-author-email]
+**Van Thuan**
+📧 [charlesdang.252@gmail.com][ref-author-email]
 
 [![Github][github-shield]][ref-author-github]
-[![LinkedIn][linkedin-shield]][ref-author-linkedin]
-
-### Support This Project
-
-If you find this project helpful and would like to support its development, please consider giving it a ⭐ **star** on GitHub or buying me a ☕ **coffee**!
-
-**Buy me a coffee** ☕
-
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <a href='https://ko-fi.com/andrechristikan' target='_blank'>
-    <img src='https://cdn.ko-fi.com/cdn/kofi3.png?v=3' alt='Buy Me a Coffee at ko-fi.com' width='200'/>
-  </a>
-</div>
-
-**Or support via PayPal** 💳
-
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <a href='https://www.paypal.me/andrechristikan' target='_blank'>
-    <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' alt='Donate with PayPal' />
-  </a>
-</div>
-
-<!-- REFERENCES -->
-
-<!-- BADGE LINKS -->
-
-[ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
-[nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
-[typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-[mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
-[jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
-[jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
-[docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-[linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
-
-<!-- CONTACTS -->
-
-[ref-author-linkedin]: https://linkedin.com/in/andrechristikan
-[ref-author-email]: mailto:andrechristikan@gmail.com
-[ref-author-github]: https://github.com/andrechristikan
-[ref-author-paypal]: https://www.paypal.me/andrechristikan
-[ref-author-kofi]: https://ko-fi.com/andrechristikan
-
-<!-- Repo LINKS -->
-
-[ref-ack]: https://github.com/andrechristikan/ack-nestjs-boilerplate
-[ref-ack-issues]: https://github.com/andrechristikan/ack-nestjs-boilerplate/issues
-[ref-ack-stars]: https://github.com/andrechristikan/ack-nestjs-boilerplate/stargazers
-[ref-ack-forks]: https://github.com/andrechristikan/ack-nestjs-boilerplate/network/members
-[ref-ack-contributors]: https://github.com/andrechristikan/ack-nestjs-boilerplate/graphs/contributors
-[ref-ack-license]: LICENSE.md
 
 <!-- THIRD PARTY -->
 
+[ref-ack]: https://github.com/andrechristikan/ack-nestjs-boilerplate
 [ref-nestjs]: http://nestjs.com
-[ref-prisma]: https://www.prisma.io
 [ref-mongodb]: https://docs.mongodb.com/
 [ref-redis]: https://redis.io
-[ref-bullmq]: https://bullmq.io
 [ref-nodejs]: https://nodejs.org/
 [ref-typescript]: https://www.typescriptlang.org/
 [ref-docker]: https://docs.docker.com
-[ref-pnpm]: https://pnpm.io
-[ref-package-json]: package.json
 [ref-jwt]: https://jwt.io
 [ref-jest]: https://jestjs.io/docs/getting-started
-
-<!-- DOCS LINKS -->
-
-[ref-doc-activity-log]: docs/activity-log.md
-[ref-doc-authentication]: docs/authentication.md
-[ref-doc-authorization]: docs/authorization.md
-[ref-doc-cache]: docs/cache.md
-[ref-doc-configuration]: docs/configuration.md
-[ref-doc-database]: docs/database.md
-[ref-doc-environment]: docs/environment.md
-[ref-doc-feature-flag]: docs/feature-flag.md
-[ref-doc-file-upload]: docs/file-upload.md
-[ref-doc-handling-error]: docs/handling-error.md
-[ref-doc-installation]: docs/installation.md
-[ref-doc-logger]: docs/logger.md
-[ref-doc-message]: docs/message.md
-[ref-doc-notification]: docs/notification.md
-[ref-doc-pagination]: docs/pagination.md
-[ref-doc-project-structure]: docs/project-structure.md
-[ref-doc-queue]: docs/queue.md
-[ref-doc-request-validation]: docs/request-validation.md
-[ref-doc-response]: docs/response.md
-[ref-doc-security-and-middleware]: docs/security-and-middleware.md
-[ref-doc-third-party-integration]: docs/third-party-integration.md
-[ref-doc-presign]: docs/presign.md
-[ref-doc-term-policy]: docs/term-policy.md
-[ref-doc-two-factor]: docs/two-factor.md
-[ref-doc-analytics]: docs/analytics.md
-[ref-doc-contributing]: CONTRIBUTING.md
-[ref-doc-doc]: docs/doc.md

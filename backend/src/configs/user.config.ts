@@ -1,14 +1,22 @@
 import { registerAs } from '@nestjs/config';
 
-export interface IVehicleServiceConfig {
-  vehiclePrefix: string;
+export interface IUserConfig {
+  usernamePrefix: string;
+  usernamePattern: RegExp;
   uploadPhotoProfilePath: string;
+  default: {
+    role: string;
+  };
 }
 
 export default registerAs(
   'user',
-  (): IVehicleServiceConfig => ({
-    vehiclePrefix: 'vehicle',
-    uploadPhotoProfilePath: 'users/{userId}/vehicles',
-  }),
+  (): IUserConfig => ({
+    usernamePrefix: 'user',
+    usernamePattern: /^[a-zA-Z0-9-_]+$/,
+    uploadPhotoProfilePath: 'users/{userId}/profile',
+    default: {
+      role: 'user',
+    },
+  })
 );

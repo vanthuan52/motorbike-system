@@ -49,6 +49,7 @@ config.yml
 keys/
 *.pem
 *.pub
+*.key
 jwks.json
 
 # Temporary and cache files
