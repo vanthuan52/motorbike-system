@@ -56,7 +56,7 @@ export class DatabaseService
       return {
         database: {
           status: 'down',
-          error: error.message,
+          error: (error as Error).message,
         },
       };
     }

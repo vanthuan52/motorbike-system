@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { ENUM_VEHICLE_MODEL_STATUS } from '../../enums/vehicle-model.enum';
+import { EnumVehicleModelStatus } from '../../enums/vehicle-model.enum';
 
 export class VehicleModelUpdateStatusRequestDto {
   @ApiProperty({
     required: true,
-    example: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
-    enum: ENUM_VEHICLE_MODEL_STATUS,
+    example: EnumVehicleModelStatus.active,
+    enum: EnumVehicleModelStatus,
   })
-  @IsEnum(ENUM_VEHICLE_MODEL_STATUS)
+  @IsEnum(EnumVehicleModelStatus)
   @IsNotEmpty()
-  status: ENUM_VEHICLE_MODEL_STATUS;
+  status: EnumVehicleModelStatus;
 }

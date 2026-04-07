@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
-import { ENUM_CARE_RECORD_MEDIA_STAGE } from '../enums/care-record-media.enum';
+import { EnumCareRecordMediaStage } from '../enums/care-record-media.enum';
 import { EnumFileExtension } from '@/common/file/enums/file.enum';
 
 export class CareRecordMediaDto extends DatabaseDto {
@@ -15,11 +15,11 @@ export class CareRecordMediaDto extends DatabaseDto {
 
   @ApiProperty({
     description: 'Là file của bước nào',
-    example: ENUM_CARE_RECORD_MEDIA_STAGE.BEFORE,
-    enum: ENUM_CARE_RECORD_MEDIA_STAGE,
+    example: EnumCareRecordMediaStage.before,
+    enum: EnumCareRecordMediaStage,
   })
   @Expose()
-  stage: ENUM_CARE_RECORD_MEDIA_STAGE;
+  stage: EnumCareRecordMediaStage;
 
   @ApiProperty({
     description: 'File extension',

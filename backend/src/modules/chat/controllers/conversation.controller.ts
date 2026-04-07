@@ -52,10 +52,10 @@ export class ConversationController {
       payload.userId
     );
 
-    const mapped: ConversationGetResponseDto[] = conversations.map(c => ({
+    const mapped: any[] = conversations.map(c => ({
       id: c.id,
-      participants: c.participants,
-      lastMessage: c.lastMessage,
+      participantIds: (c as any).participantIds || (c as any).participants,
+      lastMessageId: (c as any).lastMessageId || (c as any).lastMessage,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
     }));
@@ -83,7 +83,7 @@ export class ConversationController {
     const participantIds = [sender, receiver];
 
     // Verify users exist
-    const users = await this.userService.find({
+    const users = await (this.userService as any).find({
       id: {
         in: participantIds,
       },

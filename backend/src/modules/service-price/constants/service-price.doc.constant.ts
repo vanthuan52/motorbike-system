@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions } from '@nestjs/swagger';
-import { ENUM_SERVICE_PRICE_STATUS } from '../enums/service-price.enum';
+import { EnumServicePriceStatus } from '../enums/service-price.enum';
 
 export const ServicePriceDocParamsId: ApiParamOptions[] = [
   {
@@ -38,7 +38,7 @@ export const ServicePriceDocQueryStatus: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_SERVICE_PRICE_STATUS).join(','),
+    example: Object.values(EnumServicePriceStatus).join(','),
     description: 'one value',
   },
 ];

@@ -36,8 +36,10 @@ export class MessageService implements IMessageService {
 
   async sendMessage(
     conversation: ConversationModel,
-    { content, messageType, receiver, sender, attachments }: SendMessageDto
+    payload: SendMessageDto
   ): Promise<MessageModel> {
+    const { content, messageType, receiver, sender } = payload;
+    const attachments = (payload as any).attachments;
     const savedMessage = await this.messageRepository.create({
       conversation: { connect: { id: conversation.id } },
       content,
@@ -151,7 +153,7 @@ export class MessageService implements IMessageService {
     return this.messageRepository.update(messageId, {
       isUnsent: true,
       content: '',
-      attachments: Prisma.JsonNull,
+      attachments: null as any,
       updatedBy: senderId,
     });
   }

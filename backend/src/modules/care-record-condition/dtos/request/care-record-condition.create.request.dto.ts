@@ -13,11 +13,11 @@ import {
   Min,
 } from 'class-validator';
 import {
-  ENUM_BODY_CONDITION,
-  ENUM_EXHAUST_COVER_CONDITION,
-  ENUM_OIL_LEVEL,
-  ENUM_REARVIEW_MIRROR_CONDITION,
-  ENUM_SEAT_CONDITION,
+  EnumBodyCondition,
+  EnumExhaustCoverCondition,
+  EnumOilLevel,
+  EnumMirrorCondition,
+  EnumSeatCondition,
 } from '../../enums/care-record-condition.enum';
 
 export class CareRecordConditionCreateRequestDto {
@@ -69,54 +69,54 @@ export class CareRecordConditionCreateRequestDto {
   fuelLevelFaulty?: boolean;
 
   @ApiProperty({
-    example: ENUM_OIL_LEVEL.FULL,
+    example: EnumOilLevel.full,
     description: 'Mức dầu nhớt máy',
-    enum: ENUM_OIL_LEVEL,
+    enum: EnumOilLevel,
     required: false,
   })
   @IsOptional()
-  @IsEnum(ENUM_OIL_LEVEL)
-  engineOilLevel?: ENUM_OIL_LEVEL;
+  @IsEnum(EnumOilLevel)
+  engineOilLevel?: EnumOilLevel;
 
   @ApiProperty({
-    example: ENUM_REARVIEW_MIRROR_CONDITION.PRESENT,
+    example: EnumMirrorCondition.present,
     description: 'Tình trạng kiếng hậu',
-    enum: ENUM_REARVIEW_MIRROR_CONDITION,
+    enum: EnumMirrorCondition,
     required: false,
   })
   @IsOptional()
-  @IsEnum(ENUM_REARVIEW_MIRROR_CONDITION)
-  rearviewMirrorCondition?: ENUM_REARVIEW_MIRROR_CONDITION;
+  @IsEnum(EnumMirrorCondition)
+  rearviewMirrorCondition?: EnumMirrorCondition;
 
   @ApiProperty({
-    example: ENUM_SEAT_CONDITION.OK,
+    example: EnumSeatCondition.ok,
     description: 'Tình trạng yên xe',
-    enum: ENUM_SEAT_CONDITION,
+    enum: EnumSeatCondition,
     required: false,
   })
   @IsOptional()
-  @IsEnum(ENUM_SEAT_CONDITION)
-  seatCondition?: ENUM_SEAT_CONDITION;
+  @IsEnum(EnumSeatCondition)
+  seatCondition?: EnumSeatCondition;
 
   @ApiProperty({
-    example: ENUM_BODY_CONDITION.OK,
+    example: EnumBodyCondition.ok,
     description: 'Tình trạng dàn áo',
-    enum: ENUM_BODY_CONDITION,
+    enum: EnumBodyCondition,
     required: false,
   })
   @IsOptional()
-  @IsEnum(ENUM_BODY_CONDITION)
-  bodyCondition?: ENUM_BODY_CONDITION;
+  @IsEnum(EnumBodyCondition)
+  bodyCondition?: EnumBodyCondition;
 
   @ApiProperty({
-    example: ENUM_EXHAUST_COVER_CONDITION.PRESENT,
+    example: EnumExhaustCoverCondition.present,
     description: 'Tình trạng ốp pô',
-    enum: ENUM_EXHAUST_COVER_CONDITION,
+    enum: EnumExhaustCoverCondition,
     required: false,
   })
   @IsOptional()
-  @IsEnum(ENUM_EXHAUST_COVER_CONDITION)
-  exhaustCoverCondition?: ENUM_EXHAUST_COVER_CONDITION;
+  @IsEnum(EnumExhaustCoverCondition)
+  exhaustCoverCondition?: EnumExhaustCoverCondition;
 
   @ApiProperty({
     example: false,

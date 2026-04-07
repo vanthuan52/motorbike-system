@@ -50,8 +50,6 @@ import {
 import { EnumRoleStatusCodeError } from '@/modules/role/enums/role.status-code.enum';
 import { EnumFileExtensionDocument } from '@/common/file/enums/file.enum';
 
-import { EnumTermPolicyStatusCodeError } from '@/modules/term-policy/enums/term-policy.status-code.enum';
-
 /**
  * Helper function to create a schema object with consistent structure.
  * @param doc - Document options containing DTO and status information
@@ -369,13 +367,6 @@ export function DocGuard(options?: IDocGuardOptions): MethodDecorator {
     oneOfForbidden.push({
       statusCode: EnumPolicyStatusCodeError.forbidden,
       messagePath: 'policy.error.forbidden',
-    });
-  }
-
-  if (options?.termPolicy) {
-    oneOfForbidden.push({
-      statusCode: EnumTermPolicyStatusCodeError.requiredInvalid,
-      messagePath: 'termPolicy.error.requiredInvalid',
     });
   }
 

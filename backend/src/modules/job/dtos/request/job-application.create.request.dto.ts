@@ -10,7 +10,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { ENUM_JOB_APPLICATION_STATUS } from '../../enums/job-application.enum';
+import { EnumJobApplicationStatus } from '../../enums/job-application.enum';
 
 export class JobApplicationUserCreateRequestDto {
   @ApiProperty({
@@ -45,12 +45,12 @@ export class JobApplicationUserCreateRequestDto {
   appliedAt: Date;
 
   @ApiProperty({
-    example: ENUM_JOB_APPLICATION_STATUS.NEW,
-    enum: () => ENUM_JOB_APPLICATION_STATUS,
+    example: EnumJobApplicationStatus.new,
+    enum: () => EnumJobApplicationStatus,
     description: 'Trạng thái hồ sơ',
   })
-  @IsEnum(ENUM_JOB_APPLICATION_STATUS)
-  status: ENUM_JOB_APPLICATION_STATUS;
+  @IsEnum(EnumJobApplicationStatus)
+  status: EnumJobApplicationStatus;
 
   @ApiProperty({
     example: '665a7f0f8e4d1bcd9b4fd7a2',

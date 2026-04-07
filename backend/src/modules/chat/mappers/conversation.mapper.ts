@@ -3,7 +3,7 @@ import { MessageMapper } from './message.mapper';
 import { Conversation as PrismaConversation } from '@/generated/prisma-client';
 
 export class ConversationMapper {
-  static toDomain(prismaConversation: PrismaConversation): ConversationModel {
+  static toDomain(prismaConversation: PrismaConversation | any): ConversationModel {
     const model = new ConversationModel();
     model.id = prismaConversation.id;
     model.participantIds = prismaConversation.participantIds;

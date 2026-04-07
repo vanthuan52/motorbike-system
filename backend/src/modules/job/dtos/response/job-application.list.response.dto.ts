@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JobApplicationGetResponseDto } from './jobApplication.get.response.dto';
+import { JobApplicationGetResponseDto } from './job-application.get.response.dto';
 
 export class JobApplicationListResponseDto {
   @ApiProperty({ type: [JobApplicationGetResponseDto] })

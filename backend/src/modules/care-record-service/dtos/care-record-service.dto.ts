@@ -3,8 +3,8 @@ import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_CARE_RECORD_SERVICE_STATUS,
-  ENUM_CARE_RECORD_SERVICE_TYPE,
+  EnumCareRecordServiceStatus,
+  EnumCareRecordServiceType,
 } from '../enums/care-record-service.enum';
 
 export class CareRecordServiceDto extends DatabaseDto {
@@ -31,17 +31,17 @@ export class CareRecordServiceDto extends DatabaseDto {
 
   @ApiPropertyOptional({
     description: 'Trạng thái công việc',
-    example: ENUM_CARE_RECORD_SERVICE_STATUS.PENDING,
-    enum: ENUM_CARE_RECORD_SERVICE_STATUS,
+    example: EnumCareRecordServiceStatus.pending,
+    enum: EnumCareRecordServiceStatus,
   })
   @Expose()
-  status?: ENUM_CARE_RECORD_SERVICE_STATUS;
+  status?: EnumCareRecordServiceStatus;
 
   @ApiProperty({
     description: 'Loại dịch vụ',
-    example: ENUM_CARE_RECORD_SERVICE_TYPE.SERVICE,
-    enum: ENUM_CARE_RECORD_SERVICE_TYPE,
+    example: EnumCareRecordServiceType.service,
+    enum: EnumCareRecordServiceType,
   })
   @Expose()
-  type: ENUM_CARE_RECORD_SERVICE_TYPE;
+  type: EnumCareRecordServiceType;
 }

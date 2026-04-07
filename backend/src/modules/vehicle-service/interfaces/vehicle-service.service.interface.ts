@@ -70,6 +70,4 @@ export interface IVehicleServiceService {
     vehicleService: string,
     payload: VehicleServiceUploadPhotoRequestDto
   ): string;
-
-  updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleServiceModel>;
 }

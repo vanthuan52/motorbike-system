@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -16,9 +16,9 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
+    "types": ["node"],
     "allowJs": false,
     "esModuleInterop": true,
-    "moduleResolution": "node",
     "resolveJsonModule": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
@@ -36,6 +36,7 @@
       "@/generated/*": ["generated/*"],
       "@/prisma/client": ["generated/prisma-client"]
     },
+    "ignoreDeprecations": "6.0",
     "forceConsistentCasingInFileNames": true,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false

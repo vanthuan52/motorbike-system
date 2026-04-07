@@ -4,7 +4,6 @@ import {
   INotificationEmailWorkerPayload,
   INotificationForgotPasswordPayload,
   INotificationNewDeviceLoginPayload,
-  INotificationPublishTermPolicyPayload,
   INotificationTemporaryPasswordPayload,
   INotificationVerificationEmailPayload,
   INotificationVerifiedEmailPayload,
@@ -95,13 +94,6 @@ export interface INotificationEmailProcessorService {
   processResetTwoFactorByAdmin(
     job: Job<
       INotificationEmailWorkerPayload,
-      IQueueResponse,
-      EnumNotificationProcess
-    >
-  ): Promise<IQueueResponse>;
-  processPublishTermPolicy(
-    job: Job<
-      INotificationEmailWorkerBulkPayload<INotificationPublishTermPolicyPayload>,
       IQueueResponse,
       EnumNotificationProcess
     >

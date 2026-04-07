@@ -29,7 +29,7 @@ export class DeviceMapper {
   }
 
   static toDeviceOwnershipDomain(
-    prismaOwnership: PrismaDeviceOwnership
+    prismaOwnership: PrismaDeviceOwnership | any
   ): DeviceOwnershipModel {
     const model = new DeviceOwnershipModel();
     model.id = prismaOwnership.id;

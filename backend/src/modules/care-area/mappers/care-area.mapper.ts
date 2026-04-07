@@ -7,7 +7,7 @@ export class CareAreaMapper {
     model.id = prismaArea.id;
     model.name = prismaArea.name;
     model.description = prismaArea.description;
-    model.orderBy = prismaArea.order;
+    model.orderBy = prismaArea.orderBy;
 
     model.createdAt = prismaArea.createdAt;
     model.updatedAt = prismaArea.updatedAt;

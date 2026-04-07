@@ -59,7 +59,7 @@ import {
   ServicePriceDefaultAvailableSearch,
 } from '../constants/service-price.list.constant';
 import { RequestRequiredPipe } from '@/common/request/pipes/request.required.pipe';
-import { IModelServicePrice } from '../interfaces/service-price.interface';
+import { IServicePrice } from '../interfaces/service-price.interface';
 import { RequestOptionalParseObjectIdPipe } from '@/common/request/pipes/request.optional-parse-object-id.pipe';
 import { VehicleServiceService } from '@/modules/vehicle-service/services/vehicle-service.service';
 import { VehicleModelService } from '@/modules/vehicle-model/services/vehicle-model.service';
@@ -266,7 +266,7 @@ export class ServicePriceAdminController {
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
     const { limit, skip, where } = pagination;
     const find: Record<string, any> = {
-      ...where,
+      ...(where as Record<string, any>),
     };
 
     if (vehicleServiceId) {
@@ -289,7 +289,7 @@ export class ServicePriceAdminController {
       priceMap.set(`${p.vehicleServiceId}_${p.vehicleModelId}`, p)
     );
 
-    const combinedList: IModelServicePrice[] = [];
+    const combinedList: IServicePrice[] = [];
     allServices.forEach(vehicleService => {
       allModels.forEach(vehicleModel => {
         const key = `${vehicleService.id}_${vehicleModel.id}`;
@@ -307,7 +307,7 @@ export class ServicePriceAdminController {
             dateStart: existingPrice.dateStart,
             dateEnd: existingPrice.dateEnd,
             status: existingPrice.status as any,
-          } as IModelServicePrice);
+          } as unknown as IServicePrice);
         } else {
           combinedList.push({
             _id: null,
@@ -319,7 +319,7 @@ export class ServicePriceAdminController {
             dateStart: null,
             dateEnd: null,
             status: EnumServicePriceStatus.noPrice as any,
-          } as IModelServicePrice);
+          } as unknown as IServicePrice);
         }
       });
     });
@@ -331,7 +331,7 @@ export class ServicePriceAdminController {
     const total: number = combinedList.length;
 
     return {
-      type: pagination.type,
+      type: (pagination as any).type,
       count: total,
       perPage: limit,
       page: Math.floor(skip / limit) + 1,
@@ -414,8 +414,8 @@ export class ServicePriceAdminController {
     vehicleModelId: string
   ): Promise<IResponsePagingReturn<ServicePriceListResponseDto>> {
     const filters: IServicePriceListFilters = {
-      vehicleService: vehicleServiceId,
-      vehicleModel: vehicleModelId,
+      vehicleServiceId: vehicleServiceId,
+      vehicleModelId: vehicleModelId,
     };
 
     const result = await this.servicePriceService.getListOffset(

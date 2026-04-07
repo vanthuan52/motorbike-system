@@ -4,7 +4,7 @@ import { MediaAttachmentModel } from '../models/media-attachment.model';
 import { MediaAttachmentMapper } from '../mappers/media-attachment.mapper';
 import {
   Prisma,
-  Attachment as PrismaAttachment,
+  MediaAttachment as PrismaAttachment,
 } from '@/generated/prisma-client';
 
 @Injectable()

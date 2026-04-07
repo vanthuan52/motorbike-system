@@ -31,8 +31,8 @@ export class ApiKeyRepository {
       orderBy,
       ...rest
     }: IPaginationQueryOffsetParams<
-      Prisma.ActivityLogSelect,
-      Prisma.ActivityLogWhereInput
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
     >,
     filters?: IApiKeyListFilters
   ): Promise<ApiKeyModel[]> {
@@ -41,7 +41,7 @@ export class ApiKeyRepository {
       ...filters,
     };
 
-    const results = await this.databaseService.apiKey.findMany({
+    const results = await (this.databaseService.apiKey as any).findMany({
       where: mergedWhere,
       skip,
       take: limit,
@@ -58,8 +58,8 @@ export class ApiKeyRepository {
     {
       where: baseWhere,
     }: IPaginationQueryOffsetParams<
-      Prisma.ActivityLogSelect,
-      Prisma.ActivityLogWhereInput
+      Prisma.ApiKeySelect,
+      Prisma.ApiKeyWhereInput
     >,
     filters?: IApiKeyListFilters
   ): Promise<number> {
@@ -135,7 +135,7 @@ export class ApiKeyRepository {
   }
 
   async create(
-    { name, type, startAt, endAt }: ApiKeyCreateRequestDto,
+    { name, type }: ApiKeyCreateRequestDto,
     key: string,
     hash: string
   ): Promise<ApiKeyModel> {
@@ -146,9 +146,7 @@ export class ApiKeyRepository {
         hash,
         isActive: true,
         type,
-        startAt,
-        endAt,
-      },
+        },
     });
 
     return ApiKeyMapper.toDomain(result);
@@ -195,16 +193,14 @@ export class ApiKeyRepository {
 
   async updateDates(
     id: string,
-    { startAt, endAt }: ApiKeyUpdateDateRequestDto
+    { }: ApiKeyUpdateDateRequestDto
   ): Promise<ApiKeyModel> {
     const result = await this.databaseService.apiKey.update({
       where: {
         id,
       },
       data: {
-        startAt,
-        endAt,
-      },
+        },
     });
 
     return ApiKeyMapper.toDomain(result);

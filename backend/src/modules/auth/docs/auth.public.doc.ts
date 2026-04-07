@@ -7,13 +7,13 @@ import {
 } from '@/common/doc/decorators/doc.decorator';
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { AuthTokenResponseDto } from '@/modules/auth/dtos/response/auth.token.response.dto';
-import { UserForgotPasswordResetRequestDto } from '@/modules/user/dtos/request/user.forgot-password-reset.request.dto';
-import { UserForgotPasswordRequestDto } from '@/modules/user/dtos/request/user.forgot-password.request.dto';
-import { UserLoginRequestDto } from '@/modules/user/dtos/request/user.login.request.dto';
-import { UserSendEmailVerificationRequestDto } from '@/modules/user/dtos/request/user.send-email-verification.request.dto';
-import { UserSignUpRequestDto } from '@/modules/user/dtos/request/user.sign-up.request.dto';
-import { UserVerifyEmailRequestDto } from '@/modules/user/dtos/request/user.verify-email.request.dto';
-import { UserLoginResponseDto } from '@/modules/auth/dtos/response/auth.login.response.dto';
+import { AuthForgotPasswordResetRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password-reset.request.dto';
+import { AuthForgotPasswordRequestDto } from '@/modules/auth/dtos/request/auth.forgot-password.request.dto';
+import { AuthLoginRequestDto } from '@/modules/auth/dtos/request/auth.login.request.dto';
+import { AuthSendEmailVerificationRequestDto } from '@/modules/auth/dtos/request/auth.send-email-verification.request.dto';
+import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
+import { AuthVerifyEmailRequestDto } from '@/modules/auth/dtos/request/auth.verify-email.request.dto';
+import { AuthLoginResponseDto } from '@/modules/auth/dtos/response/auth.login.response.dto';
 
 export function AuthPublicLoginCredentialDoc(): MethodDecorator {
   return applyDecorators(
@@ -25,10 +25,10 @@ export function AuthPublicLoginCredentialDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
-      dto: UserLoginRequestDto,
+      dto: AuthLoginRequestDto,
     }),
     DocResponse('user.loginCredential', {
-      dto: UserLoginResponseDto,
+      dto: AuthLoginResponseDto,
     })
   );
 }
@@ -40,7 +40,7 @@ export function AuthPublicLoginSocialGoogleDoc(): MethodDecorator {
     }),
     DocAuth({ xApiKey: true, google: true }),
     DocResponse('auth.loginWithSocialGoogle', {
-      dto: UserLoginResponseDto,
+      dto: AuthLoginResponseDto,
     })
   );
 }
@@ -52,7 +52,7 @@ export function AuthPublicLoginSocialAppleDoc(): MethodDecorator {
     }),
     DocAuth({ xApiKey: true, apple: true }),
     DocResponse('auth.loginWithSocialApple', {
-      dto: UserLoginResponseDto,
+      dto: AuthLoginResponseDto,
     })
   );
 }
@@ -64,7 +64,7 @@ export function AuthPublicSignUpDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
-      dto: UserSignUpRequestDto,
+      dto: AuthSignUpRequestDto,
     }),
     DocAuth({
       xApiKey: true,
@@ -85,7 +85,7 @@ export function AuthPublicSendEmailVerificationDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
-      dto: UserSendEmailVerificationRequestDto,
+      dto: AuthSendEmailVerificationRequestDto,
     }),
     DocResponse('user.sendEmailVerification')
   );
@@ -101,7 +101,7 @@ export function AuthPublicVerifyEmailDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
-      dto: UserVerifyEmailRequestDto,
+      dto: AuthVerifyEmailRequestDto,
     }),
     DocResponse('user.verifyEmail')
   );
@@ -114,7 +114,7 @@ export function AuthPublicForgotPasswordDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
-      dto: UserForgotPasswordRequestDto,
+      dto: AuthForgotPasswordRequestDto,
     }),
     DocAuth({
       xApiKey: true,
@@ -130,7 +130,7 @@ export function AuthPublicResetPasswordDoc(): MethodDecorator {
     }),
     DocRequest({
       bodyType: EnumDocRequestBodyType.json,
-      dto: UserForgotPasswordResetRequestDto,
+      dto: AuthForgotPasswordResetRequestDto,
     }),
     DocAuth({
       xApiKey: true,

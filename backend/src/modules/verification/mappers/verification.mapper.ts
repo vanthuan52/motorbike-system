@@ -3,10 +3,10 @@ import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { Verification as PrismaVerification } from '@/generated/prisma-client';
 
 export class VerificationMapper {
-  static toDomain(prismaData: PrismaVerification): VerificationModel {
+  static toDomain(prismaData: PrismaVerification | any): VerificationModel {
     const model = new VerificationModel();
     model.id = prismaData.id;
-    model.type = prismaData.type;
+    model.type = prismaData.type as any;
     model.to = prismaData.to;
     model.expiredAt = prismaData.expiredAt;
     model.expiredInMinutes = prismaData.expiredInMinutes;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ENUM_JOB_APPLICATION_STATUS } from '../enums/job-application.enum';
+import { EnumJobApplicationStatus } from '../enums/job-application.enum';
 
 export class JobApplicationResponseDto {
   @ApiProperty({ type: String })
@@ -18,11 +18,11 @@ export class JobApplicationResponseDto {
   appliedAt: Date;
 
   @ApiProperty({
-    example: ENUM_JOB_APPLICATION_STATUS.NEW,
-    enum: () => ENUM_JOB_APPLICATION_STATUS,
+    example: EnumJobApplicationStatus.new,
+    enum: () => EnumJobApplicationStatus,
     description: 'Trạng thái hồ sơ',
   })
-  status: ENUM_JOB_APPLICATION_STATUS;
+  status: EnumJobApplicationStatus;
 
   @ApiProperty({ type: String })
   job: string;

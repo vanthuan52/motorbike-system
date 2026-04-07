@@ -24,7 +24,7 @@ import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { VehicleModelCreateRequestDto } from '../dtos/request/vehicle-model.create.request.dto';
 import { VehicleModelUpdateRequestDto } from '../dtos/request/vehicle-model.update.request.dto';
 import { VehicleModelUpdateStatusRequestDto } from '../dtos/request/vehicle-model.update-status.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { VehicleModelGetFullResponseDto } from '../dtos/response/vehicle-model.full.response.dto';
 
 export function VehicleModelAdminListDoc(): MethodDecorator {

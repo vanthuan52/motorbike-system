@@ -2,6 +2,8 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserVehicleRepository } from '../repository/user-vehicle.repository';
@@ -10,10 +12,8 @@ import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create
 import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
 import { UserVehicleUploadPhotoRequestDto } from '../dtos/request/user-vehicle.upload-photo.request.dto';
 import { HelperService } from '@/common/helper/services/helper.service';
-import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import {
   IPaginationCursorReturn,
-  IPaginationIn,
   IPaginationOffsetReturn,
   IPaginationQueryCursorParams,
   IPaginationQueryOffsetParams,
@@ -22,18 +22,20 @@ import { EnumUserVehicleStatusCodeError } from '../enums/user-vehicle.status-cod
 import { VehicleModelRepository } from '@/modules/vehicle-model/repository/vehicle-model.repository';
 import { UserVehicleModel } from '../models/user-vehicle.model';
 import { UserService } from '@/modules/user/services/user.service';
-import { Prisma } from '@/generated/prisma-client';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
-
 import { IUserVehicleListFilters } from '../interfaces/user-vehicle.filter.interface';
+import { Prisma } from '@/generated/prisma-client';
 
 @Injectable()
 export class UserVehicleService implements IUserVehicleService {
   private readonly uploadPath: string;
 
   constructor(
+    @Inject(forwardRef(() => UserVehicleRepository))
     private readonly userVehicleRepository: UserVehicleRepository,
+    @Inject(forwardRef(() => VehicleModelRepository))
     private readonly vehicleModelRepository: VehicleModelRepository,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly helperService: HelperService
@@ -176,11 +178,5 @@ export class UserVehicleService implements IUserVehicleService {
     }
 
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
-  }
-
-  async updatePhoto(id: string, photo: AwsS3Dto): Promise<UserVehicleModel> {
-    return this.userVehicleRepository.update(id, {
-      photo: photo.completedUrl,
-    });
   }
 }

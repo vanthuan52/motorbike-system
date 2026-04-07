@@ -65,9 +65,7 @@ export class JobApplicationService implements IJobApplicationService {
       email: payload.email,
       phone: payload.phone,
       appliedAt: payload.appliedAt,
-      cv: payload.cv,
-      experience: payload.experience,
-      education: payload.education,
+      resume: (payload as any).cv || (payload as any).resume,
       job: {
         connect: { id: payload.job },
       },

@@ -28,7 +28,7 @@ import { ServicePricePublicController } from '@/modules/service-price/controller
 import { ServicePriceModule } from '@/modules/service-price/service-price.module';
 import { AppointmentPublicController } from '@/modules/appointment/controllers/appointment.public.controller';
 import { AppointmentModule } from '@/modules/appointment/appointment.module';
-import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle';
+import { UserVehicleModule } from '@/modules/user-vehicle/user-vehicle.module';
 import { HelloModule } from '@/modules/hello/hello.module';
 
 /**

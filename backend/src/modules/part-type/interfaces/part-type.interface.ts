@@ -1,10 +1,3 @@
-import { UserDoc, UserEntity } from '@/modules/user/entities/user.entity';
-import { PartTypeDoc, PartTypeEntity } from '../entities/part-type.entity';
+import { PartTypeModel } from '../models/part-type.model';
 
-export interface IPartTypeEntity extends Omit<PartTypeEntity, 'createdBy'> {
-  createdBy: UserEntity;
-}
-
-export interface IPartTypeDoc extends Omit<PartTypeDoc, 'createdBy'> {
-  createdBy: UserDoc;
-}
+export interface IPartType extends PartTypeModel {}

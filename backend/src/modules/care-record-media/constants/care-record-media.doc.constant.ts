@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions } from '@nestjs/swagger';
-import { ENUM_CARE_RECORD_MEDIA_STAGE } from '../enums/care-record-media.enum';
+import { EnumCareRecordMediaStage } from '../enums/care-record-media.enum';
 import { EnumFileExtension } from '@/common/file/enums/file.enum';
 
 export const CareRecordMediaDocParamsId: ApiParamOptions[] = [
@@ -19,7 +19,7 @@ export const CareRecordMediaDocQueryStage: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_CARE_RECORD_MEDIA_STAGE).join(','),
+    example: Object.values(EnumCareRecordMediaStage).join(','),
     description: 'one value',
   },
 ];

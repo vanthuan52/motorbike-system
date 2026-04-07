@@ -2,9 +2,9 @@ import { VehicleBrandModel } from '@/modules/vehicle-brand/models/vehicle-brand.
 import { MediaAttachmentModel } from '@/modules/media/models/media-attachment.model';
 import {
   EnumVehicleModelFuelType,
+  EnumVehicleModelStatus,
   EnumVehicleModelType,
 } from '../enums/vehicle-model.enum';
-import { EnumStatus } from '@/common/enums/common.enum';
 
 /**
  * Domain model representing a vehicle model (e.g., Honda Wave RSX).
@@ -20,7 +20,7 @@ export class VehicleModelModel {
   modelYear?: number;
   type: EnumVehicleModelType;
   fuelType: EnumVehicleModelFuelType;
-  status: EnumStatus;
+  status: EnumVehicleModelStatus;
   orderBy: number;
   yearStart?: number;
   yearEnd?: number;
@@ -43,7 +43,7 @@ export class VehicleModelModel {
   }
 
   isActive(): boolean {
-    return this.status === EnumStatus.active && !this.deletedAt;
+    return this.status === EnumVehicleModelStatus.active && !this.deletedAt;
   }
 
   isDeleted(): boolean {

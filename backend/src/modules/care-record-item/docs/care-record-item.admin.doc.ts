@@ -19,7 +19,7 @@ import {
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { CareRecordItemGetFullResponseDto } from '../dtos/response/care-record-item.full.response.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 
 export function CareRecordItemAdminListDoc(): MethodDecorator {
   return applyDecorators(

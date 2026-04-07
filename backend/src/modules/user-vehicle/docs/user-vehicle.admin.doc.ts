@@ -18,7 +18,7 @@ import {
 import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { UserVehicleCreateRequestDto } from '../dtos/request/user-vehicle.create.request.dto';
 import { UserVehicleUpdateRequestDto } from '../dtos/request/user-vehicle.update.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { UserVehicleGetFullResponseDto } from '../dtos/response/user-vehicle.full.response.dto';
 
 export function UserVehicleAdminListDoc(): MethodDecorator {

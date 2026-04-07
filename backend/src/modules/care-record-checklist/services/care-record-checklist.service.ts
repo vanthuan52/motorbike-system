@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ICareRecordChecklistService } from '../interfaces/care-record-checklist.service.interface';
-import { CareRecordChecklistRepository } from '../respository/care-record-checklist.repository';
+import { CareRecordChecklistRepository } from '../repository/care-record-checklist.repository';
 import { CareRecordChecklistCreateRequestDto } from '../dtos/request/care-record-checklist.create.request.dto';
 import { CareRecordChecklistUpdateRequestDto } from '../dtos/request/care-record-checklist.update.request.dto';
 import {

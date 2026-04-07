@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ServicePriceGetFullResponseDto } from './service-price.full.response.dto';
-import { ENUM_SERVICE_PRICE_STATUS } from '../../enums/service-price.enum';
+import { EnumServicePriceStatus } from '../../enums/service-price.enum';
 
 export class ServicePriceListResponseDto extends ServicePriceGetFullResponseDto {}
 
@@ -38,9 +38,9 @@ export class ModelServicePriceListResponseDto {
 
   @ApiProperty({
     required: true,
-    enum: ENUM_SERVICE_PRICE_STATUS,
+    enum: EnumServicePriceStatus,
   })
-  status: ENUM_SERVICE_PRICE_STATUS;
+  status: EnumServicePriceStatus;
 
   @ApiProperty({
     required: false,

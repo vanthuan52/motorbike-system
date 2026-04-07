@@ -1,9 +1,14 @@
 import { VehicleModelModel } from '../models/vehicle-model.model';
 import { VehicleBrandMapper } from '@/modules/vehicle-brand/mappers/vehicle-brand.mapper';
 import { VehicleModel as PrismaVehicleModel } from '@/generated/prisma-client';
+import {
+  EnumVehicleModelFuelType,
+  EnumVehicleModelStatus,
+  EnumVehicleModelType,
+} from '../enums/vehicle-model.enum';
 
 export class VehicleModelMapper {
-  static toDomain(prismaModel: PrismaVehicleModel): VehicleModelModel {
+  static toDomain(prismaModel: PrismaVehicleModel | any): VehicleModelModel {
     const model = new VehicleModelModel();
     model.id = prismaModel.id;
     model.name = prismaModel.name;
@@ -12,9 +17,9 @@ export class VehicleModelMapper {
     model.description = prismaModel.description;
     model.engineDisplacement = prismaModel.engineDisplacement;
     model.modelYear = prismaModel.modelYear;
-    model.type = prismaModel.type;
-    model.fuelType = prismaModel.fuelType;
-    model.status = prismaModel.status;
+    model.type = prismaModel.type as EnumVehicleModelType;
+    model.fuelType = prismaModel.fuelType as EnumVehicleModelFuelType;
+    model.status = prismaModel.status as EnumVehicleModelStatus;
     model.orderBy = prismaModel.orderBy;
     model.yearStart = prismaModel.yearStart;
     model.yearEnd = prismaModel.yearEnd;

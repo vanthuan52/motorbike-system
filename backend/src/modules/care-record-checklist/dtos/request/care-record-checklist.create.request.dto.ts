@@ -9,8 +9,8 @@ import {
   IsUUID,
 } from 'class-validator';
 import {
-  ENUM_CARE_RECORD_CHECKLIST_RESULT,
-  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+  EnumCareRecordChecklistResult,
+  EnumCareRecordChecklistStatus,
 } from '../../enums/care-record-checklist.enum';
 
 export class CareRecordChecklistCreateRequestDto {
@@ -60,26 +60,26 @@ export class CareRecordChecklistCreateRequestDto {
   wearPercentage?: number;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_CARE_RECORD_CHECKLIST_STATUS))
+  @IsIn(Object.values(EnumCareRecordChecklistStatus))
   @ApiProperty({
-    example: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
+    example: EnumCareRecordChecklistStatus.pending,
     description: 'Trạng thái của mục công việc',
     required: false,
-    enum: ENUM_CARE_RECORD_CHECKLIST_STATUS,
-    default: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
+    enum: EnumCareRecordChecklistStatus,
+    default: EnumCareRecordChecklistStatus.pending,
   })
-  status?: ENUM_CARE_RECORD_CHECKLIST_STATUS;
+  status?: EnumCareRecordChecklistStatus;
 
   @IsOptional()
-  @IsIn(Object.values(ENUM_CARE_RECORD_CHECKLIST_RESULT))
+  @IsIn(Object.values(EnumCareRecordChecklistResult))
   @ApiProperty({
-    example: ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED,
+    example: EnumCareRecordChecklistResult.unchecked,
     description: 'Kết quả của mục công việc',
     required: false,
-    enum: ENUM_CARE_RECORD_CHECKLIST_RESULT,
-    default: ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED,
+    enum: EnumCareRecordChecklistResult,
+    default: EnumCareRecordChecklistResult.unchecked,
   })
-  result?: ENUM_CARE_RECORD_CHECKLIST_RESULT;
+  result?: EnumCareRecordChecklistResult;
 
   @ApiProperty({
     example: faker.image.url(),

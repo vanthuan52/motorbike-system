@@ -4,7 +4,7 @@ import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-mode
 import { UserVehicle as PrismaUserVehicle } from '@/generated/prisma-client';
 
 export class UserVehicleMapper {
-  static toDomain(prismaVehicle: PrismaUserVehicle): UserVehicleModel {
+  static toDomain(prismaVehicle: PrismaUserVehicle | any): UserVehicleModel {
     const model = new UserVehicleModel();
     model.id = prismaVehicle.id;
     model.modelYear = prismaVehicle.modelYear;

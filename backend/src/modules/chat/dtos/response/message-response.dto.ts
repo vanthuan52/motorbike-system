@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { faker } from '@faker-js/faker';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import {
-  ENUM_MESSAGE_STATUS,
-  ENUM_MESSAGE_TYPE,
+  EnumMessageStatus,
+  EnumMessageType,
 } from '../../enums/message.enum';
 
 export class MessageGetResponseDto extends DatabaseDto {
@@ -44,11 +44,11 @@ export class MessageGetResponseDto extends DatabaseDto {
 
   @ApiProperty({
     required: true,
-    enum: ENUM_MESSAGE_TYPE,
-    example: ENUM_MESSAGE_TYPE.TEXT,
+    enum: EnumMessageType,
+    example: EnumMessageType.text,
     description: 'Loại tin nhắn (text, image, video, ...)',
   })
-  messageType: ENUM_MESSAGE_TYPE;
+  messageType: EnumMessageType;
 
   @ApiProperty({
     required: true,
@@ -59,11 +59,11 @@ export class MessageGetResponseDto extends DatabaseDto {
 
   @ApiProperty({
     required: true,
-    enum: ENUM_MESSAGE_STATUS,
-    example: ENUM_MESSAGE_STATUS.SENT,
+    enum: EnumMessageStatus,
+    example: EnumMessageStatus.sent,
     description: 'Trạng thái tin nhắn (sent, delivered, read, ...)',
   })
-  status: ENUM_MESSAGE_STATUS;
+  status: EnumMessageStatus;
 
   @ApiProperty({
     required: true,

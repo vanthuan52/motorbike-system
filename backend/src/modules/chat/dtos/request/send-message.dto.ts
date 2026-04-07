@@ -1,5 +1,5 @@
 import { IsEnum, IsString } from 'class-validator';
-import { ENUM_MESSAGE_TYPE } from '../../enums/message.enum';
+import { EnumMessageType } from '../../enums/message.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SendMessageDto {
@@ -36,11 +36,11 @@ export class SendMessageDto {
   content: string;
 
   @ApiProperty({
-    example: ENUM_MESSAGE_TYPE.TEXT,
+    example: EnumMessageType.text,
     description: 'Message type',
     required: true,
-    enum: ENUM_MESSAGE_TYPE,
+    enum: EnumMessageType,
   })
-  @IsEnum(ENUM_MESSAGE_TYPE)
-  messageType: ENUM_MESSAGE_TYPE;
+  @IsEnum(EnumMessageType)
+  messageType: EnumMessageType;
 }

@@ -4,7 +4,10 @@ import {
   IHelperEmailValidation,
   IHelperPasswordOptions,
 } from '@/common/helper/interfaces/helper.interface';
-import { GeoLocation, UserAgent } from '@generated/prisma-client';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 export interface IHelperService {
   arrayUnique<T>(array: T[]): T[];

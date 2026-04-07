@@ -1,2 +1,0 @@
-﻿src/modules/care-record/care-record.module.ts(33,1): error TS1128: Declaration or statement expected.
-src/modules/care-record/care-record.module.ts(33,2): error TS1128: Declaration or statement expected.

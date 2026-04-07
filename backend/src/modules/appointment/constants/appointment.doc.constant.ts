@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
+import { EnumAppointmentStatus } from '../enums/appointment.enum';
 import { ApiParamOptions } from '@nestjs/swagger';
 
 export const AppointmentDocParamsId: ApiParamOptions[] = [
@@ -18,7 +18,7 @@ export const AppointmentDocQueryStatus: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_APPOINTMENT_STATUS).join(','),
+    example: Object.values(EnumAppointmentStatus).join(','),
     description: "value with ',' delimiter",
   },
 ];

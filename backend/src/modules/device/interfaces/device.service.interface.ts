@@ -8,7 +8,8 @@ import {
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { DeviceRefreshRequestDto } from '@/modules/device/dtos/requests/device.refresh.dto';
 import { DeviceOwnershipResponseDto } from '@/modules/device/dtos/response/device.ownership.response';
-import { DeviceOwnership, Prisma } from '@generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
+import { DeviceOwnershipModel } from '../models/device.model';
 
 export interface IDeviceService {
   getListOffsetByAdmin(
@@ -43,5 +44,5 @@ export interface IDeviceService {
     deviceOwnershipId: string,
     requestLog: IRequestLog,
     removedBy: string
-  ): Promise<DeviceOwnership>;
+  ): Promise<any>;
 }

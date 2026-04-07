@@ -4,7 +4,7 @@ import { VehicleModelMapper } from '@/modules/vehicle-model/mappers/vehicle-mode
 import { ServicePrice as PrismaServicePrice } from '@/generated/prisma-client';
 
 export class ServicePriceMapper {
-  static toDomain(prismaPrice: PrismaServicePrice): ServicePriceModel {
+  static toDomain(prismaPrice: PrismaServicePrice | any): ServicePriceModel {
     const model = new ServicePriceModel();
     model.id = prismaPrice.id;
     model.price = prismaPrice.price;

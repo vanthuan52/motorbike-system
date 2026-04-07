@@ -4,7 +4,7 @@ import { JobApplicationMapper } from './job-application.mapper';
 import { Job as PrismaJob } from '@/generated/prisma-client';
 
 export class JobMapper {
-  static toDomain(prismaJob: PrismaJob): JobModel {
+  static toDomain(prismaJob: PrismaJob | any): JobModel {
     const model = new JobModel();
     model.id = prismaJob.id;
     model.title = prismaJob.title;

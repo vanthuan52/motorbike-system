@@ -62,13 +62,4 @@ export interface IMediaService {
 
   // Utility Methods
   determineMediaType(mimeType: string): EnumMediaType;
-
-  // Mapping Methods
-  mapToEmbedded(doc: MediaModel): MediaEmbeddedResponseDto;
-
-  mapToEmbeddedList(docs: MediaModel[]): MediaEmbeddedResponseDto[];
-
-  mapGet(doc: MediaModel): MediaGetResponseDto;
-
-  mapList(docs: MediaModel[]): MediaListResponseDto[];
 }

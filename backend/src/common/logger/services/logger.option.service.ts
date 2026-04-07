@@ -86,11 +86,11 @@ export class LoggerOptionService {
   async createOptions(): Promise<Params> {
     return {
       pinoHttp: {
-        genReqId: this.getReqId,
+        genReqId: this.getReqId as any,
         formatters: {
           log: this.createLogFormatter(),
         },
-        mixin: this.createMixin(),
+        mixin: this.createMixin() as any,
         messageKey: 'msg',
         timestamp: false,
         wrapSerializers: false,
@@ -99,7 +99,7 @@ export class LoggerOptionService {
         level: this.enable ? this.level : 'silent',
         redact: this.createRedactionConfig(),
         serializers: this.createSerializers(),
-        autoLogging: this.createAutoLoggingConfig(),
+        autoLogging: this.createAutoLoggingConfig() as any,
       },
     };
   }
