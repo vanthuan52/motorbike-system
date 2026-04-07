@@ -10,7 +10,7 @@ import {
   IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ENUM_PAYMENT_STATUS } from '../../enums/care-record.enum';
+import { EnumPaymentStatus } from '../../enums/care-record.enum';
 
 export class CareRecordCreateRequestDto {
   @ApiProperty({
@@ -72,8 +72,8 @@ export class CareRecordCreateRequestDto {
 
   @ApiHideProperty()
   @IsOptional()
-  @IsIn(Object.values(ENUM_PAYMENT_STATUS))
-  paymentStatus?: ENUM_PAYMENT_STATUS;
+  @IsIn(Object.values(EnumPaymentStatus))
+  paymentStatus?: EnumPaymentStatus;
 
   @ApiHideProperty()
   @IsOptional()

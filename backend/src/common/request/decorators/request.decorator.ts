@@ -18,7 +18,7 @@ import {
 import { RequestEnvGuard } from '@/common/request/guards/request.env.guard';
 import { EnumAppEnvironment } from '@/app/enums/app.enum';
 import { IRequestApp } from '@/common/request/interfaces/request.interface';
-import { GeoLocation } from '@generated/prisma-client';
+import { GeoLocation } from '@/modules/user/interfaces/user.interface';
 
 /**
  * Request timeout decorator for route handlers.

@@ -5,7 +5,7 @@ import { ApplicationReview as PrismaApplicationReview } from '@/generated/prisma
 
 export class ApplicationReviewMapper {
   static toDomain(
-    prismaReview: PrismaApplicationReview
+    prismaReview: PrismaApplicationReview | any
   ): ApplicationReviewModel {
     const model = new ApplicationReviewModel();
     model.id = prismaReview.id;

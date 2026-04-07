@@ -10,8 +10,8 @@ import {
   IsUUID,
 } from 'class-validator';
 import {
-  ENUM_CARE_RECORD_ITEM_ITEM_TYPE,
-  ENUM_CARE_RECORD_ITEM_SOURCE,
+  EnumCareRecordItemType,
+  EnumCareRecordItemSource,
 } from '../../enums/care-record-item.enum';
 
 export class CareRecordItemCreateRequestDto {
@@ -52,24 +52,24 @@ export class CareRecordItemCreateRequestDto {
   part: string;
 
   @IsNotEmpty()
-  @IsIn(Object.values(ENUM_CARE_RECORD_ITEM_SOURCE))
+  @IsIn(Object.values(EnumCareRecordItemSource))
   @ApiProperty({
-    example: ENUM_CARE_RECORD_ITEM_SOURCE.SCHEDULED,
+    example: EnumCareRecordItemSource.scheduled,
     description: 'Nguồn gốc từ đâu',
     required: true,
-    enum: ENUM_CARE_RECORD_ITEM_SOURCE,
+    enum: EnumCareRecordItemSource,
   })
-  source: ENUM_CARE_RECORD_ITEM_SOURCE;
+  source: EnumCareRecordItemSource;
 
   @IsNotEmpty()
-  @IsIn(Object.values(ENUM_CARE_RECORD_ITEM_ITEM_TYPE))
+  @IsIn(Object.values(EnumCareRecordItemType))
   @ApiProperty({
-    example: ENUM_CARE_RECORD_ITEM_ITEM_TYPE.SERVICE,
+    example: EnumCareRecordItemType.service,
     description: 'Thể loại của item',
     required: true,
-    enum: ENUM_CARE_RECORD_ITEM_ITEM_TYPE,
+    enum: EnumCareRecordItemType,
   })
-  itemType: ENUM_CARE_RECORD_ITEM_ITEM_TYPE;
+  itemType: EnumCareRecordItemType;
 
   @ApiProperty({
     example: '',

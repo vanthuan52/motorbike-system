@@ -14,7 +14,7 @@ import { CareRecordConditionMapper } from '@/modules/care-record-condition/mappe
 import { CareRecord as PrismaCareRecord } from '@/generated/prisma-client';
 
 export class CareRecordMapper {
-  static toDomain(prismaRecord: PrismaCareRecord): CareRecordModel {
+  static toDomain(prismaRecord: PrismaCareRecord | any): CareRecordModel {
     const model = new CareRecordModel();
     model.id = prismaRecord.id;
     model.vehicleModelName = prismaRecord.vehicleModelName;

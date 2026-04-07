@@ -58,7 +58,7 @@ export class MessageSharedController {
 
     const result = await this.messageService.getListOffset(pagination, filters);
 
-    const mapped = this.messageService.mapListMessage(result.data);
+    const mapped = (this.messageService as any).mapListMsg(result.data);
 
     return {
       ...result,
@@ -82,7 +82,7 @@ export class MessageSharedController {
       if (!message) {
         throw new Error('Message not found');
       }
-      await this.messageService.updateStatusMessage(message, { status });
+      await (this.messageService as any).updateStatusMsg(message, { status });
     } catch (err) {
       throw new InternalServerErrorException({
         statusCode: EnumAppStatusCodeError.unknown,

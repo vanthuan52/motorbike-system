@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_CARE_RECORD_CHECKLIST_RESULT,
-  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+  EnumCareRecordChecklistResult,
+  EnumCareRecordChecklistStatus,
 } from '../enums/care-record-checklist.enum';
 import { ApiParamOptions } from '@nestjs/swagger';
 
@@ -21,7 +21,7 @@ export const CareRecordChecklistDocQueryStatus: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_CARE_RECORD_CHECKLIST_STATUS).join(','),
+    example: Object.values(EnumCareRecordChecklistStatus).join(','),
     description: 'one value',
   },
 ];
@@ -32,7 +32,7 @@ export const CareRecordChecklistDocQueryResult: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_CARE_RECORD_CHECKLIST_RESULT).join(','),
+    example: Object.values(EnumCareRecordChecklistResult).join(','),
     description: 'one value',
   },
 ];

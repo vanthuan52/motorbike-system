@@ -387,7 +387,7 @@ export class DeviceOwnershipRepository {
     });
 
     const deviceIdList = deviceIds.map(
-      (d: PrismaDeviceOwnership) => d.deviceId
+      (d: any) => d.deviceId
     );
 
     return this.databaseService.device.updateMany({

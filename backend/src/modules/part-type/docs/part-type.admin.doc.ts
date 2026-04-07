@@ -56,24 +56,6 @@ export function PartTypeAdminGetDoc(): MethodDecorator {
   );
 }
 
-export function PartTypeAdminGetDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'get part type by id',
-    }),
-    DocRequest({
-      params: PartTypeDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse<PartTypeGetResponseDto>('part-type.getById', {
-      dto: PartTypeGetResponseDto,
-    }),
-  );
-}
-
 export function PartTypeAdminCreateDoc(): MethodDecorator {
   return applyDecorators(
     Doc({
@@ -190,37 +172,5 @@ export function PartTypeAdminForceDeleteDoc(): MethodDecorator {
     }),
     DocGuard({ role: true, policy: true }),
     DocResponse('part-type.forceDelete')
-  );
-}
-
-export function PartTypeAdminRestoreDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'restore a soft-deleted part type from trash',
-    }),
-    DocRequest({
-      params: PartTypeDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('part-type.restore'),
-  );
-}
-
-export function PartTypeAdminForceDeleteDoc(): MethodDecorator {
-  return applyDecorators(
-    Doc({
-      summary: 'permanently delete a part type (irreversible)',
-    }),
-    DocRequest({
-      params: PartTypeDocParamsId,
-    }),
-    DocAuth({
-      jwtAccessToken: true,
-    }),
-    DocGuard({ role: true, policy: true }),
-    DocResponse('part-type.forceDelete'),
   );
 }

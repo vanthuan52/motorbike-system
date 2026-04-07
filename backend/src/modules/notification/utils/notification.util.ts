@@ -9,10 +9,8 @@ import { NotificationResponseDto } from '@/modules/notification/dtos/response/no
 import { EnumNotificationProcess } from '@/modules/notification/enums/notification.enum';
 import { EnumNotificationStatusCodeError } from '@/modules/notification/enums/notification.status-code.enum';
 import {
-  INotificationAcceptTermPolicyPayload,
   INotificationForgotPasswordPayload,
   INotificationNewDeviceLoginPayload,
-  INotificationPublishTermPolicyPayload,
   INotificationTemporaryPasswordPayload,
   INotificationVerificationEmailPayload,
   INotificationVerifiedEmailPayload,
@@ -389,33 +387,6 @@ export class NotificationUtil {
   }
 
   /**
-   * Queues term policy publication notification to multiple users.
-   *
-   * @param payload - Term policy publication data
-   * @param publishedBy - Admin/user ID who published the policy
-   * @returns Promise resolving when job is enqueued
-   */
-  async sendPublishTermPolicy(
-    payload: INotificationPublishTermPolicyPayload,
-    publishedBy: string
-  ): Promise<void> {
-    await this.notificationQueue.add(
-      EnumNotificationProcess.publishTermPolicy,
-      {
-        proceedBy: publishedBy,
-        data: payload,
-      } as INotificationWorkerBulkPayload<INotificationPublishTermPolicyPayload>,
-      {
-        priority: EnumQueuePriority.medium,
-        deduplication: {
-          id: `${EnumNotificationProcess.publishTermPolicy}-${payload.type}-${payload.version}`,
-          ttl: 1000,
-        },
-      }
-    );
-  }
-
-  /**
    * Queues mobile number verification confirmation notification.
    *
    * @param userId - User receiving the notification
@@ -437,34 +408,6 @@ export class NotificationUtil {
         priority: EnumQueuePriority.medium,
         deduplication: {
           id: `${EnumNotificationProcess.verifiedMobileNumber}-${userId}`,
-          ttl: 1000,
-        },
-      }
-    );
-  }
-
-  /**
-   * Queues user acceptance of term policy notification.
-   *
-   * @param userId - User receiving the notification
-   * @param payload - Term policy version accepted by the user
-   * @returns Promise resolving when job is enqueued
-   */
-  async sendUserAcceptTermPolicy(
-    userId: string,
-    payload: INotificationAcceptTermPolicyPayload
-  ): Promise<void> {
-    await this.notificationQueue.add(
-      EnumNotificationProcess.userAcceptTermPolicy,
-      {
-        userId,
-        data: payload,
-        proceedBy: userId,
-      } as INotificationWorkerPayload<INotificationAcceptTermPolicyPayload>,
-      {
-        priority: EnumQueuePriority.low,
-        deduplication: {
-          id: `${EnumNotificationProcess.userAcceptTermPolicy}-${userId}-${payload.termPolicyId}`,
           ttl: 1000,
         },
       }

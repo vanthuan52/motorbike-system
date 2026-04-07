@@ -6,7 +6,7 @@ import { MediaGetResponseDto } from './media.get.response.dto';
  * @description Simplified media info for list views
  */
 export class MediaListResponseDto extends PickType(MediaGetResponseDto, [
-  '_id',
+  'id',
   'key',
   'filename',
   'mimeType',

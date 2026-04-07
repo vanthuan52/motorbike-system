@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ICareRecordItemService } from '../interfaces/care-record-item.service.interface';
-import { CareRecordItemRepository } from '../respository/care-record-item.repository';
+import { CareRecordItemRepository } from '../repository/care-record-item.repository';
 import { CareRecordItemCreateRequestDto } from '../dtos/request/care-record-item.create.request.dto';
 import { CareRecordItemUpdateRequestDto } from '../dtos/request/care-record-item.update.request.dto';
 import { CareRecordItemUpdateApprovalRequestDto } from '../dtos/request/care-record-item.update-approval.request.dto';
@@ -14,7 +14,7 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { EnumCareRecordItemStatusCodeError } from '../enums/care-record-item.status-code.enum';
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import { CareRecordItemModel } from '../models/care-record-item.model';
-import { Prisma } from '@generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 
 import { ICareRecordItemListFilters } from '../interfaces/care-record-item.filter.interface';
 

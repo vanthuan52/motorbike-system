@@ -20,7 +20,7 @@ import { EnumDocRequestBodyType } from '@/common/doc/enums/doc.enum';
 import { VehicleServiceCreateRequestDto } from '../dtos/request/vehicle-service.create.request.dto';
 import { VehicleServiceUpdateRequestDto } from '../dtos/request/vehicle-service.update.request.dto';
 import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-service.update-status.request.dto';
-import { DatabaseIdDto } from '@/common/database/dtos/database.id.response.dto';
+import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { VehicleServiceGetFullResponseDto } from '../dtos/response/vehicle-service.full.response.dto';
 import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
 import { AwsS3PresignRequestDto } from '@/common/aws/dtos/request/aws.s3-presign.request.dto';

@@ -5,7 +5,7 @@ import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { Message as PrismaMessage } from '@/generated/prisma-client';
 
 export class MessageMapper {
-  static toDomain(prismaMessage: PrismaMessage): MessageModel {
+  static toDomain(prismaMessage: PrismaMessage | any): MessageModel {
     const model = new MessageModel();
     model.id = prismaMessage.id;
     model.content = prismaMessage.content;

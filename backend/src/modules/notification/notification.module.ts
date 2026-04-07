@@ -11,10 +11,11 @@ import { NotificationEmailUtil } from '@/modules/notification/utils/notification
 import { NotificationPushUtil } from '@/modules/notification/utils/notification.push.util';
 import { NotificationUtil } from '@/modules/notification/utils/notification.util';
 import { UserModule } from '@/modules/user/user.module';
+import { VerificationModule } from '../verification/verification.module';
 
 @Global()
 @Module({
-  imports: [UserModule, DeviceModule, AwsModule],
+  imports: [UserModule, DeviceModule, AwsModule, VerificationModule],
   exports: [
     NotificationService,
     NotificationTemplateService,

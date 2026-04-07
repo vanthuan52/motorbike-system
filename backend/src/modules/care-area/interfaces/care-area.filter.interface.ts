@@ -1,5 +1,5 @@
 import { Prisma } from '@/generated/prisma-client';
 
 export type ICareAreaListFilters = Partial<
-  Pick<Prisma.CareAreaWhereInput, 'storeId'>
+  Pick<Prisma.CareAreaWhereInput, "id">
 >;

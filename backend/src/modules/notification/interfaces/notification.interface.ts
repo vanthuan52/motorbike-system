@@ -1,9 +1,8 @@
 import { IRequestLog } from '@/common/request/interfaces/request.interface';
 import {
-  EnumTermPolicyType,
   EnumUserLoginFrom,
   EnumUserLoginWith,
-} from '@/generated/prisma-client';
+} from '@/modules/user/enums/user.enum';
 
 export interface INotificationTemporaryPasswordPayload {
   password: string;
@@ -40,15 +39,6 @@ export interface INotificationNewDeviceLoginPayload {
   loginWith: EnumUserLoginWith;
   loginAt: string;
   requestLog: IRequestLog;
-}
-
-export interface INotificationPublishTermPolicyPayload {
-  type: EnumTermPolicyType;
-  version: number;
-}
-
-export interface INotificationAcceptTermPolicyPayload extends INotificationPublishTermPolicyPayload {
-  termPolicyId: string;
 }
 
 export interface INotificationWorkerBulkPayload<T = unknown> {
@@ -102,3 +92,6 @@ export interface INotificationEmailWorkerBulkPayload<T = unknown> {
   send: INotificationEmailSendPayload[];
   data?: T;
 }
+
+export type INotificationPublishTermPolicyPayload = any;
+export type INotificationAcceptTermPolicyPayload = any;

@@ -3,6 +3,7 @@ import {
   ArrayUnique,
   IsArray,
   IsIn,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,

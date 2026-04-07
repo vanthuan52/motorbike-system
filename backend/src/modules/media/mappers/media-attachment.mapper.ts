@@ -6,7 +6,7 @@ import { MediaAttachment as PrismaMediaAttachment } from '@/generated/prisma-cli
  * Maps Prisma MediaAttachment entity to domain model and vice-versa.
  */
 export class MediaAttachmentMapper {
-  static toDomain(prismaEntity: PrismaMediaAttachment): MediaAttachmentModel {
+  static toDomain(prismaEntity: PrismaMediaAttachment | any): MediaAttachmentModel {
     const model = new MediaAttachmentModel();
     model.id = prismaEntity.id;
     model.attachableType = prismaEntity.attachableType;

@@ -251,11 +251,6 @@ export class VehicleModelService implements IVehicleModelService {
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
   }
 
-  async updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleModelModel> {
-    return this.vehicleModelRepository.update(id, {
-      photo: photo.path,
-    });
-  }
   async findAll(
     where: Prisma.VehicleModelWhereInput
   ): Promise<VehicleModelModel[]> {

@@ -11,7 +11,6 @@ import {
   INotificationEmailWorkerPayload,
   INotificationForgotPasswordPayload,
   INotificationNewDeviceLoginPayload,
-  INotificationPublishTermPolicyPayload,
   INotificationTemporaryPasswordPayload,
   INotificationVerificationEmailPayload,
   INotificationVerifiedEmailPayload,
@@ -490,46 +489,6 @@ export class NotificationEmailProcessorService implements INotificationEmailProc
       return { message: 'New device login email processed', result };
     } catch (err: unknown) {
       this.logger.error(err, 'Failed to process new device login email');
-      throw err;
-    }
-  }
-
-  async processPublishTermPolicy(
-    job: Job<
-      INotificationEmailWorkerBulkPayload<INotificationPublishTermPolicyPayload>,
-      IQueueResponse,
-      EnumNotificationProcess
-    >
-  ): Promise<IQueueResponse> {
-    try {
-      const { type, version } = job.data.data;
-      const users = await this.userRepository.findActive();
-      const userChunks = this.helperService.arrayChunk(users, this.batchSize);
-
-      const results = [];
-      for (const chunk of userChunks) {
-        const result = await this.awsSESService.sendBulk({
-          templateName: EnumNotificationProcess.publishTermPolicy,
-          recipients: chunk.map(u => ({
-            recipient: u.email,
-            templateData: { username: u.username },
-          })),
-          sender: this.noreplyEmail,
-          defaultTemplateData: {
-            ...this.defaultTemplateData,
-            type,
-            version,
-          },
-        });
-
-        results.push(result);
-
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-
-      return { message: 'Publish term policy email processed', results };
-    } catch (err: unknown) {
-      this.logger.error(err, 'Failed to process publish term policy email');
       throw err;
     }
   }

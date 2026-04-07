@@ -71,6 +71,4 @@ export interface IVehicleModelService {
     vehicleModel: string,
     payload: VehicleModelUploadPhotoRequestDto
   ): string;
-
-  updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleModelModel>;
 }

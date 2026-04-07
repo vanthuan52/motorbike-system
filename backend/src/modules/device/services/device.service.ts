@@ -24,8 +24,9 @@ import { SessionRepository } from '@/modules/session/repositories/session.reposi
 import { SessionUtil } from '@/modules/session/utils/session.util';
 import { ActivityLogService } from '@/modules/activity-log/services/activity-log.service';
 import { EnumActivityLogAction } from '@/modules/activity-log/enums/activity-log.enum';
-import { DeviceOwnership, Prisma } from '@/generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 import { IDeviceCheckingResult } from '../interfaces/device.interface';
+import { DeviceOwnershipModel } from '../models/device.model';
 
 @Injectable()
 export class DeviceService implements IDeviceService {
@@ -176,7 +177,7 @@ export class DeviceService implements IDeviceService {
     deviceOwnershipId: string,
     requestLog: IRequestLog,
     removedBy: string
-  ): Promise<DeviceOwnership> {
+  ): Promise<any> {
     const existDeviceOwnership =
       await this.deviceOwnershipRepository.existActive(
         userId,

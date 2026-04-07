@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { ENUM_JOB_APPLICATION_STATUS } from '../../enums/job-application.enum';
+import { EnumJobApplicationStatus } from '../../enums/job-application.enum';
 
 export class JobApplicationUpdateStatusRequestDto {
   @ApiProperty({
-    example: ENUM_JOB_APPLICATION_STATUS.HIRED,
-    enum: ENUM_JOB_APPLICATION_STATUS,
+    example: EnumJobApplicationStatus.hired,
+    enum: EnumJobApplicationStatus,
   })
-  @IsEnum(ENUM_JOB_APPLICATION_STATUS)
-  status: ENUM_JOB_APPLICATION_STATUS;
+  @IsEnum(EnumJobApplicationStatus)
+  status: EnumJobApplicationStatus;
 }

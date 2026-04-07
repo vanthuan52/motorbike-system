@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
-import { ENUM_APPOINTMENT_STATUS } from '../enums/appointment.enum';
+import { EnumAppointmentStatus } from '../enums/appointment.enum';
 
 export class AppointmentDto extends DatabaseDto {
   @ApiProperty({
@@ -92,11 +92,11 @@ export class AppointmentDto extends DatabaseDto {
   appointmentDate: Date;
 
   @ApiProperty({
-    enum: ENUM_APPOINTMENT_STATUS,
+    enum: EnumAppointmentStatus,
     required: true,
     description: 'Appointment status',
-    example: ENUM_APPOINTMENT_STATUS.PENDING,
+    example: EnumAppointmentStatus.pending,
   })
   @Expose()
-  status: ENUM_APPOINTMENT_STATUS;
+  status: EnumAppointmentStatus;
 }

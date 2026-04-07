@@ -5,11 +5,9 @@ import { QueueProcessorBase } from '@/queues/bases/queue.processor.base';
 import { QueueProcessor } from '@/queues/decorators/queue.decorator';
 import { IQueueResponse } from '@/queues/interfaces/queue.interface';
 import {
-  INotificationEmailWorkerBulkPayload,
   INotificationEmailWorkerPayload,
   INotificationForgotPasswordPayload,
   INotificationNewDeviceLoginPayload,
-  INotificationPublishTermPolicyPayload,
   INotificationTemporaryPasswordPayload,
   INotificationVerificationEmailPayload,
   INotificationVerifiedEmailPayload,
@@ -158,15 +156,6 @@ export class NotificationEmailProcessor extends QueueProcessorBase {
           return this.notificationEmailProcessorService.processResetTwoFactorByAdmin(
             job as Job<
               INotificationEmailWorkerPayload,
-              IQueueResponse,
-              EnumNotificationProcess
-            >
-          );
-
-        case EnumNotificationProcess.publishTermPolicy:
-          return this.notificationEmailProcessorService.processPublishTermPolicy(
-            job as Job<
-              INotificationEmailWorkerBulkPayload<INotificationPublishTermPolicyPayload>,
               IQueueResponse,
               EnumNotificationProcess
             >

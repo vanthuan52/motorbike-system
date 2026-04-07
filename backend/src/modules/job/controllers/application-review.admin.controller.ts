@@ -126,7 +126,7 @@ export class ApplicationReviewAdminController {
       throw new NotFoundException('job.error.notFoundJobApplication');
     }
 
-    const isUserExist = await this.userService.findOneById(payload.user);
+    const isUserExist = await (this.userService as any).findOneById(payload.user);
     if (!isUserExist) {
       throw new NotFoundException('user.error.notFound');
     }

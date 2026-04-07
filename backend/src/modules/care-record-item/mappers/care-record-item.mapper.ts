@@ -10,7 +10,7 @@ import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { CareRecordItem as PrismaCareRecordItem } from '@/generated/prisma-client';
 
 export class CareRecordItemMapper {
-  static toDomain(prismaItem: PrismaCareRecordItem): CareRecordItemModel {
+  static toDomain(prismaItem: PrismaCareRecordItem | any): CareRecordItemModel {
     const model = new CareRecordItemModel();
     model.id = prismaItem.id;
     model.source = prismaItem.source as EnumCareRecordItemSource;

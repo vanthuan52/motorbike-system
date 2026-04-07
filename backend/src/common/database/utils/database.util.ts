@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import ObjectID from 'bson-objectid';
-import { Prisma } from '@generated/prisma-client';
+import { Prisma } from '@/generated/prisma-client';
 
 /**
  * Database utility service providing common database operations.

@@ -1,10 +1,8 @@
 import { Job } from 'bullmq';
 import { EnumNotificationProcess } from '@/modules/notification/enums/notification.enum';
 import {
-  INotificationAcceptTermPolicyPayload,
   INotificationForgotPasswordPayload,
   INotificationNewDeviceLoginPayload,
-  INotificationPublishTermPolicyPayload,
   INotificationTemporaryPasswordPayload,
   INotificationVerificationEmailPayload,
   INotificationVerifiedEmailPayload,

@@ -38,7 +38,6 @@ import { UserModel } from '@/modules/user/models/user.model';
 import { AuthSignUpRequestDto } from '@/modules/auth/dtos/request/auth.sign-up.request.dto';
 import { UserMapper } from '@/modules/user/mappers/user.mapper';
 import { IUserLoginMetadataUpdate } from '@/modules/user/interfaces/user.interface';
-import { EnumPasswordHistoryType } from '@/modules/password-history/enums/password-history.enum';
 import { Prisma, User as PrismaUser } from '@/generated/prisma-client';
 
 @Injectable()
@@ -53,7 +52,7 @@ export class UserRepository {
   async updateVerificationStatus(
     userId: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const result = await db.user.update({
       where: { id: userId, deletedAt: null },
@@ -61,12 +60,10 @@ export class UserRepository {
         isVerified: true,
         updatedBy: userId,
       },
-      include: {
-        role: true,
-      },
+      include: { userRoles: { include: { role: true } } } as any,
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async findWithPaginationOffset(
@@ -89,9 +86,7 @@ export class UserRepository {
       },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
@@ -99,7 +94,7 @@ export class UserRepository {
     return {
       ...paginatedResult,
       data: paginatedResult.data.map((item: PrismaUser) =>
-        UserMapper.toDomain(item)
+        UserMapper.toDomain(item as any) as any
       ),
     };
   }
@@ -124,37 +119,33 @@ export class UserRepository {
       },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
 
     return {
       ...paginatedResult,
-      data: paginatedResult.data.map(item => UserMapper.toDomain(item)),
+      data: paginatedResult.data.map(item => UserMapper.toDomain(item as any) as any),
     };
   }
 
-  async findByEmails(emails: string[]): Promise<UserModel[]> {
+  async findByEmails(emails: string[]): Promise<any[]> {
     const results = await this.databaseService.user.findMany({
       where: {
         email: { in: emails },
       },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
 
-    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
+    return results.map((item: any) => UserMapper.toDomain(item as any)) as any;
   }
 
-  async findExport(filters?: IUserListFilters): Promise<UserModel[]> {
+  async findExport(filters?: IUserListFilters): Promise<any[]> {
     const results = await this.databaseService.user.findMany({
       where: {
         ...filters,
@@ -162,17 +153,15 @@ export class UserRepository {
       },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
 
-    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
+    return results.map((item: any) => UserMapper.toDomain(item as any)) as any;
   }
 
-  async findActive(): Promise<UserModel[]> {
+  async findActive(): Promise<any[]> {
     const results = await this.databaseService.user.findMany({
       where: {
         status: EnumUserStatus.active,
@@ -185,7 +174,7 @@ export class UserRepository {
       },
     });
 
-    return results.map((item: PrismaUser) => UserMapper.toDomain(item));
+    return results.map((item: any) => UserMapper.toDomain(item as any)) as any;
   }
 
   async findOneById(id: string): Promise<UserModel | null> {
@@ -193,14 +182,12 @@ export class UserRepository {
       where: { id, deletedAt: null },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneActiveById(id: string): Promise<UserModel | null> {
@@ -208,7 +195,7 @@ export class UserRepository {
       where: { id, deletedAt: null, status: EnumUserStatus.active },
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneActiveByEmail(email: string): Promise<UserModel | null> {
@@ -216,7 +203,7 @@ export class UserRepository {
       where: { email, deletedAt: null, status: EnumUserStatus.active },
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneByEmail(email: string): Promise<UserModel | null> {
@@ -224,7 +211,7 @@ export class UserRepository {
       where: { email },
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneWithRoleByEmail(email: string): Promise<UserModel | null> {
@@ -232,47 +219,39 @@ export class UserRepository {
       where: { email, deletedAt: null },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneProfileById(id: string): Promise<UserModel | null> {
     const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null },
-      include: {
-        role: true,
-      },
+      include: { userRoles: { include: { role: true } } } as any,
     });
 
-    return result ? (UserMapper.toDomain(result) as IUserProfile) : null;
+    return result ? (UserMapper.toDomain(result as any) as any as IUserProfile) : null;
   }
 
   async findOneActiveProfileById(id: string): Promise<UserModel | null> {
     const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null, status: EnumUserStatus.active },
-      include: {
-        role: true,
-      },
+      include: { userRoles: { include: { role: true } } } as any,
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneWithRoleById(id: string): Promise<UserModel | null> {
     const result = await this.databaseService.user.findUnique({
       where: { id, deletedAt: null },
-      include: {
-        role: true,
-      },
+      include: { userRoles: { include: { role: true } } } as any,
     });
 
-    return result ? UserMapper.toDomain(result) : null;
+    return result ? UserMapper.toDomain(result as any) as any : null;
   }
 
   async findOneActiveByForgotPasswordToken(
@@ -294,9 +273,7 @@ export class UserRepository {
       },
       include: {
         user: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
@@ -324,11 +301,7 @@ export class UserRepository {
   }
 
   async existByEmail(email: string): Promise<boolean> {
-    return (
-      this.databaseService.user.count({
-        where: { email: email },
-      }) > 0
-    );
+    return (await this.databaseService.user.count({ where: { email: email } })) > 0;
   }
 
   async existByUsername(username: string): Promise<{ id: string } | null> {
@@ -351,7 +324,7 @@ export class UserRepository {
     { id: roleId, type: roleType }: IRole,
     createdBy: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const user = await db.user.create({
       data: {
@@ -370,15 +343,6 @@ export class UserRepository {
         status: EnumUserStatus.active,
         createdBy,
         deletedAt: null,
-        passwordHistories: {
-          create: {
-            password: passwordHash,
-            type: EnumPasswordHistoryType.admin,
-            expiredAt: passwordPeriodExpired,
-            createdAt: passwordCreated,
-            createdBy,
-          },
-        },
       },
     });
 
@@ -389,7 +353,7 @@ export class UserRepository {
     id: string,
     { status }: UserUpdateStatusRequestDto,
     updatedBy: string
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const result = await this.databaseService.user.update({
       where: { id, deletedAt: null },
       data: {
@@ -398,13 +362,13 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async updateProfile(
     userId: string,
     { ...data }: UserUpdateProfileRequestDto
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
@@ -413,13 +377,13 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async updatePhotoProfile(
     userId: string,
     photo: AwsS3Dto
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
@@ -428,13 +392,13 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async deleteSelf(
     userId: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const deletedAt = this.helperService.dateCreate();
     const result = await db.user.update({
@@ -447,13 +411,13 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async claimUsername(
     userId: string,
     { username }: UserClaimUsernameRequestDto
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
@@ -462,7 +426,7 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async updatePasswordByAdmin(
@@ -475,7 +439,7 @@ export class UserRepository {
     }: IAuthPassword,
     updatedBy: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const result = await db.user.update({
       where: { id: userId, deletedAt: null },
@@ -485,22 +449,13 @@ export class UserRepository {
         passwordExpired,
         passwordAttempt: 0,
         updatedBy,
-        passwordHistories: {
-          create: {
-            password: passwordHash,
-            type: EnumPasswordHistoryType.admin,
-            expiredAt: passwordPeriodExpired,
-            createdAt: passwordCreated,
-            createdBy: updatedBy,
-          },
-        },
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
-  async increasePasswordAttempt(userId: string): Promise<UserModel> {
+  async increasePasswordAttempt(userId: string): Promise<any> {
     const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
@@ -510,10 +465,10 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
-  async resetPasswordAttempt(userId: string): Promise<UserModel> {
+  async resetPasswordAttempt(userId: string): Promise<any> {
     const result = await this.databaseService.user.update({
       where: { id: userId, deletedAt: null },
       data: {
@@ -521,7 +476,7 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async changePassword(
@@ -533,7 +488,7 @@ export class UserRepository {
       passwordPeriodExpired,
     }: IAuthPassword,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const result = await db.user.update({
       where: { id: userId, deletedAt: null },
@@ -543,19 +498,10 @@ export class UserRepository {
         passwordExpired,
         passwordAttempt: 0,
         updatedBy: userId,
-        passwordHistories: {
-          create: {
-            password: passwordHash,
-            type: EnumPasswordHistoryType.profile,
-            expiredAt: passwordPeriodExpired,
-            createdAt: passwordCreated,
-            createdBy: userId,
-          },
-        },
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async updateLoginMetadata(
@@ -563,7 +509,7 @@ export class UserRepository {
     { loginFrom, loginWith }: IUserLoginMetadataUpdate,
     ipAddress: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const today = this.helperService.dateCreate();
 
@@ -578,7 +524,7 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async createFromSocial(
@@ -588,7 +534,7 @@ export class UserRepository {
     loginWith: EnumUserLoginWith,
     { name, from }: AuthCreateSocialRequestDto,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const userId = this.databaseUtil.createId();
     const signUpWith =
@@ -617,9 +563,7 @@ export class UserRepository {
       },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
@@ -634,7 +578,7 @@ export class UserRepository {
     { email, name, from }: AuthSignUpRequestDto,
     { passwordHash }: IAuthPassword,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const user = await db.user.create({
       data: {
@@ -659,9 +603,7 @@ export class UserRepository {
       },
       include: {
         userRoles: {
-          include: {
-            role: true,
-          },
+          include: { userRoles: { include: { role: true } } } as any,
         },
       },
     });
@@ -708,7 +650,7 @@ export class UserRepository {
     forgotPasswordId: string,
     { passwordCreated, passwordHash }: IAuthPassword,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
 
     const result = await db.user.update({
@@ -730,13 +672,13 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async reachMaxPasswordAttempt(
     userId: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel> {
+  ): Promise<any> {
     const db = options?.tx || this.databaseService;
     const result = await db.user.update({
       where: { id: userId, deletedAt: null },
@@ -745,7 +687,7 @@ export class UserRepository {
       },
     });
 
-    return UserMapper.toDomain(result);
+    return UserMapper.toDomain(result as any) as any;
   }
 
   async importByAdmin(
@@ -755,9 +697,9 @@ export class UserRepository {
     { id: roleId, type: roleType }: IRole,
     createdBy: string,
     options?: IDatabaseOptions
-  ): Promise<UserModel[]> {
+  ): Promise<any[]> {
     const db = options?.tx || this.databaseService;
-    const usersToCreate: Prisma.PrismaPromise<UserModel>[] = [];
+    const usersToCreate: Prisma.PrismaPromise<any>[] = [];
 
     for (const [index, { email, name }] of data.entries()) {
       const userId = this.databaseUtil.createId();
@@ -787,15 +729,6 @@ export class UserRepository {
             status: EnumUserStatus.active,
             createdBy,
             deletedAt: null,
-            passwordHistories: {
-              create: {
-                password: passwordHash,
-                type: EnumPasswordHistoryType.admin,
-                expiredAt: passwordPeriodExpired,
-                createdAt: passwordCreated,
-                createdBy,
-              },
-            },
           },
         })
       );

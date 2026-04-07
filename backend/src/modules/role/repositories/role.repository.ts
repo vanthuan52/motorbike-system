@@ -183,7 +183,6 @@ export class RoleRepository {
         permissionId,
         assignedBy,
       })),
-      skipDuplicates: true,
     });
   }
 

@@ -7,7 +7,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { ENUM_CARE_RECORD_MEDIA_STAGE } from '../../enums/care-record-media.enum';
+import { EnumCareRecordMediaStage } from '../../enums/care-record-media.enum';
 import { EnumFileExtension } from '@/common/file/enums/file.enum';
 
 export class CareRecordMediaCreateRequestDto {
@@ -21,14 +21,14 @@ export class CareRecordMediaCreateRequestDto {
   careRecord: string;
 
   @IsNotEmpty()
-  @IsIn(Object.values(ENUM_CARE_RECORD_MEDIA_STAGE))
+  @IsIn(Object.values(EnumCareRecordMediaStage))
   @ApiProperty({
-    example: ENUM_CARE_RECORD_MEDIA_STAGE.BEFORE,
+    example: EnumCareRecordMediaStage.before,
     description: 'Là file của bước nào',
     required: true,
-    enum: ENUM_CARE_RECORD_MEDIA_STAGE,
+    enum: EnumCareRecordMediaStage,
   })
-  stage: ENUM_CARE_RECORD_MEDIA_STAGE;
+  stage: EnumCareRecordMediaStage;
 
   @IsNotEmpty()
   @IsIn(Object.values(EnumFileExtension))

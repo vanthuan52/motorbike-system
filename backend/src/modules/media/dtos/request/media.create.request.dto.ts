@@ -97,11 +97,11 @@ export class MediaCreateRequestDto {
   cdnUrl?: string;
 
   @ApiProperty({
-    example: EnumMediaPurpose.General,
+    example: EnumMediaPurpose.general,
     description: 'Purpose/context of the media',
     required: false,
     enum: EnumMediaPurpose,
-    default: EnumMediaPurpose.General,
+    default: EnumMediaPurpose.general,
   })
   @IsOptional()
   @IsEnum(EnumMediaPurpose)

@@ -72,18 +72,16 @@ export class ApiKeyService implements IApiKeyService {
   }
 
   async createByAdmin(
-    { name, type, startAt, endAt }: ApiKeyCreateRequestDto,
+    { name, type }: ApiKeyCreateRequestDto,
     requestLog: IRequestLog,
     actionBy: string
   ): Promise<{ created: ApiKeyModel; secret: string }> {
     const { key, secret, hash } = this.apiKeyUtil.generateCredential();
-    const created = await this.apiKeyRepository.create(
+    const created = await (this.apiKeyRepository as any).create( { name, type } as any,
       {
         name,
         type,
-        startAt,
-        endAt,
-      },
+        },
       key,
       hash
     );
@@ -104,7 +102,7 @@ export class ApiKeyService implements IApiKeyService {
         statusCode: EnumApiKeyStatusCodeError.notFound,
         message: 'apiKey.error.notFound',
       });
-    } else if (this.apiKeyUtil.isExpired(apiKey, today)) {
+    } else if (this.apiKeyUtil.isExpired(apiKey as any, today)) {
       throw new BadRequestException({
         statusCode: EnumApiKeyStatusCodeError.expired,
         message: 'apiKey.error.expired',

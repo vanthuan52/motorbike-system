@@ -116,11 +116,11 @@ export class CareRecordService implements ICareRecordService {
     actionBy: string
   ): Promise<CareRecordModel> {
     const created = await this.careRecordRepository.create({
-      appointmentId: appointment,
-      userVehicleId: userVehicle,
+      appointment: appointment ? { connect: { id: appointment } } : undefined,
+      userVehicle: userVehicle ? { connect: { id: userVehicle } } : undefined,
       vehicleModelName,
-      technicianId: technician,
-      storeId: store,
+      technician: technician ? { connect: { id: technician } } : undefined,
+      store: store ? { connect: { id: store } } : undefined,
       confirmedByOwner: confirmedByOwner ? confirmedByOwner : false,
       status: EnumCareRecordStatus.pending,
       paymentStatus: EnumPaymentStatus.unpaid,
@@ -231,7 +231,7 @@ export class CareRecordService implements ICareRecordService {
     await this.findOneByIdOrFail(id);
 
     const updated = await this.careRecordRepository.update(id, {
-      technicianId: technician,
+      technician: technician ? { connect: { id: technician } } : undefined,
       updatedBy: actionBy,
     });
 
@@ -332,10 +332,10 @@ export class CareRecordService implements ICareRecordService {
 
         if (vehicleService) {
           if (
-            vehicleService.checklistItems &&
-            vehicleService.checklistItems.length > 0
+            (vehicleService as any).checklistItems &&
+            (vehicleService as any).checklistItems.length > 0
           ) {
-            const serviceChecklistDtos = vehicleService.checklistItems.map(
+            const serviceChecklistDtos = (vehicleService as any).checklistItems.map(
               (serviceChecklist: any) => ({
                 careRecordService: careRecordService.id,
                 serviceChecklist: serviceChecklist.id || serviceChecklist,

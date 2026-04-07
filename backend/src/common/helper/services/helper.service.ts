@@ -12,7 +12,10 @@ import {
 } from '@/common/helper/interfaces/helper.interface';
 import { IHelperService } from '@/common/helper/interfaces/helper.service.interface';
 import { EnumHelperDateDayOf } from '@/common/helper/enums/helper.enum';
-import { GeoLocation, UserAgent } from '@generated/prisma-client';
+import {
+  GeoLocation,
+  UserAgent,
+} from '@/modules/user/interfaces/user.interface';
 
 /**
  * Comprehensive utility service providing helper functions for common operations.

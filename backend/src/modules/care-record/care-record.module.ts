@@ -5,7 +5,8 @@ import { CareRecordServiceModule } from '../care-record-service/care-record-serv
 import { CareRecordChecklistModule } from '../care-record-checklist/care-record-checklist.module';
 import { VehicleServiceModule } from '../vehicle-service/vehicle-service.module';
 import { AppointmentModule } from '../appointment/appointment.module';
-import { UserVehicleModule } from '../user-vehicle/user-vehicle';
+import { UserVehicleModule } from '../user-vehicle/user-vehicle.module';
+import { CareRecordRepository } from './repository/care-record.repository';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { UserVehicleModule } from '../user-vehicle/user-vehicle';
     UserVehicleModule,
   ],
   controllers: [],
-  providers: [CareRecordService, CareRecordUtil],
-  exports: [CareRecordService, CareRecordUtil],
+  providers: [CareRecordService, CareRecordUtil, CareRecordRepository],
+  exports: [CareRecordService, CareRecordUtil, CareRecordRepository],
 })
 export class CareRecordModule {}

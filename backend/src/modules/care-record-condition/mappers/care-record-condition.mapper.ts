@@ -11,7 +11,7 @@ import { CareRecordCondition as PrismaCareRecordCondition } from '@/generated/pr
 
 export class CareRecordConditionMapper {
   static toDomain(
-    prismaCondition: PrismaCareRecordCondition
+    prismaCondition: PrismaCareRecordCondition | any
   ): CareRecordConditionModel {
     const model = new CareRecordConditionModel();
     model.id = prismaCondition.id;

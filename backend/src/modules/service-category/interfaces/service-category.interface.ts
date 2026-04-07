@@ -1,19 +1,3 @@
-import { UserDoc, UserEntity } from '@/modules/user/entities/user.entity';
-import {
-  ServiceCategoryDoc,
-  ServiceCategoryEntity,
-} from '../entities/service-category.entity';
+import { ServiceCategoryModel } from '../models/service-category.model';
 
-export interface IServiceCategoryEntity extends Omit<
-  ServiceCategoryEntity,
-  'createdBy'
-> {
-  createdBy: UserEntity;
-}
-
-export interface IServiceCategoryDoc extends Omit<
-  ServiceCategoryDoc,
-  'createdBy'
-> {
-  createdBy: UserDoc;
-}
+export interface IServiceCategory extends ServiceCategoryModel {}

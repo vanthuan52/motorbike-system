@@ -6,7 +6,7 @@ import { JobApplication as PrismaJobApplication } from '@/generated/prisma-clien
 
 export class JobApplicationMapper {
   static toDomain(
-    prismaJobApplication: PrismaJobApplication
+    prismaJobApplication: PrismaJobApplication | any
   ): JobApplicationModel {
     const model = new JobApplicationModel();
     model.id = prismaJobApplication.id;

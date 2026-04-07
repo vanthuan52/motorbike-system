@@ -3,8 +3,8 @@ import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_CARE_RECORD_CHECKLIST_RESULT,
-  ENUM_CARE_RECORD_CHECKLIST_STATUS,
+  EnumCareRecordChecklistResult,
+  EnumCareRecordChecklistStatus,
 } from '../enums/care-record-checklist.enum';
 
 export class CareRecordChecklistDto extends DatabaseDto {
@@ -32,19 +32,19 @@ export class CareRecordChecklistDto extends DatabaseDto {
 
   @ApiProperty({
     description: 'Trạng thái hạng mục công việc',
-    example: ENUM_CARE_RECORD_CHECKLIST_STATUS.PENDING,
-    enum: ENUM_CARE_RECORD_CHECKLIST_STATUS,
+    example: EnumCareRecordChecklistStatus.pending,
+    enum: EnumCareRecordChecklistStatus,
   })
   @Expose()
-  status: ENUM_CARE_RECORD_CHECKLIST_STATUS;
+  status: EnumCareRecordChecklistStatus;
 
   @ApiProperty({
     description: 'Trạng thái kết quả của hạng mục công việc',
-    example: ENUM_CARE_RECORD_CHECKLIST_RESULT.UNCHECKED,
-    enum: ENUM_CARE_RECORD_CHECKLIST_RESULT,
+    example: EnumCareRecordChecklistResult.unchecked,
+    enum: EnumCareRecordChecklistResult,
   })
   @Expose()
-  result: ENUM_CARE_RECORD_CHECKLIST_RESULT;
+  result: EnumCareRecordChecklistResult;
 
   @ApiPropertyOptional({
     example: 'Ghi chú',

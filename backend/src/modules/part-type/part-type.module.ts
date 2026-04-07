@@ -3,9 +3,10 @@ import { PartTypeAdminController } from './controllers/part-type.admin.controlle
 import { PartTypeService } from './services/part-type.services';
 import { PartTypeRepository } from './repository/part-type.repository';
 import { PartTypeUtil } from './utils/part-type.util';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [],
+  imports: [UserModule],
   controllers: [PartTypeAdminController],
   providers: [PartTypeService, PartTypeRepository, PartTypeUtil],
   exports: [PartTypeService, PartTypeRepository, PartTypeUtil],

@@ -1,28 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import {
-  ENUM_CARE_RECORD_STATUS,
-  ENUM_PAYMENT_STATUS,
+  EnumCareRecordStatus,
+  EnumPaymentStatus,
 } from '../../enums/care-record.enum';
 
 export class CareRecordUpdateStatusRequestDto {
   @ApiProperty({
     required: true,
-    example: ENUM_CARE_RECORD_STATUS.PENDING,
-    enum: ENUM_CARE_RECORD_STATUS,
+    example: EnumCareRecordStatus.pending,
+    enum: EnumCareRecordStatus,
   })
-  @IsEnum(ENUM_CARE_RECORD_STATUS)
+  @IsEnum(EnumCareRecordStatus)
   @IsNotEmpty()
-  status: ENUM_CARE_RECORD_STATUS;
+  status: EnumCareRecordStatus;
 }
 
 export class CareRecordUpdatePaymentStatusRequestDto {
   @ApiProperty({
     required: true,
-    example: ENUM_PAYMENT_STATUS.UNPAID,
-    enum: ENUM_PAYMENT_STATUS,
+    example: EnumPaymentStatus.unpaid,
+    enum: EnumPaymentStatus,
   })
-  @IsEnum(ENUM_PAYMENT_STATUS)
+  @IsEnum(EnumPaymentStatus)
   @IsNotEmpty()
-  paymentStatus: ENUM_PAYMENT_STATUS;
+  paymentStatus: EnumPaymentStatus;
 }

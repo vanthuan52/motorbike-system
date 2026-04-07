@@ -11,7 +11,7 @@ import {
   RoleDocParamsId,
   RoleDocQueryList,
 } from '@/modules/role/constants/role.doc.constant';
-import { RoleAbilitiesResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
+import { RolePermissionsResponseDto } from '@/modules/role/dtos/response/role.abilities.response.dto';
 import { RoleListResponseDto } from '@/modules/role/dtos/response/role.list.response.dto';
 
 export function RoleSystemListDoc(): MethodDecorator {
@@ -43,8 +43,8 @@ export function RoleSystemGetAbilitiesDoc(): MethodDecorator {
     DocAuth({
       xApiKey: true,
     }),
-    DocResponse<RoleAbilitiesResponseDto>('role.getAbilities', {
-      dto: RoleAbilitiesResponseDto,
+    DocResponse<RolePermissionsResponseDto>('role.getAbilities', {
+      dto: RolePermissionsResponseDto,
     })
   );
 }

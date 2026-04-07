@@ -18,6 +18,7 @@ import { RoleModule } from '@/modules/role/role.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { ActivityLogModule } from '@/modules/activity-log/activity-log.module';
 import { ApiKeyModule } from '@/modules/api-key/api-key.module';
+import { NotificationModule } from '@/modules/notification/notification.module';
 
 /**
  * Common module that provides shared functionality across the application.

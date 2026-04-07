@@ -314,16 +314,16 @@ export class AppEnvDto {
   /**
    * Two-factor authentication issuer (TOTP label)
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  AUTH_TWO_FACTOR_ISSUER: string;
+  AUTH_TWO_FACTOR_ISSUER?: string;
 
   /**
    * Two-factor encryption key
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  AUTH_TWO_FACTOR_ENCRYPTION_KEY: string;
+  AUTH_TWO_FACTOR_ENCRYPTION_KEY?: string;
 
   /**
    * Google OAuth client ID for social authentication (optional)
@@ -370,11 +370,11 @@ export class AppEnvDto {
   /**
    * AWS S3 IAM Role ARN for authentication (optional)
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @ValidateIf(
-    o => o.AWS_S3_IAM_CREDENTIAL_KEY || o.AWS_S3_IAM_CREDENTIAL_SECRET
-  )
+  // @ValidateIf(
+  //   o => o.AWS_S3_IAM_CREDENTIAL_KEY || o.AWS_S3_IAM_CREDENTIAL_SECRET
+  // )
   AWS_S3_IAM_ARN?: string;
 
   /**

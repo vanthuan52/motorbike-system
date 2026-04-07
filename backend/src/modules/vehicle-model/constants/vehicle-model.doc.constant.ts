@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_VEHICLE_MODEL_FUEL_TYPE,
-  ENUM_VEHICLE_MODEL_STATUS,
-  ENUM_VEHICLE_MODEL_TYPE,
+  EnumVehicleModelFuelType,
+  EnumVehicleModelStatus,
+  EnumVehicleModelType,
 } from '../enums/vehicle-model.enum';
 
 interface DocField {
@@ -40,7 +40,7 @@ export const VehicleModelDocQueryStatus: DocField[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_VEHICLE_MODEL_STATUS).join(','),
+    example: Object.values(EnumVehicleModelStatus).join(','),
     description: "value with ',' delimiter",
   },
 ];
@@ -51,7 +51,7 @@ export const VehicleModelDocQueryType: DocField[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_VEHICLE_MODEL_TYPE).join(','),
+    example: Object.values(EnumVehicleModelType).join(','),
     description: 'one value',
   },
 ];
@@ -62,7 +62,7 @@ export const VehicleModelDocQueryFuelType: DocField[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_VEHICLE_MODEL_FUEL_TYPE).join(','),
+    example: Object.values(EnumVehicleModelFuelType).join(','),
     description: 'one value',
   },
 ];

@@ -49,12 +49,7 @@ export interface IApiKeyService {
     requestLog: IRequestLog,
     actionBy: string
   ): Promise<ApiKeyModel>;
-  updateDatesByAdmin(
-    id: string,
-    { startAt, endAt }: ApiKeyUpdateDateRequestDto,
-    requestLog: IRequestLog,
-    actionBy: string
-  ): Promise<ApiKeyModel>;
+  
   resetByAdmin(
     id: string,
     requestLog: IRequestLog,

@@ -12,8 +12,6 @@ import { EnumVehicleServiceStatus } from '../enums/vehicle-service.enum';
 import { VehicleServiceUpdateStatusRequestDto } from '../dtos/request/vehicle-service.update-status.request.dto';
 import { VehicleServiceUploadPhotoRequestDto } from '../dtos/request/vehicle-service.upload-photo.request.dto';
 import { HelperService } from '@/common/helper/services/helper.service';
-import { AwsS3Dto } from '@/common/aws/dtos/aws.s3.dto';
-import { VehicleServiceUtil } from '../utils/vehicle-service.util';
 import {
   IPaginationCursorReturn,
   IPaginationOffsetReturn,
@@ -33,8 +31,7 @@ export class VehicleServiceService implements IVehicleServiceService {
   constructor(
     private readonly vehicleServiceRepository: VehicleServiceRepository,
     private readonly configService: ConfigService,
-    private readonly helperService: HelperService,
-    private readonly vehicleServiceUtil: VehicleServiceUtil
+    private readonly helperService: HelperService
   ) {
     this.uploadPath =
       this.configService.get<string>('vehicleService.uploadPath') || '';
@@ -241,11 +238,5 @@ export class VehicleServiceService implements IVehicleServiceService {
     }
 
     return `${path}/${randomPath}.${extension.toLowerCase()}`;
-  }
-
-  async updatePhoto(id: string, photo: AwsS3Dto): Promise<VehicleServiceModel> {
-    return this.vehicleServiceRepository.update(id, {
-      photo: photo.completedUrl,
-    });
   }
 }

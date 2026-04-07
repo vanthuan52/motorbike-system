@@ -78,7 +78,7 @@ export class MediaGetResponseDto extends DatabaseDto {
   type: EnumMediaType;
 
   @ApiProperty({
-    example: EnumMediaPurpose.ProfilePhoto,
+    example: EnumMediaPurpose.profilePhoto,
     description: 'Purpose/context of the media',
     required: true,
     enum: EnumMediaPurpose,

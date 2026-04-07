@@ -2,11 +2,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import {
-  ENUM_BODY_CONDITION,
-  ENUM_EXHAUST_COVER_CONDITION,
-  ENUM_OIL_LEVEL,
-  ENUM_REARVIEW_MIRROR_CONDITION,
-  ENUM_SEAT_CONDITION,
+  EnumBodyCondition,
+  EnumExhaustCoverCondition,
+  EnumOilLevel,
+  EnumMirrorCondition,
+  EnumSeatCondition,
 } from '../enums/care-record-condition.enum';
 
 export class CareRecordConditionDto extends DatabaseDto {
@@ -46,44 +46,44 @@ export class CareRecordConditionDto extends DatabaseDto {
   fuelLevelFaulty: boolean;
 
   @ApiProperty({
-    enum: ENUM_OIL_LEVEL,
-    example: ENUM_OIL_LEVEL.FULL,
+    enum: EnumOilLevel,
+    example: EnumOilLevel.full,
     description: 'Mức dầu nhớt máy',
   })
   @Expose()
-  engineOilLevel: ENUM_OIL_LEVEL;
+  engineOilLevel: EnumOilLevel;
 
   @ApiProperty({
-    enum: ENUM_REARVIEW_MIRROR_CONDITION,
-    example: ENUM_REARVIEW_MIRROR_CONDITION.PRESENT,
+    enum: EnumMirrorCondition,
+    example: EnumMirrorCondition.present,
     description: 'Tình trạng kiếng hậu',
   })
   @Expose()
-  rearviewMirrorCondition: ENUM_REARVIEW_MIRROR_CONDITION;
+  rearviewMirrorCondition: EnumMirrorCondition;
 
   @ApiProperty({
-    enum: ENUM_SEAT_CONDITION,
-    example: ENUM_SEAT_CONDITION.OK,
+    enum: EnumSeatCondition,
+    example: EnumSeatCondition.ok,
     description: 'Tình trạng yên xe',
   })
   @Expose()
-  seatCondition: ENUM_SEAT_CONDITION;
+  seatCondition: EnumSeatCondition;
 
   @ApiProperty({
-    enum: ENUM_BODY_CONDITION,
-    example: ENUM_BODY_CONDITION.OK,
+    enum: EnumBodyCondition,
+    example: EnumBodyCondition.ok,
     description: 'Tình trạng dàn áo',
   })
   @Expose()
-  bodyCondition: ENUM_BODY_CONDITION;
+  bodyCondition: EnumBodyCondition;
 
   @ApiProperty({
-    enum: ENUM_EXHAUST_COVER_CONDITION,
-    example: ENUM_EXHAUST_COVER_CONDITION.PRESENT,
+    enum: EnumExhaustCoverCondition,
+    example: EnumExhaustCoverCondition.present,
     description: 'Tình trạng ốp pô',
   })
   @Expose()
-  exhaustCoverCondition: ENUM_EXHAUST_COVER_CONDITION;
+  exhaustCoverCondition: EnumExhaustCoverCondition;
 
   @ApiProperty({
     example: false,

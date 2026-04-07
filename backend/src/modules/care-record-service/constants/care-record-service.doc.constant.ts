@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ApiParamOptions } from '@nestjs/swagger';
-import { ENUM_CARE_RECORD_SERVICE_STATUS } from '../enums/care-record-service.enum';
+import { EnumCareRecordServiceStatus } from '../enums/care-record-service.enum';
 
 export const CareRecordServiceDocParamsId: ApiParamOptions[] = [
   {
@@ -18,7 +18,7 @@ export const CareRecordServiceDocQueryStatus: ApiParamOptions[] = [
     allowEmptyValue: true,
     required: false,
     type: 'string',
-    example: Object.values(ENUM_CARE_RECORD_SERVICE_STATUS).join(','),
+    example: Object.values(EnumCareRecordServiceStatus).join(','),
     description: 'one value',
   },
 ];

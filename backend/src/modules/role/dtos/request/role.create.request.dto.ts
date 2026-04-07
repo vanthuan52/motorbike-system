@@ -23,4 +23,16 @@ export class RoleCreateRequestDto extends RoleUpdateRequestDto {
   @MaxLength(30)
   @Transform(({ value }) => value.toLowerCase().trim())
   name: Lowercase<string>;
+  @ApiProperty({
+    description: 'Code of role',
+    example: 'ADMIN',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @IsAlphanumeric()
+  @MinLength(3)
+  @MaxLength(30)
+  @Transform(({ value }) => value.toUpperCase().trim())
+  code: string;
 }

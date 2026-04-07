@@ -3,8 +3,8 @@ import { Expose } from 'class-transformer';
 import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import { faker } from '@faker-js/faker';
 import {
-  ENUM_CARE_RECORD_ITEM_ITEM_TYPE,
-  ENUM_CARE_RECORD_ITEM_SOURCE,
+  EnumCareRecordItemType,
+  EnumCareRecordItemSource,
 } from '../enums/care-record-item.enum';
 
 export class CareRecordItemDto extends DatabaseDto {
@@ -24,19 +24,19 @@ export class CareRecordItemDto extends DatabaseDto {
 
   @ApiProperty({
     description: 'Xuất phát từ đâu',
-    example: ENUM_CARE_RECORD_ITEM_SOURCE.ADDITIONAL,
-    enum: ENUM_CARE_RECORD_ITEM_SOURCE,
+    example: EnumCareRecordItemSource.additional,
+    enum: EnumCareRecordItemSource,
   })
   @Expose()
-  source: ENUM_CARE_RECORD_ITEM_SOURCE;
+  source: EnumCareRecordItemSource;
 
   @ApiProperty({
     description: 'Loại item',
-    example: ENUM_CARE_RECORD_ITEM_ITEM_TYPE.SERVICE,
-    enum: ENUM_CARE_RECORD_ITEM_ITEM_TYPE,
+    example: EnumCareRecordItemType.service,
+    enum: EnumCareRecordItemType,
   })
   @Expose()
-  itemType: ENUM_CARE_RECORD_ITEM_ITEM_TYPE;
+  itemType: EnumCareRecordItemType;
 
   @ApiProperty({
     example: 'Tên',

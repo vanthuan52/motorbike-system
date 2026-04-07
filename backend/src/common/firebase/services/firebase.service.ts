@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { createPrivateKey } from 'crypto';
 import * as firebaseAdmin from 'firebase-admin';
 import { App as FirebaseApp } from 'firebase-admin/app';
-import { Messaging } from 'firebase-admin/lib/messaging/messaging';
+import { Messaging } from 'firebase-admin/messaging';
 import {
   FirebaseInvalidTokenCodes,
   FirebaseMaxSendPushBatchSize,
@@ -39,15 +39,15 @@ export class FirebaseService implements OnModuleInit {
     this.projectId = this.configService.get<string>('firebase.projectId');
     this.clientEmail = this.configService.get<string>('firebase.clientEmail');
 
-    const privateKeyBuffer = Buffer.from(
-      this.configService.get<string>('firebase.privateKey'),
-      'base64'
-    );
-    this.privateKey = createPrivateKey({
-      key: privateKeyBuffer,
-      format: 'der',
-      type: 'pkcs8',
-    }).export({ type: 'pkcs8', format: 'pem' }) as string;
+    const privateKeyBase64 = this.configService.get<string>('firebase.privateKey');
+    if (privateKeyBase64) {
+      const privateKeyBuffer = Buffer.from(privateKeyBase64, 'base64');
+      this.privateKey = createPrivateKey({
+        key: privateKeyBuffer,
+        format: 'der',
+        type: 'pkcs8',
+      }).export({ type: 'pkcs8', format: 'pem' }) as string;
+    }
   }
 
   /**

@@ -154,7 +154,7 @@ export class SessionService implements ISessionService {
       this.sessionUtil.deleteOneLogin(userId, sessionId),
     ]);
 
-    return removed;
+    return removed as unknown as ISession;
   }
 
   /**

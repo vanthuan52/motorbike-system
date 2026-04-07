@@ -5,7 +5,7 @@ import { DatabaseDto } from '@/common/database/dtos/database.dto';
 import {
   EnumDeviceNotificationProvider,
   EnumDevicePlatform,
-} from '@/generated/prisma-client';
+} from '@/modules/device/enums/device.enum';
 
 export class DeviceResponseDto extends DatabaseDto {
   @ApiHideProperty()

@@ -48,8 +48,6 @@ export interface IUserVehicleService {
 
   delete(id: string, requestLog: IRequestLog): Promise<UserVehicleModel>;
 
-  updatePhoto(id: string, photo: AwsS3Dto): Promise<UserVehicleModel>;
-
   createRandomFilenamePhoto(
     userId: string,
     payload: UserVehicleUploadPhotoRequestDto

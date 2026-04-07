@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UserService } from '@/modules/user/services/user.service';
 import { AwsModule } from '@/common/aws/aws.module';
 import { UserRepository } from '@/modules/user/repositories/user.repository';
 import { UserUtil } from '@/modules/user/utils/user.util';
 
+@Global()
 @Module({
   imports: [AwsModule],
   exports: [UserService, UserRepository, UserUtil],

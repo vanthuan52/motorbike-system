@@ -29,13 +29,13 @@ export class WsJwtGuard implements CanActivate {
 
       const payload = this.authUtil.payloadToken(token);
 
-      if (!payload || !payload.userId) {
+      if (!payload || !(payload as any).userId) {
         throw new WsException('Invalid authentication token');
       }
 
       // Attach user data to socket for downstream handlers
-      client.data.userId = payload.userId;
-      client.data.sessionId = payload.sessionId;
+      client.data.userId = (payload as any).userId;
+      client.data.sessionId = (payload as any).sessionId;
 
       return true;
     } catch {

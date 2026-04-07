@@ -1,6 +1,6 @@
 import { EnumFileExtension } from '@/common/file/enums/file.enum';
 
-export type IFile = Express.Multer.File;
+export type IFile = any;
 
 export interface IFileUploadSingle {
   field: string;
