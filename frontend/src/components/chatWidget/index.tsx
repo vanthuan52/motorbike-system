@@ -47,7 +47,7 @@ export default function ChatWidget() {
     toggleChat();
   };
   return (
-    <div className="fixed sm:bottom-4 sm:right-4 right-4 bottom-4 z-50">
+    <div className="relative z-50 flex justify-end">
       <AnimatePresence mode="wait">
         {showAuthModal ? (
           <AuthModal

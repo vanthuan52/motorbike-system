@@ -4,8 +4,8 @@ import { X } from "lucide-react";
 import { cn } from "@/utils/common.utils";
 
 const badgeVariants = cva(
-  // Base: atomic design token mapping
-  "inline-flex items-center gap-1 whitespace-nowrap font-medium select-none transition-colors duration-150",
+  // Base: M3 design token mapping
+  "inline-flex items-center gap-1 whitespace-nowrap font-medium select-none [transition:colors_var(--m3-transition-standard)]",
   {
     variants: {
       variant: {

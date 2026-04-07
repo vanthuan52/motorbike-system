@@ -1,18 +1,33 @@
-import { TRANSLATION_FILES } from "@/lib/i18n";
-import { Form, Input } from "antd";
 import { useTranslations } from "next-intl";
+import { useFormContext } from "react-hook-form";
+
+import { TRANSLATION_FILES } from "@/lib/i18n";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
 
 export default function PickupInfoSection() {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
+  const { control } = useFormContext();
+
   return (
-    <Form.Item
-      label={
-        <span className="font-semibold text-base">{t("form.address")}</span>
-      }
+    <FormField
+      control={control}
       name="address"
-      rules={[{ required: true, message: t("form.addressRequired") }]}
-    >
-      <Input placeholder={t("form.addressPlaceholder")} size="large" />
-    </Form.Item>
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t("form.address")}</FormLabel>
+          <FormControl>
+            <Input placeholder={t("form.addressPlaceholder")} {...field} />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }

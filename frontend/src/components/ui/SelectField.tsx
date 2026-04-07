@@ -31,7 +31,9 @@ const SelectField: React.FC<SelectFieldProps> = ({
 }) => {
   const selectClasses = cn(
     // Base
-    "w-full min-h-[44px] py-3 pr-10 rounded-[var(--radius-md)] text-base border bg-surface text-text-primary appearance-none shadow-[var(--shadow-inner)] transition-[border-color,box-shadow] duration-200 ease-in-out outline-none",
+    "w-full min-h-[44px] py-3 pr-10 rounded-[var(--radius-md)] text-base border bg-surface text-text-primary appearance-none shadow-[var(--shadow-inner)] outline-none",
+    // M3 transition
+    "[transition:border-color_var(--m3-transition-standard),box-shadow_var(--m3-transition-standard)]",
     // Icon padding
     icon ? "pl-10" : "pl-4",
     // Hover

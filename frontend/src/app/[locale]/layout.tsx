@@ -9,7 +9,7 @@ import AppProvider from "./provider";
 import AppInitializer from "./app-initializer";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import "@/styles/globals.css";
-import ChatWidget from "@/components/chatWidget";
+import { FloatingAction } from "@/components/ui/floating-action";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,7 +37,7 @@ export default async function LocaleLayout(props: {
               <NextIntlClientProvider locale={locale}>
                 <AppProvider>
                   {children}
-                  <ChatWidget />
+                  <FloatingAction />
                 </AppProvider>
               </NextIntlClientProvider>
               <ToastProvider />
