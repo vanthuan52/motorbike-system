@@ -35,21 +35,21 @@ export default function CompanyDescription() {
       transition={{ staggerChildren: 0.2 }}
     >
       <motion.div variants={fadeInUp}>
-        <div className="text-gray-600 text-xl mb-1">
+        <div className="text-text-muted text-xl mb-1">
           {t("companyDescription.title")}
         </div>
         <div className="text-3xl font-bold mb-4">{t("companyInfo.name")}</div>
 
         <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-800">
-            <FaBuilding className="text-gray-500" />
+          <div className="flex items-center gap-2 bg-secondary-100 px-3 py-1 rounded-full text-sm text-text-primary">
+            <FaBuilding className="text-text-muted" />
             {t("companyInfo.industry")}
           </div>
-          <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm text-gray-800">
-            <FaUsers className="text-gray-500" />
+          <div className="flex items-center gap-2 bg-secondary-100 px-3 py-1 rounded-full text-sm text-text-primary">
+            <FaUsers className="text-text-muted" />
             {t("companyInfo.size")}
           </div>
-          <div className="flex gap-3 text-gray-500 text-xl">
+          <div className="flex gap-3 text-text-muted text-xl">
             {COMPANY_SOCIALS.map(({ icon: Icon, href }, idx) => (
               <a
                 key={idx}
@@ -64,7 +64,7 @@ export default function CompanyDescription() {
         </div>
 
         <h2 className="text-xl font-bold mb-2">{t("companyInfo.workTitle")}</h2>
-        <p className="text-gray-700">{t("companyInfo.workDesc")}</p>
+        <p className="text-text-secondary">{t("companyInfo.workDesc")}</p>
       </motion.div>
 
       <motion.div variants={fadeInUp}>

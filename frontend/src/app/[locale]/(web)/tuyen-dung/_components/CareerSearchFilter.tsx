@@ -60,7 +60,7 @@ export default function CareerSearchFilter({
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="flex flex-col">
-          <label className="text-sm text-gray-700 mb-1">
+          <label className="text-sm text-text-secondary mb-1">
             {t("searchLabel")}
           </label>
           <Input
@@ -73,7 +73,7 @@ export default function CareerSearchFilter({
           />
         </div>
         <div className="flex flex-col">
-          <label className="text-sm text-gray-700 mb-1">
+          <label className="text-sm text-text-secondary mb-1">
             {t("jobTypeLabel")}
           </label>
           <Select

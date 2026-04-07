@@ -21,14 +21,14 @@ export const FAQList = ({
     key: faq.key,
     label: (
       <div className="flex items-center gap-3">
-        <QuestionCircleOutlined className="text-red-500" />
-        <span className="font-medium text-gray-800">
+        <QuestionCircleOutlined className="text-primary-700" />
+        <span className="font-medium text-text-primary">
           {t(`faqs.${faq.key}question`)}
         </span>
       </div>
     ),
     children: (
-      <div className="text-gray-600 leading-relaxed pl-6">
+      <div className="text-text-secondary leading-relaxed pl-6">
         {t(`faqs.${faq.key}answer`)}
       </div>
     ),
@@ -53,17 +53,17 @@ export const FAQList = ({
           activeKey={expandedPanels}
           onChange={handlePanelChange}
           size="large"
-          className="bg-white"
+          className="bg-surface"
           style={{ border: "none", background: "transparent" }}
           expandIconPosition="end"
         />
       ) : (
         <div className="text-center py-12">
-          <QuestionCircleOutlined className="text-4xl text-gray-400 mb-4" />
-          <p className="text-gray-500 text-lg font-semibold">
+          <QuestionCircleOutlined className="text-4xl text-text-muted mb-4" />
+          <p className="text-text-muted text-lg font-semibold">
             {t("noResults.title")}
           </p>
-          <p className="text-gray-500">{t("noResults.description")}</p>
+          <p className="text-text-muted">{t("noResults.description")}</p>
         </div>
       )}
     </div>

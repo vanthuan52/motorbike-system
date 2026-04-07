@@ -14,13 +14,13 @@ import { IMG_PLACEHOLDER } from "@/constant/application";
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
   {
-    delivered: { label: "Đã giao", color: "text-green-600", bg: "bg-green-50" },
+    delivered: { label: "Đã giao", color: "text-success", bg: "bg-success-bg" },
     pending: {
       label: "Đang xử lý",
       color: "text-yellow-600",
       bg: "bg-yellow-50",
     },
-    cancelled: { label: "Đã hủy", color: "text-red-600", bg: "bg-red-50" },
+    cancelled: { label: "Đã hủy", color: "text-error", bg: "bg-error-bg" },
   };
 
 function formatDate(dateStr: string) {
@@ -52,10 +52,10 @@ export default function PurchaseCard({ order, expanded, setExpanded }: Props) {
               {STATUS_MAP[order.status].label}
             </span>
             <span className="font-semibold text-lg">
-              Mã đơn: <span className="text-blue-600">{order.id}</span>
+              Mã đơn: <span className="text-primary-500">{order.id}</span>
             </span>
           </div>
-          <div className="text-gray-500 text-base mt-1">
+          <div className="text-text-muted text-base mt-1">
             Ngày đặt: {formatDate(order.createdAt)}
           </div>
         </div>
@@ -68,24 +68,24 @@ export default function PurchaseCard({ order, expanded, setExpanded }: Props) {
                 width={56}
                 height={56}
                 alt={p.name}
-                className="rounded border border-gray-300 object-cover bg-gray-100 shadow-sm"
+                className="rounded border border-border-strong object-cover bg-secondary-100 shadow-sm"
                 style={{ zIndex: 10 - idx }}
               />
             ))}
             {order.products.length > 3 && (
-              <span className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-xs font-semibold border border-gray-300">
+              <span className="w-8 h-8 flex items-center justify-center bg-secondary-200 rounded-full text-xs font-semibold border border-border-strong">
                 +{order.products.length - 3}
               </span>
             )}
           </div>
           <div className="sm:text-right min-w-[100px] gap-2 flex flex-row sm:flex-col items-center justify-center">
-            <div className="text-gray-500 text-base">Tổng tiền</div>
+            <div className="text-text-muted text-base">Tổng tiền</div>
             <div className="text-lg font-bold">
               {order.total.toLocaleString("vi-VN")} vnđ
             </div>
             <Tooltip title={isExpanded ? "Thu gọn" : "Xem chi tiết"}>
               <button
-                className={`ml-2 p-2 rounded-full border border-blue-100 hover:bg-blue-50 transition block sm:hidden`}
+                className={`ml-2 p-2 rounded-full border border-primary-100 hover:bg-primary-50 transition block sm:hidden`}
                 onClick={() => setExpanded(isExpanded ? null : order.id)}
                 aria-label={isExpanded ? "Thu gọn" : "Xem chi tiết"}
               >
@@ -95,7 +95,7 @@ export default function PurchaseCard({ order, expanded, setExpanded }: Props) {
           </div>
           <Tooltip title={isExpanded ? "Thu gọn" : "Xem chi tiết"}>
             <button
-              className={`ml-2 p-2 rounded-full border border-blue-100 hover:bg-blue-50 transition hidden sm:block`}
+              className={`ml-2 p-2 rounded-full border border-primary-100 hover:bg-primary-50 transition hidden sm:block`}
               onClick={() => setExpanded(isExpanded ? null : order.id)}
               aria-label={isExpanded ? "Thu gọn" : "Xem chi tiết"}
             >
@@ -115,21 +115,21 @@ export default function PurchaseCard({ order, expanded, setExpanded }: Props) {
             className="overflow-hidden"
           >
             <div className="mt-4 border-t pt-4 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-text-secondary">
                 <div className="flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-gray-400" />{" "}
+                  <FaMapMarkerAlt className="text-text-disabled" />{" "}
                   <span>{order.address}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaRegStickyNote className="text-gray-400" />{" "}
+                  <FaRegStickyNote className="text-text-disabled" />{" "}
                   <span>{order.note || "Không có ghi chú"}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaTruck className="text-gray-400" />{" "}
+                  <FaTruck className="text-text-disabled" />{" "}
                   <span>ĐVVC: {order.shippingMethod}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaCreditCard className="text-gray-400" />{" "}
+                  <FaCreditCard className="text-text-disabled" />{" "}
                   <span>
                     Thanh toán: {order.paymentMethod} (
                     {order.paymentStatus === "completed"
@@ -141,14 +141,14 @@ export default function PurchaseCard({ order, expanded, setExpanded }: Props) {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaMoneyBillWave className="text-gray-400" />{" "}
+                  <FaMoneyBillWave className="text-text-disabled" />{" "}
                   <span>
                     Phí ship: {order.shippingFee?.toLocaleString("vi-VN") || 0}{" "}
                     vnđ
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaMoneyBillAlt className="text-gray-400" />{" "}
+                  <FaMoneyBillAlt className="text-text-disabled" />{" "}
                   <span>
                     Giảm giá: {order.discount.toLocaleString("vi-VN")} vnđ
                   </span>
@@ -165,26 +165,26 @@ export default function PurchaseCard({ order, expanded, setExpanded }: Props) {
                 <div className="flex items-center gap-2 col-span-2">
                   <a
                     href="#"
-                    className="text-green-600 text-xs font-medium hover:underline"
+                    className="text-success text-xs font-medium hover:underline"
                   >
                     Theo dõi đơn
                   </a>
                 </div>
               </div>
               <div>
-                <div className="font-semibold mb-2 text-gray-800">Sản phẩm</div>
+                <div className="font-semibold mb-2 text-text-primary">Sản phẩm</div>
                 <div className="space-y-2">
                   {order.products.map((p) => (
                     <div
                       key={p.id}
-                      className="flex gap-3 items-center bg-gray-50 rounded-lg p-2"
+                      className="flex gap-3 items-center bg-bg-soft rounded-lg p-2"
                     >
                       <Image
                         src={p.image?.[0] || IMG_PLACEHOLDER}
                         width={56}
                         height={56}
                         alt={p.name}
-                        className="w-14 h-14 rounded border object-cover bg-gray-100"
+                        className="w-14 h-14 rounded border object-cover bg-secondary-100"
                       />
                       <div className="flex-1">
                         <div className="font-medium">{p.name}</div>

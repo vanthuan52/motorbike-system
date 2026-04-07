@@ -12,15 +12,15 @@ export default function SearchBar({
   const t = useTranslations(TRANSLATION_FILES.PART_TYPE_PAGE);
 
   return (
-    <div className="flex items-center justify-between bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200 w-full mx-auto transition-all focus-within:shadow-md">
+    <div className="flex items-center justify-between bg-surface rounded-full px-4 py-2 shadow-[var(--shadow-sm)] border border-border w-full mx-auto transition-all focus-within:shadow-[var(--shadow-md)]">
       <input
         type="text"
         placeholder={t("searchBar.placeholder")}
         value={search}
         onChange={handleSearch}
-        className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-400"
+        className="flex-1 bg-transparent outline-none text-sm text-text-primary placeholder:text-text-muted"
       />
-      <FiSearch className="text-gray-600 text-sm" />
+      <FiSearch className="text-text-secondary text-sm" />
     </div>
   );
 }

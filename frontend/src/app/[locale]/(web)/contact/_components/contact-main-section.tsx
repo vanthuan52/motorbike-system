@@ -8,7 +8,7 @@ import { TRANSLATION_FILES } from "@/lib/i18n";
 function ContactMainSection() {
   const t = useTranslations(TRANSLATION_FILES.CONTACT_PAGE);
   return (
-    <section className="relative bg-white overflow-hidden">
+    <section className="relative bg-surface overflow-hidden">
       <div className="relative h-[500px] lg:h-[600px]">
         {/* Background Image */}
         <Image
@@ -18,18 +18,18 @@ function ContactMainSection() {
           style={{ objectFit: "cover" }}
         />
         {/* Overlay */}
-        <div className="absolute inset-0 bg-blue-900 opacity-70"></div>
+        <div className="absolute inset-0 bg-secondary-900 opacity-70"></div>
 
         <div className="absolute bottom-0 left-0 right-0 hidden lg:block">
           <svg
             viewBox="0 0 1440 120"
-            fill="white"
+            fill="var(--color-surface)"
             xmlns="http://www.w3.org/2000/svg"
             className="w-full h-auto transform translate-y-1"
           >
             <path
               d="M0,0 C240,120 480,120 720,60 C960,0 1200,0 1440,60 L1440,120 L0,120 Z"
-              fill="white"
+              fill="var(--color-surface)"
             />
           </svg>
         </div>
@@ -46,23 +46,23 @@ function ContactMainSection() {
       </div>
 
       <div className="container mx-auto px-4 pb-32 relative z-30 -mt-0 lg:-mt-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white shadow-lg rounded-2xl overflow-hidden">
-          <div className="p-8 md:p-12 bg-gray-50">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-surface shadow-[var(--shadow-lg)] rounded-[var(--radius-2xl)] overflow-hidden">
+          <div className="p-8 md:p-12 bg-surface-alt">
+            <h2 className="text-2xl font-bold text-text-primary mb-6">
               {t("contactWithUs")}
             </h2>
-            <p className="text-gray-600 mb-8">{t("contactDescription")}</p>
+            <p className="text-text-secondary mb-8">{t("contactDescription")}</p>
 
             <div className="space-y-6">
               <div className="flex items-start">
-                <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-4 flex-shrink-0">
+                <div className="bg-primary-100 p-3 rounded-full text-primary-700 mr-4 flex-shrink-0">
                   <FaMapMarkerAlt size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">
+                  <h3 className="font-semibold text-text-primary">
                     {t("headquarters")}
                   </h3>
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-text-secondary text-sm">
                     Phường 123, Quận 456, Thành phố Hồ Chí Minh
                     <br />
                     Phường 123, Quận 456, Thành phố Cần Thơ
@@ -71,41 +71,41 @@ function ContactMainSection() {
               </div>
 
               <div className="flex items-start">
-                <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-4 flex-shrink-0">
+                <div className="bg-primary-100 p-3 rounded-full text-primary-700 mr-4 flex-shrink-0">
                   <FaEnvelope size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">
+                  <h3 className="font-semibold text-text-primary">
                     {t("sendEmail")}
                   </h3>
-                  <p className="text-blue-600 break-all text-sm">
+                  <p className="text-primary-700 break-all text-sm">
                     support@motorbike.com
                   </p>
-                  <p className="text-blue-600 break-all text-sm">
+                  <p className="text-primary-700 break-all text-sm">
                     hello@motorbike.com
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start">
-                <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-4 flex-shrink-0">
+                <div className="bg-primary-100 p-3 rounded-full text-primary-700 mr-4 flex-shrink-0">
                   <FaPhoneAlt size={20} />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800">{t("callUs")}</h3>
-                  <p className="text-gray-600 text-sm">+0123456789</p>
+                  <h3 className="font-semibold text-text-primary">{t("callUs")}</h3>
+                  <p className="text-text-secondary text-sm">+0123456789</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-12">
-              <h3 className="font-semibold text-gray-800 mb-4">
+              <h3 className="font-semibold text-text-primary mb-4">
                 {t("followUs")}
               </h3>
               <div className="flex space-x-4">
                 <a
                   href="javascript:;"
-                  className="w-10 h-10 rounded-full bg-blue-600 flex justify-center items-center hover:bg-indigo-600"
+                  className="w-10 h-10 rounded-full bg-primary-700 flex justify-center items-center hover:bg-primary-500 transition-colors duration-200"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +125,7 @@ function ContactMainSection() {
                 </a>
                 <a
                   href="javascript:;"
-                  className="w-10 h-10 rounded-full bg-blue-600 flex justify-center items-center hover:bg-indigo-600"
+                  className="w-10 h-10 rounded-full bg-primary-700 flex justify-center items-center hover:bg-primary-500 transition-colors duration-200"
                 >
                   <svg
                     className="w-[1.25rem] h-[1.125rem] text-white"
@@ -141,7 +141,7 @@ function ContactMainSection() {
                 </a>
                 <a
                   href="javascript:;"
-                  className="w-10 h-10 rounded-full bg-blue-600 flex justify-center items-center hover:bg-indigo-600"
+                  className="w-10 h-10 rounded-full bg-primary-700 flex justify-center items-center hover:bg-primary-500 transition-colors duration-200"
                 >
                   <svg
                     className="w-[1rem] h-[1rem] text-white"
@@ -157,7 +157,7 @@ function ContactMainSection() {
                 </a>
                 <a
                   href="javascript:;"
-                  className="w-10 h-10 rounded-full bg-blue-600 flex justify-center items-center hover:bg-indigo-600"
+                  className="w-10 h-10 rounded-full bg-primary-700 flex justify-center items-center hover:bg-primary-500 transition-colors duration-200"
                 >
                   <svg
                     className="w-[1.25rem] h-[0.875rem] text-white"
@@ -178,7 +178,7 @@ function ContactMainSection() {
           </div>
 
           <div className="p-8 md:p-12">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-text-primary mb-6">
               {t("sendMessage")}
             </h2>
 
@@ -191,7 +191,7 @@ function ContactMainSection() {
                   type="text"
                   id="name"
                   placeholder={t("namePlaceholder")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-200 bg-gray-50"
+                  className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                 />
               </div>
 
@@ -204,7 +204,7 @@ function ContactMainSection() {
                     type="tel"
                     id="phone"
                     placeholder={t("phonePlaceholder")}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-200 bg-gray-50"
+                    className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -215,7 +215,7 @@ function ContactMainSection() {
                     type="email"
                     id="email"
                     placeholder="Email"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-200 bg-gray-50"
+                    className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                   />
                 </div>
               </div>
@@ -228,7 +228,7 @@ function ContactMainSection() {
                   type="text"
                   id="subject"
                   placeholder={t("subjectPlaceholder")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-200 bg-gray-50"
+                  className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                 />
               </div>
 
@@ -240,14 +240,14 @@ function ContactMainSection() {
                   id="message"
                   rows={5}
                   placeholder={t("messagePlaceholder")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-200 resize-y bg-gray-50"
+                  className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 resize-y bg-surface-alt text-text-primary transition-all duration-150"
                 ></textarea>
               </div>
 
               <div>
                 <button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition duration-300"
+                  className="w-full bg-primary-700 hover:bg-primary-500 text-white font-semibold py-3 px-6 rounded-[var(--radius-md)] shadow-[var(--shadow-primary)] hover:shadow-[var(--shadow-primary-hover)] transition-all duration-200"
                 >
                   {t("submitButton")}
                 </button>

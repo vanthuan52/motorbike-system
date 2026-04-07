@@ -21,7 +21,7 @@ export default function UserInfo({ user }: UserInfoProps) {
   return (
     <div className="mt-6 flex flex-col lg:flex-row items-start justify-between gap-8 p-2">
       <div className="flex-1">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-text-secondary text-sm">
           <div className="flex items-center gap-2">
             <MailOutlined style={{ fontSize: 18 }} /> <span>{user?.email}</span>
           </div>
@@ -44,10 +44,10 @@ export default function UserInfo({ user }: UserInfoProps) {
       </div>
 
       <div className="flex flex-col gap-4 w-full lg:w-auto">
-        <button className="bg-violet-600 text-white rounded-md px-5 py-2 hover:bg-violet-100 transition text-sm">
+        <button className="bg-primary-500 text-white rounded-md px-5 py-2 hover:bg-primary-600 transition text-sm">
           Đặt lịch bảo dưỡng
         </button>
-        <button className="border border-violet-600 text-violet-600 rounded-md px-5 py-2 hover:bg-violet-100 transition text-sm">
+        <button className="border border-primary-500 text-primary-500 rounded-md px-5 py-2 hover:bg-primary-50 transition text-sm">
           Liên hệ kỹ thuật
         </button>
       </div>

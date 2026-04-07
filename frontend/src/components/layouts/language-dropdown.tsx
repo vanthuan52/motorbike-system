@@ -74,15 +74,15 @@ export default function LanguageDropdown({ currentLocale }: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-24 bg-white border border-gray-200 rounded shadow-lg z-20">
+        <div className="absolute right-0 mt-1 w-24 bg-surface border border-border rounded shadow-lg z-20">
           {(["vi", "en"] as const).map((lang) => (
             <button
               key={lang}
               onClick={() => handleChangeLang(lang)}
               className={`flex items-center gap-2 w-full text-left px-3 py-2 cursor-pointer ${
                 lang === currentLocale
-                  ? "font-bold text-black"
-                  : "text-gray-500"
+                  ? "font-bold text-text-primary"
+                  : "text-text-muted"
               }`}
             >
               <div className="relative w-5 h-4">

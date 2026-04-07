@@ -27,21 +27,21 @@ export default function PurchaseList({
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex-1 space-y-2">
-                <div className="h-5 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/4 mt-2"></div>
+                <div className="h-5 bg-secondary-200 rounded w-1/2"></div>
+                <div className="h-4 bg-secondary-200 rounded w-1/3"></div>
+                <div className="h-6 bg-secondary-200 rounded w-1/4 mt-2"></div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
                   {[...Array(3)].map((_, i) => (
                     <div
                       key={i}
-                      className="w-10 h-10 bg-gray-200 rounded border border-gray-300"
+                      className="w-10 h-10 bg-secondary-200 rounded border border-border-strong"
                     ></div>
                   ))}
                 </div>
-                <div className="h-6 bg-gray-200 rounded w-20"></div>
-                <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                <div className="h-6 bg-secondary-200 rounded w-20"></div>
+                <div className="w-8 h-8 bg-secondary-200 rounded-full"></div>
               </div>
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function PurchaseList({
   }
   if (orders.length === 0) {
     return (
-      <div className="p-8 text-center text-gray-500">
+      <div className="p-8 text-center text-text-muted">
         Không có đơn hàng nào phù hợp.
       </div>
     );

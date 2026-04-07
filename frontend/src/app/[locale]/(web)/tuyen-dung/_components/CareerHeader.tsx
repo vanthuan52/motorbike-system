@@ -11,7 +11,7 @@ export default function CareerHeader() {
       style={{ backgroundImage: "url('/images/motorbike/career-banner.png')" }}
     >
       <div className="absolute bottom-[-30px] sm:bottom-[-35px] md:bottom-[-40px] left-5 sm:left-30 lg:left-50 z-10">
-        <div className="w-16 h-16 md:w-20 md:h-20 bg-black rounded-xl flex items-center justify-center shadow-lg">
+        <div className="w-16 h-16 md:w-20 md:h-20 bg-secondary-900 rounded-xl flex items-center justify-center shadow-lg">
           <Image
             src="/images/logo/logo.jpg"
             alt="Logo"

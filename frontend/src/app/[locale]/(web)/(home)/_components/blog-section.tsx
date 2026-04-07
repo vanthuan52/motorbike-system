@@ -14,10 +14,10 @@ export default function BlogSection() {
   }[];
 
   return (
-    <section className="bg-gray-100 py-20">
+    <section className="bg-surface-alt py-20">
       <div className="container">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-12"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.3 }}
@@ -30,7 +30,7 @@ export default function BlogSection() {
           {posts.map((post, index) => (
             <div
               key={index}
-              className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition duration-300"
+              className="bg-surface rounded-[var(--radius-xl)] overflow-hidden shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg-hover)] transition-all duration-300"
             >
               <motion.img
                 src={post.image}
@@ -48,7 +48,7 @@ export default function BlogSection() {
               />
               <div className="p-6">
                 <motion.h3
-                  className="text-xl font-semibold text-gray-900 mb-2"
+                  className="text-xl font-semibold text-text-primary mb-2"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ amount: 0.3 }}
@@ -61,7 +61,7 @@ export default function BlogSection() {
                   {post.title}
                 </motion.h3>
                 <motion.p
-                  className="text-sm text-gray-600 mb-4"
+                  className="text-sm text-text-secondary mb-4"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ amount: 0.3 }}
@@ -75,7 +75,7 @@ export default function BlogSection() {
                 </motion.p>
                 <Link
                   href={post.slug}
-                  className="text-blue-600 font-medium hover:underline"
+                  className="text-primary-700 font-medium hover:text-primary-500 hover:underline transition-colors duration-150"
                 >
                   {t("readMore")}
                 </Link>

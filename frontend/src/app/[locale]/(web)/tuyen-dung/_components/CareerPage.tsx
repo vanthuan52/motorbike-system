@@ -57,7 +57,7 @@ export default function CareerPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-bg-soft min-h-screen">
       <CareerHeader />
       <div className="container mx-auto px-4 mt-4 sm:mt-8  py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <CompanyDescription />

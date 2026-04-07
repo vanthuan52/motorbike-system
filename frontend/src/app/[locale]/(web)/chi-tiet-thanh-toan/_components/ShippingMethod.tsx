@@ -16,21 +16,21 @@ export default function ShippingMethod({
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#000",
-          colorText: "#fff",
-          colorBgContainer: "#fff",
+          colorPrimary: "var(--color-primary-700)",
+          colorText: "var(--color-text-primary)",
+          colorBgContainer: "var(--color-surface)",
         },
         components: {
           Radio: {
-            buttonSolidCheckedActiveBg: "black",
-            buttonSolidCheckedBg: "black",
-            buttonSolidCheckedColor: "black",
-            colorBorder: "black",
+            buttonSolidCheckedActiveBg: "var(--color-primary-700)",
+            buttonSolidCheckedBg: "var(--color-primary-700)",
+            buttonSolidCheckedColor: "var(--color-primary-700)",
+            colorBorder: "var(--color-border)",
           },
         },
       }}
     >
-      <h3 className="text-xl font-semibold mb-4">
+      <h3 className="text-xl font-semibold mb-4 text-text-primary">
         {t("shippingMethod.title")}
       </h3>
       <Radio.Group
@@ -43,26 +43,26 @@ export default function ShippingMethod({
         <Radio
           value="free"
           className={clsx(
-            "border w-full rounded-xl !p-2 flex items-center",
-            "!border-gray-300 text-[--ant-colorText]",
+            "border w-full rounded-[var(--radius-xl)] !p-2 flex items-center",
+            "!border-border",
             shipping === "free"
-              ? "bg-gray-100 text-black"
-              : "bg-white text-black"
+              ? "bg-primary-50"
+              : "bg-surface"
           )}
           style={{
-            borderColor: "black",
-            color: "black",
-            background: shipping === "free" ? "#f3f4f6" : "#fff",
+            borderColor: "var(--color-border)",
+            color: "var(--color-text-primary)",
+            background: shipping === "free" ? "var(--color-primary-50)" : "var(--color-surface)",
           }}
         >
           <div className="flex-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold">
+              <span className="font-semibold text-text-primary">
                 {t("shippingMethod.free.title")}
               </span>
-              <span className="ml-1 font-semibold">0 vnđ</span>
+              <span className="ml-1 font-semibold text-text-primary">0 vnđ</span>
             </div>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-text-muted mt-1">
               {t("shippingMethod.free.time")}
             </p>
           </div>
@@ -70,26 +70,26 @@ export default function ShippingMethod({
         <Radio
           value="express"
           className={clsx(
-            "border w-full rounded-xl !p-2 flex items-center",
-            "!border-gray-300 text-[--ant-colorText]",
-            shipping === "free"
-              ? "bg-gray-100 text-black"
-              : "bg-white text-black"
+            "border w-full rounded-[var(--radius-xl)] !p-2 flex items-center",
+            "!border-border",
+            shipping === "express"
+              ? "bg-primary-50"
+              : "bg-surface"
           )}
           style={{
-            borderColor: "black",
-            color: "black",
-            background: shipping === "express" ? "#f3f4f6" : "#fff",
+            borderColor: "var(--color-border)",
+            color: "var(--color-text-primary)",
+            background: shipping === "express" ? "var(--color-primary-50)" : "var(--color-surface)",
           }}
         >
           <div className="flex-1">
             <div className="flex justify-between items-center">
-              <span className="font-semibold">
+              <span className="font-semibold text-text-primary">
                 {t("shippingMethod.express.title")}
               </span>
-              <span className="ml-1 font-semibold">45000 vnđ</span>
+              <span className="ml-1 font-semibold text-text-primary">45000 vnđ</span>
             </div>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-text-muted mt-1">
               {t("shippingMethod.express.time")}
             </p>
           </div>

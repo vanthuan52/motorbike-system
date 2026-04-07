@@ -17,7 +17,7 @@ export default function PrivacyPolicyAccordion() {
   return (
     <div className="py-8">
       <div className="container">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">
           {t("title")}
         </h2>
         <div className="space-y-4">
@@ -27,19 +27,19 @@ export default function PrivacyPolicyAccordion() {
             return (
               <div
                 key={index}
-                className="border border-gray-200 rounded-lg shadow-sm"
+                className="border border-border rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)]"
               >
                 <button
                   onClick={() => toggle(index)}
-                  className="w-full text-left px-4 py-3 bg-white hover:bg-gray-50 rounded-t-lg flex justify-between items-center"
+                  className="w-full text-left px-4 py-3 bg-surface hover:bg-surface-alt rounded-t-[var(--radius-lg)] flex justify-between items-center cursor-pointer transition-colors duration-150"
                 >
-                  <span className="font-medium text-gray-800">{title}</span>
-                  <span className="text-xl text-gray-500">
+                  <span className="font-medium text-text-primary">{title}</span>
+                  <span className="text-xl text-text-muted">
                     {openIndex === index ? "−" : "+"}
                   </span>
                 </button>
                 {openIndex === index && (
-                  <div className="px-4 py-3 bg-gray-50 text-gray-700 space-y-1">
+                  <div className="px-4 py-3 bg-surface-alt text-text-secondary space-y-1">
                     {Array.isArray(content) ? (
                       <ul className="list-disc list-inside space-y-1">
                         {content.map((item: string, idx: number) => (

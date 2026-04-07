@@ -17,7 +17,7 @@ export default function PartTypeCard({ cat }: { cat: PartType }) {
       whileHover={{ scale: 1.02, boxShadow: "0 6px 24px rgba(0,0,0,0.1)" }}
       className={clsx("flex flex-col", "group")}
     >
-      <div className="relative w-full aspect-[4/3] overflow-hidden border border-gray-300">
+      <div className="relative w-full aspect-[4/3] overflow-hidden border border-border">
         <Image
           src={getValidImageSrc(cat.photo)}
           alt={cat.name}
@@ -28,7 +28,7 @@ export default function PartTypeCard({ cat }: { cat: PartType }) {
       </div>
 
       <div className="p-4 flex flex-col justify-between gap-4">
-        <div className="text-xl font-semibold text-gray-800">{cat.name}</div>
+        <div className="text-xl font-semibold text-text-primary">{cat.name}</div>
         <div className="flex items-center gap-2 text-sm text-black font-normal">
           <Link
             href={`${ROUTER_PATH.PART_TYPE}/${cat.slug}`}

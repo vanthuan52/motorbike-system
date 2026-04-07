@@ -36,7 +36,7 @@ export default function ProductCard({
   return (
     <motion.div
       transition={{ type: "ease" }}
-      className={`group relative border border-gray-200 bg-gray-50 transition-all duration-300 
+      className={`group relative border border-border bg-bg-soft transition-all duration-300 
       p-4 overflow-visible 
       ${isList ? "flex gap-4 items-start" : "flex flex-col"}`}
     >
@@ -71,24 +71,24 @@ export default function ProductCard({
           type="button"
           aria-label={t("productCard.preview")}
           onClick={() => setPreviewOpen(true)}
-          className="absolute right-2 bottom-2 bg-gray-100 hover:bg-white border border-gray-300 w-7 h-7 rounded-lg flex items-center justify-center shadow"
+          className="absolute right-2 bottom-2 bg-secondary-100 hover:bg-surface border border-border-strong w-7 h-7 rounded-lg flex items-center justify-center shadow"
         >
-          <Eye size={16} className="text-gray-700" />
+          <Eye size={16} className="text-text-secondary" />
         </button>
       </div>
 
       <div
         className={`${isList ? "flex-1 flex flex-col justify-between" : "mt-3 text-center"}`}
       >
-        <p className="text-lg font-medium text-gray-700 text-left">
+        <p className="text-lg font-medium text-text-secondary text-left">
           {product.price.toLocaleString()}₫
         </p>
         <Link href={`/san-pham/${product.slug}`}>
-          <h4 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 text-left h-12 lg:h-8">
+          <h4 className="text-base font-semibold text-text-primary mb-1 line-clamp-2 text-left h-12 lg:h-8">
             {product.name}
           </h4>
           {isList && (
-            <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+            <p className="text-sm text-text-muted line-clamp-2 mb-2">
               {product.description}
             </p>
           )}
@@ -98,11 +98,11 @@ export default function ProductCard({
         >
           {isList ? (
             <div className="flex gap-2 mt-4">
-              <button className="bg-white text-gray-700 text-sm px-3 py-1 rounded border hover:bg-gray-100 transition">
+              <button className="bg-surface text-text-secondary text-sm px-3 py-1 rounded border hover:bg-secondary-100 transition">
                 {t("productCard.quickBuy")}
               </button>
               <button
-                className="bg-black text-white text-sm px-3 py-1 rounded hover:bg-gray-800 transition"
+                className="bg-secondary-900 text-white text-sm px-3 py-1 rounded hover:bg-secondary-800 transition"
                 onClick={handleAddToCart}
               >
                 {t("productCard.addToCart")}
@@ -110,11 +110,11 @@ export default function ProductCard({
             </div>
           ) : (
             <div className="flex flex-col lg:flex-row gap-2 justify-center overflow-hidden transition-all duration-300 h-full mt-2">
-              <button className="bg-white text-gray-700 text-sm px-2 py-1 rounded border hover:bg-gray-100 transition max-h-[30px] line-clamp-1">
+              <button className="bg-surface text-text-secondary text-sm px-2 py-1 rounded border hover:bg-secondary-100 transition max-h-[30px] line-clamp-1">
                 {t("productCard.quickBuy")}
               </button>
               <button
-                className="bg-black text-white text-sm px-2 py-1 rounded hover:bg-gray-800 transition max-h-[30px] line-clamp-1"
+                className="bg-secondary-900 text-white text-sm px-2 py-1 rounded hover:bg-secondary-800 transition max-h-[30px] line-clamp-1"
                 onClick={handleAddToCart}
               >
                 {t("productCard.addToCart")}

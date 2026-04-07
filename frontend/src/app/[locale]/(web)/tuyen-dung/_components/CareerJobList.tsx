@@ -24,11 +24,11 @@ export default function CareerJobList({
   return (
     <div>
       {loading ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-text-muted">
           Đang tải dữ liệu...
         </div>
       ) : hiring.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-text-muted">
           Không có công việc nào phù hợp.
         </div>
       ) : (
@@ -55,8 +55,8 @@ export default function CareerJobList({
               className={clsx(
                 "w-9 h-9 rounded border text-sm font-semibold",
                 page === p
-                  ? "bg-gray-700 text-white border-gray-700"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-500"
+                  ? "bg-secondary-900 text-white border-secondary-900"
+                  : "bg-surface text-text-secondary border-border-strong hover:bg-bg-soft hover:border-text-muted"
               )}
               onClick={() => setPage(p)}
               disabled={page === p}

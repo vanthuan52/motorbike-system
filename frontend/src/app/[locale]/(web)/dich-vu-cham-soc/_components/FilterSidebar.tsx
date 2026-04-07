@@ -23,8 +23,8 @@ export default function ServiceFilter() {
             key={type.value}
             href={`/dich-vu-cham-soc/${type.value}`}
             className={`px-4 py-2 rounded-lg text-left transition-colors font-medium
-            ${current === type.value ? "bg-gray-200 text-gray-700" : "text-gray-700"}
-            hover:bg-gray-300
+            ${current === type.value ? "bg-primary-100 text-text-primary" : "text-text-secondary"}
+            hover:bg-secondary-100
           `}
             onClick={() => setOpen(false)}
           >
@@ -56,22 +56,22 @@ export default function ServiceFilter() {
             onClick={() => setOpen(false)}
           />
           {/* Drawer content */}
-          <div className='relative z-50 w-4/5 max-w-xs bg-white h-full shadow-xl px-0 pb-0 animate-slide-in-left'>
+          <div className='relative z-50 w-4/5 max-w-xs bg-surface h-full shadow-[var(--shadow-lg)] px-0 pb-0 animate-slide-in-left'>
             <div className='px-4 pt-6 pb-6'>
               <div className='flex items-center justify-between mb-6'>
                 <div className='flex items-center gap-2'>
-                  <Filter className='w-5 h-5 text-gray-600' />
-                  <h3 className='text-lg font-semibold text-gray-900'>
+                  <Filter className='w-5 h-5 text-text-secondary' />
+                  <h3 className='text-lg font-semibold text-text-primary'>
                     Loại dịch vụ
                   </h3>
                 </div>
                 <button
-                  className='p-2 rounded hover:bg-gray-100'
+                  className='p-2 rounded hover:bg-surface-alt'
                   onClick={() => setOpen(false)}
                   aria-label='Đóng bộ lọc'
                   type='button'
                 >
-                  <X className='w-6 h-6 text-gray-500' />
+                  <X className='w-6 h-6 text-text-muted' />
                 </button>
               </div>
               {sidebarContent}

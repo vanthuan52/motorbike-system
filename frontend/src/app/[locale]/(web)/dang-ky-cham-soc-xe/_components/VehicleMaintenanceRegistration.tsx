@@ -19,8 +19,8 @@ export default function VehicleMaintenanceRegistration() {
     useBookingForm();
 
   return (
-    <div className="container mx-auto my-4 bg-white p-4 md:p-8">
-      <h1 className="text-2xl font-bold text-gray-800 text-center mb-3 uppercase">
+    <div className="container mx-auto my-4 bg-surface p-4 md:p-8 rounded-[var(--radius-xl)] shadow-[var(--shadow-md)]">
+      <h1 className="text-2xl font-bold text-text-primary text-center mb-3 uppercase">
         {t("pageTitle")}
       </h1>
       <BookingTabs value={serviceType} onChange={handleTabChange} />
@@ -60,7 +60,7 @@ export default function VehicleMaintenanceRegistration() {
             color="default"
             variant="solid"
             htmlType="submit"
-            className=" bg-black text-white font-bold text-base h-12 rounded-lg hover:bg-gray-800"
+            className="bg-primary-700 text-white font-bold text-base h-12 rounded-[var(--radius-lg)] hover:bg-primary-500 shadow-[var(--shadow-primary)]"
             size="large"
             loading={submitLoading}
           >

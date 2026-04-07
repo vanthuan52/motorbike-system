@@ -74,7 +74,7 @@ export default function CartTable({
 
   if (cartItems.length === 0)
     return (
-      <div className="text-center py-10 text-gray-400">
+      <div className="text-center py-10 text-text-muted">
         Giỏ hàng của bạn đang trống.
       </div>
     );
@@ -86,7 +86,7 @@ export default function CartTable({
       className="flex flex-col gap-4"
     >
       <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
-        <div className="min-w-[600px] w-full text-sm sm:text-base border border-gray-200 p-2 rounded-xl">
+        <div className="min-w-[600px] w-full text-sm sm:text-base border border-border p-2 rounded-[var(--radius-xl)]">
           <div>
             {products.map((p) => {
               const item = cartItems.find((i) => i.id === p.id);
@@ -94,7 +94,7 @@ export default function CartTable({
               return (
                 <div
                   key={p.id}
-                  className="border-b border-gray-200 bg-white rounded-xl flex w-full justify-between items-center mb-1"
+                  className="border-b border-border bg-surface rounded-[var(--radius-xl)] flex w-full justify-between items-center mb-1"
                 >
                   <div className="flex justify-center items-center">
                     <div className="py-1 sm:py-2 px-1 sm:px-2 align-middle">
@@ -110,7 +110,7 @@ export default function CartTable({
                     </div>
                     <div className="py-1 sm:py-2 px-1 sm:px-2">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-[260px]">
-                        <div className="relative rounded overflow-hidden bg-gray-100 border border-gray-200 w-10 h-10 sm:w-16 sm:h-16">
+                        <div className="relative rounded overflow-hidden bg-surface-alt border border-border w-10 h-10 sm:w-16 sm:h-16">
                           <Image
                             src={p.image[0]}
                             placeholder="blur"
@@ -120,13 +120,13 @@ export default function CartTable({
                             className="object-cover"
                           />
                         </div>
-                        <span className="font-medium text-gray-900 text-xs sm:text-base line-clamp-2 max-w-[80px] sm:max-w-none">
+                        <span className="font-medium text-text-primary text-xs sm:text-base line-clamp-2 max-w-[80px] sm:max-w-none">
                           {p.name}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-right text-gray-800 whitespace-nowrap">
+                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-right text-text-primary whitespace-nowrap">
                     {p.price.toLocaleString()} đ
                   </div>
                   <div className="py-1 sm:py-2 px-1 sm:px-2 text-center">
@@ -135,24 +135,24 @@ export default function CartTable({
                         icon={<MinusOutlined />}
                         size="small"
                         shape="circle"
-                        className="border border-gray-300 text-gray-600 hover:bg-gray-200"
+                        className="border border-border text-text-secondary hover:bg-surface-alt"
                         onClick={() => handleDecrease(p.id)}
                         disabled={item.quantity <= 1}
                       />
-                      <span className="inline-block w-6 sm:w-8 text-center text-gray-900">
+                      <span className="inline-block w-6 sm:w-8 text-center text-text-primary">
                         {item.quantity}
                       </span>
                       <Button
                         icon={<PlusOutlined />}
                         size="small"
                         shape="circle"
-                        className="border border-gray-300 text-gray-600 hover:bg-gray-200"
+                        className="border border-border text-text-secondary hover:bg-surface-alt"
                         onClick={() => handleIncrease(p.id)}
                         disabled={item.quantity >= 99}
                       />
                     </div>
                   </div>
-                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-right font-semibold text-gray-900 whitespace-nowrap">
+                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-right font-semibold text-text-primary whitespace-nowrap">
                     {(p.price * item.quantity).toLocaleString()} đ
                   </div>
                 </div>

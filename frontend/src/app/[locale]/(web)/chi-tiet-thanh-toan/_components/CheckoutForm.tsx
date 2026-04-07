@@ -33,9 +33,9 @@ export default function CheckoutForm({
     }
   };
   return (
-    <div className="bg-white p-4 sm:p-8 rounded-xl shadow ">
+    <div className="bg-surface p-4 sm:p-8 rounded-[var(--radius-xl)] shadow-[var(--shadow-md)]">
       <Breadcrumb />
-      <h2 className="text-2xl font-semibold mb-6 mt-2">
+      <h2 className="text-2xl font-semibold mb-6 mt-2 text-text-primary">
         {t("shippingAddressTitle")}
       </h2>
       <Form
@@ -47,9 +47,9 @@ export default function CheckoutForm({
       >
         <Form.Item
           label={
-            <span className="font-semibold">
+            <span className="font-semibold text-text-primary">
               {t("firstName")}
-              <span>*</span>
+              <span className="text-error">*</span>
             </span>
           }
           name="first_name"
@@ -61,9 +61,9 @@ export default function CheckoutForm({
 
         <Form.Item
           label={
-            <span className="font-semibold">
+            <span className="font-semibold text-text-primary">
               {t("lastName")}
-              <span>*</span>
+              <span className="text-error">*</span>
             </span>
           }
           name="last_name"
@@ -75,9 +75,9 @@ export default function CheckoutForm({
 
         <Form.Item
           label={
-            <span className="font-semibold">
+            <span className="font-semibold text-text-primary">
               {t("email")}
-              <span>*</span>
+              <span className="text-error">*</span>
             </span>
           }
           name="email"
@@ -92,9 +92,9 @@ export default function CheckoutForm({
 
         <Form.Item
           label={
-            <span className="font-semibold">
+            <span className="font-semibold text-text-primary">
               {t("phone")}
-              <span>*</span>
+              <span className="text-error">*</span>
             </span>
           }
           name="phone"
@@ -107,9 +107,9 @@ export default function CheckoutForm({
         <div className="flex justify-between w-full gap-4 col-span-2">
           <Form.Item
             label={
-              <span className="font-semibold">
+              <span className="font-semibold text-text-primary">
                 {t("city")}
-                <span>*</span>
+                <span className="text-error">*</span>
               </span>
             }
             name="city"
@@ -121,9 +121,9 @@ export default function CheckoutForm({
 
           <Form.Item
             label={
-              <span className="font-semibold">
+              <span className="font-semibold text-text-primary">
                 {t("address")}
-                <span>*</span>
+                <span className="text-error">*</span>
               </span>
             }
             name="address"
@@ -135,9 +135,9 @@ export default function CheckoutForm({
 
           <Form.Item
             label={
-              <span className="font-semibold">
+              <span className="font-semibold text-text-primary">
                 {t("zip")}
-                <span>*</span>
+                <span className="text-error">*</span>
               </span>
             }
             name="zip"
@@ -149,7 +149,7 @@ export default function CheckoutForm({
         </div>
 
         <Form.Item
-          label={<span className="font-semibold">{t("description")}</span>}
+          label={<span className="font-semibold text-text-primary">{t("description")}</span>}
           name="description"
           className="col-span-2 !w-full"
         >

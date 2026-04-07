@@ -1,9 +1,297 @@
 @import "nprogress/nprogress.css";
 @import "tailwindcss";
 
+/* ============================================================
+   MotoServ — Design Tokens v4.0
+   Brand Style: Coolors-inspired (White + Electric Blue)
+   Font: Inter
+   ============================================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* =========================================================
+     1. COLORS — Background
+     ========================================================= */
+  --color-bg: #FFFFFF;
+  --color-bg-soft: #F8F9FA;
+  --color-bg-hover: #F1F3F5;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F8F9FA;
+  --color-overlay: rgba(0, 0, 0, 0.5);
+
+  /* =========================================================
+     2. COLORS — Text
+     ========================================================= */
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-muted: #868E96;
+  --color-text-disabled: #ADB5BD;
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: #0066FF;
+  --color-text-link-hover: #005CE6;
+
+  /* =========================================================
+     3. COLORS — Primary (Electric Blue)
+     ========================================================= */
+  --color-primary-50:  #E6F0FF;
+  --color-primary-100: #CCE0FF;
+  --color-primary-200: #99C2FF;
+  --color-primary-300: #66A3FF;
+  --color-primary-400: #3385FF;
+  --color-primary-500: #0066FF;  /* ← Brand Primary */
+  --color-primary-600: #005CE6;  /* Hover */
+  --color-primary-700: #004CBF;  /* Active / Dark */
+  --color-primary-800: #003D99;
+  --color-primary-900: #002E73;
+  --color-primary-950: #001F4D;
+
+  /* ── Secondary (Neutral Gray) ── */
+  --color-secondary-50:  #F8F9FA;
+  --color-secondary-100: #F1F3F5;
+  --color-secondary-200: #E9ECEF;
+  --color-secondary-300: #DEE2E6;
+  --color-secondary-400: #CED4DA;
+  --color-secondary-500: #ADB5BD;
+  --color-secondary-600: #868E96;
+  --color-secondary-700: #495057;
+  --color-secondary-800: #343A40;
+  --color-secondary-900: #212529;
+  --color-secondary-950: #121416;
+
+  /* ── Accent (same as Primary for this brand) ── */
+  --color-accent-light: #E6F0FF;
+  --color-accent: #0066FF;
+  --color-accent-dark: #005CE6;
+
+  /* ── Border ── */
+  --color-border: #DEE2E6;
+  --color-border-strong: #CED4DA;
+  --color-border-focus: rgba(0, 102, 255, 0.25);
+
+  /* ── Semantic ── */
+  --color-success: #059669;
+  --color-success-bg: #ECFDF5;
+  --color-success-border: #A7F3D0;
+  --color-success-text: #065F46;
+
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-warning-border: #FDE68A;
+  --color-warning-text: #92400E;
+
+  --color-error: #DC2626;
+  --color-error-bg: #FEF2F2;
+  --color-error-border: #FECACA;
+  --color-error-text: #991B1B;
+
+  --color-info: #0066FF;
+  --color-info-bg: #E6F0FF;
+  --color-info-border: #99C2FF;
+  --color-info-text: #004CBF;
+
+  /* =========================================================
+     4. TYPOGRAPHY
+     ========================================================= */
+  --font-heading: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --text-xs: 0.75rem;         /* 12px */
+  --text-sm: 0.875rem;        /* 14px */
+  --text-base: 1rem;          /* 16px */
+  --text-lg: 1.125rem;        /* 18px */
+  --text-xl: 1.25rem;         /* 20px */
+  --text-2xl: 1.5rem;         /* 24px */
+  --text-3xl: 1.875rem;       /* 30px */
+  --text-4xl: 2.25rem;        /* 36px — Hero title */
+
+  /* Legacy aliases */
+  --text-display: 3.5rem;
+  --text-h1: 2.25rem;
+  --text-h2: 1.875rem;
+  --text-h3: 1.5rem;
+  --text-h4: 1.25rem;
+  --text-h5: 1.125rem;
+  --text-h6: 1rem;
+  --text-body-lg: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-small: 0.6875rem;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* ── Line Height ── */
+  --leading-tight: 1.2;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+
+  /* ── Letter Spacing ── */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.02em;
+
+  /* =========================================================
+     5. SPACING (4px base)
+     ========================================================= */
+  --space-none: 0;
+  --space-1:  0.25rem;   /*  4px */
+  --space-2:  0.5rem;    /*  8px */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+  --space-20: 5rem;      /* 80px */
+  --space-24: 6rem;      /* 96px */
+
+  /* Legacy semantic aliases */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+  --space-2xl: 2.5rem;
+  --space-3xl: 3rem;
+  --space-4xl: 4rem;
+  --space-5xl: 5rem;
+  --space-6xl: 6rem;
+
+  /* =========================================================
+     6. RADII & SHADOWS
+     ========================================================= */
+  --radius-none: 0;
+  --radius-sm:   4px;
+  --radius-md:   8px;      /* Buttons */
+  --radius-lg:   12px;     /* Cards */
+  --radius-xl:   16px;
+  --radius-2xl:  24px;
+  --radius-full: 9999px;
+
+  /* ── Shadows — Soft & subtle (Coolors-style) ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+
+  --shadow-sm-hover: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md-hover: 0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg-hover: 0 14px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-xl-hover: 0 25px 35px -6px rgba(0, 0, 0, 0.08);
+
+  --shadow-sm-active: 0 1px 1px rgba(0, 0, 0, 0.06);
+  --shadow-md-active: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg-active: 0 6px 10px rgba(0, 0, 0, 0.06);
+  --shadow-xl-active: 0 12px 18px rgba(0, 0, 0, 0.06);
+
+  /* ── Brand Glow (Electric Blue) ── */
+  --shadow-primary: 0 4px 14px rgba(0, 102, 255, 0.15);
+  --shadow-primary-hover: 0 6px 20px rgba(0, 102, 255, 0.25);
+  --shadow-primary-active: 0 2px 8px rgba(0, 102, 255, 0.2);
+
+  --shadow-focus-ring: 0 0 0 3px rgba(0, 102, 255, 0.2);
+  --shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  /* =========================================================
+     7. TRANSITIONS
+     ========================================================= */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+  --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* =========================================================
+     8. LAYOUT
+     ========================================================= */
+  --container-max: 80rem;  /* 1280px */
+
+  /* Legacy compat */
+  --background: var(--color-bg);
+  --foreground: var(--color-text-primary);
+}
+
+/* ============================================================
+   Tailwind v4 — @theme Tokens
+   ============================================================ */
+@theme {
+  /* ── Primary (Electric Blue) ── */
+  --color-primary-50:  #E6F0FF;
+  --color-primary-100: #CCE0FF;
+  --color-primary-200: #99C2FF;
+  --color-primary-300: #66A3FF;
+  --color-primary-400: #3385FF;
+  --color-primary-500: #0066FF;
+  --color-primary-600: #005CE6;
+  --color-primary-700: #004CBF;
+  --color-primary-800: #003D99;
+  --color-primary-900: #002E73;
+  --color-primary-950: #001F4D;
+
+  /* ── Secondary (Neutral) ── */
+  --color-secondary-50:  #F8F9FA;
+  --color-secondary-100: #F1F3F5;
+  --color-secondary-200: #E9ECEF;
+  --color-secondary-300: #DEE2E6;
+  --color-secondary-400: #CED4DA;
+  --color-secondary-500: #ADB5BD;
+  --color-secondary-600: #868E96;
+  --color-secondary-700: #495057;
+  --color-secondary-800: #343A40;
+  --color-secondary-900: #212529;
+  --color-secondary-950: #121416;
+
+  /* ── Accent ── */
+  --color-accent-light: #E6F0FF;
+  --color-accent: #0066FF;
+  --color-accent-dark: #005CE6;
+
+  /* ── Background ── */
+  --color-bg: #FFFFFF;
+  --color-bg-soft: #F8F9FA;
+  --color-bg-hover: #F1F3F5;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #F8F9FA;
+
+  /* ── Border ── */
+  --color-border: #DEE2E6;
+  --color-border-strong: #CED4DA;
+
+  /* ── Text ── */
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-muted: #868E96;
+  --color-text-disabled: #ADB5BD;
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: #0066FF;
+
+  /* ── Semantic ── */
+  --color-success: #059669;
+  --color-success-bg: #ECFDF5;
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-error: #DC2626;
+  --color-error-bg: #FEF2F2;
+  --color-info: #0066FF;
+  --color-info-bg: #E6F0FF;
+
+  /* ── Border Radius ── */
+  --radius-brand-none: 0;
+  --radius-brand-sm:   4px;
+  --radius-brand-md:   8px;
+  --radius-brand-lg:   12px;
+  --radius-brand-xl:   16px;
+  --radius-brand-2xl:  24px;
+  --radius-brand-full: 9999px;
 }
 
 html,
@@ -15,7 +303,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-montserrat);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -43,9 +331,9 @@ li {
 
   .input-class {
     @apply px-2 py-2;
-    @apply text-[16px] leading-[24px] placeholder:text-[16px] rounded-lg border border-gray-300 text-gray-900 placeholder:text-gray-500 transition-all duration-200 ease-in-out;
-    @apply focus:border-1 focus:border-blue-500 focus:outline-none;
-    @apply focus-visible:ring-1 focus-visible:ring-blue-200 focus-visible:outline-none;
+    @apply text-[16px] leading-[24px] placeholder:text-[16px] rounded-lg border border-border text-text-primary placeholder:text-text-muted transition-all duration-200 ease-in-out;
+    @apply focus:border-1 focus:border-accent focus:outline-none;
+    @apply focus-visible:ring-1 focus-visible:ring-accent/30 focus-visible:outline-none;
   }
 
   .form-item {
@@ -53,11 +341,11 @@ li {
   }
 
   .form-label {
-    @apply text-[14px] w-full max-w-[280px] font-medium text-gray-700;
+    @apply text-[14px] w-full max-w-[280px] font-medium text-text-secondary;
   }
 
   .form-message {
-    @apply text-[12px] text-red-500;
+    @apply text-[12px] text-error;
   }
 
   .form-btn {

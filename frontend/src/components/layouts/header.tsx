@@ -98,10 +98,10 @@ export default function Header() {
 
           <div className="flex gap-4">
             <Link href="/gio-hang">
-              <button className="p-2 flex items-center justify-center rounded-full border border-gray-300 relative cursor-pointer">
+              <button className="p-2 flex items-center justify-center rounded-full border border-border-strong relative cursor-pointer">
                 <ShoppingCart size={18} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full z-10">
+                  <span className="absolute -top-2 -right-2 bg-error text-white text-xs w-5 h-5 flex items-center justify-center rounded-full z-10">
                     {cartCount}
                   </span>
                 )}
@@ -117,7 +117,7 @@ export default function Header() {
         {/* Mobile */}
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/80 z-40"
+            className="fixed inset-0 bg-secondary-950/80 z-40"
             onClick={() => setIsOpen(false)}
           />
         )}

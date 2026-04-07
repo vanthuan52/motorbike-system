@@ -21,14 +21,14 @@ export default function BlogPage() {
       : blogs.filter((blog) => blog.tag === selectedTag);
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-surface">
       <BlogHeader />
       <BlogFilter
         uniqueTags={uniqueTags}
         selectedTag={selectedTag}
         setSelectedTag={setSelectedTag}
       />
-      <section className="bg-white py-5">
+      <section className="bg-surface py-5">
         <div className="container mx-auto">
           <div className="flex flex-col lg:flex-row gap-6 mb-10">
             {filteredBlogs[0] && (

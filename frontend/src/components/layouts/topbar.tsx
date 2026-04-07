@@ -14,7 +14,7 @@ export default function TopBar({ onSearchClick }: Props) {
   const locale = useLocale();
 
   return (
-    <div className="w-full bg-black text-white text-sm">
+    <div className="w-full bg-secondary-900 text-white text-sm">
       <div className="container flex items-center justify-between py-2">
         <Link href={`tel:${APP_INFO.HOTLINE}`}>
           Hotline: {APP_INFO.HOTLINE}

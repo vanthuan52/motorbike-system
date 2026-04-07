@@ -12,10 +12,10 @@ export default function QuickIntroSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.quickIntroSection`);
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-surface-alt py-16">
       <div className="container text-center">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-gray-900 mb-6"
+          className="text-2xl md:text-3xl font-bold text-text-primary mb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -23,7 +23,7 @@ export default function QuickIntroSection() {
           {t("title", { name: APP_INFO.NAME })}
         </motion.h2>
         <motion.p
-          className="text-gray-700 text-lg md:text-xl leading-relaxed mb-8"
+          className="text-text-secondary text-lg md:text-xl leading-relaxed mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -58,12 +58,12 @@ function Feature({
 }) {
   return (
     <motion.div
-      className="p-6 bg-white shadow-md rounded-lg text-left  transition"
+      className="p-6 bg-surface shadow-[var(--shadow-md)] rounded-[var(--radius-lg)] text-left transition-all duration-200"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       whileHover={{
-        scale: 1.05,
-        boxShadow: "0 8px 32px rgba(0,0,0,0.16)",
+        scale: 1.04,
+        boxShadow: "var(--shadow-lg-hover)",
         transition: { duration: 0.22, ease: "easeOut" },
       }}
       viewport={{ amount: 0.2 }}
@@ -72,8 +72,8 @@ function Feature({
         y: { duration: 0.5, delay, ease: "easeOut" },
       }}
     >
-      <h3 className="text-xl font-semibold text-gray-800 mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      <h3 className="text-xl font-semibold text-text-primary mb-2">{title}</h3>
+      <p className="text-text-secondary">{description}</p>
     </motion.div>
   );
 }

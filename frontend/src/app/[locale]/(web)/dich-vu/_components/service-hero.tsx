@@ -11,7 +11,7 @@ export default function ServiceHero() {
   );
 
   return (
-    <section className="relative bg-gray-900 text-white overflow-hidden">
+    <section className="relative bg-secondary-900 text-white overflow-hidden">
       <motion.div
         className="absolute inset-0"
         initial={{ opacity: 0 }}
@@ -39,7 +39,7 @@ export default function ServiceHero() {
         </motion.h1>
 
         <motion.p
-          className="text-lg md:text-xl leading-relaxed text-gray-200"
+          className="text-lg md:text-xl leading-relaxed text-primary-100"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
@@ -56,7 +56,7 @@ export default function ServiceHero() {
           <motion.a
             href="#pricing"
             whileHover={{ scale: 1.05 }}
-            className="bg-red-400 text-black px-6 py-3 rounded-full font-semibold transition"
+            className="bg-primary-700 text-white px-6 py-3 rounded-full font-semibold transition shadow-[var(--shadow-primary)]"
           >
             {t("ctaPrice")}
           </motion.a>

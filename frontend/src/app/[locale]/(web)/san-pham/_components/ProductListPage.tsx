@@ -125,7 +125,7 @@ export default function ProductListPage() {
     setSearch(e.target.value);
   };
   return (
-    <section className="bg-gray-100 py-4 min-h-screen">
+    <section className="bg-bg-soft py-4 min-h-screen">
       <div className="container sm:mx-auto">
         <Breadcrumbs
           items={breadcrumbs}
@@ -199,7 +199,7 @@ export default function ProductListPage() {
                           <SkeletonCard key={i} />
                         ))
                       ) : products.length === 0 ? (
-                        <div className="col-span-full text-center text-gray-500 py-10">
+                        <div className="col-span-full text-center text-text-muted py-10">
                           {t("notFound")}
                         </div>
                       ) : (
@@ -213,7 +213,7 @@ export default function ProductListPage() {
               </main>
             </div>
           </div>
-          <hr className="border-gray-200" />
+          <hr className="border-border" />
           <div className="flex justify-center mt-4">
             <Pagination
               current={page}

@@ -114,7 +114,7 @@ const MaintenanceHistory = () => {
           </Popconfirm>
         ) : (
           <Tooltip title={t("table.cannotDelete")}>
-            <StopOutlined className="text-gray-400 text-lg" />
+            <StopOutlined className="text-text-muted text-lg" />
           </Tooltip>
         ),
     },
@@ -123,7 +123,7 @@ const MaintenanceHistory = () => {
   return (
     <div className="py-8">
       <div className="container">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">
           {t("title")}
         </h2>
 
@@ -156,7 +156,7 @@ const MaintenanceHistory = () => {
           </Button>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-gray-200">
+        <div className="bg-surface rounded-[var(--radius-lg)] p-4 border border-border">
           {loading ? (
             <SkeletonTable
               columns={[

@@ -31,13 +31,13 @@ export default function BlogFilter({
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-[20px] border text-sm font-medium transition-all duration-200 shadow-sm cursor-pointer
             ${
               isActive
-                ? "bg-[#FEDCB7] text-black border-[#FB7B0D] hover:bg-orange-600"
-                : "bg-white text-gray-600 border-gray-300 hover:border-orange-400 hover:text-orange-500"
+                ? "bg-primary-100 text-primary-800 border-primary-700 hover:bg-primary-200"
+                : "bg-surface text-text-secondary border-border hover:border-primary-400 hover:text-primary-700"
             }`}
               >
                 {tag}
                 {isActive && (
-                  <span className="p-1 rounded-full bg-[#FB7B0D] flex items-center justify-center">
+                  <span className="p-1 rounded-full bg-primary-700 flex items-center justify-center">
                     <X size={14} className="text-white" />
                   </span>
                 )}

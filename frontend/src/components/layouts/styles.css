@@ -11,7 +11,7 @@
   left: 50%;
   width: 0%;
   height: 2px;
-  background-color: black;
+  background-color: var(--color-accent);
   transition: all 0.3s ease-in-out;
   transform: translateX(-50%);
 }

@@ -15,10 +15,10 @@ const SocialCommunitySection = () => {
   }));
 
   return (
-    <section className="bg-white py-20 md:py-28">
+    <section className="bg-surface py-20 md:py-28">
       <div className="container">
         {/* Social icons */}
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-8">
           {t("followUs")}
         </h2>
         <div className="flex justify-center gap-6 mb-16">
@@ -26,7 +26,7 @@ const SocialCommunitySection = () => {
             href="https://facebook.com"
             target="_blank"
             rel="noreferrer"
-            className="text-blue-600 text-3xl hover:scale-110 transition-transform"
+            className="text-primary-700 text-3xl hover:scale-110 hover:text-primary-500 transition-all duration-200"
           >
             <FaFacebookF />
           </a>
@@ -34,7 +34,7 @@ const SocialCommunitySection = () => {
             href="https://instagram.com"
             target="_blank"
             rel="noreferrer"
-            className="text-pink-500 text-3xl hover:scale-110 transition-transform"
+            className="text-accent text-3xl hover:scale-110 transition-all duration-200"
           >
             <FaInstagram />
           </a>
@@ -42,7 +42,7 @@ const SocialCommunitySection = () => {
             href="https://youtube.com"
             target="_blank"
             rel="noreferrer"
-            className="text-red-600 text-3xl hover:scale-110 transition-transform"
+            className="text-error text-3xl hover:scale-110 transition-all duration-200"
           >
             <FaYoutube />
           </a>
@@ -50,14 +50,14 @@ const SocialCommunitySection = () => {
             href="https://tiktok.com"
             target="_blank"
             rel="noreferrer"
-            className="text-black text-3xl hover:scale-110 transition-transform"
+            className="text-text-primary text-3xl hover:scale-110 transition-all duration-200"
           >
             <FaTiktok />
           </a>
         </div>
 
         {/* Community activities */}
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12">
           {t("communityTitle")}
         </h2>
 
@@ -73,7 +73,7 @@ const SocialCommunitySection = () => {
                 ease: "easeOut",
               }}
               viewport={{ amount: 0.2 }}
-              className="rounded-2xl shadow-md overflow-hidden bg-gray-50 hover:shadow-xl transition-shadow"
+              className="rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] overflow-hidden bg-surface-alt hover:shadow-[var(--shadow-xl-hover)] transition-all duration-200"
             >
               <div className="relative w-full h-48">
                 <Image
@@ -86,10 +86,10 @@ const SocialCommunitySection = () => {
                 />
               </div>
               <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2 text-gray-800">
+                <h3 className="text-xl font-semibold mb-2 text-text-primary">
                   {item.title}
                 </h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
+                <p className="text-text-secondary text-sm">{item.description}</p>
               </div>
             </motion.div>
           ))}

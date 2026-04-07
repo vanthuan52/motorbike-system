@@ -38,10 +38,10 @@ export default function TestimonialsSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.testimonialsSection`);
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-surface py-20">
       <div className="container mx-auto px-4">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.3 }}
@@ -53,7 +53,7 @@ export default function TestimonialsSection() {
           {testimonials.map((tItem, idx) => (
             <motion.div
               key={idx}
-              className="bg-gray-50 border border-gray-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center"
+              className="bg-surface-alt border border-border p-6 rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md-hover)] transition-all duration-300 flex flex-col items-center"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ amount: 0.2 }}
@@ -68,17 +68,17 @@ export default function TestimonialsSection() {
                   <Image
                     src={tItem.avatar}
                     alt={t(`${tItem.nameKey}`)}
-                    className="rounded-full object-cover"
+                    className="rounded-full object-cover ring-2 ring-primary-100"
                     fill
                     sizes="56px"
                   />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className="text-lg font-semibold text-text-primary">
                   {t(`${tItem.nameKey}`)}
                 </h3>
               </div>
               <motion.p
-                className="text-gray-600 text-sm"
+                className="text-text-secondary text-sm"
                 initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ amount: 0.2 }}

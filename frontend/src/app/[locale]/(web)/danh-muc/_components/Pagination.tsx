@@ -19,8 +19,8 @@ export default function Pagination({
         className={clsx(
           "w-10 h-10 flex items-center justify-center rounded-full border text-lg font-semibold transition-all duration-200",
           page === 1
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-            : "bg-white hover:bg-orange-50 text-gray-700 border-gray-300 hover:border-orange-400"
+            ? "bg-surface-alt text-text-muted cursor-not-allowed border-border"
+            : "bg-surface hover:bg-primary-50 text-text-secondary border-border hover:border-primary-400"
         )}
         disabled={page === 1 || loading}
         onClick={() => {
@@ -36,8 +36,8 @@ export default function Pagination({
           className={clsx(
             "w-10 h-10 flex items-center justify-center rounded-full border text-lg font-semibold transition-all duration-200",
             page === p
-              ? "bg-orange-400 text-white border-orange-400 shadow"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-orange-50 hover:border-orange-400"
+              ? "bg-primary-700 text-white border-primary-700 shadow-[var(--shadow-primary)]"
+              : "bg-surface text-text-secondary border-border hover:bg-primary-50 hover:border-primary-400"
           )}
           disabled={loading}
           onClick={() => {
@@ -52,8 +52,8 @@ export default function Pagination({
         className={clsx(
           "w-10 h-10 flex items-center justify-center rounded-full border text-lg font-semibold transition-all duration-200",
           page === totalPages
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
-            : "bg-white hover:bg-orange-50 text-gray-700 border-gray-300 hover:border-orange-400"
+            ? "bg-surface-alt text-text-muted cursor-not-allowed border-border"
+            : "bg-surface hover:bg-primary-50 text-text-secondary border-border hover:border-primary-400"
         )}
         disabled={page === totalPages || loading}
         onClick={() => {

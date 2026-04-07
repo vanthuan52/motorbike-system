@@ -17,10 +17,10 @@ const HistorySection = () => {
   const icons = [FaFlagCheckered, FaTools, FaUsers, FaAward];
 
   return (
-    <section className="bg-white py-20 md:py-28">
+    <section className="bg-surface py-20 md:py-28">
       <div className="container">
         <motion.h2
-          className="text-3xl font-bold text-center text-gray-900 mb-12"
+          className="text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.3 }}
@@ -40,7 +40,7 @@ const HistorySection = () => {
             <Image
               src="/images/about/founding-story.jpg"
               alt={t("founding.title")}
-              className="rounded-xl shadow-lg object-cover"
+              className="rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)] object-cover"
               fill
               priority
             />
@@ -51,23 +51,23 @@ const HistorySection = () => {
             viewport={{ amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+            <h3 className="text-2xl font-semibold text-text-primary mb-4">
               {t("founding.title")}
             </h3>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-text-secondary leading-relaxed">
               {t("founding.content")}
             </p>
           </motion.div>
         </div>
 
         <motion.div
-          className="bg-gray-50 p-8 rounded-xl shadow-inner"
+          className="bg-surface-alt p-8 rounded-[var(--radius-xl)] shadow-[var(--shadow-inner)]"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <h3 className="text-2xl font-semibold text-gray-800 mb-8 text-center">
+          <h3 className="text-2xl font-semibold text-text-primary mb-8 text-center">
             {t("milestoneTitle")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
@@ -85,13 +85,13 @@ const HistorySection = () => {
                     ease: "easeOut",
                   }}
                 >
-                  <div className="text-indigo-600 text-4xl mb-4 flex justify-center">
+                  <div className="text-primary-700 text-4xl mb-4 flex justify-center">
                     <Icon />
                   </div>
-                  <h4 className="text-xl font-bold text-gray-800">
+                  <h4 className="text-xl font-bold text-text-primary">
                     {item.year}
                   </h4>
-                  <p className="text-gray-600 mt-2">{item.description}</p>
+                  <p className="text-text-secondary mt-2">{item.description}</p>
                 </motion.div>
               );
             })}

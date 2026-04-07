@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/utils/common.utils";
 
 interface SelectFieldProps {
   label?: string;
@@ -13,6 +14,7 @@ interface SelectFieldProps {
   optionLabel?: string;
   values?: string[];
   rootClass?: string;
+  required?: boolean;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -25,26 +27,38 @@ const SelectField: React.FC<SelectFieldProps> = ({
   optionLabel,
   values,
   rootClass,
+  required = false,
 }) => {
-  const selectClasses = `w-full py-2 pr-10 ${
-    icon ? "pl-10" : "pl-4"
-  } rounded-lg text-sm border bg-white appearance-none focus:outline-none transition duration-200 ease-in-out ${
+  const selectClasses = cn(
+    // Base
+    "w-full min-h-[44px] py-3 pr-10 rounded-[var(--radius-md)] text-base border bg-surface text-text-primary appearance-none shadow-[var(--shadow-inner)] transition-[border-color,box-shadow] duration-200 ease-in-out outline-none",
+    // Icon padding
+    icon ? "pl-10" : "pl-4",
+    // Hover
+    "hover:border-border-strong",
+    // Focus
+    "focus:border-primary-500 focus:shadow-[var(--shadow-focus-ring)] focus:border-2",
+    // Error
     error
-      ? "border-red-500 focus:ring-2 focus:ring-red-200"
-      : "border-gray-300 "
-  }`;
+      ? "border-error shadow-[0_0_0_3px_rgba(220,38,38,0.15)] bg-error-bg"
+      : "border-border"
+  );
 
   return (
-    <div className={`flex flex-col gap-1 w-full ${rootClass}`}>
+    <div className={cn("flex flex-col gap-1 w-full", rootClass)}>
       {label && (
-        <label className="text-sm font-medium text-gray-700" htmlFor={label}>
+        <label
+          className="text-sm font-medium text-text-primary"
+          htmlFor={label}
+        >
           {label}
+          {required && <span className="text-error ml-0.5">*</span>}
         </label>
       )}
 
       <div className="relative">
         {icon && (
-          <div className="absolute inset-y-0 left-3 flex items-center  pointer-events-none">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-text-muted">
             {icon}
           </div>
         )}
@@ -68,7 +82,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         </select>
 
         {/* Custom arrow icon */}
-        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+        <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-text-muted">
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path
               fillRule="evenodd"
@@ -79,9 +93,9 @@ const SelectField: React.FC<SelectFieldProps> = ({
         </div>
       </div>
 
-      <div className="h-5">
+      <div className="min-h-5">
         {error ? (
-          <p id={`${label}-error`} className="text-red-500 text-sm">
+          <p id={`${label}-error`} className="text-sm text-error-text">
             {error}
           </p>
         ) : (

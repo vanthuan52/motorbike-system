@@ -15,9 +15,9 @@ const AwardsSection = () => {
   }));
 
   return (
-    <section className="bg-gray-50 py-20 md:py-28">
+    <section className="bg-surface-alt py-20 md:py-28">
       <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12">
           {t("heading")}
         </h2>
 
@@ -25,7 +25,7 @@ const AwardsSection = () => {
           {awards.map((item, index) => (
             <motion.div
               key={index}
-              className="bg-white shadow-md rounded-2xl overflow-hidden transition-transform hover:-translate-y-1"
+              className="bg-surface shadow-[var(--shadow-md)] rounded-[var(--radius-2xl)] overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-lg-hover)]"
               initial={{ opacity: 0, scale: 0.92 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ amount: 0.2 }}
@@ -46,10 +46,10 @@ const AwardsSection = () => {
                 />
               </div>
               <div className="p-5">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                <h3 className="text-lg font-semibold text-text-primary mb-2">
                   {item.title}
                 </h3>
-                <p className="text-sm text-gray-600">{item.description}</p>
+                <p className="text-sm text-text-secondary">{item.description}</p>
               </div>
             </motion.div>
           ))}

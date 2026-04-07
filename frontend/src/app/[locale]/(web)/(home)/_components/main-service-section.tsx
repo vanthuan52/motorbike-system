@@ -1,16 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { TRANSLATION_FILES } from "@/lib/i18n";
-
-interface Service {
-  image: string;
-  title: string;
-  description: string;
-}
 
 const servicesKeys = ["repair", "oilChange", "wash", "replacement"] as const;
 
@@ -18,10 +11,10 @@ export default function MainServicesSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.serviceSection`);
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-surface py-20">
       <div className="container mx-auto px-4">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.5 }}
@@ -34,15 +27,14 @@ export default function MainServicesSection() {
           {servicesKeys.map((key, idx) => (
             <motion.div
               key={key}
-              className="bg-white border border-gray-100 rounded-xl shadow-md hover:shadow-lg transition duration-300"
+              className="bg-surface border border-border rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg-hover)] transition-all duration-300"
               whileHover={{
                 scale: 1.04,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
                 transition: { duration: 0.22, ease: "easeOut" },
               }}
             >
               <motion.div
-                className="relative h-60 w-full rounded-t-xl overflow-hidden"
+                className="relative h-60 w-full rounded-t-[var(--radius-xl)] overflow-hidden"
                 initial={{ scale: 0.85, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ amount: 0.3 }}
@@ -64,7 +56,7 @@ export default function MainServicesSection() {
 
               <div className="p-5 text-center">
                 <motion.h3
-                  className="text-lg font-semibold text-gray-800 mb-2"
+                  className="text-lg font-semibold text-text-primary mb-2"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ amount: 0.3 }}
@@ -77,7 +69,7 @@ export default function MainServicesSection() {
                   {t(`${key}.title`)}
                 </motion.h3>
                 <motion.p
-                  className="text-sm text-gray-600"
+                  className="text-sm text-text-secondary"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ amount: 0.3 }}
@@ -95,7 +87,7 @@ export default function MainServicesSection() {
         </div>
 
         <div className="flex items-center justify-center py-5 mt-5">
-          <button className="border border-gray-800 text-gray-800 hover:bg-gray-100 font-semibold px-6 py-3 rounded-md transition cursor-pointer">
+          <button className="border-2 border-primary-700 text-primary-700 hover:bg-primary-50 font-semibold px-6 py-3 rounded-[var(--radius-md)] transition-all duration-200 cursor-pointer">
             {t("viewAll")}
           </button>
         </div>

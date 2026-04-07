@@ -97,7 +97,7 @@ export default function PurchaseHistoryPage() {
         <div className="block md:hidden mb-3">
           <Button
             type="primary"
-            className="!bg-black"
+            className="!bg-secondary-900"
             onClick={() => setFilterOpen(true)}
           >
             Lọc đơn hàng
