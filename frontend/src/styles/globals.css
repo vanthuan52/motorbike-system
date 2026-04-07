@@ -2,8 +2,9 @@
 @import "tailwindcss";
 
 /* ============================================================
-   MotoServ — Design Tokens v4.0
+   MotoServ — Design Tokens v5.0 (Material 3 Enhanced)
    Brand Style: Coolors-inspired (White + Electric Blue)
+   M3 Additions: On-Colors, Containers, State Layers, Tonal Elevation
    Font: Inter
    ============================================================ */
 
@@ -87,6 +88,31 @@
   --color-info-bg: #E6F0FF;
   --color-info-border: #99C2FF;
   --color-info-text: #004CBF;
+
+  /* ── M3: On-Color Pairs ── */
+  --color-on-primary: #FFFFFF;
+  --color-on-primary-container: #002E73;
+  --color-on-secondary: #FFFFFF;
+  --color-on-secondary-container: #212529;
+  --color-on-surface: #212529;
+  --color-on-surface-variant: #495057;
+  --color-on-error: #FFFFFF;
+  --color-on-error-container: #991B1B;
+
+  /* ── M3: Container Colors ── */
+  --color-primary-container: #CCE0FF;
+  --color-secondary-container: #E9ECEF;
+  --color-error-container: #FEF2F2;
+  --color-success-container: #ECFDF5;
+  --color-warning-container: #FFFBEB;
+
+  /* ── M3: Surface Tint & Tonal Elevation ── */
+  --surface-tint: #0066FF;
+  --elevation-tint-1: color-mix(in srgb, var(--surface-tint) 5%, transparent);
+  --elevation-tint-2: color-mix(in srgb, var(--surface-tint) 8%, transparent);
+  --elevation-tint-3: color-mix(in srgb, var(--surface-tint) 11%, transparent);
+  --elevation-tint-4: color-mix(in srgb, var(--surface-tint) 12%, transparent);
+  --elevation-tint-5: color-mix(in srgb, var(--surface-tint) 14%, transparent);
 
   /* =========================================================
      4. TYPOGRAPHY
@@ -210,6 +236,31 @@
   --transition-slow: 300ms ease;
   --transition-spring: 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* ── M3: Motion Duration Tokens ── */
+  --m3-duration-short1: 50ms;
+  --m3-duration-short2: 100ms;
+  --m3-duration-short3: 150ms;
+  --m3-duration-short4: 200ms;
+  --m3-duration-medium1: 250ms;
+  --m3-duration-medium2: 300ms;
+  --m3-duration-medium4: 400ms;
+  --m3-duration-long1: 450ms;
+  --m3-duration-long2: 500ms;
+
+  /* ── M3: Easing Curves ── */
+  --m3-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --m3-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --m3-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --m3-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --m3-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --m3-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+
+  /* ── M3: Transition Shorthands ── */
+  --m3-transition-standard: var(--m3-duration-medium2) var(--m3-easing-standard);
+  --m3-transition-emphasized: var(--m3-duration-long2) var(--m3-easing-emphasized);
+  --m3-transition-enter: var(--m3-duration-medium4) var(--m3-easing-emphasized-decelerate);
+  --m3-transition-exit: var(--m3-duration-short4) var(--m3-easing-emphasized-accelerate);
+
   /* =========================================================
      8. LAYOUT
      ========================================================= */
@@ -292,6 +343,23 @@
   --radius-brand-xl:   16px;
   --radius-brand-2xl:  24px;
   --radius-brand-full: 9999px;
+
+  /* ── M3: On-Color Pairs ── */
+  --color-on-primary: #FFFFFF;
+  --color-on-primary-container: #002E73;
+  --color-on-secondary: #FFFFFF;
+  --color-on-secondary-container: #212529;
+  --color-on-surface: #212529;
+  --color-on-surface-variant: #495057;
+  --color-on-error: #FFFFFF;
+  --color-on-error-container: #991B1B;
+
+  /* ── M3: Container Colors ── */
+  --color-primary-container: #CCE0FF;
+  --color-secondary-container: #E9ECEF;
+  --color-error-container: #FEF2F2;
+  --color-success-container: #ECFDF5;
+  --color-warning-container: #FFFBEB;
 }
 
 html,
@@ -324,9 +392,118 @@ li {
   .container-fluid {
     @apply mx-auto px-4 lg:px-8 xl:px-0;
   }
+
+  /* ============================================================
+     M3: Card Variants
+     - Elevated: shadow + tonal tint (default Google style)
+     - Filled: tinted bg, no shadow
+     - Outlined: border, no shadow
+     ============================================================ */
+  .card-elevated {
+    background-color: var(--color-surface);
+    background-image: linear-gradient(var(--elevation-tint-1), var(--elevation-tint-1));
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-lg);
+    transition: box-shadow var(--m3-transition-standard),
+                background-image var(--m3-transition-standard);
+  }
+  .card-elevated:hover {
+    box-shadow: var(--shadow-md);
+    background-image: linear-gradient(var(--elevation-tint-2), var(--elevation-tint-2));
+  }
+
+  .card-filled {
+    background-color: var(--color-surface-alt);
+    border-radius: var(--radius-lg);
+    transition: background-color var(--m3-transition-standard);
+  }
+  .card-filled:hover {
+    background-color: var(--color-bg-hover);
+  }
+
+  .card-outlined {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--m3-transition-standard);
+  }
+  .card-outlined:hover {
+    border-color: var(--color-border-strong);
+  }
 }
 
 @layer utilities {
+  /* ============================================================
+     M3: State Layer System
+     Usage: Add .state-layer to any interactive element.
+     The pseudo-element uses `currentColor` so the overlay
+     automatically matches the element's text/content color.
+     ============================================================ */
+  .state-layer {
+    position: relative;
+    overflow: hidden;
+  }
+  .state-layer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity var(--m3-duration-short4) var(--m3-easing-standard);
+  }
+  .state-layer:hover::after {
+    opacity: 0.08;
+  }
+  .state-layer:focus-visible::after {
+    opacity: 0.10;
+  }
+  .state-layer:active::after {
+    opacity: 0.10;
+  }
+  .state-layer:disabled::after,
+  .state-layer[aria-disabled="true"]::after {
+    opacity: 0;
+  }
+
+  /* M3: State layer with explicit tint color override */
+  .state-layer-primary::after {
+    background: var(--color-primary-500);
+  }
+  .state-layer-inverse::after {
+    background: #FFFFFF;
+  }
+
+  /* ============================================================
+     M3: Tonal Elevation Utilities
+     Combines shadow depth with primary-tinted surface overlay.
+     ============================================================ */
+  .elevation-0 {
+    box-shadow: none;
+    background-color: var(--color-surface);
+  }
+  .elevation-1 {
+    box-shadow: var(--shadow-xs);
+    background-image: linear-gradient(var(--elevation-tint-1), var(--elevation-tint-1));
+  }
+  .elevation-2 {
+    box-shadow: var(--shadow-sm);
+    background-image: linear-gradient(var(--elevation-tint-2), var(--elevation-tint-2));
+  }
+  .elevation-3 {
+    box-shadow: var(--shadow-md);
+    background-image: linear-gradient(var(--elevation-tint-3), var(--elevation-tint-3));
+  }
+  .elevation-4 {
+    box-shadow: var(--shadow-lg);
+    background-image: linear-gradient(var(--elevation-tint-4), var(--elevation-tint-4));
+  }
+  .elevation-5 {
+    box-shadow: var(--shadow-xl);
+    background-image: linear-gradient(var(--elevation-tint-5), var(--elevation-tint-5));
+  }
+
   /* UI */
 
   .input-class {

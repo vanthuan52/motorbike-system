@@ -4,9 +4,9 @@ export default function ChatButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition cursor-pointer"
+      className="flex size-12 cursor-pointer items-center justify-center rounded-full bg-primary-500 text-white shadow-[var(--shadow-md)] outline-none state-layer transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-105 hover:shadow-[var(--shadow-lg)] active:shadow-[var(--shadow-md-active)] focus-visible:shadow-[var(--shadow-focus-ring)]"
     >
-      <MessageCircle size={24} />
+      <MessageCircle size={22} />
     </button>
   );
 }

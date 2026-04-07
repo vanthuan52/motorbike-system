@@ -2,6 +2,7 @@
 import { useTranslations } from "next-intl";
 import { Link, TRANSLATION_FILES } from "@/lib/i18n";
 import { ROUTER_PATH } from "@/constant/router-path";
+import { Logo } from "@/components/ui/Logo";
 
 const CONTACT_INFO = [
   "Giờ làm việc: 8:00 AM – 17:00 PM",
@@ -39,12 +40,7 @@ export default function Footer() {
       <div className="container">
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-8 py-10 max-sm:max-w-sm max-sm:mx-auto gap-y-8">
           <div className="col-span-full mb-10 lg:col-span-2 lg:mb-0">
-            <Link
-              href="/"
-              className="flex justify-center lg:justify-start text-xl font-bold"
-            >
-              {t("footer.logo")}
-            </Link>
+            <Logo className="flex justify-center text-3xl mb-4 lg:mb-0 lg:justify-start" />
             <p className="py-8 text-sm text-text-muted lg:max-w-xs text-center lg:text-left">
               {t("footer.description")}
             </p>
@@ -102,7 +98,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li className="mb-6">
-                <Link href="#" className="text-text-secondary hover:text-text-primary">
+                <Link
+                  href="#"
+                  className="text-text-secondary hover:text-text-primary"
+                >
                   {t("footer.policy.privacy")}
                 </Link>
               </li>
@@ -115,17 +114,26 @@ export default function Footer() {
             </h4>
             <ul className="text-sm transition-all duration-500">
               <li className="mb-6">
-                <Link href="#" className="text-text-secondary hover:text-text-primary">
+                <Link
+                  href="#"
+                  className="text-text-secondary hover:text-text-primary"
+                >
                   {t("footer.blog.tips")}
                 </Link>
               </li>
               <li className="mb-6">
-                <Link href="#" className="text-text-secondary hover:text-text-primary">
+                <Link
+                  href="#"
+                  className="text-text-secondary hover:text-text-primary"
+                >
                   {t("footer.blog.news")}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-text-secondary hover:text-text-primary">
+                <Link
+                  href="#"
+                  className="text-text-secondary hover:text-text-primary"
+                >
                   {t("footer.blog.events")}
                 </Link>
               </li>

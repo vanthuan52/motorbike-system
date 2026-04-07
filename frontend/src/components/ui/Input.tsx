@@ -10,7 +10,9 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         data-slot="input"
         className={cn(
           // Base
-          "flex h-11 w-full min-w-0 rounded-[var(--radius-md)] border bg-surface px-4 py-3 text-base text-text-primary shadow-[var(--shadow-inner)] transition-[color,border-color,box-shadow] duration-200 ease-in-out outline-none",
+          "flex h-11 w-full min-w-0 rounded-[var(--radius-md)] border bg-surface px-4 py-3 text-base text-text-primary shadow-[var(--shadow-inner)] outline-none",
+          // M3 transition
+          "[transition:color_var(--m3-transition-standard),border-color_var(--m3-transition-standard),box-shadow_var(--m3-transition-standard)]",
           // Placeholder
           "placeholder:text-text-muted",
           // Selection
