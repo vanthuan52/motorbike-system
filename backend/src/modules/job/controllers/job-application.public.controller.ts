@@ -16,7 +16,7 @@ import { DatabaseIdDto } from '@/common/database/dtos/database.id.dto';
 import { JobService } from '../services/job.service';
 import { JobApplicationUtil } from '../utils/job-application.util';
 
-@ApiTags('modules.job.public')
+@ApiTags('modules.public.job')
 @Controller({
   version: '1',
   path: '/job/job-application',

@@ -14,8 +14,6 @@
         "s3:ListMultipartUploadParts",
         "s3:GetBucketPolicy",
         "s3:PutBucketPolicy",
-        "s3:GetBucketCORS",
-        "s3:PutBucketCORS",
         "s3:GetLifecycleConfiguration",
         "s3:PutLifecycleConfiguration"
       ],
