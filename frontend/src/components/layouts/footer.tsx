@@ -45,26 +45,26 @@ export default function Footer() {
             >
               {t("footer.logo")}
             </Link>
-            <p className="py-8 text-sm text-gray-500 lg:max-w-xs text-center lg:text-left">
+            <p className="py-8 text-sm text-text-muted lg:max-w-xs text-center lg:text-left">
               {t("footer.description")}
             </p>
             <Link
               href="#"
-              className="py-2.5 px-5 block w-fit bg-black rounded-full shadow-sm text-sm !text-white mx-auto transition-all duration-500 lg:mx-0 hover:bg-white hover:!text-black"
+              className="py-2.5 px-5 block w-fit bg-secondary-900 rounded-full shadow-sm text-sm !text-white mx-auto transition-all duration-500 lg:mx-0 hover:bg-surface hover:!text-secondary-900"
             >
               {t("footer.contactUs")}
             </Link>
           </div>
 
           <div className="lg:mx-auto text-left">
-            <h4 className="text-lg text-gray-900 font-medium mb-7">
+            <h4 className="text-lg text-text-primary font-medium mb-7">
               {t("footer.company.title")}
             </h4>
             <ul className="text-sm transition-all duration-500">
               <li className="mb-6">
                 <Link
                   href={ROUTER_PATH.HOME}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-text-secondary hover:text-text-primary"
                 >
                   {t("footer.company.home")}
                 </Link>
@@ -72,7 +72,7 @@ export default function Footer() {
               <li className="mb-6">
                 <Link
                   href={ROUTER_PATH.ABOUT}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-text-secondary hover:text-text-primary"
                 >
                   {t("footer.company.about")}
                 </Link>
@@ -80,7 +80,7 @@ export default function Footer() {
               <li className="mb-6">
                 <Link
                   href={ROUTER_PATH.SERVICES}
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-text-secondary hover:text-text-primary"
                 >
                   {t("footer.company.services")}
                 </Link>
@@ -89,20 +89,20 @@ export default function Footer() {
           </div>
 
           <div className="lg:mx-auto text-left">
-            <h4 className="text-lg text-gray-900 font-medium mb-7">
+            <h4 className="text-lg text-text-primary font-medium mb-7">
               {t("footer.policy.title")}
             </h4>
             <ul className="text-sm transition-all duration-500">
               <li className="mb-6">
                 <Link
                   href="/cau-hoi-thuong-gap"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-text-secondary hover:text-text-primary"
                 >
                   {t("footer.policy.faq")}
                 </Link>
               </li>
               <li className="mb-6">
-                <Link href="#" className="text-gray-600 hover:text-gray-900">
+                <Link href="#" className="text-text-secondary hover:text-text-primary">
                   {t("footer.policy.privacy")}
                 </Link>
               </li>
@@ -110,22 +110,22 @@ export default function Footer() {
           </div>
 
           <div className="lg:mx-auto text-left">
-            <h4 className="text-lg text-gray-900 font-medium mb-7">
+            <h4 className="text-lg text-text-primary font-medium mb-7">
               {t("footer.blog.title")}
             </h4>
             <ul className="text-sm transition-all duration-500">
               <li className="mb-6">
-                <Link href="#" className="text-gray-600 hover:text-gray-900">
+                <Link href="#" className="text-text-secondary hover:text-text-primary">
                   {t("footer.blog.tips")}
                 </Link>
               </li>
               <li className="mb-6">
-                <Link href="#" className="text-gray-600 hover:text-gray-900">
+                <Link href="#" className="text-text-secondary hover:text-text-primary">
                   {t("footer.blog.news")}
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-600 hover:text-gray-900">
+                <Link href="#" className="text-text-secondary hover:text-text-primary">
                   {t("footer.blog.events")}
                 </Link>
               </li>
@@ -133,14 +133,14 @@ export default function Footer() {
           </div>
 
           <div className="lg:mx-auto text-left">
-            <h4 className="text-lg text-gray-900 font-medium mb-7 text-center">
+            <h4 className="text-lg text-text-primary font-medium mb-7 text-center">
               {t("footer.getApps")}
             </h4>
             <ul className="text-sm transition-all duration-500 flex flex-col items-center">
               <li className="mb-6">
                 <Link
                   href="#"
-                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2 justify-center"
+                  className="text-text-secondary hover:text-text-primary flex items-center gap-2 justify-center"
                 >
                   <img
                     src="/images/google-play.png"
@@ -154,7 +154,7 @@ export default function Footer() {
               <li className="mb-6">
                 <Link
                   href="#"
-                  className="text-gray-600 hover:text-gray-900 flex items-center gap-2 justify-center"
+                  className="text-text-secondary hover:text-text-primary flex items-center gap-2 justify-center"
                 >
                   <img
                     src="/images/apple-store.png"
@@ -169,9 +169,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="py-7 border-t border-gray-200">
+        <div className="py-7 border-t border-border">
           <div className="flex items-center justify-center flex-col lg:justify-between lg:flex-row">
-            <span className="text-sm text-gray-500 text-center">
+            <span className="text-sm text-text-muted text-center">
               ©
               <Link href="https://pagedone.io/" target="_blank">
                 {t("footer.copyright")}

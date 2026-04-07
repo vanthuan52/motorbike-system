@@ -9,9 +9,26 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         type={props.type}
         data-slot="input"
         className={cn(
-          "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+          // Base
+          "flex h-11 w-full min-w-0 rounded-[var(--radius-md)] border bg-surface px-4 py-3 text-base text-text-primary shadow-[var(--shadow-inner)] transition-[color,border-color,box-shadow] duration-200 ease-in-out outline-none",
+          // Placeholder
+          "placeholder:text-text-muted",
+          // Selection
+          "selection:bg-primary-100 selection:text-primary-900",
+          // Hover
+          "hover:border-border-strong",
+          // Focus
+          "focus-visible:border-primary-500 focus-visible:shadow-[var(--shadow-focus-ring)] focus-visible:border-2",
+          // File input
+          "file:text-text-primary file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+          // Error state
+          "aria-invalid:border-error aria-invalid:shadow-[0_0_0_3px_rgba(220,38,38,0.15)] aria-invalid:bg-error-bg",
+          // Disabled
+          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-alt",
+          // Responsive
+          "md:text-sm",
+          // Border default
+          "border-border",
           props.className
         )}
         {...props}

@@ -102,7 +102,7 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
     <div ref={containerRef} className={clsx("relative", className)}>
       <button
         onClick={() => setMenuOpen((open) => !open)}
-        className="rounded-full overflow-hidden border border-gray-300 flex items-center justify-center focus:outline-none p-2"
+        className="rounded-full overflow-hidden border border-border-strong flex items-center justify-center focus:outline-none p-2"
         aria-label="User menu"
       >
         {user?.photo ? (
@@ -117,14 +117,14 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
       </button>
 
       {menuOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 overflow-hidden z-50">
+        <div className="absolute right-0 mt-2 w-56 bg-surface rounded-md shadow-lg border border-border overflow-hidden z-50">
           {isAuthenticated ? (
             <>
               {MENU_ITEMS.map(({ label, href, icon }) => (
                 <Link
                   key={label}
                   href={href}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-700 text-sm cursor-pointer"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-secondary-100 text-text-secondary text-sm cursor-pointer"
                   onClick={() => setMenuOpen(false)}
                 >
                   {icon}
@@ -132,7 +132,7 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
                 </Link>
               ))}
               <div
-                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-gray-700 text-sm cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-secondary-100 text-text-secondary text-sm cursor-pointer"
                 onClick={logout}
               >
                 <LogoutOutlined />
@@ -142,7 +142,7 @@ export default function UserAvatar({ user, className }: UserAvatarProps) {
           ) : (
             <Link
               href={ROUTER_PATH.SIGN_IN}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-black text-sm cursor-pointer"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-secondary-100 text-text-primary text-sm cursor-pointer"
               onClick={() => setMenuOpen(false)}
             >
               <LogIn size={18} />

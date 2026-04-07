@@ -20,10 +20,10 @@ const TechnologySection = () => {
   const steps = [0, 1, 2, 3, 4].map((i) => t(`workflowSteps.${i}`));
 
   return (
-    <section className="bg-white py-20 md:py-28">
+    <section className="bg-surface py-20 md:py-28">
       <div className="container">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.3 }}
@@ -37,7 +37,7 @@ const TechnologySection = () => {
           {technologies.map((tech, idx) => (
             <motion.div
               key={idx}
-              className="bg-gray-50 rounded-xl shadow hover:shadow-lg transition overflow-hidden"
+              className="bg-surface-alt rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg-hover)] transition-all duration-200 overflow-hidden"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ amount: 0.2 }}
@@ -54,10 +54,10 @@ const TechnologySection = () => {
                 />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                <h3 className="text-xl font-semibold text-text-primary mb-2">
                   {tech.title}
                 </h3>
-                <p className="text-gray-600 text-sm">{tech.description}</p>
+                <p className="text-text-secondary text-sm">{tech.description}</p>
               </div>
             </motion.div>
           ))}
@@ -65,14 +65,14 @@ const TechnologySection = () => {
 
         {/* Workflow */}
         <motion.div
-          className="bg-indigo-50 p-10 rounded-xl shadow-md"
+          className="bg-primary-50 p-10 rounded-[var(--radius-xl)] shadow-[var(--shadow-md)]"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <motion.h3
-            className="text-2xl font-semibold text-indigo-800 mb-6 flex items-center gap-2"
+            className="text-2xl font-semibold text-primary-800 mb-6 flex items-center gap-2"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ amount: 0.3 }}
@@ -81,7 +81,7 @@ const TechnologySection = () => {
             <Workflow className="w-6 h-6" />
             {t("workflowTitle")}
           </motion.h3>
-          <ol className="list-decimal list-inside text-gray-700 space-y-3 text-base">
+          <ol className="list-decimal list-inside text-text-secondary space-y-3 text-base">
             {steps.map((step, idx) => (
               <motion.li
                 key={idx}

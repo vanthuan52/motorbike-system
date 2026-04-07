@@ -1,31 +1,30 @@
 import { Switch } from "antd";
 import type { SwitchProps } from "antd";
-import clsx from "clsx";
+import { cn } from "@/utils/common.utils";
 
 interface Props extends SwitchProps {
   className?: string;
 }
 
 /**
- * A custom Switch component with green color when checked.
- *
- * @param {string} [className] - Additional class names for the Switch component.
- * @param {boolean} checked - Whether the switch is checked or not.
- * @param {SwitchProps} [props] - Additional props for the Switch component.
- * @returns {JSX.Element} A Switch component with green color when checked.
+ * A custom Switch component using brand primary color when checked.
+ * Uses MotoService design tokens for consistent styling.
  */
-export const GreenSwitch = ({ className = "", checked, ...props }: Props) => {
+export const BrandSwitch = ({ className = "", checked, ...props }: Props) => {
   return (
     <Switch
       {...props}
       checked={checked}
-      className={clsx(
+      className={cn(
         "!align-middle !border-none",
         checked
-          ? "!bg-green-600 hover:!bg-green-700"
-          : "!bg-gray-300 hover:!bg-gray-400",
+          ? "!bg-primary-500 hover:!bg-primary-600"
+          : "!bg-secondary-300 hover:!bg-secondary-400",
         className
       )}
     />
   );
 };
+
+// Legacy alias for backward compatibility
+export const GreenSwitch = BrandSwitch;

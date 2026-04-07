@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { cn } from "@/utils/common.utils";
 
 interface InputFieldProps {
   label?: string;
@@ -16,6 +17,7 @@ interface InputFieldProps {
   disabled?: boolean;
   autoFocus?: boolean;
   className?: string;
+  required?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -31,6 +33,7 @@ const InputField: React.FC<InputFieldProps> = ({
   disabled = false,
   autoFocus = false,
   className,
+  required = false,
 }) => {
   const isTextarea = type === "textarea";
   const isPassword = type === "password";
@@ -38,11 +41,25 @@ const InputField: React.FC<InputFieldProps> = ({
 
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
-  const inputClasses = `w-full min-h-[42px] flex py-2 pr-10 ${
-    icon ? "pl-10" : "pl-3"
-  } rounded-lg text-sm border bg-white focus:outline-none focus:ring-2 ${
-    error ? "border-red-500 focus:ring-red-200" : "border-gray-300 "
-  } ${disabled ? "cursor-not-allowed opacity-50" : ""}`;
+  const inputClasses = cn(
+    // Base
+    "w-full min-h-[44px] flex py-3 pr-10 rounded-[var(--radius-md)] text-base border bg-surface text-text-primary shadow-[var(--shadow-inner)] transition-[border-color,box-shadow] duration-200 ease-in-out outline-none",
+    // Placeholder
+    "placeholder:text-text-muted",
+    // Icon padding
+    icon ? "pl-10" : "pl-4",
+    // Hover
+    "hover:border-border-strong",
+    // Focus
+    "focus:border-primary-500 focus:shadow-[var(--shadow-focus-ring)] focus:border-2",
+    // Error state
+    error
+      ? "border-error shadow-[0_0_0_3px_rgba(220,38,38,0.15)] bg-error-bg"
+      : "border-border",
+    // Disabled
+    disabled && "cursor-not-allowed opacity-50 bg-surface-alt",
+    className
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -55,14 +72,20 @@ const InputField: React.FC<InputFieldProps> = ({
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && (
-        <label className="text-sm font-medium text-gray-700" htmlFor={label}>
+        <label
+          className="text-sm font-medium text-text-primary"
+          htmlFor={label}
+        >
           {label}
+          {required && (
+            <span className="text-error ml-0.5">*</span>
+          )}
         </label>
       )}
 
       <div className="relative">
         {icon && (
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-text-muted">
             {icon}
           </div>
         )}
@@ -74,7 +97,7 @@ const InputField: React.FC<InputFieldProps> = ({
             placeholder={placeholder}
             value={value}
             onChange={handleChange}
-            className={`${inputClasses} ${className || ""}`}
+            className={inputClasses}
             disabled={disabled}
             autoFocus={autoFocus}
             aria-invalid={!!error}
@@ -87,7 +110,7 @@ const InputField: React.FC<InputFieldProps> = ({
             placeholder={placeholder}
             value={value}
             onChange={handleChange}
-            className={`${inputClasses} ${className || ""}`}
+            className={inputClasses}
             disabled={disabled}
             autoFocus={autoFocus}
             aria-invalid={!!error}
@@ -95,12 +118,11 @@ const InputField: React.FC<InputFieldProps> = ({
           />
         )}
 
-        {/* Toggle show/hide password */}
         {isPassword && (
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute inset-y-0 right-3 flex items-center focus:outline-none text-gray-500 cursor-pointer"
+            className="absolute inset-y-0 right-3 flex items-center focus:outline-none text-text-muted hover:text-text-secondary cursor-pointer transition-colors duration-150"
             tabIndex={-1}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -108,9 +130,9 @@ const InputField: React.FC<InputFieldProps> = ({
         )}
       </div>
 
-      <div className="h-5">
+      <div className="min-h-5">
         {error ? (
-          <p id={`${label}-error`} className="text-red-500 text-sm">
+          <p id={`${label}-error`} className="text-sm text-error-text">
             {error}
           </p>
         ) : (

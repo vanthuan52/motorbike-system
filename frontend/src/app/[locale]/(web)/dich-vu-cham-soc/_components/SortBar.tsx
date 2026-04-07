@@ -30,12 +30,12 @@ export default function SortBar({
 
   return (
     <div className='flex flex-col sm:flex-row sm:items-center md:gap-16 justify-between'>
-      <p className='text-sm text-gray-700 md:w-60'>
+      <p className='text-sm text-text-secondary md:w-60'>
         {showing} {t("sortBar.showing")} {total} {t("sortBar.results")}
       </p>
       <div className='flex items-center space-x-2 justify-between w-full mt-2'>
         <div className='flex items-center space-x-2'>
-          <label htmlFor='sort' className='text-md font-medium text-gray-700'>
+          <label htmlFor='sort' className='text-md font-medium text-text-secondary'>
             {t("sortBar.sortBy")}
           </label>
           <ConfigProvider
@@ -65,7 +65,7 @@ export default function SortBar({
             />
           </ConfigProvider>
         </div>
-        <div className='flex items-center bg-gray-200 rounded-md ml-2'>
+        <div className='flex items-center bg-secondary-100 rounded-[var(--radius-md)] ml-2'>
           <button
             className='p-2 cursor-pointer'
             onClick={() => onLayoutChange("grid")}

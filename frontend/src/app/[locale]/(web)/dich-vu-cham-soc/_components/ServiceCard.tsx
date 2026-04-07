@@ -25,7 +25,7 @@ export default function ServiceCard({ service, layout }: ServiceCardProps) {
       className='group'
     >
       <div
-        className={`bg-white rounded-lg shadow p-4 hover:shadow-lg transition-all duration-200 
+        className={`bg-surface rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] p-4 hover:shadow-[var(--shadow-lg-hover)] transition-all duration-200 
           ${layout === "list" ? "flex gap-4" : ""} hover:scale-[1.02]`}
       >
         <img
@@ -39,14 +39,14 @@ export default function ServiceCard({ service, layout }: ServiceCardProps) {
           loading='lazy'
         />
         <div className={layout === "list" ? "flex-1" : ""}>
-          <h3 className='font-semibold text-lg mb-2 group-hover:text-blue-600 transition-colors'>
+          <h3 className='font-semibold text-lg mb-2 group-hover:text-primary-700 transition-colors'>
             {service.name}
           </h3>
           <div className='flex items-center gap-1 mb-2'>
-            <Star className='w-4 h-4 text-yellow-400 fill-current' />
-            <span className='text-sm text-gray-900'>{service.rating}</span>
+            <Star className='w-4 h-4 text-accent fill-current' />
+            <span className='text-sm text-text-primary'>{service.rating}</span>
           </div>
-          <div className='text-red-600 font-bold'>
+          <div className='text-accent font-bold'>
             {typeof service.price === "number" ||
             /^\d+$/.test(service.price.toString())
               ? formatPrice(service.price)

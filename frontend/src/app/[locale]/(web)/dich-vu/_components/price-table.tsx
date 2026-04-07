@@ -64,9 +64,9 @@ export default function PriceTable() {
   };
 
   return (
-    <section className="py-16 bg-gray-100">
+    <section className="py-16 bg-surface-alt">
       <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-10">
           {t("title")}
         </h2>
 
@@ -137,7 +137,7 @@ function FadeCard({
         scale: 0.95,
       }}
       animate={controls}
-      className="bg-white rounded-xl shadow-md overflow-hidden transition"
+      className="bg-surface rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] overflow-hidden transition"
     >
       <button
         onClick={onToggle}
@@ -150,15 +150,15 @@ function FadeCard({
           className="flex justify-between items-center w-full"
         >
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">
+            <h3 className="text-lg font-semibold text-text-primary">
               {t(service.nameKey)}
             </h3>
-            <p className="text-sm text-gray-500">{t(service.priceKey)}</p>
+            <p className="text-sm text-text-muted">{t(service.priceKey)}</p>
           </div>
           {isOpen ? (
-            <ChevronUp className="w-6 h-6 text-gray-500" />
+            <ChevronUp className="w-6 h-6 text-text-muted" />
           ) : (
-            <ChevronDown className="w-6 h-6 text-gray-500" />
+            <ChevronDown className="w-6 h-6 text-text-muted" />
           )}
         </motion.div>
       </button>
@@ -168,7 +168,7 @@ function FadeCard({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="px-6 pb-4 text-sm text-gray-600"
+          className="px-6 pb-4 text-sm text-text-secondary"
         >
           {t(service.noteKey)}
         </motion.div>

@@ -10,12 +10,12 @@ export const SearchInputReuse = ({ placeholder, onChange }: Props) => {
     <Input
       placeholder={placeholder || "Nhập từ khóa tìm kiếm..."}
       suffix={
-        <div className="pl-3 ml-2 !min-h-[30px] border-l border-gray-300 text-gray-500 flex items-center justify-center w-full">
+        <div className="pl-3 ml-2 !min-h-[30px] border-l border-border text-text-muted flex items-center justify-center w-full">
           <Search size={20} />
         </div>
       }
       onChange={(e) => onChange?.(e.target.value)}
-      className="w-full sm:max-w-xs rounded-[10px] hover:!border-gray-300 focus:!border-gray-300 focus:!ring-0 !border-gray-300 !font-semibold"
+      className="w-full sm:max-w-xs rounded-[10px] hover:!border-border-strong focus:!border-primary-700 focus:!ring-0 !border-border !font-semibold !text-text-primary"
     />
   );
 };

@@ -10,7 +10,7 @@ export default function CartTotals({ subtotal }: { subtotal: number }) {
   const total = subtotal + shipping;
 
   return (
-    <div className="bg-white rounded-xl shadow p-6 min-w-[320px]">
+    <div className="bg-surface rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] p-6 min-w-[320px]">
       <h2 className="font-bold text-lg mb-4">{t("totals.heading")}</h2>
 
       <div className="flex justify-between py-2 border-b">
@@ -26,7 +26,7 @@ export default function CartTotals({ subtotal }: { subtotal: number }) {
               <span className="font-semibold">
                 {shipping.toLocaleString()} đ
               </span>
-              <span className="ml-1 text-gray-500">
+              <span className="ml-1 text-text-muted">
                 ({t("totals.shippingNote")})
               </span>
             </>
@@ -36,7 +36,7 @@ export default function CartTotals({ subtotal }: { subtotal: number }) {
         </span>
       </div>
 
-      <div className="flex justify-between py-2 mt-2 text-lg font-bold text-orange-600">
+      <div className="flex justify-between py-2 mt-2 text-lg font-bold text-accent">
         <span>{t("totals.total")}</span>
         <span>{total.toLocaleString()} đ</span>
       </div>
@@ -44,7 +44,7 @@ export default function CartTotals({ subtotal }: { subtotal: number }) {
       <Link href={total === 0 ? "#" : "/chi-tiet-thanh-toan"}>
         <button
           className={clsx(
-            "w-full mt-4 py-2 rounded bg-orange-500 text-white font-semibold hover:bg-orange-600 transition",
+            "w-full mt-4 py-2 rounded-[var(--radius-md)] bg-primary-700 text-white font-semibold hover:bg-primary-500 transition shadow-[var(--shadow-primary)]",
             total === 0 && "opacity-60 cursor-not-allowed"
           )}
           disabled={total === 0}

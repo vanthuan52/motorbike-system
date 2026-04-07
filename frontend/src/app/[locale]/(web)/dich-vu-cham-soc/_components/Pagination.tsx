@@ -53,7 +53,7 @@ export default function Pagination({
           p === "..." ? (
             <span
               key={`ellipsis-${i}`}
-              className='px-2 text-gray-400 select-none'
+              className='px-2 text-text-muted select-none'
             >
               ...
             </span>
@@ -62,7 +62,7 @@ export default function Pagination({
               key={p}
               onClick={() => onChange(Number(p))}
               className={`w-8 h-8 text-sm rounded-full flex items-center justify-center transition ${
-                p === current ? "bg-gray-200 font-medium" : "hover:bg-gray-100"
+                p === current ? "bg-primary-100 font-medium" : "hover:bg-surface-alt"
               }`}
             >
               {p}

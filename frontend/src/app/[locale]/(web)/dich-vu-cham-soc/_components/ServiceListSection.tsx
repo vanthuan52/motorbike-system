@@ -106,11 +106,11 @@ const ServiceListSection: React.FC<Props> = ({ filterType }) => {
         </div>
       ) : (
         <div className='text-center py-16'>
-          <div className='text-gray-400 text-6xl mb-4'>🔍</div>
-          <h3 className='text-lg font-medium text-gray-900 mb-2'>
+          <div className='text-text-muted text-6xl mb-4'>🔍</div>
+          <h3 className='text-lg font-medium text-text-primary mb-2'>
             Không tìm thấy dịch vụ
           </h3>
-          <p className='text-gray-500'>
+          <p className='text-text-muted'>
             Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
           </p>
         </div>

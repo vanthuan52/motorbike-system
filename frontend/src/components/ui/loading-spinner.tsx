@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import clsx from "clsx";
+import { cn } from "@/utils/common.utils";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -13,14 +13,14 @@ interface LoadingSpinnerProps {
 
 const sizeMap = {
   sm: "h-4 w-4 border-2",
-  md: "h-8 w-8 border-4",
+  md: "h-8 w-8 border-[3px]",
   lg: "h-12 w-12 border-4",
 };
 
 const colorMap = {
-  primary: "border-t-primary border-gray-300",
-  white: "border-t-white border-gray-100",
-  gray: "border-t-gray-500 border-gray-300",
+  primary: "border-primary-200 border-t-primary-500",
+  white: "border-white/30 border-t-white",
+  gray: "border-secondary-200 border-t-secondary-500",
 };
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
@@ -31,23 +31,25 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text,
 }) => {
   const spinner = (
-    <div className="z-100 flex flex-col items-center justify-center space-y-2">
+    <div className="z-100 flex flex-col items-center justify-center gap-3">
       <div
-        className={clsx(
+        className={cn(
           "animate-spin rounded-full",
           sizeMap[size],
           colorMap[color],
           className
         )}
       />
-      {text && <p className="text-sm text-gray-500">{text}</p>}
+      {text && (
+        <p className="text-sm text-text-secondary font-medium">{text}</p>
+      )}
     </div>
   );
 
   if (!overlay) return spinner;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-secondary-900/40 backdrop-blur-sm">
       {spinner}
     </div>
   );

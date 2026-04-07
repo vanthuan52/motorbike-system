@@ -43,11 +43,11 @@ export default function SearchOverlay({
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full py-4 pl-12 pr-4 bg-white text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 rounded-[30px]"
+            className="w-full py-4 pl-12 pr-4 bg-surface text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all duration-300 rounded-[30px]"
           />
-          <Search className="absolute left-4 text-gray-400" size={24} />
+          <Search className="absolute left-4 text-text-muted" size={24} />
           <button
-            className="absolute right-3 text-gray-400 hover:text-black transition cursor-pointer"
+            className="absolute right-3 text-text-muted hover:text-text-primary transition cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
               onClose();

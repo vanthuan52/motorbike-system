@@ -160,7 +160,7 @@ const MyVehicle = () => {
     <div className="py-8">
       <div className="container">
         <div className=" flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Xe của tôi</h2>
+          <h2 className="text-xl font-semibold text-text-primary">Xe của tôi</h2>
           <Button
             icon={<PlusCircleOutlined />}
             type="primary"
@@ -170,7 +170,7 @@ const MyVehicle = () => {
           </Button>
         </div>
 
-        <div className="bg-white rounded-lg p-4 border border-gray-200">
+        <div className="bg-surface rounded-lg p-4 border border-border">
           <div className="lg:my-4 sm:my-2">
             <SearchInputReuse onChange={(text) => setSearchText(text)} />
           </div>

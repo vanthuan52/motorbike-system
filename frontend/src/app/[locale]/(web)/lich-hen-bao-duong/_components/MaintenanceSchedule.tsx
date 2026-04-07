@@ -101,7 +101,7 @@ const MaintenanceScheduleList = () => {
   return (
     <div className="py-8 min-h-screen bg-gradient-to-r">
       <div className="mb-6 flex items-center gap-3">
-        <h2 className="text-xl font-semibold text-gray-800">{t("title")}</h2>
+        <h2 className="text-xl font-semibold text-text-primary">{t("title")}</h2>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
@@ -127,18 +127,18 @@ const MaintenanceScheduleList = () => {
             return (
               <div
                 key={item.id}
-                className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105"
+                className="rounded-[var(--radius-xl)] border border-border bg-surface p-6 shadow-[var(--shadow-lg)] hover:shadow-[var(--shadow-xl-hover)] transition duration-300 ease-in-out transform hover:scale-105"
               >
                 <div className="lg:my-4 sm:my-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
+                  <h3 className="text-xl font-semibold text-text-primary">
                     {item.first_name} {item.last_name}
                   </h3>
-                  <p className="text-md text-gray-500">
+                  <p className="text-md text-text-muted">
                     {t(`service_type.${item.service_type}`)}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                <div className="flex items-center gap-2 text-sm text-text-secondary mb-4">
                   <ClockCircleOutlined
                     style={{ fontSize: 16, color: "#3B82F6" }}
                   />
@@ -155,7 +155,7 @@ const MaintenanceScheduleList = () => {
                   {status.label}
                 </div>
 
-                <div className="mt-4 text-gray-500 text-sm space-y-1">
+                <div className="mt-4 text-text-muted text-sm space-y-1">
                   <p>
                     {t("info.phone")}: {item.phone_number}
                   </p>
@@ -182,7 +182,7 @@ const MaintenanceScheduleList = () => {
                 <div className="mt-4 flex justify-between items-center">
                   <Tooltip title={t("actions.edit")}>
                     <button
-                      className="text-blue-500 hover:text-blue-700"
+                      className="text-primary-700 hover:text-primary-500"
                       onClick={() => openEditModal(item)}
                     >
                       <EditOutlined style={{ fontSize: 20 }} />
@@ -204,7 +204,7 @@ const MaintenanceScheduleList = () => {
             );
           })
         ) : (
-          <div className="col-span-full text-center text-gray-500">
+          <div className="col-span-full text-center text-text-muted">
             {t("empty")}
           </div>
         )}

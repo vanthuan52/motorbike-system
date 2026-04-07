@@ -234,7 +234,7 @@ export default function VehicleModelModal({
 
       <div className="min-h-[300px]">
         {!localSelectedBrand ? (
-          <div className="flex justify-center items-center h-40 text-gray-500">
+          <div className="flex justify-center items-center h-40 text-text-muted">
             {t("vehicleModelModal.noBrandSelected")}
           </div>
         ) : loadingModels ? (
@@ -266,7 +266,7 @@ export default function VehicleModelModal({
                   }
                   className={`cursor-pointer ${
                     selectedModel?.value === m.value
-                      ? "!border-blue-500 border-2"
+                      ? "!border-primary-700 border-2"
                       : ""
                   }`}
                   cover={
@@ -279,7 +279,7 @@ export default function VehicleModelModal({
                 >
                   <h3 className="font-semibold">{m.label}</h3>
                   {m.year && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-text-muted">
                       {t("vehicleModelModal.filter.year")}: {m.year}
                     </p>
                   )}

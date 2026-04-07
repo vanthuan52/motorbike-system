@@ -58,9 +58,9 @@ export default function CustomerReviews() {
   }, []);
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-surface-alt">
       <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-10">
           {t("title")}
         </h2>
 
@@ -125,7 +125,7 @@ function ReviewCard({
         scale: 0.95,
       }}
       animate={controls}
-      className="bg-white rounded-xl shadow-md overflow-hidden p-6"
+      className="bg-surface rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] overflow-hidden p-6"
     >
       <div className="flex items-center space-x-4">
         {review.avatar && (
@@ -140,23 +140,23 @@ function ReviewCard({
           </div>
         )}
         <div>
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-lg font-semibold text-text-primary">
             {t(review.customerKey)}
           </h3>
-          <div className="flex items-center text-yellow-400">
+          <div className="flex items-center text-accent">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
                 className={`w-5 h-5 ${
-                  i < review.rating ? "text-yellow-500" : "text-gray-300"
+                  i < review.rating ? "text-accent" : "text-secondary-200"
                 }`}
               />
             ))}
           </div>
-          <p className="text-sm text-gray-500">{`${t(review.dateKey)}`}</p>
+          <p className="text-sm text-text-muted">{`${t(review.dateKey)}`}</p>
         </div>
       </div>
-      <p className="mt-4 text-gray-600">{`${t(review.contentKey)}`}</p>
+      <p className="mt-4 text-text-secondary">{`${t(review.contentKey)}`}</p>
     </motion.div>
   );
 }

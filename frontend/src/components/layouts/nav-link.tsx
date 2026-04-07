@@ -18,7 +18,7 @@ export default function NavLink({
       href={href}
       onClick={onClick}
       className={`nav-link block py-2 md:py-0 relative ${
-        isActive ? "text-[#1447E6]!" : ""
+        isActive ? "text-accent!" : ""
       }`}
     >
       {label}

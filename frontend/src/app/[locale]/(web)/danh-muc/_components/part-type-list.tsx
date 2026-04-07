@@ -59,7 +59,7 @@ export default function PartTypeList({
               <SkeletonCard key={i} />
             ))
           ) : partTypes.length === 0 ? (
-            <div className="col-span-full text-center text-gray-500 py-8">
+            <div className="col-span-full text-center text-text-muted py-8">
               {t("partTypeList.notFound")}
             </div>
           ) : (

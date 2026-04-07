@@ -13,7 +13,7 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className=" bg-[#F8F8F8]">
+    <main className="bg-bg">
       <Header />
       <div className="pt-[100px]">{children}</div>
       <Footer />

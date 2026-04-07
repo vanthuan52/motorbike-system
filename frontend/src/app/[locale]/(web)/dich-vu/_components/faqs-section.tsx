@@ -48,19 +48,19 @@ function FAQItem({
       initial={{ opacity: 0, y: 10 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.15 }}
-      className="bg-white rounded-xl shadow-md overflow-hidden transition"
+      className="bg-surface rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] overflow-hidden transition"
     >
       <button
         onClick={() => onToggle(index)}
         className="flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none"
       >
-        <h3 className="text-lg font-semibold text-gray-800">
+        <h3 className="text-lg font-semibold text-text-primary">
           {`${t(faq.questionKey)}`}
         </h3>
         {isOpen ? (
-          <ChevronUp className="w-6 h-6 text-gray-500" />
+          <ChevronUp className="w-6 h-6 text-text-muted" />
         ) : (
-          <ChevronDown className="w-6 h-6 text-gray-500" />
+          <ChevronDown className="w-6 h-6 text-text-muted" />
         )}
       </button>
 
@@ -69,7 +69,7 @@ function FAQItem({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
-          className="px-6 pb-4 text-sm text-gray-600"
+          className="px-6 pb-4 text-sm text-text-secondary"
         >
           {`${t(faq.answerKey)}`}
         </motion.div>
@@ -90,9 +90,9 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="py-16 bg-gray-100">
+    <section className="py-16 bg-surface-alt">
       <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-10">
           {t("title")}
         </h2>
 
@@ -118,7 +118,7 @@ export default function FAQSection() {
           >
             <motion.a
               href="/cau-hoi-thuong-gap"
-              className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-full text-lg hover:bg-blue-500 transition shadow-md"
+              className="bg-primary-700 text-white font-semibold px-6 py-3 rounded-full text-lg hover:bg-primary-500 transition shadow-[var(--shadow-primary)]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

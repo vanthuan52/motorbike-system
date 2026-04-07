@@ -14,15 +14,15 @@ interface Combo {
 const combos: Combo[] = [
   {
     key: "full",
-    icon: <Wrench className="w-8 h-8 text-blue-600" />,
+    icon: <Wrench className="w-8 h-8 text-primary-700" />,
   },
   {
     key: "oil",
-    icon: <Wrench className="w-8 h-8 text-green-600" />,
+    icon: <Wrench className="w-8 h-8 text-success" />,
   },
   {
     key: "newCustomer",
-    icon: <Percent className="w-8 h-8 text-red-500" />,
+    icon: <Percent className="w-8 h-8 text-accent" />,
   },
 ];
 
@@ -30,10 +30,10 @@ export default function ServiceComboSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.serviceComboSection`);
 
   return (
-    <section className="bg-gray-50 py-20">
+    <section className="bg-surface-alt py-20">
       <div className="container mx-auto px-4">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.3 }}
@@ -45,12 +45,12 @@ export default function ServiceComboSection() {
           {combos.map((combo, idx) => (
             <motion.div
               key={combo.key}
-              className="group p-6 rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl bg-white"
+              className="group p-6 rounded-[var(--radius-2xl)] shadow-[var(--shadow-md)] transition-all duration-300 hover:shadow-[var(--shadow-xl-hover)] bg-surface"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{
                 scale: 1.04,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+                transition: { duration: 0.22, ease: "easeOut" },
               }}
               viewport={{ amount: 0.3 }}
               transition={{
@@ -61,14 +61,14 @@ export default function ServiceComboSection() {
             >
               <div className="flex items-center gap-4 mb-4">
                 <div>{combo.icon}</div>
-                <h3 className="text-xl font-semibold text-gray-800">
+                <h3 className="text-xl font-semibold text-text-primary">
                   {t(`${combo.key}.title`)}
                 </h3>
               </div>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-text-secondary text-sm mb-4">
                 {t(`${combo.key}.description`)}
               </p>
-              <div className="text-blue-600 text-lg font-bold">
+              <div className="text-primary-700 text-lg font-bold">
                 {t(`${combo.key}.price`)}
               </div>
             </motion.div>

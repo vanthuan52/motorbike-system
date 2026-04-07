@@ -20,10 +20,10 @@ const FaqSection = () => {
   };
 
   return (
-    <section className="bg-white py-20 md:py-28">
+    <section className="bg-surface py-20 md:py-28">
       <div className="container">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.3 }}
@@ -36,7 +36,7 @@ const FaqSection = () => {
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
-              className="border border-gray-200 rounded-xl shadow-sm"
+              className="border border-border rounded-[var(--radius-xl)] shadow-[var(--shadow-sm)]"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ amount: 0.2 }}
@@ -48,18 +48,18 @@ const FaqSection = () => {
             >
               <button
                 onClick={() => toggle(index)}
-                className="flex justify-between items-center w-full px-6 py-4 text-left text-gray-800 font-medium focus:outline-none"
+                className="flex justify-between items-center w-full px-6 py-4 text-left text-text-primary font-medium focus:outline-none cursor-pointer"
               >
                 {faq.question}
                 <ChevronDown
-                  className={`w-5 h-5 transform transition-transform ${
+                  className={`w-5 h-5 text-text-muted transform transition-transform ${
                     openIndex === index ? "rotate-180" : ""
                   }`}
                 />
               </button>
               {openIndex === index && (
                 <motion.div
-                  className="px-6 pb-4 text-gray-600 text-sm"
+                  className="px-6 pb-4 text-text-secondary text-sm"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}

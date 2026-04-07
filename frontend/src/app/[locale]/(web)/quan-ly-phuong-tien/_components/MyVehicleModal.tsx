@@ -85,7 +85,7 @@ const MyVehicleModal = ({
     >
       <div className="flex flex-col md:flex-row p-6 gap-6">
         <div className="flex flex-col items-center justify-center flex-none w-full md:w-[180px]">
-          <div className="w-full max-w-[180px] h-[180px] border-2 border-dashed border-gray-300 rounded-md mb-3 flex justify-center items-center overflow-hidden bg-gray-50 relative">
+          <div className="w-full max-w-[180px] h-[180px] border-2 border-dashed border-border-strong rounded-md mb-3 flex justify-center items-center overflow-hidden bg-bg-soft relative">
             {imagePreview ? (
               <img
                 src={imagePreview}
@@ -94,7 +94,7 @@ const MyVehicleModal = ({
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             ) : (
-              <span className="text-gray-400 text-center">Chưa có ảnh</span>
+              <span className="text-text-muted text-center">Chưa có ảnh</span>
             )}
           </div>
 
@@ -109,7 +109,7 @@ const MyVehicleModal = ({
           <Button
             icon={<UploadOutlined />}
             type="primary"
-            className="w-full max-w-[180px] h-12 rounded-lg font-semibold bg-blue-500 hover:bg-blue-600"
+            className="w-full max-w-[180px] h-12 rounded-lg font-semibold bg-primary-500 hover:bg-primary-600"
             onClick={() => fileInputRef.current?.click()}
           >
             Tải ảnh lên

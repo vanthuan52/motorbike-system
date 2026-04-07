@@ -32,7 +32,7 @@ export default function ServiceDetailSection() {
           name="time"
           rules={[{ required: true, message: t("form.timeSlotRequired") }]}
           extra={
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-text-muted">
               {t("form.timeSlotExtra")}
             </span>
           }

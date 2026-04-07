@@ -93,10 +93,10 @@ export default function PurchaseFilter({
         },
       }}
     >
-      <div className="bg-white rounded-xl shadow flex flex-col gap-4 p-4 mb-6 border border-gray-200">
+      <div className="bg-surface rounded-xl shadow flex flex-col gap-4 p-4 mb-6 border border-border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="flex flex-col gap-2 w-full">
-            <label className="text-base font-medium text-gray-700">
+            <label className="text-base font-medium text-text-secondary">
               Trạng thái
             </label>
             <Select
@@ -118,7 +118,7 @@ export default function PurchaseFilter({
 
           {/* Ngày đặt */}
           <div className="flex flex-col gap-2 w-full">
-            <label className="text-base font-medium text-gray-700">
+            <label className="text-base font-medium text-text-secondary">
               Ngày đặt
             </label>
             {isMobile ? (
@@ -177,7 +177,7 @@ export default function PurchaseFilter({
 
           {/* Ngày giao */}
           <div className="flex flex-col gap-2 w-full">
-            <label className="text-base font-medium text-gray-700">
+            <label className="text-base font-medium text-text-secondary">
               Ngày giao
             </label>
             {isMobile ? (

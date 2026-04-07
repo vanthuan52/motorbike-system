@@ -39,9 +39,9 @@ export default function ServiceCombos() {
   );
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-surface-alt">
       <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-gray-800">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10 text-text-primary">
           {t("title")}
         </h2>
 
@@ -94,22 +94,22 @@ function SlideInCard({
       ref={ref}
       initial={{ opacity: 0, y: 30, x: index % 2 === 0 ? -20 : 20 }}
       animate={controls}
-      className="bg-white shadow-xl rounded-xl p-6 hover:shadow-2xl transition border-t-4 border-yellow-400"
+      className="bg-surface shadow-[var(--shadow-lg)] rounded-[var(--radius-xl)] p-6 hover:shadow-[var(--shadow-xl-hover)] transition border-t-4 border-primary-700"
     >
-      <h3 className="text-xl font-semibold text-gray-900 mb-3">
+      <h3 className="text-xl font-semibold text-text-primary mb-3">
         {t(combo.titleKey)}
       </h3>
 
-      <ul className="text-sm text-gray-600 mb-4 list-disc list-inside space-y-1">
+      <ul className="text-sm text-text-secondary mb-4 list-disc list-inside space-y-1">
         {combo.servicesKey.map((key, i) => (
           <li key={i}>{t(key)}</li>
         ))}
       </ul>
 
-      <div className="text-lg font-bold text-yellow-600 mb-1">
+      <div className="text-lg font-bold text-accent mb-1">
         {t(combo.priceKey)}
       </div>
-      <div className="text-sm text-gray-500 italic">{t(combo.noteKey)}</div>
+      <div className="text-sm text-text-muted italic">{t(combo.noteKey)}</div>
     </motion.div>
   );
 }

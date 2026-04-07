@@ -1,4 +1,4 @@
-import { Montserrat } from "next/font/google";
+import { Inter } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
 import { NextIntlClientProvider } from "next-intl";
@@ -11,10 +11,10 @@ import ReactQueryProvider from "@/components/ReactQueryProvider";
 import "@/styles/globals.css";
 import ChatWidget from "@/components/chatWidget";
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export default async function LocaleLayout(props: {
@@ -29,7 +29,7 @@ export default async function LocaleLayout(props: {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${montserrat.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`}>
         <ReactQueryProvider>
           <AntdRegistry>
             <ReduxProvider>

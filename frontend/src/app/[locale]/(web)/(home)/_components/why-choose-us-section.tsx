@@ -17,32 +17,32 @@ export default function WhyChooseUsSection() {
 
   const features: Feature[] = [
     {
-      icon: <ShieldCheck className="w-10 h-10 text-blue-600" />,
+      icon: <ShieldCheck className="w-10 h-10 text-primary-700" />,
       titleKey: "qualityTitle",
       descKey: "qualityDesc",
     },
     {
-      icon: <Wrench className="w-10 h-10 text-green-600" />,
+      icon: <Wrench className="w-10 h-10 text-success" />,
       titleKey: "expertTitle",
       descKey: "expertDesc",
     },
     {
-      icon: <Clock className="w-10 h-10 text-yellow-500" />,
+      icon: <Clock className="w-10 h-10 text-warning" />,
       titleKey: "timelyTitle",
       descKey: "timelyDesc",
     },
     {
-      icon: <Users className="w-10 h-10 text-purple-600" />,
+      icon: <Users className="w-10 h-10 text-primary-400" />,
       titleKey: "dedicatedTitle",
       descKey: "dedicatedDesc",
     },
   ];
 
   return (
-    <section className="bg-gray-50 py-20">
+    <section className="bg-surface-alt py-20">
       <div className="container mx-auto px-4">
         <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-6"
+          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-6"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2 }}
@@ -51,7 +51,7 @@ export default function WhyChooseUsSection() {
           {t("title")}
         </motion.h2>
         <motion.p
-          className="text-center text-gray-600 mb-12 max-w-2xl mx-auto"
+          className="text-center text-text-secondary mb-12 max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2 }}
@@ -63,12 +63,11 @@ export default function WhyChooseUsSection() {
           {features.map((feature, idx) => (
             <motion.div
               key={idx}
-              className="bg-white rounded-xl shadow-md p-6 text-center hover:shadow-lg transition duration-300"
+              className="bg-surface rounded-[var(--radius-xl)] shadow-[var(--shadow-md)] p-6 text-center hover:shadow-[var(--shadow-lg-hover)] transition-all duration-300"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{
                 scale: 1.04,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
                 transition: { duration: 0.22, ease: "easeOut" },
               }}
               viewport={{ amount: 0.3 }}
@@ -79,10 +78,10 @@ export default function WhyChooseUsSection() {
               }}
             >
               <div className="flex justify-center mb-4">{feature.icon}</div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">
                 {t(feature.titleKey)}
               </h3>
-              <p className="text-sm text-gray-600">{`${t(feature.descKey)}`}</p>
+              <p className="text-sm text-text-secondary">{`${t(feature.descKey)}`}</p>
             </motion.div>
           ))}
         </div>
