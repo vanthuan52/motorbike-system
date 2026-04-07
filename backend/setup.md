@@ -182,6 +182,35 @@ Kiểm tra `STORAGE_ENDPOINT=http://localhost:39000` trong `.env.development`. N
 docker logs motorbike-dev-minio-init
 ```
 
+### ❌ Container lỗi mount volume sau khi xóa và tạo lại file/folder trên host
+
+**Triệu chứng:** Container không start được, log báo lỗi tương tự:
+
+```
+OCI runtime create failed: error mounting "..." to rootfs at "...":
+Are you trying to mount a directory onto a file (or vice-versa)?
+```
+
+**Nguyên nhân:** Khi Docker đang chạy mà file/folder được bind mount bị **xóa** trên host, Docker sẽ tự tạo một **directory placeholder** thay thế. Sau đó dù bạn tạo lại đúng file gốc, container vẫn giữ metadata mount cũ (directory) → xung đột kiểu file vs directory.
+
+**Ví dụ thực tế:** Xóa thư mục `keys/` chứa `access-jwks.json` → Docker cache mount cũ là directory → tạo lại file `access-jwks.json` vẫn lỗi.
+
+**Cách khắc phục:**
+
+```bash
+# Xóa container bị lỗi và tạo lại
+docker compose -f docker-compose.dev.yml rm -f <service-name>
+docker compose -f docker-compose.dev.yml up -d <service-name>
+
+# Hoặc recreate toàn bộ
+docker compose -f docker-compose.dev.yml up -d --force-recreate
+```
+
+> **Lưu ý:** Nếu file mount là file được generate (ví dụ JWT keys), hãy chạy lại lệnh generate trước:
+> ```bash
+> npm run generate:keys
+> ```
+
 ### ❌ Port bị chiếm
 
 | Port    | Service       |

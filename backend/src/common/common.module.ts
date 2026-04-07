@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerModule } from 'nestjs-pino';
+import { LoggerModule } from '@/common/logger/logger.module';
 import { PaginationModule } from './pagination/pagination.module';
 import { PolicyModule } from '@/modules/policy/policy.module';
 import { HelperModule } from './helper/helper.module';
