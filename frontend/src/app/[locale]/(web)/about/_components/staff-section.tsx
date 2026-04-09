@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const StaffSection = () => {
   const t = useTranslations(`${TRANSLATION_FILES.ABOUT_PAGE}.staffSection`);
@@ -19,25 +20,11 @@ const StaffSection = () => {
   return (
     <section className="bg-surface-alt py-20 md:py-28">
       <div className="container">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("heading")}
-        </motion.h2>
-
-        <motion.p
-          className="text-center max-w-2xl mx-auto text-text-secondary mb-16 text-lg"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-        >
-          {t("description")}
-        </motion.p>
+        <SectionHeading 
+          title={t("heading")} 
+          subtitle={t("description")} 
+          className="mb-16" 
+        />
 
         <div className="grid gap-10 md:grid-cols-3">
           {members.map((member, index) => (

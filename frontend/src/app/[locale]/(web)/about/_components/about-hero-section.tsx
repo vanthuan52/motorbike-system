@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const AboutHeroSection = () => {
   const t = useTranslations(`${TRANSLATION_FILES.ABOUT_PAGE}.aboutHeroSection`);
@@ -27,28 +28,11 @@ const AboutHeroSection = () => {
               priority
             />
           </motion.div>
-          <motion.h2
-            className="text-2xl md:text-3xl font-bold text-text-primary mb-4"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ amount: 0.3 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            {t("heading")}
-          </motion.h2>
-          <motion.p
-            className="text-lg text-text-secondary leading-relaxed"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ amount: 0.3 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-          >
-            <span
-              dangerouslySetInnerHTML={{
-                __html: t.raw("description"),
-              }}
-            />
-          </motion.p>
+          <SectionHeading 
+            title={t("heading")} 
+            subtitle={<span dangerouslySetInnerHTML={{ __html: t.raw("description") }} />}
+            className="mb-8"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -59,10 +43,13 @@ const AboutHeroSection = () => {
             viewport={{ amount: 0.2 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h3 className="text-2xl font-semibold text-text-primary mb-4">
-              {t("missionTitle")}
-            </h3>
-            <p className="text-text-secondary text-lg">{t("missionDesc")}</p>
+            <SectionHeading 
+              title={t("missionTitle")} 
+              subtitle={t("missionDesc")}
+              align="left"
+              className="mb-0"
+              subtitleClassName="text-text-secondary text-lg" 
+            />
           </motion.div>
 
           <motion.div
@@ -72,10 +59,13 @@ const AboutHeroSection = () => {
             viewport={{ amount: 0.2 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h3 className="text-2xl font-semibold text-text-primary mb-4">
-              {t("visionTitle")}
-            </h3>
-            <p className="text-text-secondary text-lg">{t("visionDesc")}</p>
+            <SectionHeading 
+              title={t("visionTitle")} 
+              subtitle={t("visionDesc")}
+              align="left"
+              className="mb-0"
+              subtitleClassName="text-text-secondary text-lg" 
+            />
           </motion.div>
         </div>
       </div>

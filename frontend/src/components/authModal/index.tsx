@@ -11,12 +11,21 @@ import {
   SignUpCredentialsFormType,
   signUpCredentialsSchema,
 } from "@/features/auth/validations/auth.schema";
-import { Form, FormItem } from "@/components/ui/Form";
-import CustomInput from "../CustomInput";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import Button from "@/components/ui/Button/Button";
 import { authActions } from "@/features/auth/store/auth-slice";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { X } from "lucide-react";
+
 interface AuthModalProps {
   open?: boolean;
   onClose?: () => void;
@@ -34,7 +43,7 @@ export default function AuthModal({
   const [isSignUp, setIsSignUp] = useState(false);
 
   const { isAuthenticated, registerCompleted, loading, error } = useAppSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   const formSignIn = useForm<LoginCredentialsFormType>({
@@ -57,13 +66,13 @@ export default function AuthModal({
   });
 
   const onSubmitSignIn: SubmitHandler<LoginCredentialsFormType> = async (
-    values
+    values,
   ) => {
     await dispatch(authActions.loginCredentials(values));
   };
 
   const onSubmitSignUp: SubmitHandler<SignUpCredentialsFormType> = async (
-    values
+    values,
   ) => {
     await dispatch(authActions.register(values));
   };
@@ -133,48 +142,97 @@ export default function AuthModal({
                 className="flex gap-4 flex-col"
               >
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignUp.control}
-                    label={t("emailLabel")}
-                    type="email"
                     name="email"
-                    placeholder={t("emailPlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("emailLabel")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder={t("emailPlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignUp.control}
-                    label={t("nameLabel")}
-                    type="text"
                     name="name"
-                    placeholder={t("namePlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("nameLabel")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder={t("namePlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignUp.control}
-                    label={t("phoneLabel")}
-                    type="text"
                     name="phone"
-                    placeholder={t("phonePlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("phoneLabel")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder={t("phonePlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignUp.control}
-                    label={t("passwordLabel")}
-                    type="password"
                     name="password"
-                    placeholder={t("passwordPlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("passwordLabel")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder={t("passwordPlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignUp.control}
-                    label={t("confirmPasswordLabel")}
-                    type="password"
                     name="confirmPassword"
-                    placeholder={t("confirmPasswordPlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("confirmPasswordLabel")}</FormLabel>
+                        <FormControl>
+                          <PasswordInput
+                            placeholder={t("confirmPasswordPlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 {error && (
@@ -216,21 +274,41 @@ export default function AuthModal({
                 className="my-10 flex gap-4 flex-col"
               >
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignIn.control}
-                    label={t("emailLabel")}
-                    type="email"
                     name="email"
-                    placeholder={t("emailPlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("emailLabel")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder={t("emailPlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 <FormItem>
-                  <CustomInput
+                  <FormField
                     control={formSignIn.control}
-                    label={t("passwordLabel")}
-                    type="password"
                     name="password"
-                    placeholder={t("passwordPlaceholder")}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("passwordLabel")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder={t("passwordPlaceholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </FormItem>
                 {error && (

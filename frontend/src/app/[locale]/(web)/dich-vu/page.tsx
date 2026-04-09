@@ -1,13 +1,12 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-
-import BookingSuggest from "@/app/[locale]/(web)/(home)/_components/booking-suggest";
-import ServiceHero from "./_components/service-hero";
-import ServiceList from "./_components/service-list";
-import ServiceProcess from "./_components/service-process";
+import ServiceCTA from "./_components/service-cta";
+import { TRANSLATION_FILES } from "@/lib/i18n";
+import CareServiceBrowse from "./_components/care-service-browse";
 import CustomerReviews from "./_components/customer-review";
 import FAQSection from "./_components/faqs-section";
-import { TRANSLATION_FILES } from "@/lib/i18n";
+import ServiceHero from "./_components/service-hero";
+import ServiceProcess from "./_components/service-process";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations(TRANSLATION_FILES.SERVICE_PAGE);
@@ -21,10 +20,12 @@ export default function Page() {
   return (
     <div className="w-full">
       <ServiceHero />
-      <ServiceList />
+      <CareServiceBrowse />
       <ServiceProcess />
       <CustomerReviews />
-      <BookingSuggest />
+      <div className="container mx-auto px-4 xl:px-0 pb-16">
+        <ServiceCTA />
+      </div>
       <FAQSection />
     </div>
   );

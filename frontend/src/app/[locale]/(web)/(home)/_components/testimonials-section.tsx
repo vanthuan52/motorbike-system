@@ -4,33 +4,34 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 interface Testimonial {
-  nameKey: string;
+  name: string;
   contentKey: string;
   avatar: string;
 }
 
 const testimonials: Testimonial[] = [
   {
-    nameKey: "nguyen",
+    name: "Nguyễn Văn Hùng",
     contentKey: "nguyenContent",
-    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    avatar: "/images/avatar/avatar.png",
   },
   {
-    nameKey: "tran",
+    name: "Trần Thị Cẩm Tú",
     contentKey: "tranContent",
-    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    avatar: "/images/avatar/avatar.png",
   },
   {
-    nameKey: "le",
+    name: "Lê Minh Tuấn",
     contentKey: "leContent",
-    avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+    avatar: "/images/avatar/avatar.png",
   },
   {
-    nameKey: "pham",
+    name: "Phạm Hà Linh",
     contentKey: "phamContent",
-    avatar: "https://randomuser.me/api/portraits/women/51.jpg",
+    avatar: "/images/avatar/avatar.png",
   },
 ];
 
@@ -38,17 +39,9 @@ export default function TestimonialsSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.testimonialsSection`);
 
   return (
-    <section className="bg-surface py-20">
-      <div className="container mx-auto px-4">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("title")}
-        </motion.h2>
+    <section className="bg-surface py-20" id="testimonials">
+      <div className="container mx-auto">
+        <SectionHeading title={t("title")} className="mb-12" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {testimonials.map((tItem, idx) => (
             <motion.div
@@ -67,20 +60,20 @@ export default function TestimonialsSection() {
                 <div className="relative w-14 h-14 mb-2">
                   <Image
                     src={tItem.avatar}
-                    alt={t(`${tItem.nameKey}`)}
-                    className="rounded-full object-cover ring-2 ring-primary-100"
+                    alt={tItem.name}
+                    className="rounded-full object-contain p-[16px] ring-2 ring-primary-100 bg-surface"
                     fill
                     sizes="56px"
                   />
                 </div>
                 <h3 className="text-lg font-semibold text-text-primary">
-                  {t(`${tItem.nameKey}`)}
+                  {tItem.name}
                 </h3>
               </div>
               <motion.p
                 className="text-text-secondary text-sm"
-                initial={{ opacity: 0, x: 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ amount: 0.2 }}
                 transition={{
                   duration: 0.5,

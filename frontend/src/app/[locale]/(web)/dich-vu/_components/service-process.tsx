@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { motion, useAnimation, useInView } from "framer-motion";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const steps = [
   {
@@ -42,15 +43,13 @@ const steps = [
 
 export default function ServiceProcess() {
   const t = useTranslations(
-    `${TRANSLATION_FILES.SERVICE_PAGE}.serviceProcressSection`
+    `${TRANSLATION_FILES.SERVICE_PAGE}.serviceProcressSection`,
   );
 
   return (
     <section className="bg-surface py-16">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12">
-          {t("title")}
-        </h2>
+        <SectionHeading title={t("title")} className="mb-12" />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {steps.map((step, index) => (
@@ -116,7 +115,7 @@ function RotateCard({
         <h3 className="text-lg font-semibold text-text-primary">{title}</h3>
       </div>
       <p className="text-sm text-text-secondary">{description}</p>
-      <div className="absolute -top-4 -left-4 w-8 h-8 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold shadow">
+      <div className="absolute -top-4 -left-2 md:-left-4 w-8 h-8 bg-primary-700 text-white rounded-full flex items-center justify-center font-bold shadow">
         {index + 1}
       </div>
     </motion.div>

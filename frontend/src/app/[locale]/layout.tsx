@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Lexend } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@ant-design/v5-patch-for-react-19";
 import { NextIntlClientProvider } from "next-intl";
@@ -9,12 +9,12 @@ import AppProvider from "./provider";
 import AppInitializer from "./app-initializer";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 import "@/styles/globals.css";
-import { FloatingAction } from "@/components/ui/floating-action";
 
-const inter = Inter({
-  variable: "--font-inter",
+const lexend = Lexend({
+  variable: "--font-lexend",
   subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 export default async function LocaleLayout(props: {
@@ -29,7 +29,7 @@ export default async function LocaleLayout(props: {
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${lexend.variable} antialiased`}>
         <ReactQueryProvider>
           <AntdRegistry>
             <ReduxProvider>
@@ -37,7 +37,6 @@ export default async function LocaleLayout(props: {
               <NextIntlClientProvider locale={locale}>
                 <AppProvider>
                   {children}
-                  <FloatingAction />
                 </AppProvider>
               </NextIntlClientProvider>
               <ToastProvider />
