@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { APP_INFO } from "@/constant/application";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const featureKeys = ["quality", "team", "booking"] as const;
 
@@ -12,16 +13,12 @@ export default function QuickIntroSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.quickIntroSection`);
 
   return (
-    <section className="bg-surface-alt py-16">
+    <section className="bg-surface-alt py-16" id="quick-intro">
       <div className="container text-center">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-text-primary mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          {t("title", { name: APP_INFO.NAME })}
-        </motion.h2>
+        <SectionHeading
+          title={t("title", { name: APP_INFO.NAME })}
+          className="mb-6"
+        />
         <motion.p
           className="text-text-secondary text-lg md:text-xl leading-relaxed mb-8"
           initial={{ opacity: 0, y: 20 }}

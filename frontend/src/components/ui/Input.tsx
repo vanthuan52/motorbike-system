@@ -2,11 +2,11 @@ import * as React from "react";
 import { cn } from "@/utils/common.utils";
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  (props, ref) => {
+  ({ className, type, ...props }, ref) => {
     return (
       <input
         ref={ref}
-        type={props.type}
+        type={type}
         data-slot="input"
         className={cn(
           // Base
@@ -31,7 +31,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           "md:text-sm",
           // Border default
           "border-border",
-          props.className
+          className
         )}
         {...props}
       />

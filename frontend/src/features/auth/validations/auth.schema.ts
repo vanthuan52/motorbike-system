@@ -8,7 +8,14 @@ export const loginCredentialsSchema = yup.object().shape({
 
 export const signUpCredentialsSchema = loginCredentialsSchema.shape({
   name: yup.string().required(),
-  phone: yup.string().required().min(10).max(15),
+  phone: yup
+    .string()
+    .test(
+      "is-phone-valid",
+      "Số điện thoại phải từ 10 đến 15 ký tự",
+      (value) => !value || (value.length >= 10 && value.length <= 15)
+    )
+    .optional(),
   confirmPassword: yup
     .string()
     .min(8)

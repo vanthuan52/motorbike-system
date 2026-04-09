@@ -5,18 +5,18 @@
    MotoServ — Design Tokens v5.0 (Material 3 Enhanced)
    Brand Style: Coolors-inspired (White + Electric Blue)
    M3 Additions: On-Colors, Containers, State Layers, Tonal Elevation
-   Font: Inter
+   Font: Lexend
    ============================================================ */
 
 :root {
   /* =========================================================
      1. COLORS — Background
      ========================================================= */
-  --color-bg: #FFFFFF;
-  --color-bg-soft: #F8F9FA;
-  --color-bg-hover: #F1F3F5;
-  --color-surface: #FFFFFF;
-  --color-surface-alt: #F8F9FA;
+  --color-bg: #ffffff;
+  --color-bg-soft: #f8f9fa;
+  --color-bg-hover: #f1f3f5;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8f9fa;
   --color-overlay: rgba(0, 0, 0, 0.5);
 
   /* =========================================================
@@ -24,90 +24,90 @@
      ========================================================= */
   --color-text-primary: #212529;
   --color-text-secondary: #495057;
-  --color-text-muted: #868E96;
-  --color-text-disabled: #ADB5BD;
-  --color-text-inverse: #FFFFFF;
-  --color-text-link: #0066FF;
-  --color-text-link-hover: #005CE6;
+  --color-text-muted: #868e96;
+  --color-text-disabled: #adb5bd;
+  --color-text-inverse: #ffffff;
+  --color-text-link: #0066ff;
+  --color-text-link-hover: #005ce6;
 
   /* =========================================================
      3. COLORS — Primary (Electric Blue)
      ========================================================= */
-  --color-primary-50:  #E6F0FF;
-  --color-primary-100: #CCE0FF;
-  --color-primary-200: #99C2FF;
-  --color-primary-300: #66A3FF;
-  --color-primary-400: #3385FF;
-  --color-primary-500: #0066FF;  /* ← Brand Primary */
-  --color-primary-600: #005CE6;  /* Hover */
-  --color-primary-700: #004CBF;  /* Active / Dark */
-  --color-primary-800: #003D99;
-  --color-primary-900: #002E73;
-  --color-primary-950: #001F4D;
+  --color-primary-50: #e6f0ff;
+  --color-primary-100: #cce0ff;
+  --color-primary-200: #99c2ff;
+  --color-primary-300: #66a3ff;
+  --color-primary-400: #3385ff;
+  --color-primary-500: #0066ff; /* ← Brand Primary */
+  --color-primary-600: #005ce6; /* Hover */
+  --color-primary-700: #004cbf; /* Active / Dark */
+  --color-primary-800: #003d99;
+  --color-primary-900: #002e73;
+  --color-primary-950: #001f4d;
 
   /* ── Secondary (Neutral Gray) ── */
-  --color-secondary-50:  #F8F9FA;
-  --color-secondary-100: #F1F3F5;
-  --color-secondary-200: #E9ECEF;
-  --color-secondary-300: #DEE2E6;
-  --color-secondary-400: #CED4DA;
-  --color-secondary-500: #ADB5BD;
-  --color-secondary-600: #868E96;
+  --color-secondary-50: #f8f9fa;
+  --color-secondary-100: #f1f3f5;
+  --color-secondary-200: #e9ecef;
+  --color-secondary-300: #dee2e6;
+  --color-secondary-400: #ced4da;
+  --color-secondary-500: #adb5bd;
+  --color-secondary-600: #868e96;
   --color-secondary-700: #495057;
-  --color-secondary-800: #343A40;
+  --color-secondary-800: #343a40;
   --color-secondary-900: #212529;
   --color-secondary-950: #121416;
 
   /* ── Accent (same as Primary for this brand) ── */
-  --color-accent-light: #E6F0FF;
-  --color-accent: #0066FF;
-  --color-accent-dark: #005CE6;
+  --color-accent-light: #e6f0ff;
+  --color-accent: #0066ff;
+  --color-accent-dark: #005ce6;
 
   /* ── Border ── */
-  --color-border: #DEE2E6;
-  --color-border-strong: #CED4DA;
+  --color-border: #dee2e6;
+  --color-border-strong: #ced4da;
   --color-border-focus: rgba(0, 102, 255, 0.25);
 
   /* ── Semantic ── */
   --color-success: #059669;
-  --color-success-bg: #ECFDF5;
-  --color-success-border: #A7F3D0;
-  --color-success-text: #065F46;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  --color-success-text: #065f46;
 
-  --color-warning: #D97706;
-  --color-warning-bg: #FFFBEB;
-  --color-warning-border: #FDE68A;
-  --color-warning-text: #92400E;
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-warning-text: #92400e;
 
-  --color-error: #DC2626;
-  --color-error-bg: #FEF2F2;
-  --color-error-border: #FECACA;
-  --color-error-text: #991B1B;
+  --color-error: #dc2626;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
+  --color-error-text: #991b1b;
 
-  --color-info: #0066FF;
-  --color-info-bg: #E6F0FF;
-  --color-info-border: #99C2FF;
-  --color-info-text: #004CBF;
+  --color-info: #0066ff;
+  --color-info-bg: #e6f0ff;
+  --color-info-border: #99c2ff;
+  --color-info-text: #004cbf;
 
   /* ── M3: On-Color Pairs ── */
-  --color-on-primary: #FFFFFF;
-  --color-on-primary-container: #002E73;
-  --color-on-secondary: #FFFFFF;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #002e73;
+  --color-on-secondary: #ffffff;
   --color-on-secondary-container: #212529;
   --color-on-surface: #212529;
   --color-on-surface-variant: #495057;
-  --color-on-error: #FFFFFF;
-  --color-on-error-container: #991B1B;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #991b1b;
 
   /* ── M3: Container Colors ── */
-  --color-primary-container: #CCE0FF;
-  --color-secondary-container: #E9ECEF;
-  --color-error-container: #FEF2F2;
-  --color-success-container: #ECFDF5;
-  --color-warning-container: #FFFBEB;
+  --color-primary-container: #cce0ff;
+  --color-secondary-container: #e9ecef;
+  --color-error-container: #fef2f2;
+  --color-success-container: #ecfdf5;
+  --color-warning-container: #fffbeb;
 
   /* ── M3: Surface Tint & Tonal Elevation ── */
-  --surface-tint: #0066FF;
+  --surface-tint: #0066ff;
   --elevation-tint-1: color-mix(in srgb, var(--surface-tint) 5%, transparent);
   --elevation-tint-2: color-mix(in srgb, var(--surface-tint) 8%, transparent);
   --elevation-tint-3: color-mix(in srgb, var(--surface-tint) 11%, transparent);
@@ -117,18 +117,17 @@
   /* =========================================================
      4. TYPOGRAPHY
      ========================================================= */
-  --font-heading: var(--font-inter), system-ui, -apple-system, sans-serif;
-  --font-body: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-lexend, system-ui, -apple-system, sans-serif);
   --font-mono: "JetBrains Mono", monospace;
 
-  --text-xs: 0.75rem;         /* 12px */
-  --text-sm: 0.875rem;        /* 14px */
-  --text-base: 1rem;          /* 16px */
-  --text-lg: 1.125rem;        /* 18px */
-  --text-xl: 1.25rem;         /* 20px */
-  --text-2xl: 1.5rem;         /* 24px */
-  --text-3xl: 1.875rem;       /* 30px */
-  --text-4xl: 2.25rem;        /* 36px — Hero title */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px — Hero title */
 
   /* Legacy aliases */
   --text-display: 3.5rem;
@@ -165,27 +164,27 @@
      5. SPACING (4px base)
      ========================================================= */
   --space-none: 0;
-  --space-1:  0.25rem;   /*  4px */
-  --space-2:  0.5rem;    /*  8px */
-  --space-3:  0.75rem;   /* 12px */
-  --space-4:  1rem;      /* 16px */
-  --space-5:  1.25rem;   /* 20px */
-  --space-6:  1.5rem;    /* 24px */
-  --space-8:  2rem;      /* 32px */
-  --space-10: 2.5rem;    /* 40px */
-  --space-12: 3rem;      /* 48px */
-  --space-16: 4rem;      /* 64px */
-  --space-20: 5rem;      /* 80px */
-  --space-24: 6rem;      /* 96px */
+  --space-1: 0.25rem; /*  4px */
+  --space-2: 0.5rem; /*  8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
 
   /* Legacy semantic aliases */
   --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
-  --space-xs:  0.5rem;
-  --space-sm:  0.75rem;
-  --space-md:  1rem;
-  --space-lg:  1.5rem;
-  --space-xl:  2rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
   --space-2xl: 2.5rem;
   --space-3xl: 3rem;
   --space-4xl: 4rem;
@@ -196,23 +195,27 @@
      6. RADII & SHADOWS
      ========================================================= */
   --radius-none: 0;
-  --radius-sm:   4px;
-  --radius-md:   8px;      /* Buttons */
-  --radius-lg:   12px;     /* Cards */
-  --radius-xl:   16px;
-  --radius-2xl:  24px;
+  --radius-sm: 4px;
+  --radius-md: 8px; /* Buttons */
+  --radius-lg: 12px; /* Cards */
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
   --radius-full: 9999px;
 
   /* ── Shadows — Soft & subtle (Coolors-style) ── */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl:
+    0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
 
   --shadow-sm-hover: 0 2px 4px rgba(0, 0, 0, 0.08);
-  --shadow-md-hover: 0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-lg-hover: 0 14px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
+  --shadow-md-hover:
+    0 6px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg-hover:
+    0 14px 20px -4px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.04);
   --shadow-xl-hover: 0 25px 35px -6px rgba(0, 0, 0, 0.08);
 
   --shadow-sm-active: 0 1px 1px rgba(0, 0, 0, 0.06);
@@ -257,14 +260,17 @@
 
   /* ── M3: Transition Shorthands ── */
   --m3-transition-standard: var(--m3-duration-medium2) var(--m3-easing-standard);
-  --m3-transition-emphasized: var(--m3-duration-long2) var(--m3-easing-emphasized);
-  --m3-transition-enter: var(--m3-duration-medium4) var(--m3-easing-emphasized-decelerate);
-  --m3-transition-exit: var(--m3-duration-short4) var(--m3-easing-emphasized-accelerate);
+  --m3-transition-emphasized: var(--m3-duration-long2)
+    var(--m3-easing-emphasized);
+  --m3-transition-enter: var(--m3-duration-medium4)
+    var(--m3-easing-emphasized-decelerate);
+  --m3-transition-exit: var(--m3-duration-short4)
+    var(--m3-easing-emphasized-accelerate);
 
   /* =========================================================
      8. LAYOUT
      ========================================================= */
-  --container-max: 80rem;  /* 1280px */
+  --container-max: 80rem; /* 1280px */
 
   /* Legacy compat */
   --background: var(--color-bg);
@@ -276,113 +282,119 @@
    ============================================================ */
 @theme {
   /* ── Primary (Electric Blue) ── */
-  --color-primary-50:  #E6F0FF;
-  --color-primary-100: #CCE0FF;
-  --color-primary-200: #99C2FF;
-  --color-primary-300: #66A3FF;
-  --color-primary-400: #3385FF;
-  --color-primary-500: #0066FF;
-  --color-primary-600: #005CE6;
-  --color-primary-700: #004CBF;
-  --color-primary-800: #003D99;
-  --color-primary-900: #002E73;
-  --color-primary-950: #001F4D;
+  --color-primary-50: #e6f0ff;
+  --color-primary-100: #cce0ff;
+  --color-primary-200: #99c2ff;
+  --color-primary-300: #66a3ff;
+  --color-primary-400: #3385ff;
+  --color-primary-500: #0066ff;
+  --color-primary-600: #005ce6;
+  --color-primary-700: #004cbf;
+  --color-primary-800: #003d99;
+  --color-primary-900: #002e73;
+  --color-primary-950: #001f4d;
 
   /* ── Secondary (Neutral) ── */
-  --color-secondary-50:  #F8F9FA;
-  --color-secondary-100: #F1F3F5;
-  --color-secondary-200: #E9ECEF;
-  --color-secondary-300: #DEE2E6;
-  --color-secondary-400: #CED4DA;
-  --color-secondary-500: #ADB5BD;
-  --color-secondary-600: #868E96;
+  --color-secondary-50: #f8f9fa;
+  --color-secondary-100: #f1f3f5;
+  --color-secondary-200: #e9ecef;
+  --color-secondary-300: #dee2e6;
+  --color-secondary-400: #ced4da;
+  --color-secondary-500: #adb5bd;
+  --color-secondary-600: #868e96;
   --color-secondary-700: #495057;
-  --color-secondary-800: #343A40;
+  --color-secondary-800: #343a40;
   --color-secondary-900: #212529;
   --color-secondary-950: #121416;
 
   /* ── Accent ── */
-  --color-accent-light: #E6F0FF;
-  --color-accent: #0066FF;
-  --color-accent-dark: #005CE6;
+  --color-accent-light: #e6f0ff;
+  --color-accent: #0066ff;
+  --color-accent-dark: #005ce6;
 
   /* ── Background ── */
-  --color-bg: #FFFFFF;
-  --color-bg-soft: #F8F9FA;
-  --color-bg-hover: #F1F3F5;
-  --color-surface: #FFFFFF;
-  --color-surface-alt: #F8F9FA;
+  --color-bg: #ffffff;
+  --color-bg-soft: #f8f9fa;
+  --color-bg-hover: #f1f3f5;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8f9fa;
 
   /* ── Border ── */
-  --color-border: #DEE2E6;
-  --color-border-strong: #CED4DA;
+  --color-border: #dee2e6;
+  --color-border-strong: #ced4da;
 
   /* ── Text ── */
   --color-text-primary: #212529;
   --color-text-secondary: #495057;
-  --color-text-muted: #868E96;
-  --color-text-disabled: #ADB5BD;
-  --color-text-inverse: #FFFFFF;
-  --color-text-link: #0066FF;
+  --color-text-muted: #868e96;
+  --color-text-disabled: #adb5bd;
+  --color-text-inverse: #ffffff;
+  --color-text-link: #0066ff;
 
   /* ── Semantic ── */
   --color-success: #059669;
-  --color-success-bg: #ECFDF5;
-  --color-warning: #D97706;
-  --color-warning-bg: #FFFBEB;
-  --color-error: #DC2626;
-  --color-error-bg: #FEF2F2;
-  --color-info: #0066FF;
-  --color-info-bg: #E6F0FF;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-error: #dc2626;
+  --color-error-bg: #fef2f2;
+  --color-info: #0066ff;
+  --color-info-bg: #e6f0ff;
 
   /* ── Border Radius ── */
   --radius-brand-none: 0;
-  --radius-brand-sm:   4px;
-  --radius-brand-md:   8px;
-  --radius-brand-lg:   12px;
-  --radius-brand-xl:   16px;
-  --radius-brand-2xl:  24px;
+  --radius-brand-sm: 4px;
+  --radius-brand-md: 8px;
+  --radius-brand-lg: 12px;
+  --radius-brand-xl: 16px;
+  --radius-brand-2xl: 24px;
   --radius-brand-full: 9999px;
 
   /* ── M3: On-Color Pairs ── */
-  --color-on-primary: #FFFFFF;
-  --color-on-primary-container: #002E73;
-  --color-on-secondary: #FFFFFF;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #002e73;
+  --color-on-secondary: #ffffff;
   --color-on-secondary-container: #212529;
   --color-on-surface: #212529;
   --color-on-surface-variant: #495057;
-  --color-on-error: #FFFFFF;
-  --color-on-error-container: #991B1B;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #991b1b;
 
   /* ── M3: Container Colors ── */
-  --color-primary-container: #CCE0FF;
-  --color-secondary-container: #E9ECEF;
-  --color-error-container: #FEF2F2;
-  --color-success-container: #ECFDF5;
-  --color-warning-container: #FFFBEB;
+  --color-primary-container: #cce0ff;
+  --color-secondary-container: #e9ecef;
+  --color-error-container: #fef2f2;
+  --color-success-container: #ecfdf5;
+  --color-warning-container: #fffbeb;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+@layer base {
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    /* --font-lexend is injected by next/font on <body> via className,
+       so it must be referenced here — not in :root — to resolve correctly. */
+    font-family: var(--font-lexend, system-ui, -apple-system, sans-serif);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-li {
-  list-style-type: none;
+  li {
+    list-style-type: none;
+  }
 }
 
 @layer components {
@@ -401,15 +413,22 @@ li {
      ============================================================ */
   .card-elevated {
     background-color: var(--color-surface);
-    background-image: linear-gradient(var(--elevation-tint-1), var(--elevation-tint-1));
+    background-image: linear-gradient(
+      var(--elevation-tint-1),
+      var(--elevation-tint-1)
+    );
     box-shadow: var(--shadow-sm);
     border-radius: var(--radius-lg);
-    transition: box-shadow var(--m3-transition-standard),
-                background-image var(--m3-transition-standard);
+    transition:
+      box-shadow var(--m3-transition-standard),
+      background-image var(--m3-transition-standard);
   }
   .card-elevated:hover {
     box-shadow: var(--shadow-md);
-    background-image: linear-gradient(var(--elevation-tint-2), var(--elevation-tint-2));
+    background-image: linear-gradient(
+      var(--elevation-tint-2),
+      var(--elevation-tint-2)
+    );
   }
 
   .card-filled {
@@ -444,7 +463,7 @@ li {
     overflow: hidden;
   }
   .state-layer::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
@@ -457,10 +476,10 @@ li {
     opacity: 0.08;
   }
   .state-layer:focus-visible::after {
-    opacity: 0.10;
+    opacity: 0.1;
   }
   .state-layer:active::after {
-    opacity: 0.10;
+    opacity: 0.1;
   }
   .state-layer:disabled::after,
   .state-layer[aria-disabled="true"]::after {
@@ -472,7 +491,7 @@ li {
     background: var(--color-primary-500);
   }
   .state-layer-inverse::after {
-    background: #FFFFFF;
+    background: #ffffff;
   }
 
   /* ============================================================
@@ -485,23 +504,38 @@ li {
   }
   .elevation-1 {
     box-shadow: var(--shadow-xs);
-    background-image: linear-gradient(var(--elevation-tint-1), var(--elevation-tint-1));
+    background-image: linear-gradient(
+      var(--elevation-tint-1),
+      var(--elevation-tint-1)
+    );
   }
   .elevation-2 {
     box-shadow: var(--shadow-sm);
-    background-image: linear-gradient(var(--elevation-tint-2), var(--elevation-tint-2));
+    background-image: linear-gradient(
+      var(--elevation-tint-2),
+      var(--elevation-tint-2)
+    );
   }
   .elevation-3 {
     box-shadow: var(--shadow-md);
-    background-image: linear-gradient(var(--elevation-tint-3), var(--elevation-tint-3));
+    background-image: linear-gradient(
+      var(--elevation-tint-3),
+      var(--elevation-tint-3)
+    );
   }
   .elevation-4 {
     box-shadow: var(--shadow-lg);
-    background-image: linear-gradient(var(--elevation-tint-4), var(--elevation-tint-4));
+    background-image: linear-gradient(
+      var(--elevation-tint-4),
+      var(--elevation-tint-4)
+    );
   }
   .elevation-5 {
     box-shadow: var(--shadow-xl);
-    background-image: linear-gradient(var(--elevation-tint-5), var(--elevation-tint-5));
+    background-image: linear-gradient(
+      var(--elevation-tint-5),
+      var(--elevation-tint-5)
+    );
   }
 
   /* UI */

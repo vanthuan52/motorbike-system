@@ -10,6 +10,7 @@ import QuickIntroSection from "./_components/quick-intro-section";
 import ServiceComboSection from "./_components/service-combo-section";
 import TestimonialsSection from "./_components/testimonials-section";
 import WhyChooseUsSection from "./_components/why-choose-us-section";
+import GallerySection from "./_components/gallery-section";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,6 +30,7 @@ export default function Home() {
       <WhyChooseUsSection />
       <ProcessStepsSection />
       <ServiceComboSection />
+      <GallerySection />
       <TestimonialsSection />
       <BlogSection />
       <BookingSuggest />

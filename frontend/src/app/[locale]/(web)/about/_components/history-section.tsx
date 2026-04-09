@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { FaFlagCheckered, FaTools, FaUsers, FaAward } from "react-icons/fa";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const HistorySection = () => {
   const t = useTranslations(`${TRANSLATION_FILES.ABOUT_PAGE}.historySection`);
@@ -19,15 +20,7 @@ const HistorySection = () => {
   return (
     <section className="bg-surface py-20 md:py-28">
       <div className="container">
-        <motion.h2
-          className="text-3xl font-bold text-center text-text-primary mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("heading")}
-        </motion.h2>
+        <SectionHeading title={t("heading")} className="mb-12" />
 
         <div className="grid md:grid-cols-2 gap-10 items-center mb-16">
           <motion.div
@@ -51,12 +44,13 @@ const HistorySection = () => {
             viewport={{ amount: 0.2 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <h3 className="text-2xl font-semibold text-text-primary mb-4">
-              {t("founding.title")}
-            </h3>
-            <p className="text-lg text-text-secondary leading-relaxed">
-              {t("founding.content")}
-            </p>
+            <SectionHeading 
+              title={t("founding.title")} 
+              subtitle={t("founding.content")}
+              align="left"
+              className="mb-4"
+              subtitleClassName="text-lg text-text-secondary leading-relaxed" 
+            />
           </motion.div>
         </div>
 
@@ -67,9 +61,7 @@ const HistorySection = () => {
           viewport={{ amount: 0.2 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
-          <h3 className="text-2xl font-semibold text-text-primary mb-8 text-center">
-            {t("milestoneTitle")}
-          </h3>
+          <SectionHeading title={t("milestoneTitle")} className="mb-8" />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             {milestones.map((item, idx) => {
               const Icon = icons[idx];

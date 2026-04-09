@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const servicesKeys = ["repair", "oilChange", "wash", "replacement"] as const;
 
@@ -11,17 +12,9 @@ export default function MainServicesSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.serviceSection`);
 
   return (
-    <section className="bg-surface py-20">
+    <section className="bg-surface py-20" id="main-services">
       <div className="container mx-auto px-4">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.5 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("title")}
-        </motion.h2>
+        <SectionHeading title={t("title")} className="mb-12" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {servicesKeys.map((key, idx) => (

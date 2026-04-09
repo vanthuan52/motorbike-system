@@ -8,7 +8,7 @@ import HistorySection from "./_components/history-section";
 import SocialCommunitySection from "./_components/social-community";
 import StaffSection from "./_components/staff-section";
 import WhyChooseUsSection from "../(home)/_components/why-choose-us-section";
-import CertificationAndTestimonials from "../dich-vu/_components/certificate-section";
+
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,10 +27,7 @@ export default function AboutPage() {
       <StaffSection />
       <FeaturedServices />
       <WhyChooseUsSection />
-      <CertificationAndTestimonials />
       <FaqSection />
-      <AwardsSection />
-      <SocialCommunitySection />
     </div>
   );
 }

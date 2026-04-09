@@ -1,8 +1,27 @@
-import Image from "next/image";
+import { Mail } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Facebook, Linkedin, Mail, Twitter } from "lucide-react";
+import Image from "next/image";
+
 import { tags } from "@/data/TagsData";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+
+const FacebookIcon = ({ size = 18 }: { size?: number | string }) => (
+  <Image
+    src="/images/icons/facebook.png"
+    alt="Facebook"
+    width={Number(size)}
+    height={Number(size)}
+  />
+);
+
+const YoutubeIcon = ({ size = 18 }: { size?: number | string }) => (
+  <Image
+    src="/images/icons/youtube.png"
+    alt="Youtube"
+    width={Number(size)}
+    height={Number(size)}
+  />
+);
 
 interface Blog {
   title: string;
@@ -22,7 +41,7 @@ export default function SharingContent({ blog }: { blog: Blog }) {
           {t("sharing.shareTitle")}
         </p>
         <ul className="flex gap-2 sm:gap-4">
-          {[Linkedin, Mail, Facebook, Twitter].map((Icon, i) => (
+          {[YoutubeIcon, Mail, FacebookIcon].map((Icon, i) => (
             <li
               key={i}
               className="rounded-full bg-[#CCCCCC] p-2 hover:bg-[#B0B0B0] transition duration-200 ease-in-out cursor-pointer"
@@ -60,7 +79,7 @@ export default function SharingContent({ blog }: { blog: Blog }) {
             {t("sharing.authorBio")}
           </span>
           <ul className="flex gap-2 sm:gap-4 justify-center sm:justify-start mt-2">
-            {[Linkedin, Mail, Facebook, Twitter].map((Icon, i) => (
+            {[YoutubeIcon, Mail, FacebookIcon].map((Icon, i) => (
               <li
                 key={i}
                 className="rounded-full bg-[#CCCCCC] p-2 hover:bg-[#B0B0B0] transition duration-200 ease-in-out cursor-pointer"

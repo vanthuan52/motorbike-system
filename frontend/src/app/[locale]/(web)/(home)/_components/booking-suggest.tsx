@@ -4,32 +4,26 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { ROUTER_PATH } from "@/constant/router-path";
 import { Link, TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 export default function BookingSuggest() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.bookingSuggest`);
 
   return (
-    <section className="relative bg-primary-700 text-white py-20">
+    <section
+      className="relative bg-primary-700 text-white py-20"
+      id="booking-suggest"
+    >
       <div className="absolute inset-0 bg-cover bg-center opacity-20"></div>
       <div className="relative container mx-auto px-6 flex flex-col items-center text-center">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold mb-4"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          {t("title")}
-        </motion.h2>
-        <motion.p
-          className="text-lg md:text-xl mb-8 max-w-2xl text-primary-100"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-        >
-          {t("description")}
-        </motion.p>
+        <SectionHeading
+          title={t("title")}
+          subtitle={t("description")}
+          titleClassName="text-white"
+          subtitleClassName="text-lg md:text-xl text-primary-100"
+          className="mb-8"
+          hideUnderline={true}
+        />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

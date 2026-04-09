@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const SocialCommunitySection = () => {
   const t = useTranslations(`${TRANSLATION_FILES.ABOUT_PAGE}.socialCommunity`);
@@ -18,9 +19,7 @@ const SocialCommunitySection = () => {
     <section className="bg-surface py-20 md:py-28">
       <div className="container">
         {/* Social icons */}
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-8">
-          {t("followUs")}
-        </h2>
+        <SectionHeading title={t("followUs")} className="mb-8" />
         <div className="flex justify-center gap-6 mb-16">
           <a
             href="https://facebook.com"
@@ -57,9 +56,7 @@ const SocialCommunitySection = () => {
         </div>
 
         {/* Community activities */}
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12">
-          {t("communityTitle")}
-        </h2>
+        <SectionHeading title={t("communityTitle")} className="mb-12" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           {activities.map((item, idx) => (

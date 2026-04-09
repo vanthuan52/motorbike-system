@@ -9,12 +9,12 @@ export default function HeroSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.heroSection`);
 
   return (
-    <section className="relative bg-surface overflow-hidden">
+    <section className="relative bg-surface overflow-hidden" id="hero">
       <div className="container py-10 flex flex-col md:flex-row items-center gap-10">
         <motion.div
           className="w-full text-center md:text-left"
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2 }}
           transition={{ duration: 1.5, delay: 0.2 }}
         >
@@ -48,8 +48,8 @@ export default function HeroSection() {
 
         <motion.div
           className="w-full text-center md:text-left"
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.2 }}
           transition={{ duration: 1.5, delay: 0.2 }}
         >

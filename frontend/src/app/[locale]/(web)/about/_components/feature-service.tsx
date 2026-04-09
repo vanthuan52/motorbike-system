@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Wrench, ShieldCheck, Car, Timer, BadgeCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const FeaturedServices = () => {
   const t = useTranslations(`${TRANSLATION_FILES.ABOUT_PAGE}.featuredServices`);
@@ -29,15 +30,7 @@ const FeaturedServices = () => {
   return (
     <section className="bg-surface pt-10 pb-4">
       <div className="container">
-        <motion.h2
-          className="text-3xl font-bold text-center text-text-primary mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("heading")}
-        </motion.h2>
+        <SectionHeading title={t("heading")} className="mb-12" />
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {services.map((service, idx) => (

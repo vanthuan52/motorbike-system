@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 const AwardsSection = () => {
   const t = useTranslations(`${TRANSLATION_FILES.ABOUT_PAGE}.awardsSection`);
@@ -17,9 +18,7 @@ const AwardsSection = () => {
   return (
     <section className="bg-surface-alt py-20 md:py-28">
       <div className="container">
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12">
-          {t("heading")}
-        </h2>
+        <SectionHeading title={t("heading")} className="mb-12" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {awards.map((item, index) => (

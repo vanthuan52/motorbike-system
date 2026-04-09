@@ -16,7 +16,8 @@
     "namePlaceholder": "Nhập họ tên",
     "phoneLabel": "Số điện thoại",
     "phonePlaceholder": "Nhập số điện thoại",
-    "submitButton": "Xác nhận",
+    "submitButton": "Đăng nhập",
+    "forgotPassword": "Quên mật khẩu?",
 
     "overlayLeftTitle": "Chào mừng trở lại!",
     "overlayLeftDesc": "Để tiếp tục kết nối với chúng tôi, vui lòng đăng nhập bằng thông tin cá nhân",
@@ -25,10 +26,14 @@
     "overlayRightTitle": "Xin chào, bạn mới!",
     "overlayRightDesc": "Nhập thông tin cá nhân và bắt đầu hành trình cùng chúng tôi",
     "signUpButton": "Đăng ký",
-    "noAccount": "Chưa có tài khoản?"
+    "noAccount": "Chưa có tài khoản?",
+    "registerTitle": "Đăng ký tài khoản",
+    "registerSubtitle": "Vui lòng điền thông tin bên dưới",
+    "haveAccount": "Đã có tài khoản?",
+    "registerSubmitButton": "Đăng ký"
   },
   "authCard": {
-    "title": "Hệ Thống Bảo Dưỡng\nXe Máy",
+    "title": "Hệ Thống Bảo Dưỡng\nXe Máy Ant Motor",
     "description": "Công ty chúng tôi luôn cung cấp dịch vụ và ưu đãi hấp dẫn dành cho khách hàng đã tin tưởng và ghé thăm.",
     "highlightNote": "Một trong những kỹ thuật viên giỏi nhất của chúng tôi.",
     "technicianName": "Nguyễn Văn H",

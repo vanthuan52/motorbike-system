@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Link, TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 export default function BlogSection() {
   const t = useTranslations(`${TRANSLATION_FILES.HOME}.blogSection`);
@@ -14,17 +15,9 @@ export default function BlogSection() {
   }[];
 
   return (
-    <section className="bg-surface-alt py-20">
+    <section className="bg-surface-alt py-20" id="blog">
       <div className="container">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.3 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("title")}
-        </motion.h2>
+        <SectionHeading title={t("title")} className="mb-12" />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {posts.map((post, index) => (

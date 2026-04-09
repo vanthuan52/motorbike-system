@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { ShieldCheck, Wrench, Clock, Users } from "lucide-react";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import SectionHeading from "@/components/ui/section-heading";
 
 interface Feature {
   icon: JSX.Element;
@@ -39,26 +40,13 @@ export default function WhyChooseUsSection() {
   ];
 
   return (
-    <section className="bg-surface-alt py-20">
+    <section className="bg-surface-alt py-20" id="why-choose-us">
       <div className="container mx-auto px-4">
-        <motion.h2
-          className="text-2xl md:text-3xl font-bold text-center text-text-primary mb-6"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.2 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          {t("title")}
-        </motion.h2>
-        <motion.p
-          className="text-center text-text-secondary mb-12 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ amount: 0.2 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-        >
-          {t("subtitle")}
-        </motion.p>
+        <SectionHeading
+          title={t("title")}
+          subtitle={t("subtitle")}
+          className="mb-12"
+        />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, idx) => (
             <motion.div
