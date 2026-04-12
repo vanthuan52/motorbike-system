@@ -2,25 +2,24 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Drawer, Button } from "antd";
-import { MenuOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 import FilterSidebar from "./FilterSidebar";
 import SortBar from "./SortBar";
 import ProductCard from "./ProductCard";
 import Pagination from "./Pagination";
-import { mockDataTableVehiclePart } from "@/data/TableData";
-import { fetchProducts } from "../api/productApi";
 import { SkeletonCard } from "./SkeletonCard";
 import ActiveFilters from "./ActiveFilters";
-import { Product } from "@/types/users/products/product";
-import { useRouter } from "next/navigation";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
-import SearchBar from "../../danh-muc/_components/SearchBar";
+import Drawer from "@/components/ui/Drawer";
 import { DEFAULT_PER_PAGE } from "@/constant/application";
+import { mockDataTableVehiclePart } from "@/data/TableData";
+import { fetchProducts } from "../api/productApi";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import { Product } from "@/types/users/products/product";
 
 type StatusType = "in_stock" | "out_of_stock" | "out_of_business";
 type FilterState = {
@@ -33,11 +32,13 @@ export default function ProductListPage() {
   const t = useTranslations(TRANSLATION_FILES.PRODUCT);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get("danh-muc") || "";
-  const [filters, setFilters] = useState<FilterState>({
-    status: [],
-    price: [0, 10000000],
-    categories: initialCategory ? [initialCategory] : [],
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const urlCategories = searchParams.getAll("danh-muc");
+    return {
+      status: [],
+      price: [0, 10000000],
+      categories: urlCategories.length ? urlCategories : [],
+    };
   });
 
   useEffect(() => {
@@ -47,23 +48,17 @@ export default function ProductListPage() {
       params.append("danh-muc", cat);
     });
     router.replace(`?${params.toString()}`, { scroll: false });
-  }, [filters.categories, searchParams, router]);
-
-  useEffect(() => {
-    const urlCategories = searchParams.getAll("danh-muc");
-    setFilters((prev) => ({
-      ...prev,
-      categories: urlCategories.length ? urlCategories : [],
-    }));
-  }, [searchParams]);
-  const [sort, setSort] = useState<"relevance" | "price-asc" | "price-desc">(
-    "relevance"
-  );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.categories]);
+  const [sort, setSort] = useState<
+    "relevance" | "discount" | "newest" | "price-asc" | "price-desc"
+  >("relevance");
   const [layout, setLayout] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
   const [direction, setDirection] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const { direction: scrollDir, pastThreshold } = useScrollDirection(100);
   const { data, isLoading } = useQuery({
     queryKey: ["products", filters, sort, page, search],
     queryFn: () =>
@@ -99,7 +94,7 @@ export default function ProductListPage() {
       x: 0,
       opacity: 1,
       position: "static" as const,
-      transition: { duration: 0.3, ease: "easeInOut" },
+      transition: { duration: 0.3, ease: "easeInOut" as const },
     },
     exit: (direction: number) => ({
       x: direction > 0 ? -60 : 60,
@@ -109,7 +104,7 @@ export default function ProductListPage() {
       left: 0,
       width: "100%",
       height: "100%",
-      transition: { duration: 0.3, ease: "easeInOut" },
+      transition: { duration: 0.3, ease: "easeInOut" as const },
     }),
   };
 
@@ -125,61 +120,83 @@ export default function ProductListPage() {
     setSearch(e.target.value);
   };
   return (
-    <section className="bg-bg-soft py-4 min-h-screen">
+    <section className="bg-bg-soft min-h-screen">
       <div className="container sm:mx-auto">
         <Breadcrumbs
           items={breadcrumbs}
-          className="mb-4"
+          className="py-5"
           linkClassName="hover:!underline"
           activeClassName="text-white font-bold"
-          separator="/"
         />
-        <SearchBar search={search} handleSearch={handleSearch} />
+        <h1 className="text-2xl font-bold text-text-primary my-4">
+          {t("pageTitle")}
+        </h1>
         <div className="flex flex-col gap-4 py-2">
-          <SortBar
-            sort={sort}
-            onChange={setSort}
-            total={total}
-            showing={products.length}
-            layout={layout}
-            onLayoutChange={setLayout}
-          />
           <div className="flex flex-col ">
-            <div className="flex flex-col lg:flex-row md:gap-6">
-              <aside className="hidden lg:block md:w-60 flex-shrink-0">
+            <div className="flex flex-col lg:flex-row gap-6">
+              <aside className="hidden lg:block lg:w-60 flex-shrink-0">
                 <FilterSidebar
                   filters={filters}
                   onChange={handleFilterChange}
                   categories={mockDataTableVehiclePart}
+                  search={search}
+                  onSearch={handleSearch}
                 />
               </aside>
-              <div className="lg:hidden mb-2">
-                <Button
-                  icon={<MenuOutlined />}
-                  onClick={() => setSidebarOpen(true)}
-                  className="mb-2"
-                >
-                  {t("filter.open")}
-                </Button>
-                <Drawer
-                  title={t("filter.title")}
-                  placement="left"
-                  onClose={() => setSidebarOpen(false)}
-                  open={sidebarOpen}
-                  width={320}
-                >
-                  <div className="p-4">
-                    <FilterSidebar
-                      filters={filters}
-                      onChange={handleFilterChange}
-                      categories={mockDataTableVehiclePart}
-                    />
-                  </div>
-                </Drawer>
-              </div>
+              {/* Drawer for mobile filter — trigger moved to SortBar */}
+              <Drawer
+                placement="left"
+                onClose={() => setSidebarOpen(false)}
+                open={sidebarOpen}
+                width={320}
+              >
+                <div className="p-4">
+                  <FilterSidebar
+                    filters={filters}
+                    onChange={handleFilterChange}
+                    categories={mockDataTableVehiclePart}
+                    search={search}
+                    onSearch={handleSearch}
+                  />
+                </div>
+              </Drawer>
               <main className="flex-1 flex flex-col gap-4">
+                {/* SortBar: normal flow */}
+                <div className="lg:block">
+                  <SortBar
+                    sort={sort}
+                    onChange={setSort}
+                    total={total}
+                    showing={products.length}
+                    layout={layout}
+                    onLayoutChange={setLayout}
+                    onFilterOpen={() => setSidebarOpen(true)}
+                  />
+                </div>
+
+                {/* SortBar: fixed on mobile when scrolling up */}
+                {pastThreshold && scrollDir === "up" && (
+                  <div
+                    className="lg:hidden fixed top-0 left-0 right-0 z-40
+                               bg-bg-soft/95 backdrop-blur-sm shadow-md
+                               px-4 py-2
+                               animate-slide-down"
+                  >
+                    <div className="container sm:mx-auto">
+                      <SortBar
+                        sort={sort}
+                        onChange={setSort}
+                        total={total}
+                        showing={products.length}
+                        layout={layout}
+                        onLayoutChange={setLayout}
+                        onFilterOpen={() => setSidebarOpen(true)}
+                      />
+                    </div>
+                  </div>
+                )}
                 <ActiveFilters filters={filters} setFilters={setFilters} />
-                <div className="relative min-h-[350px] overflow-hidden">
+                <div className="relative min-h-[350px]">
                   <AnimatePresence custom={direction} mode="wait">
                     <motion.div
                       key={page + search + sort + JSON.stringify(filters)}
@@ -190,7 +207,7 @@ export default function ProductListPage() {
                       exit="exit"
                       className={
                         layout === "grid"
-                          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                          ? "grid grid-cols-1 min-[500px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4"
                           : "flex flex-col gap-4"
                       }
                     >
@@ -213,7 +230,6 @@ export default function ProductListPage() {
               </main>
             </div>
           </div>
-          <hr className="border-border" />
           <div className="flex justify-center mt-4">
             <Pagination
               current={page}

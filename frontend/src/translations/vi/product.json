@@ -3,11 +3,13 @@
     "title": "Sản Phẩm",
     "description": "Sản Phẩm"
   },
+  "pageTitle": "Danh sách phụ tùng",
   "breadcrumbs": {
     "home": "Trang Chủ",
     "productList": "Danh Sách Sản Phẩm"
   },
   "searchBar": {
+    "title": "Tìm kiếm",
     "placeholder": "Tìm kiếm sản phẩm..."
   },
   "filter": {
@@ -31,6 +33,9 @@
     "grid": "Chế độ lưới",
     "list": "Chế độ danh sách",
     "options": {
+      "discount": "Ưu đãi",
+      "newest": "Mới nhất",
+      "price": "Giá",
       "relevance": "Liên quan nhất",
       "priceAsc": "Giá: Thấp đến Cao",
       "priceDesc": "Giá: Cao đến Thấp"
@@ -39,6 +44,7 @@
   "filterSidebar": {
     "title": "Bộ Lọc",
     "reset": "Đặt lại",
+    "apply": "Lọc",
     "status": {
       "title": "Tình Trạng",
       "options": {

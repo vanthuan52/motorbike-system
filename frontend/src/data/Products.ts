@@ -20,6 +20,7 @@ export const mockProducts: Product[] = [
     status: "in_stock",
     origin: "Nhật Bản",
     slug: "nhong-sen-dia-did",
+    discount: 15,
   },
   {
     id: "2",
@@ -39,6 +40,7 @@ export const mockProducts: Product[] = [
     status: "in_stock",
     origin: "Nhật Bản",
     slug: "bugi-ngk",
+    discount: 10,
   },
   {
     id: "3",
@@ -77,6 +79,7 @@ export const mockProducts: Product[] = [
     status: "in_stock",
     origin: "Pháp",
     slug: "dau-nhot-motul-3100",
+    discount: 20,
   },
   {
     id: "5",
@@ -131,6 +134,7 @@ export const mockProducts: Product[] = [
     status: "in_stock",
     origin: "Mỹ",
     slug: "loc-gio-kn",
+    discount: 5,
   },
   {
     id: "8",
@@ -190,5 +194,6 @@ export const mockProducts: Product[] = [
     status: "in_stock",
     origin: "Slovenia",
     slug: "ong-xa-akrapovic",
+    discount: 25,
   },
 ];

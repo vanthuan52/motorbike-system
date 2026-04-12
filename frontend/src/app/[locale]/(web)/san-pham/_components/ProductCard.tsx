@@ -1,14 +1,16 @@
-import { useState } from "react";
-import { ConfigProvider, Image } from "antd";
-import { Eye } from "lucide-react";
+"use client";
+
+import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { useTranslations } from "next-intl";
+
 import { addToCart } from "@/features/cart/store/cart-slice";
 import { IMG_PLACEHOLDER } from "@/constant/application";
 import { Link, TRANSLATION_FILES } from "@/lib/i18n";
 import { Product } from "@/types/users/products/product";
+
 interface ProductCardProps {
   product: Product;
   layout?: "grid" | "list";
@@ -19,109 +21,159 @@ export default function ProductCard({
   layout = "grid",
 }: ProductCardProps) {
   const t = useTranslations(TRANSLATION_FILES.PRODUCT);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const imgSrc = Array.isArray(product.image)
     ? product.image[0]
     : product.image;
   const isList = layout === "list";
   const dispatch = useDispatch();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     dispatch(
       addToCart({ id: product.id, color: product.colors[0], quantity: 1 })
     );
     toast.success(t("productCard.addToCartSuccess"));
   };
 
-  return (
-    <motion.div
-      transition={{ type: "ease" }}
-      className={`group relative border border-border bg-bg-soft transition-all duration-300 
-      p-4 overflow-visible 
-      ${isList ? "flex gap-4 items-start" : "flex flex-col"}`}
-    >
-      <div
-        className={`relative rounded-lg overflow-hidden 
-        ${isList ? "w-40 h-40 flex-shrink-0" : "w-full h-48"}`}
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = IMG_PLACEHOLDER;
+  };
+
+  // ─── LIST LAYOUT ────────────────────────────────────────────
+  if (isList) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "tween" as const, duration: 0.3 }}
+        className="group relative flex flex-col min-[500px]:flex-row gap-4 min-[500px]:gap-5
+                   rounded-xl bg-surface p-3 min-[500px]:p-4 shadow-xs
+                   hover:shadow-lg transition-all duration-300 overflow-hidden"
       >
-        <ConfigProvider
-          theme={{
-            components: {
-              Image: {
-                previewOperationColor: "#111827",
-                colorInfoBgHover: "transparent",
-              },
-            },
-          }}
+        {/* Image */}
+        <Link
+          href={`/san-pham/${product.slug}`}
+          className="relative w-full min-[500px]:w-40 min-[500px]:h-40 aspect-[4/3] min-[500px]:aspect-auto
+                     flex-shrink-0 overflow-hidden rounded-lg bg-bg-soft"
         >
-          <Image
+          <img
             src={imgSrc}
-            fallback={IMG_PLACEHOLDER}
             alt={product.name}
-            className="object-cover w-full h-full"
-            preview={{
-              visible: previewOpen,
-              onVisibleChange: (v) => setPreviewOpen(v),
-              mask: null,
-            }}
+            onError={handleImgError}
+            className="w-full h-full object-cover transition-transform duration-500
+              group-hover:scale-105"
           />
-        </ConfigProvider>
-
-        <button
-          type="button"
-          aria-label={t("productCard.preview")}
-          onClick={() => setPreviewOpen(true)}
-          className="absolute right-2 bottom-2 bg-secondary-100 hover:bg-surface border border-border-strong w-7 h-7 rounded-lg flex items-center justify-center shadow"
-        >
-          <Eye size={16} className="text-text-secondary" />
-        </button>
-      </div>
-
-      <div
-        className={`${isList ? "flex-1 flex flex-col justify-between" : "mt-3 text-center"}`}
-      >
-        <p className="text-lg font-medium text-text-secondary text-left">
-          {product.price.toLocaleString()}₫
-        </p>
-        <Link href={`/san-pham/${product.slug}`}>
-          <h4 className="text-base font-semibold text-text-primary mb-1 line-clamp-2 text-left h-12 lg:h-8">
-            {product.name}
-          </h4>
-          {isList && (
-            <p className="text-sm text-text-muted line-clamp-2 mb-2">
-              {product.description}
-            </p>
+          {/* Discount badge */}
+          {product.discount && product.discount > 0 && (
+            <span
+              className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-md
+                text-xs font-bold bg-error text-white"
+            >
+              -{product.discount}%
+            </span>
           )}
         </Link>
-        <div
-          className={`${isList ? "flex items-center justify-between mt-auto" : "mt-2"}`}
-        >
-          {isList ? (
-            <div className="flex gap-2 mt-4">
-              <button className="bg-surface text-text-secondary text-sm px-3 py-1 rounded border hover:bg-secondary-100 transition">
-                {t("productCard.quickBuy")}
-              </button>
-              <button
-                className="bg-secondary-900 text-white text-sm px-3 py-1 rounded hover:bg-secondary-800 transition"
-                onClick={handleAddToCart}
-              >
-                {t("productCard.addToCart")}
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col lg:flex-row gap-2 justify-center overflow-hidden transition-all duration-300 h-full mt-2">
-              <button className="bg-surface text-text-secondary text-sm px-2 py-1 rounded border hover:bg-secondary-100 transition max-h-[30px] line-clamp-1">
-                {t("productCard.quickBuy")}
-              </button>
-              <button
-                className="bg-secondary-900 text-white text-sm px-2 py-1 rounded hover:bg-secondary-800 transition max-h-[30px] line-clamp-1"
-                onClick={handleAddToCart}
-              >
-                {t("productCard.addToCart")}
-              </button>
-            </div>
-          )}
+
+        {/* Content */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <Link href={`/san-pham/${product.slug}`} className="group/link">
+            <h4 className="text-sm min-[500px]:text-base font-semibold text-text-primary mb-1 line-clamp-2
+                           group-hover/link:text-primary-500 transition-colors duration-200">
+              {product.name}
+            </h4>
+          </Link>
+
+          <p className="text-sm text-text-muted line-clamp-2 mb-3 leading-relaxed hidden min-[500px]:block">
+            {product.description}
+          </p>
+
+          {/* Price & Actions */}
+          <div className="mt-auto flex items-center justify-between gap-3">
+            <p className="text-lg font-bold text-text-primary">
+              {product.price.toLocaleString()}
+              <span className="text-sm font-medium ml-0.5">₫</span>
+            </p>
+            <button
+              onClick={handleAddToCart}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium
+                         rounded-lg bg-primary-500 text-white
+                         hover:bg-primary-600
+                         transition-all duration-200"
+            >
+              <ShoppingCart size={14} />
+              {t("productCard.addToCart")}
+            </button>
+          </div>
         </div>
+      </motion.div>
+    );
+  }
+
+  // ─── GRID LAYOUT ────────────────────────────────────────────
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "tween" as const, duration: 0.35 }}
+      className="group relative flex flex-col rounded-xl bg-surface
+                 shadow-xs overflow-hidden
+                 hover:shadow-lg transition-all duration-300"
+    >
+      {/* ── Image section ── */}
+      <Link
+        href={`/san-pham/${product.slug}`}
+        className="relative w-full aspect-[4/3] overflow-hidden bg-bg-soft"
+      >
+        <img
+          src={imgSrc}
+          alt={product.name}
+          onError={handleImgError}
+          className="w-full h-full object-cover transition-transform duration-500
+            group-hover:scale-105"
+        />
+
+        {/* Discount badge — top-left */}
+        {product.discount && product.discount > 0 && (
+          <span
+            className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-md
+              text-xs font-bold bg-error text-white"
+          >
+            -{product.discount}%
+          </span>
+        )}
+      </Link>
+
+      {/* ── Content section ── */}
+      <div className="flex flex-col flex-1 p-4">
+        {/* Product name */}
+        <Link href={`/san-pham/${product.slug}`} className="group/link mb-1">
+          <h4
+            className="text-sm font-semibold text-text-primary line-clamp-2 leading-snug
+                       group-hover/link:text-primary-500 transition-colors duration-200"
+          >
+            {product.name}
+          </h4>
+        </Link>
+
+        {/* Price */}
+        <p className="text-lg font-bold text-text-primary mt-auto mb-3">
+          {product.price.toLocaleString()}
+          <span className="text-sm font-medium ml-0.5">₫</span>
+        </p>
+
+        {/* Add to Cart button */}
+        <button
+          onClick={handleAddToCart}
+          className="w-full inline-flex items-center justify-center gap-1.5
+                     py-2 text-sm font-medium rounded-lg
+                     bg-primary-500 text-white
+                     hover:bg-primary-600
+                     transition-all duration-200"
+        >
+          <ShoppingCart size={14} />
+          {t("productCard.addToCart")}
+        </button>
       </div>
     </motion.div>
   );

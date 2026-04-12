@@ -21,7 +21,7 @@ const DESKTOP_NAV_ITEMS = [
   { href: ROUTER_PATH.SERVICES, key: "services" },
   { href: ROUTER_PATH.ABOUT, key: "about" },
   { href: ROUTER_PATH.BLOG, key: "blog" },
-  { href: ROUTER_PATH.CONTACT, key: "contact" },
+  { href: ROUTER_PATH.PRODUCT, key: "product" },
   { href: ROUTER_PATH.CARE_REGISTRATION, key: "careRegistration" },
 ];
 
@@ -46,7 +46,8 @@ export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const cartItems =
+    useSelector((state: RootState) => state.cart.cartItems) ?? [];
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => setIsOpen(false), [pathname]);
