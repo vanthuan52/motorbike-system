@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
 import { TRANSLATION_FILES } from "@/lib/i18n";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 
 function ContactMainSection() {
   const t = useTranslations(TRANSLATION_FILES.CONTACT_PAGE);
@@ -187,11 +189,10 @@ function ContactMainSection() {
                 <label htmlFor="name" className="sr-only">
                   {t("namePlaceholder")}
                 </label>
-                <input
+                <Input
                   type="text"
                   id="name"
                   placeholder={t("namePlaceholder")}
-                  className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                 />
               </div>
 
@@ -200,22 +201,20 @@ function ContactMainSection() {
                   <label htmlFor="phone" className="sr-only">
                     {t("phonePlaceholder")}
                   </label>
-                  <input
+                  <Input
                     type="tel"
                     id="phone"
                     placeholder={t("phonePlaceholder")}
-                    className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                   />
                 </div>
                 <div>
                   <label htmlFor="email" className="sr-only">
                     Email
                   </label>
-                  <input
+                  <Input
                     type="email"
                     id="email"
                     placeholder="Email"
-                    className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                   />
                 </div>
               </div>
@@ -224,11 +223,10 @@ function ContactMainSection() {
                 <label htmlFor="subject" className="sr-only">
                   {t("subjectPlaceholder")}
                 </label>
-                <input
+                <Input
                   type="text"
                   id="subject"
                   placeholder={t("subjectPlaceholder")}
-                  className="w-full px-4 py-3 border border-border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-primary-700/30 focus:border-primary-700 bg-surface-alt text-text-primary transition-all duration-150"
                 />
               </div>
 
@@ -245,12 +243,13 @@ function ContactMainSection() {
               </div>
 
               <div>
-                <button
+                <Button
                   type="submit"
-                  className="w-full bg-primary-700 hover:bg-primary-500 text-white font-semibold py-3 px-6 rounded-[var(--radius-md)] shadow-[var(--shadow-primary)] hover:shadow-[var(--shadow-primary-hover)] transition-all duration-200"
+                  size="lg"
+                  className="w-full px-8"
                 >
                   {t("submitButton")}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

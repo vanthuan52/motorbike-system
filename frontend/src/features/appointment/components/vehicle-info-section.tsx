@@ -15,8 +15,8 @@ import { Input } from "@/components/ui/Input";
 import { useVehicleBrand } from "@/features/appointment/hooks/useVehicleBrand";
 import { useVehicleModel } from "@/features/appointment/hooks/useVehicleModel";
 import { useVehicleService } from "@/features/appointment/hooks/useVehicleService";
-import VehicleModelModal from "./VehicleModelModal";
-import ServiceSelectionModal from "./ServiceSelectionModal";
+import VehicleModelModal from './vehicle-model-modal';
+import ServiceSelectionModal from './service-selection-modal';
 
 export default function VehicleInfoSection() {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);

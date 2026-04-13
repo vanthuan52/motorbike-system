@@ -2,15 +2,15 @@
 
 import { useTranslations } from "next-intl";
 
-import BookingTabs from "./BookingTabs";
-import CustomerInfoSection from "./CustomerInfoSection";
-import VehicleInfoSection from "./VehicleInfoSection";
-import ServiceDetailSection from "./ServiceDetailSection";
-import PickupInfoSection from "./PickupInfoSection";
-import PickupMapSection from "./PickupMapSection";
-import PickupCostSection from "./PickupCostSection";
-import ParticleBackground from "./ParticleBackground";
-import { useBookingForm } from "../../../../../features/appointment/hooks/useBookingForm";
+import BookingTabs from './booking-tabs';
+import CustomerInfoSection from './customer-info-section';
+import VehicleInfoSection from './vehicle-info-section';
+import ServiceDetailSection from './service-detail-section';
+import PickupInfoSection from './pickup-info-section';
+import PickupMapSection from './pickup-map-section';
+import PickupCostSection from './pickup-cost-section';
+import ParticleBackground from './particle-background';
+import { useBookingForm } from "@/features/appointment/hooks/useBookingForm";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 import { Form } from "@/components/ui/Form";
 import { Button } from "@/components/ui/Button";

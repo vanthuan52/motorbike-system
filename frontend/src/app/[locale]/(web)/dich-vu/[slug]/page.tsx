@@ -22,12 +22,12 @@ import {
   getRelatedServices,
   Service,
   RelatedService,
-} from "../mocks/service-detail";
+} from "@/features/vehicle-service/mocks/service-detail";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-import { SkeletonCard } from "./_components/skeleton-card";
+import { SkeletonCard } from "@/features/vehicle-service/components/skeleton-card";
 import SectionHeading from "@/components/ui/section-heading";
-import { ImageLightbox, ZoomTrigger } from "./_components/image-lightbox";
-import { ServiceCard } from "../_components/service-card";
+import { ImageLightbox, ZoomTrigger } from "@/features/vehicle-service/components/image-lightbox";
+import { ServiceCard } from "@/features/vehicle-service/components/service-card";
 
 const SERVICE_BADGES = [
   { icon: Shield, label: "Bảo hành 6 tháng" },

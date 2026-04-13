@@ -34,8 +34,8 @@ Các biến **bắt buộc** phải điền trước khi chạy:
 
 ```env
 # Database
-DATABASE_URL=mongodb://mongo:changeme@127.0.0.1:27017/motorbike_system?authSource=admin&replicaSet=rs0&directConnection=true
-DATABASE_USERNAME=mongo
+DATABASE_URL=mongodb://motorbike:changeme123@127.0.0.1:27017/motorbike_system?authSource=admin&replicaSet=rs0&directConnection=true
+DATABASE_USERNAME=motorbike
 DATABASE_PASSWORD=changeme
 
 # MinIO root credentials (dùng cho docker-compose.dev.yml)
@@ -68,6 +68,14 @@ npm run generate:keys
 
 ---
 
+## Bước 3.5 - Tạo Mongo Key
+
+```bash
+npm run generate:mongo-key
+```
+
+---
+
 ## Bước 4 — Khởi động Supporting Services
 
 ```bash
@@ -76,14 +84,14 @@ docker compose -f docker-compose.dev.yml --env-file .env.development up -d
 
 Services được khởi động:
 
-| Service       | URL                      | Mục đích                                    |
-| ------------- | ------------------------ | ------------------------------------------- |
-| MongoDB       | `localhost:27017`        | Database (Replica Set, Prisma-compatible)   |
-| JWKS Server   | `http://localhost:5301`  | Serve public keys cho JWT verify            |
-| Redis         | `localhost:6379`         | Cache + queue                               |
-| Bull Board    | `http://localhost:5303`  | Monitor BullMQ queues                       |
-| MinIO API     | `http://localhost:39000` | S3-compatible storage                       |
-| MinIO Console | `http://localhost:39001` | Quản lý bucket qua UI                       |
+| Service       | URL                      | Mục đích                                  |
+| ------------- | ------------------------ | ----------------------------------------- |
+| MongoDB       | `localhost:27017`        | Database (Replica Set, Prisma-compatible) |
+| JWKS Server   | `http://localhost:5301`  | Serve public keys cho JWT verify          |
+| Redis         | `localhost:6379`         | Cache + queue                             |
+| Bull Board    | `http://localhost:5303`  | Monitor BullMQ queues                     |
+| MinIO API     | `http://localhost:39000` | S3-compatible storage                     |
+| MinIO Console | `http://localhost:39001` | Quản lý bucket qua UI                     |
 
 > `minio-init` sẽ tự chạy và tạo buckets/user/policy rồi thoát — không cần làm thủ công.
 
@@ -207,6 +215,7 @@ docker compose -f docker-compose.dev.yml up -d --force-recreate
 ```
 
 > **Lưu ý:** Nếu file mount là file được generate (ví dụ JWT keys), hãy chạy lại lệnh generate trước:
+>
 > ```bash
 > npm run generate:keys
 > ```

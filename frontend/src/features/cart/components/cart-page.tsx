@@ -9,8 +9,8 @@ import { RootState } from "@/store";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
-const CartTable = dynamic(() => import("./CartTable"), { ssr: false });
-const CartTotals = dynamic(() => import("./CartTotals"), { ssr: false });
+const CartTable = dynamic(() => import("./cart-table"), { ssr: false });
+const CartTotals = dynamic(() => import("./cart-totals"), { ssr: false });
 
 export default function CartPage() {
   const t = useTranslations(TRANSLATION_FILES.CART_PAGE);
