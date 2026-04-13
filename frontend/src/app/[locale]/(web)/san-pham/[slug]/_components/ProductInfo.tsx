@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useTranslations } from "next-intl";
 import { Heart, Minus, Plus, Share2, ShieldCheck, Truck, RefreshCcw, BadgeCheck } from "lucide-react";
-import { toast } from "sonner";
 
 import { Product } from "@/types/users/products/product";
 import { mockDataTableVehiclePart } from "@/data/TableData";
-import { addToCart } from "@/features/cart/store/cart-slice";
+import { cartActions } from "@/features/cart/store";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 interface ProductInfoProps {
@@ -21,8 +20,11 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const dispatch = useDispatch();
 
   const handleAddToCart = () => {
-    dispatch(addToCart({ id: product.id, color: product.colors[selectedColor], quantity }));
-    toast.success(t("productInfo.toast.success"));
+    dispatch(cartActions.addToCart({
+      productId: product.id,
+      color: product.colors[selectedColor],
+      quantity,
+    }));
   };
 
   const categoryName = product.partTypeId

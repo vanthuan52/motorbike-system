@@ -3,10 +3,9 @@
 import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
-import { addToCart } from "@/features/cart/store/cart-slice";
+import { cartActions } from "@/features/cart/store";
 import { IMG_PLACEHOLDER } from "@/constant/application";
 import { Link, TRANSLATION_FILES } from "@/lib/i18n";
 import { Product } from "@/types/users/products/product";
@@ -31,9 +30,8 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     dispatch(
-      addToCart({ id: product.id, color: product.colors[0], quantity: 1 })
+      cartActions.addToCart({ productId: product.id, color: product.colors[0], quantity: 1 })
     );
-    toast.success(t("productCard.addToCartSuccess"));
   };
 
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {

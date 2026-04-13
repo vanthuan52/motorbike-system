@@ -1,5 +1,6 @@
 import { all } from "redux-saga/effects";
 import { authSaga } from "../features/auth/store/auth-saga";
+import { cartSaga } from "@/features/cart/store/cart-saga";
 import { partTypeRootSaga } from "../features/part-type/store/part-type-saga";
 import { hiringRootSaga } from "@/features/hiring/store/hiring-saga";
 import { vehicleBrandSaga } from "@/features/vehicle-brand/store/vehicle-brand-saga";
@@ -13,6 +14,7 @@ import { userSaga } from "@/features/user/store/user-saga";
 export default function* rootSaga() {
   yield all([
     authSaga(),
+    cartSaga(),
     partTypeRootSaga(),
     hiringRootSaga(),
     vehicleBrandSaga(),

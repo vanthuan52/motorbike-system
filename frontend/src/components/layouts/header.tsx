@@ -46,9 +46,8 @@ export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const cartItems =
-    useSelector((state: RootState) => state.cart.cartItems) ?? [];
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartCount =
+    useSelector((state: RootState) => state.cart.totalItems) ?? 0;
 
   useEffect(() => setIsOpen(false), [pathname]);
 
