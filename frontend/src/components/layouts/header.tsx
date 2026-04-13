@@ -31,7 +31,6 @@ const MOBILE_NAV_ITEMS = [
   { href: ROUTER_PATH.BLOG, key: "blog" },
   { href: ROUTER_PATH.CONTACT, key: "contact" },
   { href: ROUTER_PATH.CARE_REGISTRATION, key: "careRegistration" },
-  { href: ROUTER_PATH.PART_TYPE, key: "partType" },
   { href: ROUTER_PATH.PRODUCT, key: "product" },
   { href: ROUTER_PATH.POLICY, key: "policy" },
   { href: ROUTER_PATH.FAQS, key: "faqs" },

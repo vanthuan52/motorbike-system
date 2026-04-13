@@ -1,8 +1,8 @@
 import React from "react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import ContactMainSection from "@/app/[locale]/(web)/contact/_components/contact-main-section";
-import ContactMapSection from "@/app/[locale]/(web)/contact/_components/contact-map-section";
+import ContactMainSection from "@/features/contact/components/contact-main-section";
+import ContactMapSection from "@/features/contact/components/contact-map-section";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
