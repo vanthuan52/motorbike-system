@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=development next dev --turbopack",
-    "build": "NODE_ENV=production next build",
-    "start": "NODE_ENV=production next start",
+    "dev": "cross-env NODE_ENV=development next dev --turbopack",
+    "build": "cross-env NODE_ENV=production next build",
+    "start": "cross-env NODE_ENV=production next start",
     "lint": "next lint",
-    "start:dev": "NODE_ENV=development pm2 start ecosystem.config.js --env development",
-    "start:staging": "NODE_ENV=staging pm2 start ecosystem.config.js --env staging",
-    "start:prod": "NODE_ENV=production pm2 start ecosystem.config.js --env production",
-    "pm2:dev": "NODE_ENV=development next dev",
-    "pm2:staging": "NODE_ENV=staging next start",
-    "pm2:prod": "NODE_ENV=production next start"
+    "start:dev": "cross-env NODE_ENV=development pm2 start ecosystem.config.js --env development",
+    "start:staging": "cross-env NODE_ENV=staging pm2 start ecosystem.config.js --env staging",
+    "start:prod": "cross-env NODE_ENV=production pm2 start ecosystem.config.js --env production",
+    "pm2:dev": "cross-env NODE_ENV=development next dev",
+    "pm2:staging": "cross-env NODE_ENV=staging next start",
+    "pm2:prod": "cross-env NODE_ENV=production next start"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.3.0",
@@ -55,7 +55,7 @@
     "tailwind-merge": "^3.5.0",
     "validator": "^13.15.35",
     "vietnam-provinces": "^0.0.4",
-    "win-node-env": "^0.6.1",
+    "cross-env": "^7.0.3",
     "yup": "^1.7.1",
     "zod": "^4.3.6"
   },
