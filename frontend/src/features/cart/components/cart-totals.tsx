@@ -73,7 +73,7 @@ export default function CartTotals({ subtotal }: { subtotal: number }) {
 
       {/* Continue shopping */}
       <Link
-        href="/san-pham"
+        href="/phu-tung"
         className="mt-3 w-full h-10 rounded-lg text-sm font-medium border border-border
                    flex items-center justify-center gap-2
                    text-text-secondary hover:text-primary-500 hover:border-primary-300

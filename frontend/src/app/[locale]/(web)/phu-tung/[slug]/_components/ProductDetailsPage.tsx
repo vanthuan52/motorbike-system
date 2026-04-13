@@ -26,7 +26,7 @@ export default function ProductDetailsPage() {
 
   const breadcrumbs: BreadcrumbItem[] = [
     { label: t("breadcrumbs.home"), href: "/" },
-    { label: t("breadcrumbs.productList"), href: "/san-pham" },
+    { label: t("breadcrumbs.productList"), href: "/phu-tung" },
     { label: product.name },
   ];
 
