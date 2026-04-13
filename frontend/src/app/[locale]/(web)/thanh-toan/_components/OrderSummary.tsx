@@ -7,7 +7,7 @@ import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 
 import { RootState } from "@/store";
-import { fetchProductsByIds } from "../../gio-hang/_components/cart-api";
+import { fetchProductsByIds } from "@/features/cart/components/cart-api";
 import { Link, TRANSLATION_FILES } from "@/lib/i18n";
 import { Product } from "@/types/users/products/product";
 import { IMG_PLACEHOLDER } from "@/constant/application";
@@ -24,7 +24,7 @@ export default function OrderSummary() {
       (data) => {
         setProducts(data);
         setLoading(false);
-      }
+      },
     );
   }, [cartItems]);
 
