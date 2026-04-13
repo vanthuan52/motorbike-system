@@ -1,18 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { toast, ToastOptions } from "react-toastify";
+import { toast } from "sonner";
 
 export type NotificationType = "success" | "error" | "info" | "warning";
 
 interface NotifyPayload {
   message: string;
   type: NotificationType;
-  options?: ToastOptions;
 }
 
 const initialState: NotifyPayload = {
   message: "",
   type: "info",
-  options: undefined,
 };
 
 export const notificationSlice = createSlice({
@@ -20,20 +18,20 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     notify: (_state, action: PayloadAction<NotifyPayload>) => {
-      const { type, message, options } = action.payload;
+      const { type, message } = action.payload;
 
       switch (type) {
         case "success":
-          toast.success(message, options);
+          toast.success(message);
           break;
         case "error":
-          toast.error(message, options);
+          toast.error(message);
           break;
         case "info":
-          toast.info(message, options);
+          toast.info(message);
           break;
         case "warning":
-          toast.warn(message, options);
+          toast.warning(message);
           break;
       }
     },

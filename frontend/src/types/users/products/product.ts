@@ -14,4 +14,5 @@ export interface Product {
   origin: string;
   slug: string;
   quantity?: number;
+  discount?: number;
 }

@@ -43,7 +43,7 @@ export default function ServiceDetailSection() {
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("form.date")}</FormLabel>
+              <FormLabel>{t("form.date")} <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -56,7 +56,7 @@ export default function ServiceDetailSection() {
           name="time"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("form.timeSlot")}</FormLabel>
+              <FormLabel>{t("form.timeSlot")} <span className="text-red-500">*</span></FormLabel>
               <FormControl>
                 <select
                   {...field}

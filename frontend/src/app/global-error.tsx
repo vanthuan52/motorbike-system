@@ -13,10 +13,7 @@ const GlobalError = ({
     if (error) {
       console.error(error);
     }
-    return () => {
-      reset();
-    };
-  }, [error, reset]);
+  }, [error]);
 
   return (
     <html>
@@ -33,6 +30,12 @@ const GlobalError = ({
               <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
                 We are already working to solve the problem.
               </p>
+              <button
+                onClick={() => reset()}
+                className="mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+              >
+                Try again
+              </button>
             </div>
           </div>
         </section>

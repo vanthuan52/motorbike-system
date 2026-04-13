@@ -46,7 +46,7 @@ export default function ServiceList() {
 
   return (
     <section className="py-16 bg-surface text-text-primary">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center">
           {t("title")}
         </h2>

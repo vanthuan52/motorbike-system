@@ -399,10 +399,10 @@
 
 @layer components {
   .container {
-    @apply mx-auto px-4 lg:px-8 xl:px-0;
+    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8;
   }
   .container-fluid {
-    @apply mx-auto px-4 lg:px-8 xl:px-0;
+    @apply mx-auto w-full px-4 sm:px-6 lg:px-8;
   }
 
   /* ============================================================
@@ -628,5 +628,20 @@
 
   .animate-slide-out-right {
     animation: slide-out-right 0.3s ease-in-out forwards;
+  }
+
+  @keyframes slide-down {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.3s cubic-bezier(0.2, 0, 0, 1) forwards;
   }
 }

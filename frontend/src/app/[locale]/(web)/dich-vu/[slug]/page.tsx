@@ -63,7 +63,7 @@ export default function ServiceDetailPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-surface-alt">
-        <div className="container mx-auto px-4 py-10">
+        <div className="container py-10">
           <div className="h-5 w-64 bg-secondary-100 rounded-full mb-8 animate-pulse" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <SkeletonCard />
@@ -89,7 +89,7 @@ export default function ServiceDetailPage() {
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <section className="container mx-auto pt-8 pb-24">
+      <section className="container pt-8 pb-24">
         {/* Breadcrumbs */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}

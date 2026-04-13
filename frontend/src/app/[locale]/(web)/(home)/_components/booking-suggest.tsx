@@ -15,7 +15,7 @@ export default function BookingSuggest() {
       id="booking-suggest"
     >
       <div className="absolute inset-0 bg-cover bg-center opacity-20"></div>
-      <div className="relative container mx-auto px-6 flex flex-col items-center text-center">
+      <div className="relative container flex flex-col items-center text-center">
         <SectionHeading
           title={t("title")}
           subtitle={t("description")}

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 import { useTranslations } from "next-intl";
 import clsx from "clsx";
 import { SkeletonCard } from "./SkeletonCard";
@@ -6,7 +6,7 @@ import PartTypeCard from "./part-type-card";
 import { PartType } from "@/features/part-type/types";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
-const listVariants = {
+const listVariants: Variants = {
   enter: (direction: number) => ({
     x: direction > 0 ? 300 : -300,
     opacity: 0,

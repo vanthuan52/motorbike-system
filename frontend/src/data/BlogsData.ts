@@ -10,7 +10,7 @@ export const blogs = [
     author: "Nguyễn Thanh Hà",
     date: "08/04/2025",
     tag: "Phượt Off-Road",
-    image: "/images/blog-img.png",
+    image: "/images/blog/blog-img.png",
     relatedBlogs: [
       {
         id: 1,
@@ -22,7 +22,7 @@ export const blogs = [
         author: "Trần Minh Tuấn",
         date: "10/04/2025",
         tag: "Bảo Dưỡng",
-        image: "/images/blog-img.png",
+        image: "/images/blog/blog-img.png",
       },
       {
         id: 2,
@@ -34,7 +34,7 @@ export const blogs = [
         author: "Trần Minh Tuấn",
         date: "10/04/2025",
         tag: "Bảo Dưỡng",
-        image: "/images/blog-img.png",
+        image: "/images/blog/blog-img.png",
       },
       {
         id: 3,
@@ -46,7 +46,7 @@ export const blogs = [
         author: "Trần Minh Tuấn",
         date: "10/04/2025",
         tag: "Bảo Dưỡng",
-        image: "/images/blog-img.png",
+        image: "/images/blog/blog-img.png",
       },
       {
         id: 4,
@@ -58,14 +58,14 @@ export const blogs = [
         author: "Trần Minh Tuấn",
         date: "10/04/2025",
         tag: "Bảo Dưỡng",
-        image: "/images/blog-img.png",
+        image: "/images/blog/blog-img.png",
       },
     ],
     blogDetails: {
       title: "Kinh Nghiệm Chạy Off-road Cho Người Mới",
       description:
         "Tổng hợp những kinh nghiệm cần biết để bắt đầu hành trình off-road an toàn và thú vị.",
-      thumbnail: "/images/blog-img.png",
+      thumbnail: "/images/blog/blog-img.png",
       minutes: 5,
       sections: [
         {

@@ -28,7 +28,7 @@ export default function BookingTabs({ value, onChange }: BookingTabsProps) {
             className={clsx(
               "flex-1 px-4 py-2.5 text-sm md:text-base rounded-[var(--radius-sm)] font-semibold cursor-pointer transition-all duration-200",
               isActive
-                ? "bg-surface text-text-primary shadow-[var(--shadow-sm)]"
+                ? "bg-primary-500 text-white shadow-sm"
                 : "bg-transparent text-text-muted hover:text-text-secondary"
             )}
           >

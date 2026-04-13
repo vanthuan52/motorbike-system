@@ -76,21 +76,20 @@ export default function PartTypePage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="container mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8 text-white">
+        <div className="container py-6 md:py-8 text-white">
           <Breadcrumbs
             items={breadcrumbs}
             className="mb-4"
-            listClassName="text-white"
-            itemClassName="text-white"
-            linkClassName="hover:!underline"
+            linkClassName="hover:!underline text-white"
             activeClassName="text-white font-bold"
-            separator="/"
+            separatorClassName="text-white"
+            homeIconClassName="text-white"
           />
           <PageHeading />
         </div>
       </motion.div>
 
-      <div className="container sm:mx-auto px-8 sm:px-0 py-2 md:py-4">
+      <div className="container py-2 md:py-4">
         <SearchBar search={filter.search} handleSearch={handleSearch} />
         <PartTypeList
           loading={!!loading}

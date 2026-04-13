@@ -51,11 +51,16 @@ export default function RegisterPage() {
       password: "",
       confirmPassword: "",
     },
-    resolver: yupResolver(signUpCredentialsSchema),
+    resolver: yupResolver(signUpCredentialsSchema) as any,
   });
 
   const onSubmit: SubmitHandler<SignUpCredentialsFormType> = async (values) => {
-    dispatch(authActions.register(values));
+    dispatch(
+      authActions.register({
+        ...values,
+        phone: values.phone || "",
+      })
+    );
   };
 
   return (

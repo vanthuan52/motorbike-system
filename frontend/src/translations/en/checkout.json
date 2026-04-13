@@ -1,52 +1,43 @@
 {
   "meta": {
     "title": "Checkout",
-    "description": "Checkout now"
+    "description": "Complete your order"
   },
-  "shippingAddressTitle": "Shipping Address",
-  "firstName": "First Name",
-  "lastName": "Last Name",
-  "email": "Email",
-  "phone": "Phone Number",
-  "city": "City",
-  "address": "Address",
-  "zip": "Zip Code",
-  "description": "Description",
-  "firstNameRequired": "Please enter your first name",
-  "lastNameRequired": "Please enter your last name",
-  "emailRequired": "Please enter your email",
-  "emailInvalid": "Invalid email",
-  "phoneRequired": "Please enter your phone number",
-  "cityRequired": "Please enter your city",
-  "addressRequired": "Please enter your address",
-  "zipRequired": "Please enter your zip code",
-  "breadcrumb": {
-    "cart": "Shopping Cart",
-    "cartShort": "Cart",
-    "checkout": "Checkout Details",
-    "checkoutShort": "Checkout",
-    "complete": "Completed",
-    "completeShort": "Done"
+  "breadcrumbs": {
+    "home": "Home",
+    "cart": "Cart",
+    "checkout": "Checkout"
   },
-  "cartSummary": {
-    "title": "Your cart",
-    "discountPlaceholder": "Discount code",
-    "apply": "Apply",
+  "heading": "Checkout",
+  "form": {
+    "title": "Shipping Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "zip": "Postal Code",
+    "note": "Order Notes",
+    "notePlaceholder": "Notes about your order, e.g. special delivery instructions.",
+    "required": "This field is required",
+    "emailInvalid": "Invalid email address"
+  },
+  "payment": {
+    "title": "Payment Method",
+    "cod": "Cash on Delivery",
+    "codDesc": "Pay with cash upon delivery",
+    "momo": "MoMo Wallet",
+    "momoDesc": "Pay via MoMo e-wallet",
+    "momoDisabled": "Coming soon"
+  },
+  "summary": {
+    "title": "Your Order",
     "subtotal": "Subtotal",
-    "shipping": "Shipping fee",
-    "tax": "Estimated tax",
+    "shipping": "Shipping",
+    "shippingValue": "Free",
     "total": "Total",
-    "proceed": "Proceed to checkout"
-  },
-  "shippingMethod": {
-    "title": "Shipping Method",
-    "free": {
-      "title": "Free Shipping",
-      "time": "7-20 days"
-    },
-    "express": {
-      "title": "Express Delivery",
-      "time": "1-3 days"
-    }
+    "placeOrder": "Place Order",
+    "backToCart": "Back to Cart"
   }
 }

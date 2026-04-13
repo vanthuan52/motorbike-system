@@ -41,7 +41,7 @@ export default function WhyChooseUsSection() {
 
   return (
     <section className="bg-surface-alt py-20" id="why-choose-us">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <SectionHeading
           title={t("title")}
           subtitle={t("subtitle")}

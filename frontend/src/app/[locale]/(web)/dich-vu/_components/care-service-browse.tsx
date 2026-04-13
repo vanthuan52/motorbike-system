@@ -258,7 +258,7 @@ export default function CareServiceBrowse() {
 
   return (
     <section className="py-16 bg-surface">
-      <div className="container mx-auto">
+      <div className="container">
         {/* Section Title */}
         <SectionHeading title="Dịch vụ chăm sóc xe máy" className="mb-12" />
 

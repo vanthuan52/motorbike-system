@@ -5,19 +5,34 @@
   },
   "breadcrumbs": {
     "home": "Trang Chủ",
+    "productList": "Sản Phẩm",
     "product": "Sản Phẩm"
   },
   "productInfo": {
     "toast": {
       "success": "Thêm sản phẩm vào giỏ hàng thành công"
     },
+    "sku": "Mã sản phẩm",
     "color": "Màu sắc",
+    "origin": "Xuất xứ",
     "unknown": "Không xác định",
     "stock": "Tồn kho",
-    "quantity": "Số lượng",
-    "addToCart": "Thêm vào giỏ hàng",
+    "inStock": "Còn hàng",
     "outOfStock": "Hết hàng",
     "outOfBusiness": "Ngừng kinh doanh",
-    "formOfDelivery": "Hình thức giao hàng"
+    "quantity": "Số lượng",
+    "addToCart": "Thêm vào giỏ hàng",
+    "buyNow": "Mua ngay",
+    "description": "Mô tả sản phẩm",
+    "share": "Chia sẻ",
+    "wishlist": "Yêu thích",
+    "category": {
+      "unknown": "Chưa phân loại"
+    },
+    "formOfDelivery": "Hình thức giao hàng",
+    "freeShipping": "Miễn phí vận chuyển",
+    "warranty": "Bảo hành 12 tháng",
+    "genuine": "Hàng chính hãng 100%",
+    "returnPolicy": "Đổi trả 30 ngày"
   }
 }

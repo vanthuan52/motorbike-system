@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "Đặt Hàng Thành Công",
+    "description": "Đơn hàng của bạn đã được đặt thành công"
+  },
+  "title": "Đặt hàng thành công!",
+  "subtitle": "Cảm ơn bạn đã mua sắm tại MotoServ",
+  "description": "Đơn hàng của bạn đã được tiếp nhận và đang được xử lý. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
+  "orderInfo": {
+    "title": "Thông tin đơn hàng",
+    "orderId": "Mã đơn hàng",
+    "date": "Ngày đặt hàng",
+    "payment": "Thanh toán",
+    "paymentValue": "Thanh toán khi nhận hàng",
+    "status": "Trạng thái",
+    "statusValue": "Đang xử lý"
+  },
+  "actions": {
+    "continueShopping": "Tiếp tục mua sắm",
+    "viewOrders": "Xem đơn hàng"
+  },
+  "features": {
+    "delivery": {
+      "title": "Giao hàng nhanh",
+      "desc": "Giao hàng toàn quốc"
+    },
+    "support": {
+      "title": "Hỗ trợ 24/7",
+      "desc": "Luôn sẵn sàng giúp bạn"
+    },
+    "warranty": {
+      "title": "Bảo hành chính hãng",
+      "desc": "Sản phẩm chính hãng 100%"
+    }
+  }
+}

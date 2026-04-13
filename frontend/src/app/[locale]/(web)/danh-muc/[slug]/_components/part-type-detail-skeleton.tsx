@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export function PartTypeDetailsSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
