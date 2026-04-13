@@ -36,7 +36,7 @@ export default function CartTable({
       (data) => {
         setProducts(data);
         setLoading(false);
-      }
+      },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartItems.length]);
@@ -96,7 +96,7 @@ export default function CartTable({
           {t("empty.description")}
         </p>
         <Link
-          href="/san-pham"
+          href="/phu-tung"
           className="inline-flex items-center px-6 py-2.5 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 transition-colors"
         >
           {t("empty.cta")}
@@ -131,7 +131,7 @@ export default function CartTable({
             {/* Product info */}
             <div className="flex items-center gap-4">
               <Link
-                href={`/san-pham/${p.slug}`}
+                href={`/phu-tung/${p.slug}`}
                 className="relative w-20 h-20 rounded-xl overflow-hidden bg-bg-soft flex-shrink-0"
               >
                 <Image
@@ -144,7 +144,7 @@ export default function CartTable({
               </Link>
               <div className="min-w-0">
                 <Link
-                  href={`/san-pham/${p.slug}`}
+                  href={`/phu-tung/${p.slug}`}
                   className="text-sm font-semibold text-text-primary hover:text-primary-500 transition-colors line-clamp-2"
                 >
                   {p.name}
@@ -183,7 +183,7 @@ export default function CartTable({
                       cartActions.decrementItem({
                         productId: p.id,
                         color: item.color,
-                      })
+                      }),
                     )
                   }
                   disabled={item.quantity <= 1}
@@ -201,7 +201,7 @@ export default function CartTable({
                       cartActions.incrementItem({
                         productId: p.id,
                         color: item.color,
-                      })
+                      }),
                     )
                   }
                 >
@@ -225,7 +225,7 @@ export default function CartTable({
                     cartActions.removeFromCart({
                       productId: p.id,
                       color: item.color,
-                    })
+                    }),
                   )
                 }
                 title={t("table.remove")}

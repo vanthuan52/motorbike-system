@@ -114,7 +114,7 @@ export default function ProductListPage() {
   };
   const breadcrumbs: BreadcrumbItem[] = [
     { label: t("breadcrumbs.home"), href: "/" },
-    { label: t("breadcrumbs.productList"), href: "/san-pham" },
+    { label: t("breadcrumbs.productList"), href: "/phu-tung" },
   ];
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);

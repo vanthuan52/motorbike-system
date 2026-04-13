@@ -1,22 +1,22 @@
 {
   "meta": {
-    "title": "Sản Phẩm",
-    "description": "Sản Phẩm"
+    "title": "Phụ tùng",
+    "description": "Phụ tùng"
   },
   "pageTitle": "Danh sách phụ tùng",
   "breadcrumbs": {
     "home": "Trang Chủ",
-    "productList": "Danh Sách Sản Phẩm"
+    "productList": "Danh Sách Phụ Tùng"
   },
   "searchBar": {
     "title": "Tìm kiếm",
-    "placeholder": "Tìm kiếm sản phẩm..."
+    "placeholder": "Tìm kiếm phụ tùng..."
   },
   "filter": {
-    "title": "Bộ Lọc Sản Phẩm",
+    "title": "Bộ Lọc Phụ tùng",
     "open": "Bộ Lọc"
   },
-  "notFound": "Không tìm thấy sản phẩm phù hợp.",
+  "notFound": "Không tìm thấy phụ tùng phù hợp.",
   "activeFilters": {
     "status": {
       "in_stock": "Còn hàng",
