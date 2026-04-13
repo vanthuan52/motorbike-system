@@ -8,7 +8,6 @@ export const BREADCRUMB_LABELS: Record<string, string> = {
   "dang-nhap": "Đăng nhập",
   "dang-ky": "Đăng ký",
   "chi-tiet": "Chi tiết",
-  "danh-muc": "Danh mục",
   contact: "Liên hệ",
   "dang-ky-bao-duong-xe": "Đăng ký bảo dưỡng xe",
   "dich-vu-cham-soc": "Dịch vụ chăm sóc",

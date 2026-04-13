@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import BannerSection from "./_components/banner-section";
 import BlogSection from "./_components/blog-section";
 import BookingSuggest from "./_components/booking-suggest";
 import ContactSection from "./_components/contact-section";
-import HeroSection from "./_components/hero-section";
 import MainServicesSection from "./_components/main-service-section";
 import ProcessStepsSection from "./_components/process-step-section";
 import QuickIntroSection from "./_components/quick-intro-section";
@@ -24,7 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Home() {
   return (
     <div className="w-full">
-      <HeroSection />
+      <BannerSection />
+      {/* <HeroSection /> */}
       <QuickIntroSection />
       <MainServicesSection />
       <WhyChooseUsSection />
