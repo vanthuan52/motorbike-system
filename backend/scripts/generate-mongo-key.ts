@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-
 /**
  * Generates a cryptographically secure keyfile for MongoDB replica set internal authentication.
  *
@@ -66,15 +65,27 @@ class MongoKeyfileGenerator {
     console.log(`   Size     : ${keyContent.length} characters (base64)`);
     console.log(`\n⚠️  Security reminders:`);
     console.log(`   • Listed in .gitignore (*.key) — do NOT commit this file`);
-    console.log(`   • Rotating the key requires restarting ALL replica set members`);
+    console.log(
+      `   • Rotating the key requires restarting ALL replica set members`
+    );
     console.log(`\n🐳 Docker usage:`);
-    console.log(`   Dev     (docker-compose.dev.yml)     — already wired, mount via volumes`);
-    console.log(`   Staging (docker-compose.staging.yml) — also wired, copy file to server`);
-    console.log(`   Production                           — provision via secrets manager`);
+    console.log(
+      `   Dev     (docker-compose.dev.yml)     — already wired, mount via volumes`
+    );
+    console.log(
+      `   Staging (docker-compose.staging.yml) — also wired, copy file to server`
+    );
+    console.log(
+      `   Production                           — provision via secrets manager`
+    );
     console.log(`\n📋 Next steps:`);
-    console.log(`   Dev     : docker compose --env-file .env.development -f docker-compose.dev.yml up -d`);
-    console.log(`   Staging : scp docker/mongo/mongo.key user@server:/app/docker/mongo/mongo.key`);
-    console.log(`             docker compose --env-file .env.staging -f docker-compose.staging.yml up -d`);
+    console.log(`   Dev     : docker compose -f docker-compose.dev.yml up -d`);
+    console.log(
+      `   Staging : scp docker/mongo/mongo.key user@server:/app/docker/mongo/mongo.key`
+    );
+    console.log(
+      `             docker compose -f docker-compose.staging.yml up -d`
+    );
     console.log(`\n`);
 
     return this.outputPath;
