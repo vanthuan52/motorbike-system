@@ -1,6 +1,8 @@
 "use client";
 import { useParams } from "next/navigation";
+// @ts-expect-error: Swiper CSS imports don't have types
 import "swiper/css";
+// @ts-expect-error: Swiper CSS imports don't have types
 import "swiper/css/thumbs";
 import { useTranslations } from "next-intl";
 import React from "react";

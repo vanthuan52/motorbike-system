@@ -62,7 +62,7 @@ export default function AuthModal({
       password: "",
       confirmPassword: "",
     },
-    resolver: yupResolver(signUpCredentialsSchema),
+    resolver: yupResolver(signUpCredentialsSchema) as any,
   });
 
   const onSubmitSignIn: SubmitHandler<LoginCredentialsFormType> = async (
@@ -74,7 +74,12 @@ export default function AuthModal({
   const onSubmitSignUp: SubmitHandler<SignUpCredentialsFormType> = async (
     values,
   ) => {
-    await dispatch(authActions.register(values));
+    await dispatch(
+      authActions.register({
+        ...values,
+        phone: values.phone || "",
+      })
+    );
   };
   // console.log(registerCompleted);
 

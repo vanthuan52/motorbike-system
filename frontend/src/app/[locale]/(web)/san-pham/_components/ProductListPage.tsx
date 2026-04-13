@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import FilterSidebar from "./FilterSidebar";
@@ -80,7 +80,7 @@ export default function ProductListPage() {
     setPage(1);
   }, []);
 
-  const listVariants = {
+  const listVariants: Variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 60 : -60,
       opacity: 0,

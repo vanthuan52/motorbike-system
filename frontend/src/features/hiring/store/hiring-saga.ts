@@ -39,7 +39,9 @@ function* getHiringDetailHandler(
       hiringId
     );
     const hiringDetail = response.data;
-    yield put(hiringActions.getHiringDetailSuccess(hiringDetail!));
+    yield put(
+      hiringActions.getHiringDetailSuccess(hiringDetail as unknown as Hiring)
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     yield put(hiringActions.getHiringListFailure(errorMessage));

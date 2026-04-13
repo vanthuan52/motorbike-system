@@ -80,11 +80,10 @@ export default function PartTypePage() {
           <Breadcrumbs
             items={breadcrumbs}
             className="mb-4"
-            listClassName="text-white"
-            itemClassName="text-white"
-            linkClassName="hover:!underline"
+            linkClassName="hover:!underline text-white"
             activeClassName="text-white font-bold"
-            separator="/"
+            separatorClassName="text-white"
+            homeIconClassName="text-white"
           />
           <PageHeading />
         </div>
