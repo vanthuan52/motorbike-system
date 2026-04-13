@@ -1,4 +1,4 @@
-name: motorbike-system-staging
+name: motorbike-system-prod
 
 services:
   # ──────────────────────────────────────────────────────────────
@@ -9,16 +9,16 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile
       args:
-        NODE_ENV: staging
-    container_name: motorbike-staging-apis
+        NODE_ENV: production
+    container_name: motorbike-prod-apis
     hostname: apis
-    restart: on-failure:5
+    restart: always
     ports:
       - '5300:5300'
     env_file:
       - .env
     environment:
-      - NODE_ENV=staging
+      - NODE_ENV=production
       # Internal service URLs (override .env values for container networking)
       - DATABASE_URL=mongodb://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@mongo:27017/${DATABASE_NAME:-motorbike_system}?retryWrites=true&w=majority&replicaSet=rs0&authSource=admin
       - AUTH_JWT_ACCESS_TOKEN_JWKS_URI=http://jwks-server:80/.well-known/access-jwks.json
@@ -49,33 +49,34 @@ services:
         ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 5
+      start_period: 60s
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 2G
+          cpus: '2.0'
+          memory: 4G
         reservations:
-          cpus: '0.25'
-          memory: 512M
+          cpus: '0.5'
+          memory: 1G
     logging:
       driver: json-file
       options:
-        max-size: '10m'
-        max-file: '5'
+        max-size: '20m'
+        max-file: '10'
 
   # ──────────────────────────────────────────────────────────────
   # MongoDB with Replica Set — required by Prisma for transactions
   # ──────────────────────────────────────────────────────────────
   mongo:
     image: mongo:8.0
-    container_name: motorbike-staging-mongo
+    container_name: motorbike-prod-mongo
     hostname: mongo
-    restart: unless-stopped
-    # Staging: expose on non-standard port for debugging if needed
-    ports:
-      - '5304:27017'
+    restart: always
+    # Production: no host port — only accessible within the Docker network
+    # Uncomment the line below if you need to connect from the host for maintenance
+    # ports:
+    #   - '127.0.0.1:27017:27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
@@ -91,35 +92,46 @@ services:
         chown mongodb:mongodb /tmp/mongo.key
         exec docker-entrypoint.sh "$$@"
       - --
-    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/tmp/mongo.key']
+    command:
+      - mongod
+      - '--replSet'
+      - rs0
+      - '--bind_ip_all'
+      - '--keyFile'
+      - /tmp/mongo.key
+      - '--wiredTigerCacheSizeGB'
+      - '0.5'
+      - '--oplogSize'
+      - '128'
+      - '--quiet'
     networks:
       - app-network
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 1G
+          cpus: '2.0'
+          memory: 2G
         reservations:
-          cpus: '0.25'
-          memory: 256M
+          cpus: '0.5'
+          memory: 512M
     healthcheck:
       test: >-
         mongosh -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD}
         --authenticationDatabase admin --eval "db.adminCommand('ping')" --quiet
-      interval: 10s
+      interval: 15s
       timeout: 5s
       retries: 5
       start_period: 30s
     logging:
       driver: json-file
       options:
-        max-size: '10m'
-        max-file: '5'
+        max-size: '20m'
+        max-file: '10'
 
   # MongoDB Replica Set Initialization — runs once then exits
   mongo-init:
     image: mongo:8.0
-    container_name: motorbike-staging-mongo-init
+    container_name: motorbike-prod-mongo-init
     depends_on:
       mongo:
         condition: service_healthy
@@ -150,11 +162,10 @@ services:
   # ──────────────────────────────────────────────────────────────
   jwks-server:
     image: nginx:alpine
-    container_name: motorbike-staging-jwks-server
+    container_name: motorbike-prod-jwks-server
     hostname: jwks-server
-    restart: unless-stopped
-    ports:
-      - '5301:80'
+    restart: always
+    # No host port — only accessible within the Docker network
     volumes:
       - ./keys/access-jwks.json:/usr/share/nginx/html/.well-known/access-jwks.json:ro
       - ./keys/refresh-jwks.json:/usr/share/nginx/html/.well-known/refresh-jwks.json:ro
@@ -194,27 +205,26 @@ services:
   # ──────────────────────────────────────────────────────────────
   redis:
     image: redis:8.0-alpine
-    container_name: motorbike-staging-redis
+    container_name: motorbike-prod-redis
     hostname: redis
-    restart: unless-stopped
-    # Staging: expose on non-standard port for debugging
-    ports:
-      - '5302:6379'
+    restart: always
+    # No host port — only accessible within the Docker network
     volumes:
       - redis_data:/data
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory', '256mb', '--maxmemory-policy', 'allkeys-lru']
     networks:
       - app-network
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 512M
         reservations:
           cpus: '0.1'
-          memory: 64M
+          memory: 128M
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
-      interval: 10s
+      interval: 15s
       timeout: 5s
       retries: 5
     logging:
@@ -224,15 +234,16 @@ services:
         max-file: '3'
 
   # ──────────────────────────────────────────────────────────────
-  # Bull Board — queue monitoring dashboard
+  # Bull Board — queue monitoring dashboard (optional)
   # ──────────────────────────────────────────────────────────────
   redis-bullboard:
     image: venatum/bull-board:latest
-    container_name: motorbike-staging-bullboard
+    container_name: motorbike-prod-bullboard
     hostname: redis-bullboard
     restart: unless-stopped
+    # Bind to localhost only — access via SSH tunnel or reverse proxy
     ports:
-      - '5303:3000'
+      - '127.0.0.1:5303:3000'
     networks:
       - app-network
     environment:
@@ -250,18 +261,20 @@ services:
         limits:
           cpus: '0.25'
           memory: 128M
+    profiles: ['monitoring']
 
   # ──────────────────────────────────────────────────────────────
   # MinIO — S3-compatible object storage
   # ──────────────────────────────────────────────────────────────
   minio:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
-    container_name: motorbike-staging-minio
+    container_name: motorbike-prod-minio
     hostname: minio
-    restart: unless-stopped
+    restart: always
+    # No host port for API — only accessible within the Docker network
+    # Console bound to localhost only — access via SSH tunnel
     ports:
-      - '5305:9000'  # API
-      - '5306:9001'  # Console UI
+      - '127.0.0.1:9001:9001'
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -273,11 +286,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '1.0'
+          memory: 1G
         reservations:
-          cpus: '0.1'
-          memory: 128M
+          cpus: '0.25'
+          memory: 256M
     healthcheck:
       test:
         [
@@ -294,13 +307,13 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: '10m'
-        max-file: '5'
+        max-size: '20m'
+        max-file: '10'
 
   # MinIO Initialization — creates buckets, users, policies then exits
   minio-init:
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
-    container_name: motorbike-staging-minio-init
+    container_name: motorbike-prod-minio-init
     depends_on:
       minio:
         condition: service_healthy

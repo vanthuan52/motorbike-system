@@ -34,9 +34,9 @@ Các biến **bắt buộc** phải điền trước khi chạy:
 
 ```env
 # Database
-DATABASE_URL=mongodb://motorbike:changeme123@127.0.0.1:27017/motorbike_system?authSource=admin&replicaSet=rs0&directConnection=true
+DATABASE_URL=mongodb://motorbike:changeme123@localhost:27017/motorbike_system?retryWrites=true&w=majority&replicaSet=rs0&directConnection=true&authSource=admin
 DATABASE_USERNAME=motorbike
-DATABASE_PASSWORD=changeme
+DATABASE_PASSWORD=changeme123
 
 # MinIO root credentials (dùng cho docker-compose.*.yml)
 MINIO_ROOT_USER=minioadmin
@@ -51,6 +51,7 @@ BULL_BOARD_USER=admin
 BULL_BOARD_PASSWORD=changeme
 ```
 
+> `authSource=admin` là **bắt buộc** vì root user tạo bởi Docker nằm trong database `admin`.
 > Các biến còn lại (Google, Apple, Firebase, SES...) để trống cũng được khi dev local.
 
 ---
@@ -105,20 +106,22 @@ Services được khởi động:
 
 ### MongoDB Setup for Dev vs Staging vs Production
 
-Transactions yêu cầu **replica set** nhưng **KHÔNG yêu cầu keyFile**. Keyfile chỉ dùng để secure communication giữa nhiều MongoDB nodes:
+Transactions yêu cầu **replica set**. Keyfile dùng để authenticate giữa các MongoDB nodes trong replica set:
 
 | Config | Dev | Staging | Production |
 |--------|-----|---------|------------|
 | **Replica Set** | ✅ Single Node (rs0) | ✅ Single Node (rs0) | ✅ Multi-Node (rs0) |
 | **Authentication** | ✅ Username/Password | ✅ Username/Password | ✅ Username/Password |
-| **Keyfile** | ❌ Not needed | ❌ Not needed | ✅ Recommended for multi-node |
+| **Keyfile** | ✅ Required | ✅ Required | ✅ Required |
 | **Transactions** | ✅ Works | ✅ Works | ✅ Works |
 
-**For Production:** Nếu bạn triển khai multi-node MongoDB replica set (3+ nodes phân tán), hãy:
+> **Lưu ý:** Keyfile là bắt buộc cho replica set mode vì MongoDB yêu cầu internal authentication khi `--replSet` được bật cùng `--auth`. Chạy `npm run generate:mongo-key` ở **Bước 4** để tạo.
+
+**For Production (multi-node):**
 1. Tạo keyfile: `npm run generate:mongo-key`
-2. Copy keyfile tới tất cả MongoDB nodes với `600` permissions
+2. Copy **cùng một** keyfile tới tất cả MongoDB nodes với `400` permissions
 3. Enable keyFile + auth trong mongod config
-4. Sử dụng `docker-compose.staging.yml` làm reference, thêm `--keyFile` parameter
+4. Sử dụng `docker-compose.staging.yml` làm reference
 
 ---
 
@@ -190,8 +193,18 @@ docker compose -f docker-compose.dev.yml up -d
 - Single-node services (MongoDB, Redis, MinIO)
 - No resource limits (uses max available)
 - All ports exposed for easy debugging
-- Verbose logging
-- Hot-reload enabled (if applicable)
+- App chạy ngoài Docker (`npm run start:dev`), chỉ services chạy trong Docker
+
+**Port mapping:**
+
+| Port    | Service       |
+| ------- | ------------- |
+| `27017` | MongoDB       |
+| `5301`  | JWKS Server   |
+| `6379`  | Redis         |
+| `5303`  | Bull Board    |
+| `39000` | MinIO API     |
+| `39001` | MinIO Console |
 
 ### Staging (docker-compose.staging.yml)
 
@@ -202,39 +215,47 @@ docker compose -f docker-compose.staging.yml up -d
 ```
 
 **Features:**
-- Same architecture as production (single-node balanced)
-- Moderate resource limits (realistic constraints)
-- Healthchecks enabled
-- JSON logging
-- Non-admin services (Bull Board visible)
+- ✅ Full stack bao gồm NestJS API (containerized)
+- ✅ Moderate resource limits (realistic constraints)
+- ✅ All services exposed trên non-standard ports (debugging)
+- ✅ Log rotation (`json-file` driver)
+- ✅ Internal networking — app kết nối services qua Docker hostname
+- ✅ Bull Board accessible
+
+**Port mapping:**
+
+| Port   | Service       |
+| ------ | ------------- |
+| `5300` | NestJS API    |
+| `5301` | JWKS Server   |
+| `5302` | Redis         |
+| `5303` | Bull Board    |
+| `5304` | MongoDB       |
+| `5305` | MinIO API     |
+| `5306` | MinIO Console |
 
 ### Production (docker-compose.prod.yml)
 
 **Best for:** Live environment, maximum reliability and performance
 
 ```bash
+# Không bao gồm Bull Board (chỉ bật khi cần)
 docker compose -f docker-compose.prod.yml up -d
+
+# Bao gồm Bull Board monitoring
+docker compose -f docker-compose.prod.yml --profile monitoring up -d
 ```
 
 **Features:**
-- ✅ **Strict resource limits** (prevent resource exhaustion)
+- ✅ **Internal-only networking** — chỉ API port (5300) exposed ra ngoài
+- ✅ **Strict resource limits + reservations** (prevent resource exhaustion)
 - ✅ **Always restart policy** (automatic recovery)
-- ✅ **Persistent logging** (json-file driver with rotation)
-- ✅ **Optimized healthchecks** (longer timeouts, more retries)
-- ✅ **Reserved resources** (guaranteed minimum performance)
-- ✅ **Read-only volumes** (config immutability)
+- ✅ **Log rotation** (json-file driver, max 20m × 10 files)
+- ✅ **Read-only config volumes** (config immutability)
 - ✅ **WiredTiger optimizations** (MongoDB caching, oplog sizing)
-- ✅ **Redis persistence** (AOF for durability)
-
-**Production Checklist:**
-- [ ] Set strong `DATABASE_PASSWORD` in `.env`
-- [ ] Set strong `MINIO_ROOT_PASSWORD` in `.env`
-- [ ] Configure backups for `mongo_data` volume
-- [ ] Configure backups for `minio_data` volume
-- [ ] Set up log aggregation (ELK, Datadog, CloudWatch)
-- [ ] Configure monitoring/alerting for all services
-- [ ] Test failover scenarios
-- [ ] Document rollback procedures
+- ✅ **Redis AOF persistence** (durability) + memory limits
+- ✅ **Bull Board behind profile** — chỉ accessible qua `localhost` (SSH tunnel)
+- ✅ **MinIO Console** — chỉ accessible qua `localhost` (SSH tunnel)
 - [ ] Use Docker secrets instead of .env (recommended for sensitive data)
 
 ---
@@ -268,7 +289,25 @@ Nếu không trả về JSON → chạy lại `npm run generate:keys` rồi rest
 
 ### ❌ Prisma lỗi "replica set not found"
 
-MongoDB phải chạy ở replica set mode. Chạy lại bước 3 và đảm bảo `DATABASE_URL` có `replicaSet=rs0`.
+MongoDB phải chạy ở replica set mode. Chạy lại bước 5 và đảm bảo `DATABASE_URL` có `replicaSet=rs0`.
+
+### ❌ MongoDB lỗi "Authentication failed" (SCRAM failure)
+
+**Triệu chứng:** Prisma `db push` hoặc MongoDB Compass báo `Authentication failed`.
+
+**Nguyên nhân:** Thiếu `authSource=admin` trong `DATABASE_URL`. Root user tạo bởi Docker (`MONGO_INITDB_ROOT_USERNAME`) nằm trong database `admin`, nhưng driver mặc định authenticate vào database trong URL path.
+
+**Cách khắc phục:** Đảm bảo `DATABASE_URL` có `authSource=admin`:
+
+```env
+DATABASE_URL=mongodb://...@localhost:27017/motorbike_system?...&authSource=admin
+```
+
+**Kết nối MongoDB Compass:** Dùng connection string:
+
+```
+mongodb://motorbike:changeme123@localhost:27017/motorbike_system?authSource=admin&directConnection=true
+```
 
 ### ❌ MinIO lỗi kết nối
 
@@ -335,6 +374,7 @@ backend/
 ├── keys/                  # JWT key files (không commit)
 ├── docker/
 │   ├── Dockerfile         # Production image
+│   ├── mongo/mongo.key    # MongoDB replica set keyfile (không commit)
 │   └── minio/policies/    # MinIO IAM/CORS/lifecycle config
 ├── scripts/
 │   └── generate-keys.ts   # Script tạo JWT key pair
