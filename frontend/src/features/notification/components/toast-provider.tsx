@@ -1,18 +1,19 @@
 "use client";
 
-import { ToastContainer } from "react-toastify";
+import { Toaster } from "sonner";
 
 export default function ToastProvider() {
   return (
-    <ToastContainer
+    <Toaster
       position="top-right"
-      autoClose={4000}
-      hideProgressBar={false}
-      newestOnTop
-      closeOnClick
-      pauseOnHover
-      draggable
-      theme="colored"
+      richColors
+      closeButton
+      duration={4000}
+      toastOptions={{
+        style: {
+          fontFamily: "var(--font-lexend, system-ui, sans-serif)",
+        },
+      }}
     />
   );
 }

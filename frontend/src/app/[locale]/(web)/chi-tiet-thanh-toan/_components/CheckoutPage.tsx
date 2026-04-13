@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Form } from "antd";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 const CheckoutForm = dynamic(() => import("./CheckoutForm"), { ssr: false });
 const CartSummary = dynamic(() => import("./CartSummary"), { ssr: false });
 

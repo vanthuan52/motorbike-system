@@ -399,10 +399,10 @@
 
 @layer components {
   .container {
-    @apply mx-auto px-4 lg:px-8 xl:px-0;
+    @apply mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8;
   }
   .container-fluid {
-    @apply mx-auto px-4 lg:px-8 xl:px-0;
+    @apply mx-auto w-full px-4 sm:px-6 lg:px-8;
   }
 
   /* ============================================================

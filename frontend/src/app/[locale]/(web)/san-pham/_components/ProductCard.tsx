@@ -3,7 +3,7 @@
 import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 import { addToCart } from "@/features/cart/store/cart-slice";

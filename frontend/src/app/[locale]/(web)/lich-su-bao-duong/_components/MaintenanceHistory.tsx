@@ -8,7 +8,7 @@ import {
   SearchOutlined,
   StopOutlined,
 } from "@ant-design/icons";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { MaintenanceHistoryCustomer } from "../types/types";

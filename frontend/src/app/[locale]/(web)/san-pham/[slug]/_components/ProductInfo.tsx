@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useTranslations } from "next-intl";
-import { IoShareOutline } from "react-icons/io5";
-import { CiHeart } from "react-icons/ci";
-import { toast } from "react-toastify";
+import { Heart, Minus, Plus, Share2, ShieldCheck, Truck, RefreshCcw, BadgeCheck } from "lucide-react";
+import { toast } from "sonner";
+
 import { Product } from "@/types/users/products/product";
 import { mockDataTableVehiclePart } from "@/data/TableData";
 import { addToCart } from "@/features/cart/store/cart-slice";
-
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 interface ProductInfoProps {
@@ -17,127 +16,194 @@ interface ProductInfoProps {
 export function ProductInfo({ product }: ProductInfoProps) {
   const t = useTranslations(TRANSLATION_FILES.PRODUCT_DETAIL);
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState(0);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   const dispatch = useDispatch();
-  const handleAddToCart = (product: Product, quantity: number) => {
-    dispatch(addToCart({ id: product.id, color: product.colors[0], quantity }));
+
+  const handleAddToCart = () => {
+    dispatch(addToCart({ id: product.id, color: product.colors[selectedColor], quantity }));
     toast.success(t("productInfo.toast.success"));
   };
-  return (
-    <div className="flex-1 flex flex-col justify-start gap-10 sm:py-4">
-      <h1 className="text-3xl sm:text-4xl font-bold text-black leading-tight">
-        {product.name}
-      </h1>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <span
-          className={
-            "px-4 py-1 border border-gray-300 rounded-full text-base font-semibold " +
-            (product.status === "in_stock"
-              ? "bg-green-900 text-white"
-              : product.status === "out_of_stock"
-                ? "bg-yellow-300 text-gray-700"
-                : "bg-gray-200 text-gray-500")
-          }
-        >
-          {product.status === "in_stock" && "Còn hàng"}
-          {product.status === "out_of_stock" && "Hết hàng"}
-          {product.status === "out_of_business" && "Ngừng kinh doanh"}
+  const categoryName = product.partTypeId
+    ? mockDataTableVehiclePart.find((cat) => cat.id === product.partTypeId)?.name
+    : t("productInfo.category.unknown");
+
+  const statusConfig = {
+    in_stock: { label: t("productInfo.inStock"), class: "bg-success-bg text-success" },
+    out_of_stock: { label: t("productInfo.outOfStock"), class: "bg-warning-bg text-warning" },
+    out_of_business: { label: t("productInfo.outOfBusiness"), class: "bg-secondary-200 text-text-muted" },
+  };
+
+  const status = statusConfig[product.status];
+
+  return (
+    <div className="flex-1 flex flex-col gap-6 lg:py-2">
+      {/* Header: Name + Status */}
+      <div>
+        <div className="flex items-center gap-2.5 mb-3">
+          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${status.class}`}>
+            {status.label}
+          </span>
+          <span className="text-text-muted text-xs font-medium">
+            {t("productInfo.sku")}: {product.sku}
+          </span>
+        </div>
+
+        <h1 className="text-2xl sm:text-3xl font-bold text-text-primary leading-tight">
+          {product.name}
+        </h1>
+      </div>
+
+      {/* Tags */}
+      <div className="flex flex-wrap items-center gap-2">
+        {categoryName && (
+          <span className="px-3 py-1 rounded-md text-xs bg-primary-50 text-primary-500 font-medium">
+            {categoryName}
+          </span>
+        )}
+        <span className="px-3 py-1 rounded-md text-xs bg-bg-soft text-text-secondary font-medium">
+          {t("productInfo.origin")}: {product.origin}
         </span>
-        <span className="px-4 py-1 border border-gray-300 rounded-full text-base bg-gray-100 text-gray-700 font-medium">
-          {product.partTypeId
-            ? mockDataTableVehiclePart.find(
-                (cat) => cat.id === product.partTypeId
-              )?.name
-            : t("productInfo.category.unknown")}
-        </span>
-        <span className="px-4 py-1 border border-gray-300 rounded-full text-base bg-gray-100 text-gray-700 font-medium">
-          {product.origin}
-        </span>
-        <span className="px-4 py-1 border border-gray-300 rounded-full text-base bg-gray-100 text-gray-700 font-medium">
+        <span className="px-3 py-1 rounded-md text-xs bg-bg-soft text-text-secondary font-medium">
           {t("productInfo.stock")}: {product.stock}
         </span>
       </div>
-      <div className="flex gap-4 items-center">
-        <span className="text-base text-gray-800 font-medium">
-          {t("productInfo.color")}:
+
+      {/* Price */}
+      <div className="flex items-baseline gap-3">
+        <span className="text-3xl sm:text-4xl font-extrabold text-primary-500">
+          {product.price.toLocaleString("vi-VN")}₫
         </span>
-        {product.colors.map((color, idx) => (
-          <span
-            key={color + idx}
-            className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center"
-            style={{ backgroundColor: color }}
-            title={color}
-          />
-        ))}
+        {product.discount && (
+          <span className="text-sm font-semibold text-white bg-error px-2 py-0.5 rounded-md">
+            -{product.discount}%
+          </span>
+        )}
       </div>
-      <div className="flex items-center justify-between gap-6">
-        <span className="text-3xl font-bold text-black">
-          {product.price.toLocaleString()}₫
+
+      {/* Divider */}
+      <hr className="border-border" />
+
+      {/* Color Picker */}
+      <div className="flex flex-col gap-2.5">
+        <span className="text-sm text-text-primary font-medium">
+          {t("productInfo.color")}
         </span>
-        <div className="flex gap-3">
-          <button className="flex items-center border justify-center bg-gray-100 hover:bg-gray-200 transition px-4 py-3 rounded-xl">
-            <IoShareOutline size={24} className="text-black" />
-          </button>
-          <button className="flex items-center border justify-center bg-gray-100 hover:bg-gray-200 transition px-4 py-3 rounded-xl">
-            <CiHeart size={24} className="text-black" />
-          </button>
+        <div className="flex gap-2.5">
+          {product.colors.map((color, idx) => (
+            <button
+              key={color + idx}
+              type="button"
+              onClick={() => setSelectedColor(idx)}
+              className={`
+                w-9 h-9 rounded-full transition-all duration-200 cursor-pointer
+                ${
+                  selectedColor === idx
+                    ? "ring-2 ring-primary-500 ring-offset-2 scale-110"
+                    : "ring-1 ring-border-strong hover:ring-primary-300 hover:scale-105"
+                }
+              `}
+              style={{ backgroundColor: color }}
+              title={color}
+            />
+          ))}
         </div>
       </div>
-      <div>
-        <p className="text-lg text-gray-700 break-words">
-          {product.description}
-        </p>
-      </div>
-      <div className="flex flex-col sm:flex-row items-center gap-5 mt-2">
-        <div className="flex items-center gap-3">
-          <span className="text-gray-900 font-medium text-base">
+
+      {/* Quantity + CTA */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+        {/* Quantity control */}
+        <div className="flex items-center">
+          <span className="text-sm text-text-primary font-medium mr-3 whitespace-nowrap">
             {t("productInfo.quantity")}
           </span>
-          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+          <div className="inline-flex items-center border border-border rounded-lg overflow-hidden">
             <button
-              className="px-4 py-1 text-xl text-black hover:bg-gray-100 border-r"
+              type="button"
+              className="w-10 h-10 flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             >
-              −
+              <Minus size={16} />
             </button>
-            <input
-              type="number"
-              value={quantity}
-              readOnly
-              className="w-[74px] text-center text-lg bg-white text-black"
-            />
+            <span className="w-12 text-center text-base font-semibold text-text-primary select-none">
+              {quantity}
+            </span>
             <button
-              className="px-4 py-1 text-xl text-black hover:bg-gray-100 border-l"
+              type="button"
+              className="w-10 h-10 flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
               onClick={() => setQuantity((q) => q + 1)}
             >
-              +
+              <Plus size={16} />
             </button>
           </div>
         </div>
+
+        {/* Add to Cart */}
         <button
+          type="button"
           className={`
-    w-[220px] h-12 font-semibold text-base rounded-lg border
-    transition
-    ${
-      product.status !== "in_stock"
-        ? "bg-gray-300 border-gray-300 text-white cursor-not-allowed opacity-70"
-        : "bg-black border-black text-white cursor-pointer hover:bg-gray-900"
-    }
-  `}
-          onClick={() => handleAddToCart(product, quantity)}
+            flex-1 sm:flex-none sm:min-w-[200px] h-11 px-6 font-semibold text-sm rounded-lg
+            transition-all duration-200 flex items-center justify-center gap-2
+            ${
+              product.status !== "in_stock"
+                ? "bg-secondary-200 text-text-disabled cursor-not-allowed"
+                : "bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 cursor-pointer shadow-sm hover:shadow-md"
+            }
+          `}
+          onClick={handleAddToCart}
           disabled={product.status !== "in_stock"}
         >
           {product.status === "in_stock"
             ? t("productInfo.addToCart")
             : t("productInfo.outOfStock")}
         </button>
-      </div>
-      <div className="flex flex-col sm:flex-row items-center gap-5 mt-2">
-        <div className="flex items-center gap-3">
-          <span className="text-gray-900 font-medium text-base">
-            {t("productInfo.formOfDelivery")}
-          </span>
+
+        {/* Wishlist + Share */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setIsWishlisted(!isWishlisted)}
+            className={`
+              w-11 h-11 rounded-lg border flex items-center justify-center transition-all duration-200 cursor-pointer
+              ${
+                isWishlisted
+                  ? "border-error bg-error/5 text-error"
+                  : "border-border text-text-muted hover:border-error hover:text-error hover:bg-error/5"
+              }
+            `}
+            title={t("productInfo.wishlist")}
+          >
+            <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
+          </button>
+          <button
+            type="button"
+            className="w-11 h-11 rounded-lg border border-border text-text-muted hover:border-primary-500 hover:text-primary-500 hover:bg-primary-50 flex items-center justify-center transition-all duration-200 cursor-pointer"
+            title={t("productInfo.share")}
+          >
+            <Share2 size={18} />
+          </button>
         </div>
+      </div>
+
+      {/* Divider */}
+      <hr className="border-border" />
+
+      {/* Trust badges */}
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          { icon: Truck, label: t("productInfo.freeShipping") },
+          { icon: ShieldCheck, label: t("productInfo.warranty") },
+          { icon: BadgeCheck, label: t("productInfo.genuine") },
+          { icon: RefreshCcw, label: t("productInfo.returnPolicy") },
+        ].map(({ icon: Icon, label }) => (
+          <div key={label} className="flex items-center gap-2.5 text-text-secondary">
+            <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
+              <Icon size={16} className="text-primary-500" />
+            </div>
+            <span className="text-xs font-medium leading-tight">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

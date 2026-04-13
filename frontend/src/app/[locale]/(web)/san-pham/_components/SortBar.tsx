@@ -6,7 +6,12 @@ import { useTranslations } from "next-intl";
 
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
-type SortValue = "relevance" | "discount" | "newest" | "price-asc" | "price-desc";
+type SortValue =
+  | "relevance"
+  | "discount"
+  | "newest"
+  | "price-asc"
+  | "price-desc";
 
 interface Props {
   sort: SortValue;
@@ -81,25 +86,37 @@ export default function SortBar({
           </button>
 
           {priceOpen && (
-            <div className="absolute top-full left-0 mt-1 z-20 min-w-[160px]
-                            bg-surface rounded-lg shadow-md border border-border py-1">
+            <div
+              className="absolute top-full left-0 mt-1 z-20 min-w-[160px]
+                            bg-surface rounded-lg shadow-md border border-border py-1"
+            >
               <button
                 type="button"
-                onClick={() => { onChange("price-asc"); setPriceOpen(false); }}
+                onClick={() => {
+                  onChange("price-asc");
+                  setPriceOpen(false);
+                }}
                 className={`w-full text-left px-3 py-2 text-sm transition-colors
-                  ${sort === "price-asc"
-                    ? "text-primary-500 bg-primary-50 font-medium"
-                    : "text-text-secondary hover:bg-bg-hover"}`}
+                  ${
+                    sort === "price-asc"
+                      ? "text-primary-500 bg-primary-50 font-medium"
+                      : "text-text-secondary hover:bg-bg-hover"
+                  }`}
               >
                 {t("sortBar.options.priceAsc")}
               </button>
               <button
                 type="button"
-                onClick={() => { onChange("price-desc"); setPriceOpen(false); }}
+                onClick={() => {
+                  onChange("price-desc");
+                  setPriceOpen(false);
+                }}
                 className={`w-full text-left px-3 py-2 text-sm transition-colors
-                  ${sort === "price-desc"
-                    ? "text-primary-500 bg-primary-50 font-medium"
-                    : "text-text-secondary hover:bg-bg-hover"}`}
+                  ${
+                    sort === "price-desc"
+                      ? "text-primary-500 bg-primary-50 font-medium"
+                      : "text-text-secondary hover:bg-bg-hover"
+                  }`}
               >
                 {t("sortBar.options.priceDesc")}
               </button>
@@ -120,7 +137,9 @@ export default function SortBar({
           >
             <LayoutGrid
               size={20}
-              className={layout === "grid" ? "text-white" : "text-text-secondary"}
+              className={
+                layout === "grid" ? "text-white" : "text-text-secondary"
+              }
             />
           </button>
           <button
@@ -132,7 +151,9 @@ export default function SortBar({
           >
             <List
               size={20}
-              className={layout === "list" ? "text-white" : "text-text-secondary"}
+              className={
+                layout === "list" ? "text-white" : "text-text-secondary"
+              }
             />
           </button>
         </div>
@@ -141,11 +162,12 @@ export default function SortBar({
         <button
           type="button"
           onClick={onFilterOpen}
-          className="lg:hidden p-1.5 rounded-md border border-border bg-surface
-                     text-text-secondary hover:bg-bg-hover transition-colors duration-200"
+          className="lg:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface border border-border
+                     text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors duration-200"
           aria-label={t("filter.open")}
         >
-          <SlidersHorizontal size={20} />
+          <SlidersHorizontal size={18} />
+          <span className="font-medium text-sm">Lọc</span>
         </button>
       </div>
     </div>
