@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import AboutHeroSection from "./_components/about-hero-section";
-import AwardsSection from "./_components/awards-section";
-import FaqSection from "./_components/faq-section";
-import FeaturedServices from "./_components/feature-service";
-import HistorySection from "./_components/history-section";
-import SocialCommunitySection from "./_components/social-community";
-import StaffSection from "./_components/staff-section";
-import WhyChooseUsSection from "../(home)/_components/why-choose-us-section";
+import AboutHeroSection from "../../../../features/about/components/about-hero-section";
+import AwardsSection from "../../../../features/about/components/awards-section";
+import FaqSection from "../../../../features/about/components/faq-section";
+import FeaturedServices from "../../../../features/about/components/feature-service";
+import HistorySection from "../../../../features/about/components/history-section";
+import SocialCommunitySection from "../../../../features/about/components/social-community";
+import StaffSection from "../../../../features/about/components/staff-section";
+import WhyChooseUsSection from "../../../../features/home/components/why-choose-us-section";
 
 import { TRANSLATION_FILES } from "@/lib/i18n";
 

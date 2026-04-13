@@ -13,6 +13,7 @@ import {
 } from "redux-persist";
 import rootSaga from "./root-saga";
 import { authReducer } from "@/features/auth/store";
+import { bannerReducer } from "@/features/banner/store";
 import { cartReducer } from "@/features/cart/store";
 import { partTypeReducer } from "@/features/part-type/store";
 import storage from "@/utils/ssr-safe-storage";
@@ -38,6 +39,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  banner: bannerReducer,
   cart: cartReducer,
   notification: notificationReducer,
   partType: partTypeReducer,
