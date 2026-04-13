@@ -43,25 +43,25 @@ export default function ProductDetailsPage() {
 
       <section className="pb-16">
         <div className="container">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-            {/* Left column: Gallery + Description (scrollable) */}
-            <div className="w-full lg:w-[55%]">
+          <div className="grid grid-cols-1 lg:grid-cols-[55%_1fr] gap-8 lg:gap-12 items-start">
+            {/* Gallery */}
+            <div className="order-1">
               <ProductImageGallery images={product.image} />
-
-              {/* Product Description — rendered as rich text content */}
-              <div className="mt-10 pt-8 border-t border-border">
-                <h2 className="text-lg font-bold text-text-primary mb-4">
-                  {t("productInfo.description")}
-                </h2>
-                <div className="prose prose-sm max-w-none text-text-secondary leading-relaxed">
-                  <p>{product.description}</p>
-                </div>
-              </div>
             </div>
 
-            {/* Right column: Product Info (sticky) */}
-            <div className="w-full lg:w-[45%] lg:sticky lg:top-6 lg:self-start">
+            {/* Right column: Product Info (sticky on desktop) */}
+            <div className="order-2 lg:sticky lg:top-6 lg:self-start">
               <ProductInfo product={product} />
+            </div>
+
+            {/* Product Description — below product info on mobile, below gallery on desktop */}
+            <div className="order-3 lg:order-3 lg:col-start-1 pt-8 border-t border-border">
+              <h2 className="text-lg font-bold text-text-primary mb-4">
+                {t("productInfo.description")}
+              </h2>
+              <div className="prose prose-sm max-w-none text-text-secondary leading-relaxed">
+                <p>{product.description}</p>
+              </div>
             </div>
           </div>
         </div>

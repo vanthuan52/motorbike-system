@@ -22,7 +22,7 @@ export default function CustomerInfoSection() {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("form.name")}</FormLabel>
+            <FormLabel>{t("form.name")} <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Input placeholder={t("form.namePlaceholder")} {...field} />
             </FormControl>
@@ -35,7 +35,7 @@ export default function CustomerInfoSection() {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{t("form.phone")}</FormLabel>
+            <FormLabel>{t("form.phone")} <span className="text-red-500">*</span></FormLabel>
             <FormControl>
               <Input placeholder={t("form.phonePlaceholder")} {...field} />
             </FormControl>

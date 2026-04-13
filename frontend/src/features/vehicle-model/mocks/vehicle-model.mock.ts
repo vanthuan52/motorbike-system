@@ -4,7 +4,12 @@ import {
   ENUM_VEHICLE_MODEL_TYPE,
   ENUM_VEHICLE_MODEL_FUEL_TYPE,
 } from "@/features/vehicle-model/types";
-import { VehicleBrand, ENUM_VEHICLE_BRAND_STATUS } from "@/features/vehicle-brand/types";
+import {
+  VehicleBrand,
+  ENUM_VEHICLE_BRAND_STATUS,
+} from "@/features/vehicle-brand/types";
+
+const DATE = "2024-01-01T00:00:00.000Z" as unknown as Date;
 
 /* ── Mock Brands ── */
 const brandYamaha: VehicleBrand = {
@@ -14,8 +19,8 @@ const brandYamaha: VehicleBrand = {
   status: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
   country: "Japan",
   photo: "/images/brands/yamaha.png",
-  createdAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
-    updatedAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
+  createdAt: DATE,
+  updatedAt: DATE,
 };
 
 const brandHonda: VehicleBrand = {
@@ -25,8 +30,8 @@ const brandHonda: VehicleBrand = {
   status: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
   country: "Japan",
   photo: "/images/brands/honda.png",
-  createdAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
-    updatedAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
+  createdAt: DATE,
+  updatedAt: DATE,
 };
 
 const brandSuzuki: VehicleBrand = {
@@ -36,8 +41,8 @@ const brandSuzuki: VehicleBrand = {
   status: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
   country: "Japan",
   photo: "/images/brands/suzuki.png",
-  createdAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
-    updatedAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
+  createdAt: DATE,
+  updatedAt: DATE,
 };
 
 const brandVinfast: VehicleBrand = {
@@ -47,8 +52,8 @@ const brandVinfast: VehicleBrand = {
   status: ENUM_VEHICLE_BRAND_STATUS.ACTIVE,
   country: "Vietnam",
   photo: "/images/brands/vinfast.png",
-  createdAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
-    updatedAt: "2024-01-01T00:00:00.000Z" as unknown as Date,
+  createdAt: DATE,
+  updatedAt: DATE,
 };
 
 export const mockVehicleBrands: VehicleBrand[] = [
@@ -70,11 +75,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandYamaha,
+    photo: "/images/vehicle-model/yamaha-exciter-155-2026.webp",
     type: ENUM_VEHICLE_MODEL_TYPE.MANUAL,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2021,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-002",
@@ -85,11 +91,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2025,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandYamaha,
+    photo: "/images/vehicle-model/yamaha-nvx-155-2025.webp",
     type: ENUM_VEHICLE_MODEL_TYPE.SCOOTER,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2021,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-003",
@@ -100,11 +107,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2025,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandYamaha,
+    photo: "/images/vehicle-model/yamaha-sirius-110-2025.webp",
     type: ENUM_VEHICLE_MODEL_TYPE.MANUAL,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2014,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-004",
@@ -115,11 +123,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandYamaha,
+    photo: "/images/vehicle-model/yamaha-grande-125-2025.webp",
     type: ENUM_VEHICLE_MODEL_TYPE.SCOOTER,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.HYBRID,
     yearStart: 2019,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
 
   // Honda
@@ -132,11 +141,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandHonda,
+    photo: "/images/vehicle-model/honda-winner-r-155-2026.jpg",
     type: ENUM_VEHICLE_MODEL_TYPE.MANUAL,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2019,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-006",
@@ -147,11 +157,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandHonda,
+    photo: "/images/vehicle-model/honda-air-blade-160-2026.png",
     type: ENUM_VEHICLE_MODEL_TYPE.SCOOTER,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2022,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-007",
@@ -162,11 +173,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandHonda,
+    photo: "/images/vehicle-model/honda-sh-160-2026.png",
     type: ENUM_VEHICLE_MODEL_TYPE.SCOOTER,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2020,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-008",
@@ -177,11 +189,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2025,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandHonda,
+    photo: "/images/vehicle-model/honda-wave-rsx-110-2026.png",
     type: ENUM_VEHICLE_MODEL_TYPE.MANUAL,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2006,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
 
   // Suzuki
@@ -194,11 +207,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2025,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandSuzuki,
+    photo: "/images/vehicle-model/suzuki-raider-150-2026.jpg",
     type: ENUM_VEHICLE_MODEL_TYPE.MANUAL,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2017,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-010",
@@ -209,11 +223,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandSuzuki,
+    photo: "/images/vehicle-model/suzuki-burgman-street-125-2026.jpg",
     type: ENUM_VEHICLE_MODEL_TYPE.SCOOTER,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE,
     yearStart: 2022,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
 
   // VinFast
@@ -226,11 +241,12 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandVinfast,
+    photo: "/images/vehicle-model/vinfast-klara-s-2026.png",
     type: ENUM_VEHICLE_MODEL_TYPE.ELECTRIC,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.ELECTRIC,
     yearStart: 2022,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
   {
     _id: "vm-012",
@@ -241,10 +257,11 @@ export const mockVehicleModels: VehicleModel[] = [
     modelYear: 2026,
     status: ENUM_VEHICLE_MODEL_STATUS.ACTIVE,
     vehicleBrand: brandVinfast,
+    photo: "/images/vehicle-model/vinfast-theon-s-2025.png",
     type: ENUM_VEHICLE_MODEL_TYPE.ELECTRIC,
     fuelType: ENUM_VEHICLE_MODEL_FUEL_TYPE.ELECTRIC,
     yearStart: 2023,
-    createdAt: new Date("2024-01-01"),
-    updatedAt: new Date("2024-01-01"),
+    createdAt: DATE,
+    updatedAt: DATE,
   },
 ];

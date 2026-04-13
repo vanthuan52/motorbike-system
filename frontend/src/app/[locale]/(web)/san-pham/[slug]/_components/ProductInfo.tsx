@@ -145,7 +145,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <button
           type="button"
           className={`
-            flex-1 sm:flex-none sm:min-w-[200px] h-11 px-6 font-semibold text-sm rounded-lg
+            w-full sm:flex-1 sm:min-w-[200px] h-11 px-6 font-semibold text-sm rounded-lg
             transition-all duration-200 flex items-center justify-center gap-2
             ${
               product.status !== "in_stock"

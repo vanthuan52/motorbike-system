@@ -31,7 +31,7 @@ export function ProductImageGallery({ images }: ProductImageGalleryProps) {
             <img
               src={img}
               alt={`Thumbnail ${idx + 1}`}
-              className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-110"
+              className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-110"
             />
           </button>
         ))}
@@ -43,7 +43,7 @@ export function ProductImageGallery({ images }: ProductImageGalleryProps) {
           <img
             src={images[selectedIndex]}
             alt={`Ảnh sản phẩm ${selectedIndex + 1}`}
-            className="object-contain w-full h-full transition-transform duration-500 group-hover:scale-110"
+            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
           />
         </div>
 
@@ -66,7 +66,7 @@ export function ProductImageGallery({ images }: ProductImageGalleryProps) {
               <img
                 src={img}
                 alt={`Thumbnail ${idx + 1}`}
-                className="object-contain w-full h-full"
+                className="object-cover w-full h-full"
               />
             </button>
           ))}
