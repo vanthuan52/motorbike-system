@@ -60,13 +60,13 @@ BULL_BOARD_PASSWORD=changeme
 
 Project dùng JWKS (ES256/ES512) cho xác thực. Cần tạo key pair trước khi chạy:
 
-Option 1: Không cần tự đồng cập nhật các biến `AUTH_JWT_*_PRIVATE_KEY`, `PUBLIC_KEY`, `KID`
+**Option 1** — Chỉ tạo file JWKS (tự copy key vào `.env` thủ công):
 
 ```bash
 npm run generate:keys
 ```
 
-Option 2: Cho phép tự đồng cập nhật các biến `AUTH_JWT_*_PRIVATE_KEY`, `PUBLIC_KEY`, `KID`
+**Option 2** — Tạo file JWKS + tự động cập nhật `.env` (khuyên dùng):
 
 ```bash
 npm run generate:keys --direct-insert
@@ -108,16 +108,17 @@ Services được khởi động:
 
 Transactions yêu cầu **replica set**. Keyfile dùng để authenticate giữa các MongoDB nodes trong replica set:
 
-| Config | Dev | Staging | Production |
-|--------|-----|---------|------------|
-| **Replica Set** | ✅ Single Node (rs0) | ✅ Single Node (rs0) | ✅ Multi-Node (rs0) |
+| Config             | Dev                  | Staging              | Production           |
+| ------------------ | -------------------- | -------------------- | -------------------- |
+| **Replica Set**    | ✅ Single Node (rs0) | ✅ Single Node (rs0) | ✅ Multi-Node (rs0)  |
 | **Authentication** | ✅ Username/Password | ✅ Username/Password | ✅ Username/Password |
-| **Keyfile** | ✅ Required | ✅ Required | ✅ Required |
-| **Transactions** | ✅ Works | ✅ Works | ✅ Works |
+| **Keyfile**        | ✅ Required          | ✅ Required          | ✅ Required          |
+| **Transactions**   | ✅ Works             | ✅ Works             | ✅ Works             |
 
 > **Lưu ý:** Keyfile là bắt buộc cho replica set mode vì MongoDB yêu cầu internal authentication khi `--replSet` được bật cùng `--auth`. Chạy `npm run generate:mongo-key` ở **Bước 4** để tạo.
 
 **For Production (multi-node):**
+
 1. Tạo keyfile: `npm run generate:mongo-key`
 2. Copy **cùng một** keyfile tới tất cả MongoDB nodes với `400` permissions
 3. Enable keyFile + auth trong mongod config
@@ -190,6 +191,7 @@ docker compose -f docker-compose.dev.yml up -d
 ```
 
 **Features:**
+
 - Single-node services (MongoDB, Redis, MinIO)
 - No resource limits (uses max available)
 - All ports exposed for easy debugging
@@ -215,6 +217,7 @@ docker compose -f docker-compose.staging.yml up -d
 ```
 
 **Features:**
+
 - ✅ Full stack bao gồm NestJS API (containerized)
 - ✅ Moderate resource limits (realistic constraints)
 - ✅ All services exposed trên non-standard ports (debugging)
@@ -247,6 +250,7 @@ docker compose -f docker-compose.prod.yml --profile monitoring up -d
 ```
 
 **Features:**
+
 - ✅ **Internal-only networking** — chỉ API port (5300) exposed ra ngoài
 - ✅ **Strict resource limits + reservations** (prevent resource exhaustion)
 - ✅ **Always restart policy** (automatic recovery)
@@ -256,7 +260,14 @@ docker compose -f docker-compose.prod.yml --profile monitoring up -d
 - ✅ **Redis AOF persistence** (durability) + memory limits
 - ✅ **Bull Board behind profile** — chỉ accessible qua `localhost` (SSH tunnel)
 - ✅ **MinIO Console** — chỉ accessible qua `localhost` (SSH tunnel)
-- [ ] Use Docker secrets instead of .env (recommended for sensitive data)
+
+**Production Checklist:**
+
+- [ ] Set strong passwords (`DATABASE_PASSWORD`, `MINIO_ROOT_PASSWORD`, `BULL_BOARD_PASSWORD`)
+- [ ] Configure backups cho `mongo_data` và `minio_data` volumes
+- [ ] Set up log aggregation (ELK, Datadog, CloudWatch)
+- [ ] Configure monitoring/alerting cho tất cả services
+- [ ] Use Docker secrets thay cho `.env` (recommended for sensitive data)
 
 ---
 
@@ -378,8 +389,10 @@ backend/
 │   └── minio/policies/    # MinIO IAM/CORS/lifecycle config
 ├── scripts/
 │   └── generate-keys.ts   # Script tạo JWT key pair
+│   └── generate-mongo-key.ts # Script tạo Mongo Key
 ├── docker-compose.dev.yml     # Supporting services cho local dev
-├── docker-compose.staging.yml # Full stack cho staging/production
+├── docker-compose.staging.yml # Full stack cho staging
+├── docker-compose.prod.yml    # Full stack cho production
 ├── .env.example               # Template env file
-└── .env.development           # Local env (không commit)
+└── .env                       # Local env (không commit)
 ```
