@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import PurchaseHistoryPage from "../../../../features/order/components/purchase-history-page";
+import PurchaseHistoryPage from "@/features/order/components/purchase-history-page";
 
 export const metadata: Metadata = {
   title: "Lịch sử mua hàng",
