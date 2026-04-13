@@ -9,7 +9,7 @@ const MOCK_BANNERS: Banner[] = [
     title: "Dịch Vụ Bảo Dưỡng Xe Máy Chuyên Nghiệp",
     subtitle:
       "Đội ngũ kỹ thuật viên giàu kinh nghiệm — Phụ tùng chính hãng — Bảo hành dài hạn",
-    image: "/images/banners/banner-1.png",
+    image: "/images/banners/banner-0.jpg",
     link: "/dich-vu",
     linkText: "Khám phá dịch vụ",
     order: 1,

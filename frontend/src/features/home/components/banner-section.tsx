@@ -6,7 +6,12 @@ import { useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
-import { ChevronLeft, ChevronRight, Clock, BadgeDollarSign } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  BadgeDollarSign,
+} from "lucide-react";
 
 import { RootState, useAppDispatch } from "@/store";
 import { bannerActions } from "@/features/banner/store/banner-slice";
@@ -79,6 +84,7 @@ export default function BannerSection() {
                   priority={index === 0}
                   className="object-cover"
                   sizes="100vw"
+                  unoptimized
                 />
                 <div className="absolute inset-x-0 bottom-0 h-60 bg-gradient-to-t from-secondary-950/70 to-transparent" />
               </div>
@@ -97,7 +103,7 @@ export default function BannerSection() {
                 "bg-white/10 backdrop-blur-md border border-white/20 text-white",
                 "opacity-0 group-hover:opacity-100",
                 "hover:bg-white/20 active:scale-95",
-                "transition-all duration-300 ease-out cursor-pointer"
+                "transition-all duration-300 ease-out cursor-pointer",
               )}
               aria-label="Previous slide"
             >
@@ -111,7 +117,7 @@ export default function BannerSection() {
                 "bg-white/10 backdrop-blur-md border border-white/20 text-white",
                 "opacity-0 group-hover:opacity-100",
                 "hover:bg-white/20 active:scale-95",
-                "transition-all duration-300 ease-out cursor-pointer"
+                "transition-all duration-300 ease-out cursor-pointer",
               )}
               aria-label="Next slide"
             >
@@ -131,7 +137,7 @@ export default function BannerSection() {
                   "h-2 rounded-full transition-all duration-500 ease-out cursor-pointer",
                   activeIndex === index
                     ? "w-10 bg-primary-500 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb,59,130,246),0.6)]"
-                    : "w-2 bg-white/50 hover:bg-white/80"
+                    : "w-2 bg-white/50 hover:bg-white/80",
                 )}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -156,8 +162,13 @@ function ServicePriceLookup() {
   const { vehicleServices } = useVehicleService();
 
   // ---- State ----
-  const [localSelectedBrand, setLocalSelectedBrand] = useState<string | undefined>(undefined);
-  const [selectedModel, setSelectedModel] = useState<{ value: string; label: string } | null>(null);
+  const [localSelectedBrand, setLocalSelectedBrand] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedModel, setSelectedModel] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
 
   const [vehicleModalOpen, setVehicleModalOpen] = useState(false);
@@ -172,9 +183,7 @@ function ServicePriceLookup() {
     ? vehicleBrands.find((b) => b._id === localSelectedBrand)?.name
     : "";
   const vehicleDisplayValue =
-    brandName && selectedModel
-      ? `${brandName} - ${selectedModel.label}`
-      : "";
+    brandName && selectedModel ? `${brandName} - ${selectedModel.label}` : "";
 
   const serviceDisplayValue =
     selectedServiceIds.length === 0
@@ -230,7 +239,7 @@ function ServicePriceLookup() {
                       "px-4 text-sm font-medium text-secondary-900",
                       "outline-none transition-all duration-200 cursor-pointer",
                       "hover:border-primary-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20",
-                      "placeholder:text-secondary-600"
+                      "placeholder:text-secondary-600",
                     )}
                   />
                 </div>
@@ -258,7 +267,7 @@ function ServicePriceLookup() {
                       "placeholder:text-secondary-600",
                       selectedModel
                         ? "hover:border-primary-300 cursor-pointer"
-                        : "opacity-50 cursor-not-allowed"
+                        : "opacity-50 cursor-not-allowed",
                     )}
                   />
                   {selectedServiceIds.length > 0 && (
@@ -321,7 +330,7 @@ function ServicePriceLookup() {
                       "shadow-[0_4px_16px_rgba(var(--color-primary-500-rgb,59,130,246),0.35)]",
                       "hover:bg-primary-700 hover:shadow-[0_6px_24px_rgba(var(--color-primary-500-rgb,59,130,246),0.45)]",
                       "hover:-translate-y-0.5 active:translate-y-0",
-                      "transition-all duration-300 ease-out"
+                      "transition-all duration-300 ease-out",
                     )}
                   >
                     Đặt lịch ngay
