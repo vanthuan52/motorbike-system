@@ -8,7 +8,7 @@ import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 import { mockInvoices } from "../mocks/Invoices";
 import type { InvoiceManagement } from "../types";
-import OrderCard from './order-card';
+import OrderCard from "./order-card";
 
 const PAGE_SIZE = 5;
 

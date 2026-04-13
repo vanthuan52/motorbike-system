@@ -116,7 +116,7 @@ export default function OrderSuccessPage() {
 
   const orderId = useMemo(
     () => `MS-${Date.now().toString(36).toUpperCase()}`,
-    []
+    [],
   );
   const orderDate = useMemo(
     () =>
@@ -125,7 +125,7 @@ export default function OrderSuccessPage() {
         month: "2-digit",
         year: "numeric",
       }),
-    []
+    [],
   );
 
   const features = [
@@ -204,7 +204,11 @@ export default function OrderSuccessPage() {
                     animate={{ pathLength: 1 }}
                     transition={{ delay: 0.5, duration: 0.5 }}
                   >
-                    <CheckCircle2 size={48} className="text-white" strokeWidth={2.5} />
+                    <CheckCircle2
+                      size={48}
+                      className="text-white"
+                      strokeWidth={2.5}
+                    />
                   </motion.div>
                 </div>
               </motion.div>
@@ -334,7 +338,7 @@ export default function OrderSuccessPage() {
               className="flex flex-col sm:flex-row gap-3 justify-center"
             >
               <Link
-                href="/san-pham"
+                href="/phu-tung"
                 className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-primary-500 text-white font-semibold text-sm hover:bg-primary-600 active:bg-primary-700 transition-all shadow-sm hover:shadow-md"
               >
                 <ShoppingBag size={18} />

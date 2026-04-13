@@ -30,7 +30,11 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     dispatch(
-      cartActions.addToCart({ productId: product.id, color: product.colors[0], quantity: 1 })
+      cartActions.addToCart({
+        productId: product.id,
+        color: product.colors[0],
+        quantity: 1,
+      }),
     );
   };
 
@@ -51,7 +55,7 @@ export default function ProductCard({
       >
         {/* Image */}
         <Link
-          href={`/san-pham/${product.slug}`}
+          href={`/phu-tung/${product.slug}`}
           className="relative w-full min-[500px]:w-40 min-[500px]:h-40 aspect-[4/3] min-[500px]:aspect-auto
                      flex-shrink-0 overflow-hidden rounded-lg bg-bg-soft"
         >
@@ -75,9 +79,11 @@ export default function ProductCard({
 
         {/* Content */}
         <div className="flex-1 flex flex-col min-w-0">
-          <Link href={`/san-pham/${product.slug}`} className="group/link">
-            <h4 className="text-sm min-[500px]:text-base font-semibold text-text-primary mb-1 line-clamp-2
-                           group-hover/link:text-primary-500 transition-colors duration-200">
+          <Link href={`/phu-tung/${product.slug}`} className="group/link">
+            <h4
+              className="text-sm min-[500px]:text-base font-semibold text-text-primary mb-1 line-clamp-2
+                           group-hover/link:text-primary-500 transition-colors duration-200"
+            >
               {product.name}
             </h4>
           </Link>
@@ -120,7 +126,7 @@ export default function ProductCard({
     >
       {/* ── Image section ── */}
       <Link
-        href={`/san-pham/${product.slug}`}
+        href={`/phu-tung/${product.slug}`}
         className="relative w-full aspect-[4/3] overflow-hidden bg-bg-soft"
       >
         <img
@@ -145,7 +151,7 @@ export default function ProductCard({
       {/* ── Content section ── */}
       <div className="flex flex-col flex-1 p-4">
         {/* Product name */}
-        <Link href={`/san-pham/${product.slug}`} className="group/link mb-1">
+        <Link href={`/phu-tung/${product.slug}`} className="group/link mb-1">
           <h4
             className="text-sm font-semibold text-text-primary line-clamp-2 leading-snug
                        group-hover/link:text-primary-500 transition-colors duration-200"
