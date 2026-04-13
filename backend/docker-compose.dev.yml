@@ -15,16 +15,22 @@ services:
     volumes:
       - mongo_dev_data:/data/db
       - ./docker/mongo/mongo.key:/etc/mongo/mongo.key:ro
-    command: >-
-      bash -c
-      "cp /etc/mongo/mongo.key /tmp/mongo.key &&
-      chmod 400 /tmp/mongo.key &&
-      chown mongodb:mongodb /tmp/mongo.key &&
-      mongod --replSet rs0 --bind_ip_all --keyFile /tmp/mongo.key --auth"
+    entrypoint:
+      - bash
+      - -c
+      - |
+        cp /etc/mongo/mongo.key /tmp/mongo.key
+        chmod 400 /tmp/mongo.key
+        chown mongodb:mongodb /tmp/mongo.key
+        exec docker-entrypoint.sh "$$@"
+      - --
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all', '--keyFile', '/tmp/mongo.key']
     networks:
       - dev-network
     healthcheck:
-      test: mongosh --eval "db.adminCommand('ping')" --quiet
+      test: >-
+        mongosh -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD}
+        --authenticationDatabase admin --eval "db.adminCommand('ping')" --quiet
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,11 +48,19 @@ services:
     command: >-
       bash -c
       "echo 'Initializing MongoDB replica set...' &&
-      mongosh --host mongo:27017 -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'try { rs.status(); print(\"Replica set already initialized.\"); } catch(e) { rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"127.0.0.1:27017\" }] }); print(\"Replica set initialized.\"); }' &&
+      mongosh --host mongo:27017 -u $$MONGO_USER -p $$MONGO_PASS --authenticationDatabase admin --eval '
+        try {
+          rs.status();
+          print(\"Replica set already initialized.\");
+        } catch(e) {
+          rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"mongo:27017\" }] });
+          print(\"Replica set initialized.\");
+        }
+      ' &&
       echo 'Done.'"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${DATABASE_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${DATABASE_PASSWORD}
+      - MONGO_USER=${DATABASE_USERNAME}
+      - MONGO_PASS=${DATABASE_PASSWORD}
     deploy:
       restart_policy:
         condition: none
