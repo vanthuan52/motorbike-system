@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { blogs } from "@/data/BlogsData";
-import BlogHeader from "@/app/[locale]/(web)/blog/_components/BlogHeader";
-import BlogFilter from "@/app/[locale]/(web)/blog/_components/BlogFilter";
-import BlogCard from "@/app/[locale]/(web)/blog/_components/BlogCard";
+import BlogHeader from "./blog-header";
+import BlogFilter from "./blog-filter";
+import BlogCard from "./blog-card";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export default function BlogPage() {

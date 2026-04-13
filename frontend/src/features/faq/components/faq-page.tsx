@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { faqData } from "@/data/FaqData";
-import { SearchBar } from "./SearchBar";
-import { CategoryFilter } from "./CategoryFilter";
-import { FAQList } from "./FAQList";
-import { ContactCTA } from "./ContactCTA";
-import Banner from "./Banner";
+import { SearchBar } from './search-bar';
+import { CategoryFilter } from './category-filter';
+import { FAQList } from './faqlist';
+import { ContactCTA } from './contact-cta';
+import Banner from './banner';
 
 export default function FaqPage() {
   const [searchTerm, setSearchTerm] = useState("");

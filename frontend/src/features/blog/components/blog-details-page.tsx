@@ -23,7 +23,7 @@ import { comments as allComments } from "@/data/CommentsData";
 import { tags } from "@/data/TagsData";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 import Breadcrumbs, { BreadcrumbItem } from "@/components/ui/Breadcrumbs";
-import BlogCard from "@/app/[locale]/(web)/blog/_components/BlogCard";
+import BlogCard from "./blog-card";
 
 /* ── Types ── */
 interface BlogSection {

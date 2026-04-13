@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import FaqPage from "./_components/FaqPage";
+import FaqPage from "../../../../features/faq/components/faq-page";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
