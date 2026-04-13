@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import VehicleMaintenanceRegistration from "./_components/VehicleMaintenanceRegistration";
+import VehicleMaintenanceRegistration from "../../../../features/appointment/components/vehicle-maintenance-registration";
 import { TRANSLATION_FILES } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {

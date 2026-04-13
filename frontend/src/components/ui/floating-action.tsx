@@ -63,6 +63,23 @@ export const FloatingAction = () => {
 
   return (
     <div className="fixed bottom-8 right-8 z-[90] flex flex-col items-end gap-4">
+      {/* Back to Top */}
+      <button
+        onClick={scrollToTop}
+        title="Lên đầu trang"
+        className={cn(
+          "mb-2 flex size-12 cursor-pointer items-center justify-center rounded-full bg-secondary-800 shadow-[var(--shadow-md)]",
+          "state-layer hover:shadow-[var(--shadow-lg)] active:shadow-[var(--shadow-md-active)]",
+          "outline-none focus-visible:shadow-[var(--shadow-focus-ring)] text-white",
+          "transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105",
+          isVisible
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-8 opacity-0",
+        )}
+      >
+        <ArrowUp size={24} />
+      </button>
+
       {/* Contact Info Group */}
       <div className="flex flex-col items-end gap-4">
         {/* Chat Widget integrated here */}
@@ -86,23 +103,6 @@ export const FloatingAction = () => {
           </a>
         ))}
       </div>
-
-      {/* Back to Top */}
-      <button
-        onClick={scrollToTop}
-        title="Lên đầu trang"
-        className={cn(
-          "mt-2 flex size-12 cursor-pointer items-center justify-center rounded-full bg-secondary-800 shadow-[var(--shadow-md)]",
-          "state-layer hover:shadow-[var(--shadow-lg)] active:shadow-[var(--shadow-md-active)]",
-          "outline-none focus-visible:shadow-[var(--shadow-focus-ring)] text-white",
-          "transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105",
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "pointer-events-none translate-y-8 opacity-0",
-        )}
-      >
-        <ArrowUp size={24} />
-      </button>
     </div>
   );
 };
