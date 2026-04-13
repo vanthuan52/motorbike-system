@@ -8,7 +8,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import type { ColumnsType } from "antd/es/table";
 import { Vehicle } from "@/types/Vehicle";
 import MyVehicleModal from "./MyVehicleModal";

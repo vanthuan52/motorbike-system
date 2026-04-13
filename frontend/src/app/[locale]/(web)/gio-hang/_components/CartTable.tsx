@@ -1,18 +1,15 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/store";
-import { Button } from "antd";
-import { motion } from "framer-motion";
 import Image from "next/image";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FaHeart } from "react-icons/fa";
-import {
-  updateCartItem,
-  deleteFromCart,
-} from "@/features/cart/store/cart-slice";
+import { useTranslations } from "next-intl";
+import { Minus, Plus, Trash2 } from "lucide-react";
+
+import { RootState } from "@/store";
+import { cartActions } from "@/features/cart/store";
 import { fetchProductsByIds } from "./cart-api";
-import Skeleton from "./Skeleton";
+import { Link, TRANSLATION_FILES } from "@/lib/i18n";
 import { Product } from "@/types/users/products/product";
 import { IMG_PLACEHOLDER } from "@/constant/application";
 
@@ -21,8 +18,9 @@ export default function CartTable({
 }: {
   onTotalChange: (total: number) => void;
 }) {
+  const t = useTranslations(TRANSLATION_FILES.CART_PAGE);
   const dispatch = useDispatch();
-  const cartItems = useSelector((state: RootState) => state.cart.cartItems);
+  const cartItems = useSelector((state: RootState) => state.cart.items);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,133 +32,221 @@ export default function CartTable({
       return;
     }
     setLoading(true);
-    fetchProductsByIds(cartItems.map((i) => String(i.id))).then((data) => {
-      setProducts(data);
-      setLoading(false);
-    });
+    fetchProductsByIds(cartItems.map((i) => String(i.productId))).then(
+      (data) => {
+        setProducts(data);
+        setLoading(false);
+      }
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartItems.length]);
 
   useEffect(() => {
     const total = products.reduce((sum, p) => {
-      const item = cartItems.find((i) => i.id === p.id);
+      const item = cartItems.find((i) => i.productId === p.id);
       return sum + (item?.quantity || 0) * p.price;
     }, 0);
     onTotalChange(total);
   }, [cartItems, products, onTotalChange]);
 
-  const handleIncrease = (id: string | number) => {
-    const item = cartItems.find((i) => i.id === id);
-    if (item && item.quantity < 99) {
-      dispatch(updateCartItem({ item, newQuantity: item.quantity + 1 }));
-    }
-  };
-
-  const handleDecrease = (id: string | number) => {
-    const item = cartItems.find((i) => i.id === id);
-    if (item && item.quantity > 1) {
-      dispatch(updateCartItem({ item, newQuantity: item.quantity - 1 }));
-    }
-  };
-
-  const handleRemove = (id: string | number, color?: string) => {
-    const item = cartItems.find((i) => i.id === id && i.color === color);
-    if (item) {
-      dispatch(deleteFromCart(item));
-    }
-  };
-
-  if (loading) return <Skeleton products={cartItems.length} />;
-
-  if (cartItems.length === 0)
+  /* ── Loading skeleton ── */
+  if (loading) {
     return (
-      <div className="text-center py-10 text-text-muted">
-        Giỏ hàng của bạn đang trống.
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 p-4 rounded-xl bg-bg-soft animate-pulse"
+          >
+            <div className="w-20 h-20 rounded-lg bg-secondary-200" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 bg-secondary-200 rounded w-3/4" />
+              <div className="h-3 bg-secondary-100 rounded w-1/2" />
+            </div>
+            <div className="w-20 h-4 bg-secondary-200 rounded" />
+          </div>
+        ))}
       </div>
     );
+  }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col gap-4"
-    >
-      <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
-        <div className="min-w-[600px] w-full text-sm sm:text-base border border-border p-2 rounded-[var(--radius-xl)]">
-          <div>
-            {products.map((p) => {
-              const item = cartItems.find((i) => i.id === p.id);
-              if (!item) return null;
-              return (
-                <div
-                  key={p.id}
-                  className="border-b border-border bg-surface rounded-[var(--radius-xl)] flex w-full justify-between items-center mb-1"
-                >
-                  <div className="flex justify-center items-center">
-                    <div className="py-1 sm:py-2 px-1 sm:px-2 align-middle">
-                      <RiDeleteBin6Line
-                        size={24}
-                        onClick={() => handleRemove(p.id)}
-                        className="cursor-pointer hover:text-red-500"
-                      />
-                      <FaHeart
-                        size={24}
-                        className="cursor-pointer hover:text-pink-500 hover:!fill-pink-500 mt-2"
-                      />
-                    </div>
-                    <div className="py-1 sm:py-2 px-1 sm:px-2">
-                      <div className="flex items-center gap-2 sm:gap-3 min-w-[260px]">
-                        <div className="relative rounded overflow-hidden bg-surface-alt border border-border w-10 h-10 sm:w-16 sm:h-16">
-                          <Image
-                            src={p.image[0]}
-                            placeholder="blur"
-                            blurDataURL={IMG_PLACEHOLDER}
-                            alt={p.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <span className="font-medium text-text-primary text-xs sm:text-base line-clamp-2 max-w-[80px] sm:max-w-none">
-                          {p.name}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-right text-text-primary whitespace-nowrap">
-                    {p.price.toLocaleString()} đ
-                  </div>
-                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-center">
-                    <div className="flex items-center justify-center gap-1 sm:gap-2">
-                      <Button
-                        icon={<MinusOutlined />}
-                        size="small"
-                        shape="circle"
-                        className="border border-border text-text-secondary hover:bg-surface-alt"
-                        onClick={() => handleDecrease(p.id)}
-                        disabled={item.quantity <= 1}
-                      />
-                      <span className="inline-block w-6 sm:w-8 text-center text-text-primary">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        icon={<PlusOutlined />}
-                        size="small"
-                        shape="circle"
-                        className="border border-border text-text-secondary hover:bg-surface-alt"
-                        onClick={() => handleIncrease(p.id)}
-                        disabled={item.quantity >= 99}
-                      />
-                    </div>
-                  </div>
-                  <div className="py-1 sm:py-2 px-1 sm:px-2 text-right font-semibold text-text-primary whitespace-nowrap">
-                    {(p.price * item.quantity).toLocaleString()} đ
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+  /* ── Empty state ── */
+  if (cartItems.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <div className="w-24 h-24 rounded-full bg-bg-soft flex items-center justify-center mb-6">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            className="text-text-muted"
+          >
+            <circle cx="9" cy="21" r="1" />
+            <circle cx="20" cy="21" r="1" />
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
         </div>
+        <h3 className="text-lg font-semibold text-text-primary mb-2">
+          {t("empty.title")}
+        </h3>
+        <p className="text-sm text-text-muted mb-6 max-w-xs">
+          {t("empty.description")}
+        </p>
+        <Link
+          href="/san-pham"
+          className="inline-flex items-center px-6 py-2.5 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 transition-colors"
+        >
+          {t("empty.cta")}
+        </Link>
       </div>
-    </motion.div>
+    );
+  }
+
+  /* ── Cart items ── */
+  return (
+    <div className="space-y-0">
+      {/* Header row — desktop */}
+      <div className="hidden sm:grid grid-cols-[1fr_120px_140px_100px_40px] gap-4 px-4 pb-3 text-xs font-semibold text-text-muted uppercase tracking-wide border-b border-border">
+        <span>{t("table.product")}</span>
+        <span className="text-center">{t("table.price")}</span>
+        <span className="text-center">{t("table.quantity")}</span>
+        <span className="text-right">{t("table.total")}</span>
+        <span />
+      </div>
+
+      {/* Items */}
+      {products.map((p) => {
+        const item = cartItems.find((i) => i.productId === p.id);
+        if (!item) return null;
+        const lineTotal = p.price * item.quantity;
+
+        return (
+          <div
+            key={`${p.id}-${item.color}`}
+            className="grid grid-cols-1 sm:grid-cols-[1fr_120px_140px_100px_40px] gap-4 items-center px-4 py-5 border-b border-border last:border-b-0 hover:bg-bg-soft/50 transition-colors"
+          >
+            {/* Product info */}
+            <div className="flex items-center gap-4">
+              <Link
+                href={`/san-pham/${p.slug}`}
+                className="relative w-20 h-20 rounded-xl overflow-hidden bg-bg-soft flex-shrink-0"
+              >
+                <Image
+                  src={p.image[0] || IMG_PLACEHOLDER}
+                  alt={p.name}
+                  fill
+                  className="object-contain p-1"
+                  sizes="80px"
+                />
+              </Link>
+              <div className="min-w-0">
+                <Link
+                  href={`/san-pham/${p.slug}`}
+                  className="text-sm font-semibold text-text-primary hover:text-primary-500 transition-colors line-clamp-2"
+                >
+                  {p.name}
+                </Link>
+                {item.color && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <span
+                      className="w-3.5 h-3.5 rounded-full ring-1 ring-border"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-xs text-text-muted capitalize">
+                      {item.color}
+                    </span>
+                  </div>
+                )}
+                {/* Mobile price */}
+                <span className="sm:hidden text-sm font-semibold text-text-primary mt-1 block">
+                  {p.price.toLocaleString("vi-VN")}₫
+                </span>
+              </div>
+            </div>
+
+            {/* Price — desktop */}
+            <div className="hidden sm:block text-center text-sm font-medium text-text-primary">
+              {p.price.toLocaleString("vi-VN")}₫
+            </div>
+
+            {/* Quantity */}
+            <div className="flex items-center justify-center">
+              <div className="inline-flex items-center border border-border rounded-lg overflow-hidden">
+                <button
+                  type="button"
+                  className="w-9 h-9 flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  onClick={() =>
+                    dispatch(
+                      cartActions.decrementItem({
+                        productId: p.id,
+                        color: item.color,
+                      })
+                    )
+                  }
+                  disabled={item.quantity <= 1}
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="w-10 text-center text-sm font-semibold text-text-primary select-none">
+                  {item.quantity}
+                </span>
+                <button
+                  type="button"
+                  className="w-9 h-9 flex items-center justify-center text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
+                  onClick={() =>
+                    dispatch(
+                      cartActions.incrementItem({
+                        productId: p.id,
+                        color: item.color,
+                      })
+                    )
+                  }
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Line total */}
+            <div className="hidden sm:block text-right text-sm font-bold text-text-primary">
+              {lineTotal.toLocaleString("vi-VN")}₫
+            </div>
+
+            {/* Remove */}
+            <div className="flex justify-end">
+              <button
+                type="button"
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-text-muted hover:text-error hover:bg-error/5 transition-all cursor-pointer"
+                onClick={() =>
+                  dispatch(
+                    cartActions.removeFromCart({
+                      productId: p.id,
+                      color: item.color,
+                    })
+                  )
+                }
+                title={t("table.remove")}
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Clear all */}
+      <div className="flex justify-end pt-4">
+        <button
+          type="button"
+          onClick={() => dispatch(cartActions.clearCart())}
+          className="text-xs font-medium text-text-muted hover:text-error transition-colors cursor-pointer"
+        >
+          {t("table.clearAll")}
+        </button>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { getProvinces, getDistricts, getWards } from "vietnam-provinces";
 import { UserProfile } from "@/features/user/types";
 

@@ -23,7 +23,7 @@ export default function Page() {
       <CareServiceBrowse />
       <ServiceProcess />
       <CustomerReviews />
-      <div className="container mx-auto px-4 xl:px-0 pb-16">
+      <div className="container pb-16">
         <ServiceCTA />
       </div>
       <FAQSection />

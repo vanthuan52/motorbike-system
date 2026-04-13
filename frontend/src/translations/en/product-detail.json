@@ -5,19 +5,34 @@
   },
   "breadcrumbs": {
     "home": "Home",
+    "productList": "Products",
     "product": "Product"
   },
   "productInfo": {
     "toast": {
       "success": "Product added to cart successfully"
     },
+    "sku": "SKU",
     "color": "Color",
+    "origin": "Origin",
     "unknown": "Unknown",
     "stock": "Stock",
-    "quantity": "Quantity",
-    "addToCart": "Add to Cart",
+    "inStock": "In stock",
     "outOfStock": "Out of stock",
     "outOfBusiness": "Discontinued",
-    "formOfDelivery": "Form of delivery"
+    "quantity": "Quantity",
+    "addToCart": "Add to Cart",
+    "buyNow": "Buy Now",
+    "description": "Product Description",
+    "share": "Share",
+    "wishlist": "Wishlist",
+    "category": {
+      "unknown": "Uncategorized"
+    },
+    "formOfDelivery": "Delivery",
+    "freeShipping": "Free Shipping",
+    "warranty": "12-month Warranty",
+    "genuine": "100% Genuine",
+    "returnPolicy": "30-day Return"
   }
 }

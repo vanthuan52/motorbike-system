@@ -1,57 +1,131 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface CartItem {
-  id: string | number;
-  color?: string;
-  quantity: number;
-}
+import {
+  CartItem,
+  AddToCartPayload,
+  UpdateCartItemPayload,
+  RemoveCartItemPayload,
+} from "../types";
+
+/* ── Helpers ── */
+
+/** Unique key for matching cart items by productId + color */
+const matchItem = (a: CartItem, b: { productId: string; color?: string }) =>
+  a.productId === b.productId && a.color === b.color;
+
+/* ── State ── */
 
 interface CartState {
-  cartItems: CartItem[];
+  items: CartItem[];
+  totalItems: number;
 }
 
 const initialState: CartState = {
-  cartItems: [],
+  items: [],
+  totalItems: 0,
 };
 
-const cartSlice = createSlice({
+/** Recalculate the total item count */
+const recalcTotal = (state: CartState) => {
+  state.totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
+};
+
+/* ── Slice ── */
+
+export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart(state, action: PayloadAction<CartItem>) {
-      const item = action.payload;
-      const exist = state.cartItems.find(
-        (i) => i.id === item.id && i.color === item.color
-      );
-      if (exist) {
-        exist.quantity += item.quantity;
+    /**
+     * Add a product to the cart.
+     * If the same product+color already exists, increment its quantity.
+     */
+    addToCart(state, action: PayloadAction<AddToCartPayload>) {
+      const { productId, color, quantity } = action.payload;
+      const existing = state.items.find((i) => matchItem(i, { productId, color }));
+
+      if (existing) {
+        existing.quantity += quantity;
       } else {
-        state.cartItems.push(item);
+        state.items.push({ productId, color, quantity });
       }
+      recalcTotal(state);
     },
-    deleteFromCart(state, action: PayloadAction<CartItem>) {
-      state.cartItems = state.cartItems.filter(
-        (i) => !(i.id === action.payload.id && i.color === action.payload.color)
-      );
-    },
-    updateCartItem(
-      state,
-      action: PayloadAction<{ item: CartItem; newQuantity: number }>
-    ) {
-      const { item, newQuantity } = action.payload;
-      const exist = state.cartItems.find(
-        (i) => i.id === item.id && i.color === item.color
-      );
-      if (exist) {
-        exist.quantity = newQuantity;
+
+    /**
+     * Set the exact quantity for a cart item.
+     * Removes the item if quantity <= 0.
+     */
+    updateCartItem(state, action: PayloadAction<UpdateCartItemPayload>) {
+      const { productId, color, quantity } = action.payload;
+      const existing = state.items.find((i) => matchItem(i, { productId, color }));
+
+      if (existing) {
+        if (quantity <= 0) {
+          state.items = state.items.filter((i) => !matchItem(i, { productId, color }));
+        } else {
+          existing.quantity = quantity;
+        }
       }
+      recalcTotal(state);
     },
+
+    /**
+     * Increment item quantity by 1.
+     */
+    incrementItem(state, action: PayloadAction<RemoveCartItemPayload>) {
+      const { productId, color } = action.payload;
+      const existing = state.items.find((i) => matchItem(i, { productId, color }));
+      if (existing) {
+        existing.quantity += 1;
+      }
+      recalcTotal(state);
+    },
+
+    /**
+     * Decrement item quantity by 1 (min 1).
+     */
+    decrementItem(state, action: PayloadAction<RemoveCartItemPayload>) {
+      const { productId, color } = action.payload;
+      const existing = state.items.find((i) => matchItem(i, { productId, color }));
+      if (existing && existing.quantity > 1) {
+        existing.quantity -= 1;
+      }
+      recalcTotal(state);
+    },
+
+    /**
+     * Remove a specific product+color from the cart entirely.
+     */
+    removeFromCart(state, action: PayloadAction<RemoveCartItemPayload>) {
+      const { productId, color } = action.payload;
+      state.items = state.items.filter((i) => !matchItem(i, { productId, color }));
+      recalcTotal(state);
+    },
+
+    /**
+     * Clear the entire cart.
+     */
     clearCart(state) {
-      state.cartItems = [];
+      state.items = [];
+      state.totalItems = 0;
     },
   },
 });
 
-export const { addToCart, deleteFromCart, updateCartItem, clearCart } =
-  cartSlice.actions;
+export const cartActions = cartSlice.actions;
+
+/**
+ * @deprecated Use `cartActions.addToCart` instead.
+ * Kept for backward compatibility during migration.
+ */
+export const {
+  addToCart,
+  removeFromCart,
+  updateCartItem,
+  incrementItem,
+  decrementItem,
+  clearCart,
+} = cartSlice.actions;
+
 export default cartSlice.reducer;

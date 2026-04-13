@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
-import Image from "next/image";
+import { X, Search, Bike, ChevronLeft, ChevronRight, Check } from "lucide-react";
 
 import { TRANSLATION_FILES } from "@/lib/i18n";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
 import { useVehicleBrand } from "@/features/appointment/hooks/useVehicleBrand";
 import { useVehicleModelByBrand } from "@/features/appointment/hooks/useVehicleModelByBrand";
 import {
@@ -15,7 +13,7 @@ import {
   ENUM_VEHICLE_MODEL_TYPE,
 } from "@/features/vehicle-model/types";
 
-interface VehicleModel {
+interface VehicleModelOption {
   value: string;
   label: string;
   year?: number;
@@ -26,7 +24,7 @@ interface VehicleModel {
 interface VehicleModelModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (vehicle: VehicleModel) => void;
+  onSubmit: (vehicle: VehicleModelOption) => void;
   localSelectedBrand: string | undefined;
   setLocalSelectedBrand: (brand: string) => void;
 }
@@ -39,267 +37,270 @@ export default function VehicleModelModal({
   setLocalSelectedBrand,
 }: VehicleModelModalProps) {
   const t = useTranslations(TRANSLATION_FILES.CARE_REGISTRATION);
-  const [filters, setFilters] = useState<{
-    search?: string;
-    displacement?: number;
-    year?: number;
-    fuelType?: ENUM_VEHICLE_MODEL_FUEL_TYPE;
-    type?: ENUM_VEHICLE_MODEL_TYPE;
-  }>({});
+  const [search, setSearch] = useState("");
+  const [selectedModel, setSelectedModel] = useState<VehicleModelOption | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 6;
 
-  const [selectedModel, setSelectedModel] = useState<VehicleModel | null>(null);
-
-  const { loadingVehicleBrands: loadingBrands, vehicleBrandOptions: brands } =
-    useVehicleBrand();
-
-  const memoizedFilters = useMemo(() => filters, [filters]);
-  const { loadingVehicleModels: loadingModels, vehicleModelOptions: models } =
-    useVehicleModelByBrand(localSelectedBrand, memoizedFilters);
+  const { loadingVehicleBrands, vehicleBrandOptions: brands } = useVehicleBrand();
+  const filters = useMemo(() => ({ search: "" }), []);
+  const { loadingVehicleModels, vehicleModelOptions: models } =
+    useVehicleModelByBrand(localSelectedBrand, filters);
 
   const filteredModels = useMemo(() => {
-    let data = [...models];
-    if (filters.search) {
-      data = data.filter((m) =>
-        m.label.toLowerCase().includes(filters.search!.toLowerCase())
-      );
-    }
-    return data;
-  }, [models, filters]);
+    if (!search) return models;
+    const q = search.toLowerCase();
+    return models.filter((m) => m.label.toLowerCase().includes(q));
+  }, [models, search]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
+  useEffect(() => setPage(1), [search, localSelectedBrand]);
 
-  const handleSubmit = () => {
-    if (selectedModel) {
-      onSubmit(selectedModel);
-    }
-  };
-
+  const totalPages = Math.ceil(filteredModels.length / pageSize);
   const paginatedModels = filteredModels.slice(
     (page - 1) * pageSize,
     page * pageSize
   );
-  const totalPages = Math.ceil(filteredModels.length / pageSize);
+
+  const handleSubmit = () => {
+    if (selectedModel) onSubmit(selectedModel);
+  };
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-secondary-950/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-secondary-950/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-[90%] max-w-[1000px] max-h-[90vh] overflow-y-auto bg-surface rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)] border border-border">
+      <div className="relative z-10 w-full max-w-[900px] max-h-[85vh] flex flex-col bg-surface rounded-2xl shadow-xl border border-border overflow-hidden">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-border sticky top-0 bg-surface z-10">
-          <h2 className="text-lg font-bold text-text-primary">
-            {t("vehicleModelModal.title")}
-          </h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
+              <Bike size={18} className="text-primary-500" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-text-primary">
+                {t("vehicleModelModal.title")}
+              </h2>
+              <p className="text-xs text-text-muted">
+                Chọn hãng xe và dòng xe của bạn
+              </p>
+            </div>
+          </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center size-9 rounded-full hover:bg-surface-alt transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-bg-soft transition-colors cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} className="text-text-muted" />
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
-          {/* Brand Select */}
-          <select
-            value={localSelectedBrand || ""}
-            onChange={(e) => setLocalSelectedBrand(e.target.value)}
-            className="w-full min-h-[44px] py-3 px-4 rounded-[var(--radius-md)] text-base border border-border bg-surface text-text-primary appearance-none shadow-[var(--shadow-inner)] outline-none focus:border-primary-500 focus:shadow-[var(--shadow-focus-ring)] focus:border-2 hover:border-border-strong"
-          >
-            <option value="" disabled>
-              {t("vehicleModelModal.pickMotorbike")}
-            </option>
-            {brands.map((b) => (
-              <option key={b.value} value={b.value}>
-                {b.label}
-              </option>
-            ))}
-          </select>
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+          {/* Brand pills */}
+          <div>
+            <label className="text-sm font-semibold text-text-primary mb-2 block">
+              Hãng xe
+            </label>
+            {loadingVehicleBrands ? (
+              <div className="flex gap-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-9 w-24 bg-secondary-100 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {brands.map((b) => (
+                  <button
+                    key={b.value}
+                    type="button"
+                    onClick={() => {
+                      setLocalSelectedBrand(b.value);
+                      setSelectedModel(null);
+                    }}
+                    className={`
+                      px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer
+                      ${
+                        localSelectedBrand === b.value
+                          ? "bg-primary-500 text-white shadow-sm"
+                          : "bg-bg-soft border border-border text-text-secondary hover:border-primary-300 hover:text-primary-500"
+                      }
+                    `}
+                  >
+                    {b.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          {/* Filters */}
+          {/* Search */}
           {localSelectedBrand && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <Input
-                placeholder={t("vehicleModelModal.filter.search")}
-                onChange={(e) =>
-                  setFilters((f) => ({ ...f, search: e.target.value }))
-                }
+            <div className="relative">
+              <Search
+                size={16}
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
               />
-              <select
-                className="w-full min-h-[44px] py-3 px-4 rounded-[var(--radius-md)] text-sm border border-border bg-surface text-text-primary appearance-none outline-none focus:border-primary-500 focus:border-2 hover:border-border-strong"
-                onChange={(e) =>
-                  setFilters((f) => ({
-                    ...f,
-                    displacement: e.target.value
-                      ? Number(e.target.value)
-                      : undefined,
-                  }))
-                }
-                defaultValue=""
-              >
-                <option value="">
-                  {t("vehicleModelModal.filter.displacement")}
-                </option>
-                <option value="150">150cc</option>
-                <option value="155">155cc</option>
-                <option value="300">300cc</option>
-                <option value="350">350cc</option>
-              </select>
-              <select
-                className="w-full min-h-[44px] py-3 px-4 rounded-[var(--radius-md)] text-sm border border-border bg-surface text-text-primary appearance-none outline-none focus:border-primary-500 focus:border-2 hover:border-border-strong"
-                onChange={(e) =>
-                  setFilters((f) => ({
-                    ...f,
-                    fuelType: e.target.value
-                      ? (e.target.value as ENUM_VEHICLE_MODEL_FUEL_TYPE)
-                      : undefined,
-                  }))
-                }
-                defaultValue=""
-              >
-                <option value="">
-                  {t("vehicleModelModal.filter.fuelType")}
-                </option>
-                <option value={ENUM_VEHICLE_MODEL_FUEL_TYPE.GASOLINE}>
-                  {t("vehicleModelModal.filter.gasoline")}
-                </option>
-                <option value={ENUM_VEHICLE_MODEL_FUEL_TYPE.HYBRID}>
-                  {t("vehicleModelModal.filter.hybrid")}
-                </option>
-                <option value={ENUM_VEHICLE_MODEL_FUEL_TYPE.ELECTRIC}>
-                  {t("vehicleModelModal.filter.electric")}
-                </option>
-              </select>
-              <select
-                className="w-full min-h-[44px] py-3 px-4 rounded-[var(--radius-md)] text-sm border border-border bg-surface text-text-primary appearance-none outline-none focus:border-primary-500 focus:border-2 hover:border-border-strong"
-                onChange={(e) =>
-                  setFilters((f) => ({
-                    ...f,
-                    type: e.target.value
-                      ? (e.target.value as ENUM_VEHICLE_MODEL_TYPE)
-                      : undefined,
-                  }))
-                }
-                defaultValue=""
-              >
-                <option value="">{t("vehicleModelModal.filter.type")}</option>
-                <option value={ENUM_VEHICLE_MODEL_TYPE.SCOOTER}>
-                  {t("vehicleModelModal.filter.scooter")}
-                </option>
-                <option value={ENUM_VEHICLE_MODEL_TYPE.MANUAL}>
-                  {t("vehicleModelModal.filter.manual")}
-                </option>
-                <option value={ENUM_VEHICLE_MODEL_TYPE.CLUTCH}>
-                  {t("vehicleModelModal.filter.clutch")}
-                </option>
-                <option value={ENUM_VEHICLE_MODEL_TYPE.ELECTRIC}>
-                  {t("vehicleModelModal.filter.electricBike")}
-                </option>
-              </select>
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t("vehicleModelModal.filter.search")}
+                className="w-full h-10 pl-10 pr-4 rounded-lg border border-border bg-bg-soft text-sm text-text-primary placeholder:text-text-muted focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20 outline-none transition-all"
+              />
             </div>
           )}
 
           {/* Model Grid */}
-          <div className="min-h-[250px]">
+          <div className="min-h-[240px]">
             {!localSelectedBrand ? (
-              <div className="flex justify-center items-center h-40 text-text-muted text-sm">
-                {t("vehicleModelModal.noBrandSelected")}
+              <div className="flex flex-col items-center justify-center h-52 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-bg-soft flex items-center justify-center mb-3">
+                  <Bike size={28} className="text-text-muted" />
+                </div>
+                <p className="text-sm text-text-muted">
+                  {t("vehicleModelModal.noBrandSelected")}
+                </p>
               </div>
-            ) : loadingModels ? (
-              <div className="flex justify-center items-center h-40 text-text-muted text-sm">
-                {t("vehicleModelModal.loading")}
+            ) : loadingVehicleModels ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-28 bg-secondary-100 rounded-xl animate-pulse" />
+                ))}
               </div>
             ) : paginatedModels.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10">
-                <img
-                  src="/images/motorbike-not-found.png"
-                  alt="Not found"
-                  className="w-32 h-32 object-contain mb-2 opacity-60"
-                />
+              <div className="flex flex-col items-center justify-center h-52 text-center">
+                <Search size={28} className="text-text-muted mb-2" />
+                <p className="text-sm text-text-muted">Không tìm thấy dòng xe</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paginatedModels.map((m) => (
-                  <div
-                    key={m.value}
-                    onClick={() =>
-                      setSelectedModel((prev) =>
-                        prev?.value === m.value ? null : m
-                      )
-                    }
-                    className={`cursor-pointer rounded-[var(--radius-md)] border-2 overflow-hidden transition-all duration-150 hover:shadow-[var(--shadow-sm)] ${
-                      selectedModel?.value === m.value
-                        ? "border-primary-500 shadow-[var(--shadow-sm)]"
-                        : "border-border"
-                    }`}
-                  >
-                    <div className="relative h-36 bg-secondary-100">
-                      <img
-                        src={m.image || "/images/image-holder-icon.png"}
-                        alt={m.label}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="px-3 py-2.5">
-                      <h3 className="font-semibold text-sm text-text-primary">
-                        {m.label}
-                      </h3>
-                      {m.year && (
-                        <p className="text-xs text-text-muted">
-                          {t("vehicleModelModal.filter.year")}: {m.year}
-                        </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {paginatedModels.map((m) => {
+                  const isSelected = selectedModel?.value === m.value;
+                  return (
+                    <button
+                      key={m.value}
+                      type="button"
+                      onClick={() =>
+                        setSelectedModel(isSelected ? null : m)
+                      }
+                      className={`
+                        relative flex flex-col rounded-xl border-2 text-left transition-all cursor-pointer overflow-hidden
+                        ${
+                          isSelected
+                            ? "border-primary-500 bg-primary-50/50 shadow-sm"
+                            : "border-border bg-surface hover:border-primary-200 hover:bg-bg-soft"
+                        }
+                      `}
+                    >
+                      {/* Checkmark */}
+                      {isSelected && (
+                        <div className="absolute top-2 right-2 z-10 w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center">
+                          <Check size={12} className="text-white" />
+                        </div>
                       )}
-                    </div>
-                  </div>
-                ))}
+
+                      {/* Image */}
+                      <div className="w-full h-32 bg-bg-soft flex items-center justify-center overflow-hidden">
+                        {m.image ? (
+                          <img
+                            src={m.image}
+                            alt={m.label}
+                            className="w-full h-full object-contain p-2"
+                          />
+                        ) : (
+                          <Bike size={36} className="text-text-muted" />
+                        )}
+                      </div>
+
+                      {/* Info */}
+                      <div className="px-3 py-2.5">
+                        <p className="text-sm font-semibold text-text-primary line-clamp-1">
+                          {m.label}
+                        </p>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          {m.year && (
+                            <span className="text-xs text-text-muted">{m.year}</span>
+                          )}
+                          {m.displacement && m.displacement > 0 && (
+                            <span className="text-xs text-text-muted">
+                              {m.displacement}cc
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 pt-2">
+            <div className="flex items-center justify-center gap-3 pt-1">
               <button
+                type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1.5 text-sm border border-border rounded-[var(--radius-md)] disabled:opacity-40 hover:bg-surface-alt cursor-pointer transition-colors"
+                className="w-8 h-8 rounded-lg border border-border flex items-center justify-center disabled:opacity-30 hover:bg-bg-soft cursor-pointer transition-colors"
               >
-                ←
+                <ChevronLeft size={16} />
               </button>
-              <span className="text-sm text-text-secondary">
+              <span className="text-sm text-text-secondary min-w-[60px] text-center">
                 {page} / {totalPages}
               </span>
               <button
+                type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-1.5 text-sm border border-border rounded-[var(--radius-md)] disabled:opacity-40 hover:bg-surface-alt cursor-pointer transition-colors"
+                className="w-8 h-8 rounded-lg border border-border flex items-center justify-center disabled:opacity-30 hover:bg-bg-soft cursor-pointer transition-colors"
               >
-                →
+                <ChevronRight size={16} />
               </button>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-border sticky bottom-0 bg-surface">
-          <Button variant="outline" onClick={onClose}>
-            {t("vehicleModelModal.cancelButton")}
-          </Button>
-          <Button onClick={handleSubmit} disabled={!selectedModel}>
-            {t("vehicleModelModal.confirmButton")}
-          </Button>
+        <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-border bg-surface">
+          <p className="text-xs text-text-muted">
+            {selectedModel ? (
+              <>
+                Đã chọn:{" "}
+                <span className="font-semibold text-primary-500">
+                  {selectedModel.label}
+                </span>
+              </>
+            ) : (
+              "Chọn một dòng xe để tiếp tục"
+            )}
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-10 px-5 rounded-lg border border-border text-sm font-medium text-text-secondary hover:bg-bg-soft cursor-pointer transition-colors"
+            >
+              {t("vehicleModelModal.cancelButton")}
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={!selectedModel}
+              className="h-10 px-5 rounded-lg bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors shadow-sm"
+            >
+              {t("vehicleModelModal.confirmButton")}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

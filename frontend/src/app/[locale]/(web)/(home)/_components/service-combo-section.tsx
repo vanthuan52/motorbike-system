@@ -32,7 +32,7 @@ export default function ServiceComboSection() {
 
   return (
     <section className="bg-surface-alt py-20" id="service-combo">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <SectionHeading title={t("title")} className="mb-12" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {combos.map((combo, idx) => (

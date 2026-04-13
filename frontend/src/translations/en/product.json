@@ -3,11 +3,13 @@
     "title": "Product",
     "description": "Product"
   },
+  "pageTitle": "Parts & Accessories",
   "breadcrumbs": {
     "home": "Home",
     "productList": "Product List"
   },
   "searchBar": {
+    "title": "Search",
     "placeholder": "Search products..."
   },
   "filter": {
@@ -31,6 +33,9 @@
     "grid": "Grid view",
     "list": "List view",
     "options": {
+      "discount": "Deals",
+      "newest": "Newest",
+      "price": "Price",
       "relevance": "Relevance",
       "priceAsc": "Price: Low to High",
       "priceDesc": "Price: High to Low"
@@ -39,6 +44,7 @@
   "filterSidebar": {
     "title": "Filter",
     "reset": "Reset",
+    "apply": "Filter",
     "status": {
       "title": "Status",
       "options": {

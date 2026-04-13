@@ -41,7 +41,7 @@ export default function ProcessStepsSection() {
 
   return (
     <section className="bg-surface py-20" id="process-steps">
-      <div className="container mx-auto px-4">
+      <div className="container">
         {/* Header */}
         <SectionHeading title={t("title")} className="mb-16" />
 

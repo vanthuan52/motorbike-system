@@ -3,50 +3,41 @@
     "title": "Thanh Toán",
     "description": "Tiến hành thanh toán ngay"
   },
-  "shippingAddressTitle": "Địa Chỉ Giao Hàng",
-  "firstName": "Tên",
-  "lastName": "Họ",
-  "email": "Email",
-  "phone": "Số Điện Thoại",
-  "city": "Thành Phố",
-  "address": "Địa Chỉ",
-  "zip": "Mã Bưu Điện",
-  "description": "Ghi Chú",
-  "firstNameRequired": "Vui lòng nhập tên của bạn",
-  "lastNameRequired": "Vui lòng nhập họ của bạn",
-  "emailRequired": "Vui lòng nhập email",
-  "emailInvalid": "Email không hợp lệ",
-  "phoneRequired": "Vui lòng nhập số điện thoại",
-  "cityRequired": "Vui lòng nhập thành phố",
-  "addressRequired": "Vui lòng nhập địa chỉ",
-  "zipRequired": "Vui lòng nhập mã bưu điện",
-  "breadcrumb": {
+  "breadcrumbs": {
+    "home": "Trang Chủ",
     "cart": "Giỏ Hàng",
-    "cartShort": "Giỏ",
-    "checkout": "Chi Tiết Thanh Toán",
-    "checkoutShort": "Thanh Toán",
-    "complete": "Hoàn Tất",
-    "completeShort": "Xong"
+    "checkout": "Thanh Toán"
   },
-  "cartSummary": {
-    "title": "Giỏ hàng của bạn",
-    "discountPlaceholder": "Mã giảm giá",
-    "apply": "Áp dụng",
+  "heading": "Thanh Toán",
+  "form": {
+    "title": "Thông tin giao hàng",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "address": "Địa chỉ",
+    "city": "Thành phố",
+    "zip": "Mã bưu điện",
+    "note": "Ghi chú đơn hàng",
+    "notePlaceholder": "Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn.",
+    "required": "Trường này là bắt buộc",
+    "emailInvalid": "Email không hợp lệ"
+  },
+  "payment": {
+    "title": "Phương thức thanh toán",
+    "cod": "Thanh toán khi nhận hàng",
+    "codDesc": "Thanh toán bằng tiền mặt khi nhận hàng",
+    "momo": "Ví MoMo",
+    "momoDesc": "Thanh toán qua ví điện tử MoMo",
+    "momoDisabled": "Sắp ra mắt"
+  },
+  "summary": {
+    "title": "Đơn hàng của bạn",
     "subtotal": "Tạm tính",
     "shipping": "Phí vận chuyển",
-    "tax": "Thuế ước tính",
+    "shippingValue": "Miễn phí",
     "total": "Tổng cộng",
-    "proceed": "Tiến hành thanh toán"
-  },
-  "shippingMethod": {
-    "title": "Phương Thức Giao Hàng",
-    "free": {
-      "title": "Giao Hàng Miễn Phí",
-      "time": "7-20 ngày"
-    },
-    "express": {
-      "title": "Giao Hàng Nhanh",
-      "time": "1-3 ngày"
-    }
+    "placeOrder": "Đặt hàng",
+    "backToCart": "Quay lại giỏ hàng"
   }
 }

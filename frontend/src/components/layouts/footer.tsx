@@ -184,7 +184,7 @@ export default function Footer() {
               <Link href="https://pagedone.io/" target="_blank">
                 {t("footer.copyright")}
               </Link>{" "}
-              2025, {t("footer.rightsReserved")}
+              2026. {t("footer.rightsReserved")}
             </span>
           </div>
         </div>

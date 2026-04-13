@@ -12,6 +12,7 @@ export interface VehicleService extends BaseEntity {
   name: string;
   slug: string;
   description?: string;
+  basePrice?: number;
   status: ENUM_VEHICLE_SERVICE_STATUS;
   order?: string;
   serviceCategory: ServiceCategory;

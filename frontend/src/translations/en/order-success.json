@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "Order Successful",
+    "description": "Your order has been placed successfully"
+  },
+  "title": "Order placed successfully!",
+  "subtitle": "Thank you for shopping at MotoServ",
+  "description": "Your order has been received and is being processed. We will contact you as soon as possible.",
+  "orderInfo": {
+    "title": "Order Information",
+    "orderId": "Order ID",
+    "date": "Date",
+    "payment": "Payment",
+    "paymentValue": "Cash on Delivery",
+    "status": "Status",
+    "statusValue": "Processing"
+  },
+  "actions": {
+    "continueShopping": "Continue Shopping",
+    "viewOrders": "View Orders"
+  },
+  "features": {
+    "delivery": {
+      "title": "Fast Delivery",
+      "desc": "Nationwide delivery"
+    },
+    "support": {
+      "title": "24/7 Support",
+      "desc": "Always ready to help"
+    },
+    "warranty": {
+      "title": "Official Warranty",
+      "desc": "100% genuine products"
+    }
+  }
+}

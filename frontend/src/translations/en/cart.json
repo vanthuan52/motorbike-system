@@ -1,34 +1,35 @@
 {
   "meta": {
     "title": "Cart",
-    "description": "Cart"
+    "description": "Your shopping cart"
   },
-
-  "steps": {
-    "step1": {
-      "label": "Cart",
-      "short": "Cart"
-    },
-    "step2": {
-      "label": "Checkout details",
-      "short": "Checkout"
-    },
-    "step3": {
-      "label": "Complete",
-      "short": "Done"
-    }
+  "breadcrumbs": {
+    "home": "Home",
+    "cart": "Cart"
   },
-  "loading": {
-    "cart": "Loading cart...",
-    "totals": "Calculating..."
+  "heading": "Shopping Cart",
+  "itemCount": "{count} items",
+  "empty": {
+    "title": "Your cart is empty",
+    "description": "You haven't added any products to your cart yet.",
+    "cta": "Browse Products"
+  },
+  "table": {
+    "product": "Product",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total",
+    "remove": "Remove",
+    "clearAll": "Clear All"
   },
   "totals": {
-    "heading": "Cart Totals",
+    "heading": "Order Summary",
     "subtotal": "Subtotal",
-    "shipping": "Shipping Fee",
+    "shipping": "Shipping",
     "shippingNote": "Standard delivery",
     "free": "Free",
     "total": "Total",
-    "checkoutBtn": "Proceed to Checkout"
+    "checkoutBtn": "Proceed to Checkout",
+    "continueShopping": "Continue Shopping"
   }
 }

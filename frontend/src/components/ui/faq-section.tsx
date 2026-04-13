@@ -104,7 +104,7 @@ export default function FaqSection({
 
   return (
     <section className={`py-20 bg-white ${className}`}>
-      <div className="container mx-auto max-w-4xl">
+      <div className="container max-w-4xl">
         <SectionHeading title={title} className="mb-16" />
 
         <div className="space-y-4">

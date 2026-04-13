@@ -3,13 +3,13 @@ export default function CareerDetailSkeletonPage() {
     <div className="bg-gray-50 min-h-screen animate-pulse">
       {/* Header skeleton */}
       <div className="w-full bg-white shadow-sm py-6 mb-8">
-        <div className="container mx-auto px-4 flex items-center gap-4">
+        <div className="container flex items-center gap-4">
           <div className="h-10 w-10 bg-gray-200 rounded-full" />
           <div className="h-6 w-40 bg-gray-200 rounded" />
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-10">
+      <div className="container py-10">
         {/* Back link skeleton */}
         <div className="flex items-center mb-6 gap-2">
           <div className="h-5 w-5 bg-gray-200 rounded-full" />
