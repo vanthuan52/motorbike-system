@@ -27,7 +27,7 @@ npm install
 Copy file env mẫu và điền các giá trị cần thiết:
 
 ```bash
-cp .env.example .env.development
+cp .env.example .env
 ```
 
 Các biến **bắt buộc** phải điền trước khi chạy:
@@ -38,7 +38,7 @@ DATABASE_URL=mongodb://motorbike:changeme123@127.0.0.1:27017/motorbike_system?au
 DATABASE_USERNAME=motorbike
 DATABASE_PASSWORD=changeme
 
-# MinIO root credentials (dùng cho docker-compose.dev.yml)
+# MinIO root credentials (dùng cho docker-compose.*.yml)
 MINIO_ROOT_USER=minioadmin
 MINIO_ROOT_PASSWORD=changeme
 
@@ -59,16 +59,24 @@ BULL_BOARD_PASSWORD=changeme
 
 Project dùng JWKS (ES256/ES512) cho xác thực. Cần tạo key pair trước khi chạy:
 
+Option 1: Không cần tự đồng cập nhật các biến `AUTH_JWT_*_PRIVATE_KEY`, `PUBLIC_KEY`, `KID`
+
 ```bash
 npm run generate:keys
 ```
 
-> Script sẽ tự động cập nhật `AUTH_JWT_*_PRIVATE_KEY`, `PUBLIC_KEY`, `KID` vào `.env.development`
+Option 2: Cho phép tự đồng cập nhật các biến `AUTH_JWT_*_PRIVATE_KEY`, `PUBLIC_KEY`, `KID`
+
+```bash
+npm run generate:keys --direct-insert
+```
+
+> Script sẽ tự động cập nhật `AUTH_JWT_*_PRIVATE_KEY`, `PUBLIC_KEY`, `KID` vào `.env`
 > và tạo file `keys/access-jwks.json`, `keys/refresh-jwks.json` cho JWKS Server.
 
 ---
 
-## Bước 3.5 - Tạo Mongo Key
+## Bước 4 - Tạo Mongo Key
 
 ```bash
 npm run generate:mongo-key
@@ -76,10 +84,10 @@ npm run generate:mongo-key
 
 ---
 
-## Bước 4 — Khởi động Supporting Services
+## Bước 5 — Khởi động Supporting Services
 
 ```bash
-docker compose -f docker-compose.dev.yml --env-file .env.development up -d
+docker compose -f docker-compose.dev.yml up -d
 ```
 
 Services được khởi động:
@@ -95,9 +103,26 @@ Services được khởi động:
 
 > `minio-init` sẽ tự chạy và tạo buckets/user/policy rồi thoát — không cần làm thủ công.
 
+### MongoDB Setup for Dev vs Staging vs Production
+
+Transactions yêu cầu **replica set** nhưng **KHÔNG yêu cầu keyFile**. Keyfile chỉ dùng để secure communication giữa nhiều MongoDB nodes:
+
+| Config | Dev | Staging | Production |
+|--------|-----|---------|------------|
+| **Replica Set** | ✅ Single Node (rs0) | ✅ Single Node (rs0) | ✅ Multi-Node (rs0) |
+| **Authentication** | ✅ Username/Password | ✅ Username/Password | ✅ Username/Password |
+| **Keyfile** | ❌ Not needed | ❌ Not needed | ✅ Recommended for multi-node |
+| **Transactions** | ✅ Works | ✅ Works | ✅ Works |
+
+**For Production:** Nếu bạn triển khai multi-node MongoDB replica set (3+ nodes phân tán), hãy:
+1. Tạo keyfile: `npm run generate:mongo-key`
+2. Copy keyfile tới tất cả MongoDB nodes với `600` permissions
+3. Enable keyFile + auth trong mongod config
+4. Sử dụng `docker-compose.staging.yml` làm reference, thêm `--keyFile` parameter
+
 ---
 
-## Bước 5 — Setup Database
+## Bước 6 — Setup Database
 
 ### Generate Prisma Client
 
@@ -121,7 +146,7 @@ npm run migration:seed
 
 ---
 
-## Bước 6 — Chạy ứng dụng
+## Bước 7 — Chạy ứng dụng
 
 ```bash
 npm run start:dev
@@ -148,6 +173,69 @@ API Documentation (Swagger): `http://localhost:5300/api/docs`
 | `npm run format`          | Format code với Prettier                    |
 | `npm run typecheck`       | Kiểm tra TypeScript types                   |
 | `npm run test`            | Chạy unit tests                             |
+
+---
+
+## Environment-Specific Setup
+
+### Development (docker-compose.dev.yml)
+
+**Best for:** Local development, fast iteration, debugging
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+**Features:**
+- Single-node services (MongoDB, Redis, MinIO)
+- No resource limits (uses max available)
+- All ports exposed for easy debugging
+- Verbose logging
+- Hot-reload enabled (if applicable)
+
+### Staging (docker-compose.staging.yml)
+
+**Best for:** Pre-production testing, integration testing, performance validation
+
+```bash
+docker compose -f docker-compose.staging.yml up -d
+```
+
+**Features:**
+- Same architecture as production (single-node balanced)
+- Moderate resource limits (realistic constraints)
+- Healthchecks enabled
+- JSON logging
+- Non-admin services (Bull Board visible)
+
+### Production (docker-compose.prod.yml)
+
+**Best for:** Live environment, maximum reliability and performance
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+```
+
+**Features:**
+- ✅ **Strict resource limits** (prevent resource exhaustion)
+- ✅ **Always restart policy** (automatic recovery)
+- ✅ **Persistent logging** (json-file driver with rotation)
+- ✅ **Optimized healthchecks** (longer timeouts, more retries)
+- ✅ **Reserved resources** (guaranteed minimum performance)
+- ✅ **Read-only volumes** (config immutability)
+- ✅ **WiredTiger optimizations** (MongoDB caching, oplog sizing)
+- ✅ **Redis persistence** (AOF for durability)
+
+**Production Checklist:**
+- [ ] Set strong `DATABASE_PASSWORD` in `.env`
+- [ ] Set strong `MINIO_ROOT_PASSWORD` in `.env`
+- [ ] Configure backups for `mongo_data` volume
+- [ ] Configure backups for `minio_data` volume
+- [ ] Set up log aggregation (ELK, Datadog, CloudWatch)
+- [ ] Configure monitoring/alerting for all services
+- [ ] Test failover scenarios
+- [ ] Document rollback procedures
+- [ ] Use Docker secrets instead of .env (recommended for sensitive data)
 
 ---
 
