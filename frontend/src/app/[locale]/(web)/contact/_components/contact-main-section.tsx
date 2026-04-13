@@ -45,7 +45,7 @@ function ContactMainSection() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 pb-32 relative z-30 -mt-0 lg:-mt-32">
+      <div className="container pb-32 relative z-30 -mt-0 lg:-mt-32">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-surface shadow-[var(--shadow-lg)] rounded-[var(--radius-2xl)] overflow-hidden">
           <div className="p-8 md:p-12 bg-surface-alt">
             <h2 className="text-2xl font-bold text-text-primary mb-6">

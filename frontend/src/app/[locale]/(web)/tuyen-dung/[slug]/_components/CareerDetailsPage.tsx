@@ -31,7 +31,7 @@ export default function CareerDetailsPage() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <CareerHeader />
-      <div className="container mx-auto px-4 mt-4 sm:mt-8 py-10 ">
+      <div className="container mt-4 sm:mt-8 py-10 ">
         <Link
           href={ROUTER_PATH.HIRING}
           className="flex items-center mb-6 text-gray-700 hover:text-gray-900 hover:!underline transition-all duration-200"

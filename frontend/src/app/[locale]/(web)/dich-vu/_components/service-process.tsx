@@ -48,7 +48,7 @@ export default function ServiceProcess() {
 
   return (
     <section className="bg-surface py-16">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <SectionHeading title={t("title")} className="mb-12" />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">

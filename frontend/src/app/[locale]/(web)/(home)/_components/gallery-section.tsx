@@ -76,7 +76,7 @@ export default function GallerySection() {
       {/* Decorative Blur blob */}
       <div className="absolute top-1/2 left-1/4 w-[500px] h-[500px] bg-primary-100/30 rounded-full mix-blend-multiply blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
-      <div className="container mx-auto relative z-10">
+      <div className="container relative z-10">
         <SectionHeading
           title="Không Gian Thực Tế Cửa Hàng"
           subtitle="Trải nghiệm trực quan về không gian làm việc chuyên nghiệp, trang thiết bị hiện đại và đội ngũ kỹ thuật tận tâm tại hệ thống của chúng tôi."

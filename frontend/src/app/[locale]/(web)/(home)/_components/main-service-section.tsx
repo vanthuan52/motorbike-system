@@ -13,7 +13,7 @@ export default function MainServicesSection() {
 
   return (
     <section className="bg-surface py-20" id="main-services">
-      <div className="container mx-auto px-4">
+      <div className="container">
         <SectionHeading title={t("title")} className="mb-12" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

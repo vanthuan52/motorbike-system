@@ -40,7 +40,7 @@ export default function TestimonialsSection() {
 
   return (
     <section className="bg-surface py-20" id="testimonials">
-      <div className="container mx-auto">
+      <div className="container">
         <SectionHeading title={t("title")} className="mb-12" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {testimonials.map((tItem, idx) => (

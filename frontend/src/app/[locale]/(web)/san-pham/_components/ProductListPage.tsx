@@ -121,7 +121,7 @@ export default function ProductListPage() {
   };
   return (
     <section className="bg-bg-soft min-h-screen">
-      <div className="container sm:mx-auto">
+      <div className="container">
         <Breadcrumbs
           items={breadcrumbs}
           className="py-5"
@@ -182,7 +182,7 @@ export default function ProductListPage() {
                                px-4 py-2
                                animate-slide-down"
                   >
-                    <div className="container sm:mx-auto">
+                    <div className="container">
                       <SortBar
                         sort={sort}
                         onChange={setSort}

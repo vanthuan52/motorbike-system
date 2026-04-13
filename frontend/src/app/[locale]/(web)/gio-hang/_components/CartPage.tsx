@@ -18,7 +18,7 @@ export default function CartPage() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="container mx-auto py-10"
+      className="container py-10"
     >
       <motion.ol
         initial={{ opacity: 0, y: 10 }}

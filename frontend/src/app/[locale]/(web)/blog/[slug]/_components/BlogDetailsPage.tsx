@@ -24,7 +24,7 @@ export default function BlogDetailsPage() {
 
   return (
     <div className="w-full mt-10">
-      <div className="container mx-auto">
+      <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-0 lg:gap-8">
           <div className="lg:col-span-7 col-span-1">
             <BlogContent blog={blog} />

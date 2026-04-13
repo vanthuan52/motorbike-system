@@ -29,7 +29,7 @@ export default function BlogPage() {
         setSelectedTag={setSelectedTag}
       />
       <section className="bg-surface py-5">
-        <div className="container mx-auto">
+        <div className="container">
           <div className="flex flex-col lg:flex-row gap-6 mb-10">
             {filteredBlogs[0] && (
               <BlogCard blog={filteredBlogs[0]} variant="main" />

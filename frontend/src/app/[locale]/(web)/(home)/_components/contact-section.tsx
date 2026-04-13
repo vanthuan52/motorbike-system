@@ -88,7 +88,7 @@ export default function ContactSection() {
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary-100/50 rounded-full mix-blend-multiply blur-[120px] opacity-70 pointer-events-none" />
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-secondary-100/50 rounded-full mix-blend-multiply blur-[120px] opacity-70 pointer-events-none" />
 
-      <div className="container mx-auto relative z-10">
+      <div className="container relative z-10">
         <SectionHeading title={t("title")} className="mb-16" />
 
         {/* Main Layout Card */}
